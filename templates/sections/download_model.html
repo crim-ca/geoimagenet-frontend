@@ -1,0 +1,9 @@
+{% extends 'layout_web.html' %}
+{% block content %}
+<form method="POST" action="/models/{{model_id}}/request_download_url">
+    <label>{{ gettext('Nom') }}<input type="text" name="nom" /></label>
+    <label>{{ gettext('Compagnie') }}<input type="text" name="compagnie" /></label>
+    <label>{{ gettext('Courriel') }}<input type="text" name="courriel" /></label>
+    <button type="submit">{{ gettext('Obtenir url') }}</button>
+</form>
+{% endblock %}

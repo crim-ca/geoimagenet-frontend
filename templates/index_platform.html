@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <link href="/css/base.css" rel="stylesheet">
+    <link href="/css/style_platform.css" rel="stylesheet">
+    <script src="/js/root.js" type="application/ecmascript"></script>
+    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/build/ol.js"></script>
+    <script src="/js/layer-switcher.js" type="application/ecmascript"></script>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/css/ol.css" type="text/css">
+    <link rel="stylesheet" href="/css/layer-switcher.css">
+    {% include 'components/favicons.html' %}
+</head>
+<body>
+{% block body %}
+<p>{{ gettext('default body') }}</p>
+{% endblock %}
+</body>
+</html>

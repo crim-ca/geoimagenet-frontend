@@ -1,0 +1,26 @@
+{% extends 'layout_web.html' %}
+{% block content %}
+<div class="benchmarks">
+    <table>
+        <thead>
+        <tr>
+            <th>{{ gettext('Model') }}</th>
+            <th>{{ gettext('Taxonomy Name') }}</th>
+            <th>{{ gettext('Taxonomy Version') }}</th>
+            <th>{{ gettext('Score') }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for benchmark in benchmarks %}
+        <tr>
+            <td>{{ benchmark.model }}</td>
+            <td>{{ benchmark.taxonomy_name }}</td>
+            <td>{{ benchmark.taxonomy_version }}</td>
+            <td>{{ benchmark.score }}</td>
+            <td><a href="/models/{{ benchmark.model_id }}">{{ gettext('download') }}</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

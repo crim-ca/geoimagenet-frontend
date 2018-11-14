@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <link href="/css/base.css" rel="stylesheet">
+    <link href="/css/style_web.css" rel="stylesheet">
+    {% include 'components/favicons.html' %}
+</head>
+<body>
+{% block body %}
+<p>{{ gettext('default body') }}</p>
+{% endblock %}
+</body>
+</html>

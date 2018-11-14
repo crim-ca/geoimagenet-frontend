@@ -1,0 +1,25 @@
+div.layout {
+    display: grid;
+    height: 100%;
+    grid-template-columns: minmax(200px, 300px) 1fr minmax(200px, 300px);
+    grid-template-rows: 1fr;
+}
+div.layout div.map {
+    z-index: var(--index-back);
+    grid-column: 2/3;
+    grid-row: 1/2;
+}
+div.layout div.left {
+    z-index: var(--index-front);
+    grid-column: 1/2;
+    grid-row: 1/2;
+}
+div.layout div.right {
+    z-index: var(--index-front);
+    grid-column: 3/4;
+    grid-row: 1/2;
+}
+div.layout div.log {
+    height: 100%;
+    overflow-y: auto;
+}
