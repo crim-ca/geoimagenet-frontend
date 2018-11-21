@@ -1,17 +1,15 @@
 {% extends 'index_web.html' %}
 {% block body %}
 <div class="layout">
-    <!--
-<div class="session paper">
-    {% block session %}
-    {% if logged %}
-    {% include 'components/menu_platform.html' %}
-    {% else %}
-    {% include 'components/session_status.html' %}
-    {% endif %}
-    {% endblock %}
-</div>
-    -->
+    <div class="session paper">
+        {% block session %}
+        {% if logged %}
+        {% include 'components/menu_platform.html' %}
+        {% else %}
+        {% include 'components/session_status.html' %}
+        {% endif %}
+        {% endblock %}
+    </div>
     <div class="content paper">
         {% block content %}{% endblock %}
     </div>

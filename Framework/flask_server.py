@@ -1,22 +1,17 @@
 from flask import Flask, request, make_response, redirect
 from GIN.Server import Request as GINRequest
-from GIN.Templating import make_renderer
+from GIN.Templating import renderer
 from GIN.View import Web, Platform, Benchmarks, Models
-from GIN.Controller import Session as SessionController
+from GIN.Controller import session_controller
 from GIN.Model.Service import Benchmark as BenchmarkService
 from GIN.Model.Entity import AnonymousPermission, LoggedInPermission
 from os import path
 from gettext import GNUTranslations, NullTranslations
 
-renderer = make_renderer()
-
 web_view = Web(renderer)
 benchmarks_view = Benchmarks(renderer, BenchmarkService())
 platform_view = Platform(renderer)
 models_view = Models(renderer)
-session_controller = SessionController({
-    'admin': '$pbkdf2-sha512$25000$Y.wd41yLcS7l/F/r3dt7rw$/OqZfZw5I9EBcGtSfa2VN0uqdiQ4ZB0RdSiPukTwm6Yx0rr8xDy.jNDbQME1yoUs9A3k4N3nZ0yBQbwyIw8iQw'
-})
 app = Flask(__name__, static_url_path='', static_folder='../static')
 permission = AnonymousPermission()
 

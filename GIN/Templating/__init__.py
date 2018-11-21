@@ -14,3 +14,6 @@ def make_renderer():
             'title': 'GeoImageNet',
         })
     return renderer
+
+
+renderer = make_renderer()
