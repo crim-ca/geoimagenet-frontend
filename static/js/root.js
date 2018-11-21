@@ -25,7 +25,14 @@ class MapManager {
     changing foo = () => {}; to foo = function() {} _will_ break things in interesting and unexpected ways
      */
 
+    refresh() {
+        this.vectorSource.clear();
+        this.vectorSource.refresh(true);
+    }
+
     constructor(map_div_id, type_select_id) {
+
+        this.type_select_id = type_select_id;
 
         addEventListener('selection_changed', (event) => {
             // create the cql filter from detail elements
@@ -37,8 +44,7 @@ class MapManager {
                 filter_bits.push(`taxonomy_id='${class_name}'`);
             });
             this.cql_filter = filter_bits.join(' OR ');
-            this.vectorSource.clear();
-            this.vectorSource.refresh(true);
+            this.refresh();
         });
 
         this.geoserver_path = '';
@@ -112,32 +118,6 @@ class MapManager {
         });
         this.featureOverlay.setMap(this.map);
 
-        this.modify = new ol.interaction.Modify({
-            source: this.vectorSource,
-        });
-
-        this.map.addInteraction(this.modify);
-
-        this.modify.on('modifyend', (e) => {
-            console.groupCollapsed('Modify event has fired.');
-            console.log('modifyend event: %o', e);
-            const features = e.features.getArray();
-            const feature = e.features.getArray()[0];
-            const id = feature.getId();
-            console.log('feature: %o, id: %o', feature, id);
-            this.WFS_transaction(MODE.UPDATE, features);
-            console.groupEnd();
-        });
-
-        this.typeSelect = document.getElementById(type_select_id);
-
-        this.typeSelect.onchange = () => {
-            this.map.removeInteraction(this.draw);
-            this.addInteraction();
-        };
-
-        this.addInteraction();
-
         this.formatWFS = new ol.format.WFS();
         this.formatGML = new ol.format.GML({
             featureNS: 'GeoImageNet',
@@ -149,6 +129,32 @@ class MapManager {
         this.register_geoserver_url_button();
     }
 
+    activate_interactions() {
+        this.modify = new ol.interaction.Modify({
+            source: this.vectorSource,
+        });
+        this.map.addInteraction(this.modify);
+        this.modify.on('modifyend', (e) => {
+            console.groupCollapsed('Modify event has fired.');
+            console.log('modifyend event: %o', e);
+            const features = e.features.getArray();
+            const feature = e.features.getArray()[0];
+            const id = feature.getId();
+            console.log('feature: %o, id: %o', feature, id);
+            this.WFS_transaction(MODE.UPDATE, features);
+            console.groupEnd();
+        });
+
+        this.typeSelect = document.getElementById(this.type_select_id);
+
+        this.typeSelect.onchange = () => {
+            this.map.removeInteraction(this.draw);
+            this.addInteraction();
+        };
+
+        this.addInteraction();
+    }
+
     load_layers_from_geoserver() {
         fetch(`${this.geoserver_path}/rest/layers`)
             .then(res => {
@@ -158,11 +164,13 @@ class MapManager {
 
     register_geoserver_url_button() {
         const button = document.getElementById('populate-layer-switcher-button');
-        button.addEventListener('click', () => {
-            const input = document.getElementById('geoserver-url');
-            this.geoserver_path = input.value;
-            this.load_layers_from_geoserver();
-        });
+        if (button) {
+            button.addEventListener('click', () => {
+                const input = document.getElementById('geoserver-url');
+                this.geoserver_path = input.value;
+                this.load_layers_from_geoserver();
+            });
+        }
     }
 
     WFS_transaction(mode, feature) {
@@ -181,7 +189,9 @@ class MapManager {
                 break;
             case MODE.UPDATE:
                 console.log('firing update transaction');
-                feature.forEach(f => {console.log(f.getProperties());});
+                feature.forEach(f => {
+                    console.log(f.getProperties());
+                });
                 node = this.formatWFS.writeTransaction(null, feature, null, this.formatGML);
                 break;
             case MODE.DELETE:
@@ -196,6 +206,8 @@ class MapManager {
             service: 'WFS',
             method: 'POST',
             body: payload,
+        }).then(() => {
+            this.refresh();
         });
         console.groupEnd();
     }
@@ -280,7 +292,9 @@ class MapManager {
 
 class TaxonomyBrowser {
 
-    constructor (taxonomy) {
+    constructor(taxonomy, mapManager) {
+
+        this.mapManager = mapManager;
 
         this.title_element = document.getElementById('taxonomy_title');
         this.classes_element = document.getElementById('taxonomy_classes');
@@ -305,6 +319,8 @@ class TaxonomyBrowser {
 
     load_taxonomy(taxonomy) {
         this.title_element.innerText = taxonomy.title;
+
+        let activated = false;
         taxonomy.classes.forEach(taxonomy_class => {
             const li = document.createElement('li');
 
@@ -318,6 +334,14 @@ class TaxonomyBrowser {
             radio_selector.value = taxonomy_class.id;
             radio_selector.name = 'selected_taxonomy';
 
+            radio_selector.addEventListener('change', () => {
+                if (!activated) {
+                    console.log('activating interactions');
+                    this.mapManager.activate_interactions();
+                    activated = true;
+                }
+            });
+
             li.appendChild(checkbox_selector);
             li.appendChild(radio_selector);
             li.appendChild(document.createTextNode(taxonomy_class.name));
@@ -328,6 +352,6 @@ class TaxonomyBrowser {
 }
 
 addEventListener('DOMContentLoaded', () => {
-    new MapManager('map', 'type');
-    new TaxonomyBrowser(TAXONOMY);
+    const mapManager = new MapManager('map', 'type');
+    new TaxonomyBrowser(TAXONOMY, mapManager);
 });

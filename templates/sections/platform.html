@@ -3,6 +3,7 @@
 <div class="layout">
     <div class="left paper">
         <p>{{ gettext("Bienvenue sur la plateforme d'annotation.") }}</p>
+        <!--
         <label>
             {{ gettext("Entrez l'url de l'installation geoserver voulue.") }}
             <input type="text" id="geoserver-url"/>
@@ -10,6 +11,7 @@
                 {{ gettext('Populer le sélectionneur de couches.') }}
             </button>
         </label>
+        -->
         <label>
             {{ gettext('Type de géométrie') }}
             <select id="type">
@@ -20,6 +22,7 @@
                 <option value="None">{{ gettext('None') }}</option>
             </select>
         </label>
+        <!--
         <label>
             {{ gettext('Projection') }}
             <select id="projection">
@@ -27,14 +30,21 @@
                 <option value="EPSG:4326">EPSG:4326</option>
             </select>
         </label>
+        -->
     </div>
     <div id="map" class="map"></div>
     <div class="right paper">
-        <div id="layer-switcher"></div>
+        <p>
+            {{ gettext("
+            Sélectionnez un type de taxonomie avec les boutons radios afin d'activer la création et l'édition des annotations.
+            Les cases à cocher contrôlent l'affichage des annotations. Quand aucunes n'est cochées, toutes sont affichées par défaut.
+            ") }}
+        </p>
         <div class="taxonomy" id="taxonomy">
             <h4 id="taxonomy_title"></h4>
             <ul id="taxonomy_classes"></ul>
         </div>
+        <div id="layer-switcher"></div>
     </div>
 </div>
 {% endblock %}
