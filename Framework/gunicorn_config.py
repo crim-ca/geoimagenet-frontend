@@ -4,8 +4,7 @@ from GIN.Templating import renderer
 from http.cookies import SimpleCookie
 
 bind = "0.0.0.0:5000"
-workers = 4
-loglevel = 'debug'
+workers = 1
 
 
 def parse_cookies(request):

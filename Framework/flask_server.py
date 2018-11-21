@@ -16,17 +16,6 @@ app = Flask(__name__, static_url_path='', static_folder='../static')
 permission = AnonymousPermission()
 
 
-@app.before_request
-def before_request():
-    if 'session_id' in request.cookies:
-        session_id = request.cookies['session_id'] or ''
-        if session_controller.validate_session(session_id):
-            permission = LoggedInPermission()
-            renderer.add_global('logged_in', True)
-            session = session_controller.session_store[session_id]
-            renderer.add_global('user_name', session['user_name'])
-
-
 @app.route('/')
 def home():
     return web_view.handle()
