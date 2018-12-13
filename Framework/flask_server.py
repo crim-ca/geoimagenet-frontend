@@ -56,3 +56,20 @@ def login_request():
     response = make_response()
     response.status_code = 401
     return response
+
+
+@app.route('/logout')
+def logout_request():
+    # if there's no cookie no need to actually end the session
+    if 'session_id' in request.cookies:
+        # store request session_id in a variable
+        session_id = request.cookies['session_id'] or ''
+        # destroy the session_id cookie
+        response = make_response(redirect('/'))
+        response.set_cookie('session_id', expires=0)
+        # end the session in the store
+        session_controller.end_session(session_id)
+        return response
+    # otherwise just redirect to home page
+    response = make_response(redirect('/'))
+    return response
