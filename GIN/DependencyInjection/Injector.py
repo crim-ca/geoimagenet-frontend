@@ -4,37 +4,42 @@ import inspect
 class Injector:
     def __init__(self):
         self.cache = {}
+        self.params = {}
 
     """
     Create and provision a desired type
+    routine is passed a single argument that represents the type to be returned
     
-    inspect the desired type's constructor arguments
-    
-    if there are no arguments
-        return the instantiated type
-    
-    loop over the arguments
-        using the injector to create them
-        add each of the results to a dict
-    
-    return the type passing it the dict
+    return cached instance if exists
+    loop over constructor arguments
+        if we have a param defined for it, assign it to the key and continue
+        if it has a default, assign it to the key and continue
+        if it has a type that is not built in, create the type with the injector, assign it to the key and continue
+        raise exception
     """
     def make(self, desired_type):
 
         if desired_type in self.cache:
             return self.cache[desired_type]
 
-        argument_specification = inspect.getfullargspec(desired_type.__init__)
-        constructor_args = argument_specification[6]
+        skippable_params = ['self', '/', 'args', 'kwargs']
 
-        if constructor_args.__len__() is 0:
-            return desired_type()
+        signature = inspect.signature(desired_type.__init__)
+        arguments = {}
+        for parameter, details in signature.parameters.items():
+            if parameter in skippable_params:
+                continue
+            if parameter in self.params:
+                arguments[parameter] = self.params[parameter]
+                continue
+            if details.default is not inspect._empty:
+                arguments[parameter] = details.default
+                continue
+            arguments[parameter] = self.make(details.annotation)
+            continue
 
-        params = []
+        self.cache[desired_type] = desired_type(**arguments)
+        return self.cache[desired_type]
 
-        for constructor_arg_name in constructor_args:
-            params.append(self.make(constructor_args[constructor_arg_name]))
-
-        desired_instance = desired_type(*params)
-        self.cache[desired_type] = desired_instance
-        return desired_instance
+    def define_param(self, name, value):
+        self.params[name] = value

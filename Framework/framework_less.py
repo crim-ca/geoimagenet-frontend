@@ -2,7 +2,7 @@ import multiprocessing
 import gunicorn.app.base
 from gunicorn.six import iteritems
 
-from Framework.Routing import mapper
+from GIN.Server.Routing import mapper
 from GIN.DependencyInjection.Injector import Injector
 
 injector = Injector()
