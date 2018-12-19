@@ -1,7 +1,5 @@
 from GIN.DependencyInjection.Injector import Injector
 from GIN.Templating.Renderer import Renderer
-from GIN.Server.StaticHandler import StaticHandler
-from os import path
 
 
 class ValueObject:
@@ -35,14 +33,3 @@ def test_provisioned_instance():
     renderer_1 = injector.make(Renderer)
     renderer_2 = injector.make(Renderer)
     assert renderer_1 is renderer_2
-
-
-def test_static_handler_returns_file_content():
-    injector = Injector()
-    folder = path.dirname(__file__)
-    static_content_folder = path.join(folder, 'test_data')
-    injector.define_param('root_path', static_content_folder)
-    static_handler = injector.make(StaticHandler)
-    file_content = static_handler.serve_file(static_content_folder, 'txt', 'txt')
-    assert type(file_content) is str
-    assert file_content == 'content\n'

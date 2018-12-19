@@ -6,7 +6,7 @@ from GIN.View import Web, Platform, Benchmarks, Models
 from GIN.Model.Service import Benchmark as BenchmarkService
 from GIN.Model.Entity import AnonymousPermission
 from GIN.DependencyInjection.Injector import Injector
-from GIN.Server.StaticHandler import StaticHandler
+from GIN.Server import RenderingHandler
 
 web_view = Web(renderer)
 benchmarks_view = Benchmarks(renderer, BenchmarkService())
@@ -33,16 +33,10 @@ with Connection('dbname=annotations user=fractal password=1qaz2wsx') as connecti
     print(result)
 """
 
-
-mapper.connect('/', handler=Web, method='handle')
-mapper.connect('/benchmarks', handler=Benchmarks, method='handle')
-mapper.connect('/platform', handler=Platform, method='handle')
+mapper.connect('/', handler=RenderingHandler, method='generate_markup_for_section', section='home')
+mapper.connect('/{section}', handler=RenderingHandler, method='generate_markup_for_section')
 mapper.connect('/models/{model_id}', handler=Models, method='handle')
 mapper.connect('/models/{model_id}/request_download_url', handler=Models)
-mapper.connect('/login')
-mapper.connect('/logout')
-mapper.connect('/taxonomy', handler=TaxonomyService, method='get_taxonomies')
-mapper.connect('/{static_folder}/{filename}.{extension:css|js}', handler=StaticHandler, method='serve_file')
 
 injector = Injector()
 

@@ -1,30 +1,48 @@
 import multiprocessing
 import gunicorn.app.base
 from gunicorn.six import iteritems
+from os import path
+from mimetypes import MimeTypes
 
 from GIN.Server.Routing import mapper
 from GIN.DependencyInjection.Injector import Injector
 
 injector = Injector()
+mimetypes = MimeTypes()
+
+
+def make_full_file_path(request_uri):
+    current_file_path = path.dirname(__file__)
+    static_folder_path = path.join(current_file_path, '..', 'static')
+    return '%s%s' % (static_folder_path, request_uri)
+
+
+def request_wants_file(full_file_path):
+    return path.isfile(full_file_path)
 
 
 def handler_app(environ, start_response):
 
-    method = environ['REQUEST_METHOD']
-    path = environ['PATH_INFO']
+    request_method = environ['REQUEST_METHOD']
+    request_uri = environ['PATH_INFO']
 
-    match = mapper.match(path, method)
+    full_file_path = make_full_file_path(request_uri)
+    if request_wants_file(full_file_path):
+        mime_type = mimetypes.guess_type(full_file_path)[0]
+        with open(full_file_path, 'r') as file:
+            start_response('200 OK', [('Content-Type', mime_type)])
+            return [bytes(file.read(), 'utf8')]
+
+    match = mapper.match(request_uri, request_method)
+    if 'section' in match:
+        injector.define_param('section', match['section'])
 
     handler_instance = injector.make(match['handler'])
     handler_callable = getattr(handler_instance, match['method'])
-    data = bytes(handler_callable(), 'utf8')
+    status, headers, data = handler_callable()
 
-    status = '200 OK'
-    response_headers = [
-        ('Content-Type', 'text/html'),
-    ]
-    start_response(status, response_headers)
-    return [data]
+    start_response(status, headers)
+    return [bytes(data, 'utf8')]
 
 
 def number_of_workers():
