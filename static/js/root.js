@@ -3,20 +3,6 @@ const MODE = {
     UPDATE: 'UPDATE',
     DELETE: 'DELETE',
 };
-const TAXONOMY = {
-    title: 'Land Covers',
-    classes: [
-        {id: 'urban', name: 'Urban or built-up land'},
-        {id: 'agricultural', name: 'Agricultural land'},
-        {id: 'rangeland', name: 'Rangeland'},
-        {id: 'forest', name: 'Forest land'},
-        {id: 'water', name: 'Water'},
-        {id: 'wetland', name: 'Wetland'},
-        {id: 'barren', name: 'Barren land'},
-        {id: 'tundra', name: 'Tundra'},
-        {id: 'perrenial', name: 'Perennial snow or ice'},
-    ]
-};
 
 class MapManager {
 
