@@ -7,31 +7,33 @@ from mimetypes import MimeTypes
 from GIN.Server.Routing import mapper
 from GIN.DependencyInjection.Injector import Injector
 
-injector = Injector()
 mimetypes = MimeTypes()
 
 
 def make_full_file_path(request_uri):
+
     current_file_path = path.dirname(__file__)
     static_folder_path = path.join(current_file_path, '..', 'static')
     return '%s%s' % (static_folder_path, request_uri)
 
 
 def request_wants_file(full_file_path):
+
     return path.isfile(full_file_path)
 
 
 def handler_app(environ, start_response):
 
+    injector = Injector()
     request_method = environ['REQUEST_METHOD']
     request_uri = environ['PATH_INFO']
 
     full_file_path = make_full_file_path(request_uri)
     if request_wants_file(full_file_path):
         mime_type = mimetypes.guess_type(full_file_path)[0]
-        with open(full_file_path, 'r') as file:
+        with open(full_file_path, 'rb') as file:
             start_response('200 OK', [('Content-Type', mime_type)])
-            return [bytes(file.read(), 'utf8')]
+            return [file.read()]
 
     match = mapper.match(request_uri, request_method)
     if 'section' in match:
