@@ -1,6 +1,6 @@
 {% if logged_in %}
 <p>{{ gettext('Bonjour, %(user_name)s', user_name=user_name) }}</p>
-<a>{{ gettext('Déconnexion') }}</a>
+<a href="/logout">{{ gettext('Déconnexion') }}</a>
 {% else %}
 <form method="post" action="/login">
     <label>{{ gettext('username') }}<input type="text" name="user_name" /></label>
