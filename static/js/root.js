@@ -290,6 +290,8 @@ class TaxonomyBrowser {
         this.classes_element = document.getElementById('taxonomy_classes');
         this.selection = [];
 
+        this.annotation_is_activated = false;
+
         this.fire_selection_changed = (event) => {
             // receive the checkbox selection event and manage activation state
             // if the checkbox is checked, add it to the selection
@@ -304,46 +306,52 @@ class TaxonomyBrowser {
             dispatchEvent(event);
         };
 
+        this.activate_annotation = () => {
+            if (!this.annotation_is_activated) {
+                this.mapManager.activate_interactions();
+                this.annotation_is_activated = true;
+            }
+        };
+
         this.load_taxonomy(taxonomy);
     }
 
-    construct_children(element, collection, activated) {
+    construct_children(element, collection) {
         collection.forEach(taxonomy_class => {
             const li = document.createElement('li');
-            li.classList.add('collapsed');
 
-            const checkbox_selector = document.createElement('input');
-            checkbox_selector.type = 'checkbox';
-            checkbox_selector.value = taxonomy_class.id;
-            checkbox_selector.addEventListener('change', this.fire_selection_changed);
+            if (taxonomy_class['children'] && taxonomy_class['children'].length === 0) {
+                // only leafs classes can be annotated, so only create the inputs if there are no children (leaf)
+                const checkbox_selector = document.createElement('input');
+                checkbox_selector.type = 'checkbox';
+                checkbox_selector.value = taxonomy_class.id;
+                checkbox_selector.addEventListener('change', this.fire_selection_changed);
 
-            const radio_selector = document.createElement('input');
-            radio_selector.type = 'radio';
-            radio_selector.value = taxonomy_class.id;
-            radio_selector.name = 'selected_taxonomy';
+                const radio_selector = document.createElement('input');
+                radio_selector.type = 'radio';
+                radio_selector.value = taxonomy_class.id;
+                radio_selector.name = 'selected_taxonomy';
 
-            radio_selector.addEventListener('change', () => {
-                if (!activated) {
-                    console.log('activating interactions');
-                    this.mapManager.activate_interactions();
-                    activated = true;
-                }
-            });
+                radio_selector.addEventListener('change', this.activate_annotation);
+
+                li.appendChild(checkbox_selector);
+                li.appendChild(radio_selector);
+            }
 
             const text = document.createElement('span');
             text.appendChild(document.createTextNode(taxonomy_class.name));
 
-            text.addEventListener('click', event => {
-                event.target.parentNode.classList.toggle('collapsed');
-            });
-
-            li.appendChild(checkbox_selector);
-            li.appendChild(radio_selector);
             li.appendChild(text);
 
             if (taxonomy_class['children'] && taxonomy_class['children'].length > 0) {
+                li.classList.add('collapsed');
+                // inside the if block because we don't need the toggle if there are no children
+                text.addEventListener('click', event => {
+                    event.target.parentNode.classList.toggle('collapsed');
+                });
+
                 const ul = document.createElement('ul');
-                this.construct_children(ul, taxonomy_class['children'], activated);
+                this.construct_children(ul, taxonomy_class['children']);
                 li.appendChild(ul);
             }
 
@@ -354,8 +362,7 @@ class TaxonomyBrowser {
     load_taxonomy(taxonomy) {
         this.title_element.innerText = taxonomy.title;
 
-        let activated = false;
-        this.construct_children(this.classes_element, taxonomy, activated);
+        this.construct_children(this.classes_element, taxonomy);
 
     }
 
