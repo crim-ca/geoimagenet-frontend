@@ -10,8 +10,16 @@
     <script src="/js/layer-switcher.js" type="application/ecmascript"></script>
     <script type="application/ecmascript">
         addEventListener('DOMContentLoaded', () => {
-            const mapManager = new MapManager('{{ SERVER_PROTOCOL }}', '{{ GEOSERVER_URL }}', '{{ ANNOTATION_NAMESPACE }}', '{{ ANNOTATION_LAYER }}', 'map', 'type');
-            new TaxonomyBrowser(JSON.parse('{{ TAXONOMY | safe }}'), mapManager);
+
+            const taxonomy_api = 'https://geoimagenetdev.crim.ca/api/v1';
+            fetch(`${taxonomy_api}/taxonomy_classes?taxonomy_group_name=Objets&name=Objets&depth=10`)
+                .then(res => res.json())
+                .then(json => {
+                    console.log(json);
+                    const mapManager = new MapManager('{{ SERVER_PROTOCOL }}', '{{ GEOSERVER_URL }}', '{{ ANNOTATION_NAMESPACE }}', '{{ ANNOTATION_LAYER }}', 'map', 'type');
+                    new TaxonomyBrowser(json, mapManager);
+                })
+                .catch(err => console.log(err));
         });
     </script>
     <link rel="stylesheet"

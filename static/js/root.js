@@ -307,11 +307,8 @@ class TaxonomyBrowser {
         this.load_taxonomy(taxonomy);
     }
 
-    load_taxonomy(taxonomy) {
-        this.title_element.innerText = taxonomy.title;
-
-        let activated = false;
-        taxonomy.classes.forEach(taxonomy_class => {
+    construct_children(element, collection, activated) {
+        collection.forEach(taxonomy_class => {
             const li = document.createElement('li');
 
             const checkbox_selector = document.createElement('input');
@@ -335,8 +332,23 @@ class TaxonomyBrowser {
             li.appendChild(checkbox_selector);
             li.appendChild(radio_selector);
             li.appendChild(document.createTextNode(taxonomy_class.name));
-            this.classes_element.appendChild(li);
+
+            if (taxonomy_class['children'] && taxonomy_class['children'].length > 0) {
+                const ul = document.createElement('ul');
+                this.construct_children(ul, taxonomy_class['children'], activated);
+                li.appendChild(ul);
+            }
+
+            element.appendChild(li);
         });
+    }
+
+    load_taxonomy(taxonomy) {
+        this.title_element.innerText = taxonomy.title;
+
+        let activated = false;
+        this.construct_children(this.classes_element, taxonomy[0]['children'], activated);
+
     }
 
 }
