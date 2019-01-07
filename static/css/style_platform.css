@@ -23,3 +23,12 @@ div.layout div.log {
     height: 100%;
     overflow-y: auto;
 }
+ul > li.collapsed > ul {
+    display: none;
+}
+ul > li {
+    cursor: pointer;
+}
+span:hover {
+    background-color: antiquewhite;
+}

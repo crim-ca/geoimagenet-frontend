@@ -310,6 +310,7 @@ class TaxonomyBrowser {
     construct_children(element, collection, activated) {
         collection.forEach(taxonomy_class => {
             const li = document.createElement('li');
+            li.classList.add('collapsed');
 
             const checkbox_selector = document.createElement('input');
             checkbox_selector.type = 'checkbox';
@@ -329,9 +330,16 @@ class TaxonomyBrowser {
                 }
             });
 
+            const text = document.createElement('span');
+            text.appendChild(document.createTextNode(taxonomy_class.name));
+
+            text.addEventListener('click', event => {
+                event.target.parentNode.classList.toggle('collapsed');
+            });
+
             li.appendChild(checkbox_selector);
             li.appendChild(radio_selector);
-            li.appendChild(document.createTextNode(taxonomy_class.name));
+            li.appendChild(text);
 
             if (taxonomy_class['children'] && taxonomy_class['children'].length > 0) {
                 const ul = document.createElement('ul');
@@ -347,7 +355,7 @@ class TaxonomyBrowser {
         this.title_element.innerText = taxonomy.title;
 
         let activated = false;
-        this.construct_children(this.classes_element, taxonomy[0]['children'], activated);
+        this.construct_children(this.classes_element, taxonomy, activated);
 
     }
 
