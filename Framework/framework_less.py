@@ -36,8 +36,9 @@ def handler_app(environ, start_response):
             return [file.read()]
 
     match = mapper.match(request_uri, request_method)
-    if 'section' in match:
-        injector.define_param('section', match['section'])
+
+    for key, value in match.items():
+        injector.define_param(key, value)
 
     handler_instance = injector.make(match['handler'])
     handler_callable = getattr(handler_instance, match['method'])

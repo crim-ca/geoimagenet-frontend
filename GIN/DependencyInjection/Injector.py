@@ -1,4 +1,5 @@
 import inspect
+from types import ModuleType
 
 
 class Injector:
@@ -18,6 +19,9 @@ class Injector:
         raise exception
     """
     def make(self, desired_type):
+
+        if isinstance(desired_type, ModuleType):
+            raise RuntimeError('We cannot make instances of modules. Tried to make %s' % desired_type)
 
         if desired_type in self.cache:
             return self.cache[desired_type]

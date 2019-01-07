@@ -16,21 +16,6 @@ app = Flask(__name__, static_url_path='', static_folder='../static')
 permission = AnonymousPermission()
 
 
-@app.route('/')
-def home():
-    return web_view.handle()
-
-
-@app.route('/benchmarks')
-def benchmarks():
-    return benchmarks_view.handle()
-
-
-@app.route('/platform')
-def platform():
-    return platform_view.handle()
-
-
 @app.route('/models/<model_id>')
 def models(model_id: int):
     return models_view.handle(model_id)

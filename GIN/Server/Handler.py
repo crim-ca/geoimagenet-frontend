@@ -1,7 +1,7 @@
 from GIN.Templating.Renderer import Renderer
 
 
-class RenderingHandler:
+class Rendering:
 
     def __init__(self, section, renderer: Renderer):
         self.section = section

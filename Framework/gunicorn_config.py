@@ -28,4 +28,3 @@ def pre_request(worker, request):
             renderer.add_global('logged_in', True)
             session = session_controller.session_store[session_id]
             renderer.add_global('user_name', session['user_name'])
-
