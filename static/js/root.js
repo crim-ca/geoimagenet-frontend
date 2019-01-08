@@ -285,11 +285,8 @@ class TaxonomyBrowser {
     constructor(taxonomy, mapManager) {
 
         this.mapManager = mapManager;
-
-        this.title_element = document.getElementById('taxonomy_title');
         this.classes_element = document.getElementById('taxonomy_classes');
         this.selection = [];
-
         this.annotation_is_activated = false;
 
         this.fire_selection_changed = (event) => {
@@ -331,7 +328,6 @@ class TaxonomyBrowser {
                 radio_selector.type = 'radio';
                 radio_selector.value = taxonomy_class.id;
                 radio_selector.name = 'selected_taxonomy';
-
                 radio_selector.addEventListener('change', this.activate_annotation);
 
                 li.appendChild(checkbox_selector);
@@ -360,10 +356,7 @@ class TaxonomyBrowser {
     }
 
     load_taxonomy(taxonomy) {
-        this.title_element.innerText = taxonomy.title;
-
         this.construct_children(this.classes_element, taxonomy);
-
     }
 
 }
