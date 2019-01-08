@@ -11,8 +11,7 @@
     <script type="application/ecmascript">
         addEventListener('DOMContentLoaded', () => {
 
-            const taxonomy_api = 'https://geoimagenetdev.crim.ca/api/v1';
-            fetch(`${taxonomy_api}/taxonomy_classes?taxonomy_group_name=Objets&name=Objets&depth=10`)
+            fetch(`/taxonomy/Objets`)
                 .then(res => res.json())
                 .then(json => {
                     console.log(json);

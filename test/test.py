@@ -48,3 +48,24 @@ def test_making_a_module_throws_exception():
     injector = Injector()
     with pytest.raises(RuntimeError):
         injector.make(Handler)
+
+
+def test_injector_can_execute_callables():
+    injector = Injector()
+
+    def callable_function():
+        return 'product'
+
+    result = injector.execute(callable_function)
+    assert result == 'product'
+
+
+def test_injector_can_execute_callables_with_scalar_arguments():
+    injector = Injector()
+    injector.define_param('arg', 'value')
+
+    def callable_function(arg):
+        return 'product and %s' % arg
+
+    result = injector.execute(callable_function)
+    assert result == 'product and value'

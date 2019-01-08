@@ -47,3 +47,14 @@ class Injector:
 
     def define_param(self, name, value):
         self.params[name] = value
+
+    def execute(self, executable):
+        signature = inspect.getfullargspec(executable)
+        args_to_be_given = signature[0]
+        if len(args_to_be_given) == 0:
+            return executable()
+        defined_params = {}
+        for arg in args_to_be_given:
+            if arg in self.params:
+                defined_params[arg] = self.params[arg]
+        return executable(**defined_params)

@@ -42,7 +42,7 @@ def handler_app(environ, start_response):
 
     handler_instance = injector.make(match['handler'])
     handler_callable = getattr(handler_instance, match['method'])
-    status, headers, data = handler_callable()
+    status, headers, data = injector.execute(handler_callable)
 
     start_response(status, headers)
     return [bytes(data, 'utf8')]
