@@ -1,5 +1,5 @@
 from routes import Mapper
-from GIN.DependencyInjection.Injector import Injector
+from GIN.DependencyInjection import Injector
 from GIN.Server import Handler
 from GIN.View.Web import Models
 
@@ -34,9 +34,9 @@ with Connection('dbname=annotations user=fractal password=1qaz2wsx') as connecti
 mapper.connect('/', handler=Handler.Rendering, method='generate_markup_for_section', section='home')
 mapper.connect('/taxonomy', handler=Handler.API, method='GET_taxonomy')
 mapper.connect('/taxonomy/{name}', handler=Handler.API, method='GET_taxonomy_by_name')
-mapper.connect('/{section}', handler=Handler.Rendering, method='generate_markup_for_section')
 mapper.connect('/models/{model_id}', handler=Models, method='handle')
 mapper.connect('/models/{model_id}/request_download_url', handler=Models)
+mapper.connect('/{section}', handler=Handler.Rendering, method='generate_markup_for_section')
 
 injector = Injector()
 

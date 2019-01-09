@@ -1,5 +1,6 @@
 import inspect
 from types import ModuleType
+from GIN.Controller import Session
 
 
 class Injector:
@@ -10,7 +11,7 @@ class Injector:
     """
     Create and provision a desired type
     routine is passed a single argument that represents the type to be returned
-    
+
     return cached instance if exists
     loop over constructor arguments
         if we have a param defined for it, assign it to the key and continue
@@ -18,6 +19,7 @@ class Injector:
         if it has a type that is not built in, create the type with the injector, assign it to the key and continue
         raise exception
     """
+
     def make(self, desired_type):
 
         if isinstance(desired_type, ModuleType):
@@ -58,3 +60,13 @@ class Injector:
             if arg in self.params:
                 defined_params[arg] = self.params[arg]
         return executable(**defined_params)
+
+    def share(self, instance):
+        self.cache[type(instance)] = instance
+
+
+default_injector = Injector()
+session_controller = Session({
+    'admin': '$pbkdf2-sha512$25000$Y.wd41yLcS7l/F/r3dt7rw$/OqZfZw5I9EBcGtSfa2VN0uqdiQ4ZB0RdSiPukTwm6Yx0rr8xDy.jNDbQME1yoUs9A3k4N3nZ0yBQbwyIw8iQw'
+})
+default_injector.share(session_controller)

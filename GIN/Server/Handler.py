@@ -1,4 +1,4 @@
-from GIN.Templating.Renderer import Renderer
+from GIN.Templating import Renderer
 from GIN.Model.Service.Taxonomy import Taxonomy
 from json import dumps
 

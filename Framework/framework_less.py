@@ -5,7 +5,7 @@ from os import path
 from mimetypes import MimeTypes
 
 from GIN.Server.Routing import mapper
-from GIN.DependencyInjection.Injector import Injector
+from GIN.DependencyInjection import Injector
 
 mimetypes = MimeTypes()
 

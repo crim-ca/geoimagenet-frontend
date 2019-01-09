@@ -8,7 +8,7 @@ class Renderer:
         self.default_values = default_values or {}
         file_path = path.dirname(__file__)
         self.env = Environment(
-            loader=FileSystemLoader(path.join(file_path, '../../templates')),
+            loader=FileSystemLoader(path.join(file_path, '../templates')),
             autoescape=select_autoescape(['html']),
             extensions=['jinja2.ext.i18n']
         )

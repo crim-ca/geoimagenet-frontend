@@ -1,7 +1,7 @@
 import pytest
 
-from GIN.DependencyInjection.Injector import Injector
-from GIN.Templating.Renderer import Renderer
+from GIN.DependencyInjection import Injector
+from GIN.Templating import Renderer
 from GIN.Server import Handler
 
 
@@ -13,6 +13,11 @@ class MixedParametersClass:
     def __init__(self, value_object: ValueObject, scalar_value):
         self.value_object = value_object
         self.scalar_value = scalar_value
+
+
+class ValueObjectParameterClass:
+    def __init__(self, value_object: ValueObject):
+        self.value_object = value_object
 
 
 def test_correctly_creates_types():
@@ -69,3 +74,11 @@ def test_injector_can_execute_callables_with_scalar_arguments():
 
     result = injector.execute(callable_function)
     assert result == 'product and value'
+
+
+def test_injector_can_accept_shared_instances():
+    injector = Injector()
+    value_object = ValueObject()
+    injector.share(value_object)
+    instance = injector.make(ValueObjectParameterClass)
+    assert instance.value_object is value_object
