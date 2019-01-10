@@ -12,4 +12,5 @@ class Taxonomy:
             return json.loads(content.read())
 
     def GET_all_taxonomies(self):
-        return ['Objets', 'SurfaceDeSols']
+        with urlopen('https://geoimagenetdev.crim.ca/api/v1/taxonomy') as content:
+            return json.loads(content.read())
