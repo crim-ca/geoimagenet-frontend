@@ -19,12 +19,19 @@ class Session:
         return False
 
     def validate_session(self, cookie):
-        return cookie in self.session_store
+        if cookie in self.session_store and 'active' in self.session_store[cookie]:
+            return self.session_store[cookie]['active'] is True
+        return False
 
     def create_session_cookie(self, user_name):
         session_id = generate_session_id()
         session_hash = pbkdf2_sha512.hash(session_id)
         self.session_store[session_hash] = {
-            'user_name': user_name
+            'user_name': user_name,
+            'active': True
         }
         return session_hash
+
+    def end_session(self, session_id):
+        if session_id in self.session_store:
+            self.session_store[session_id]['active'] = False

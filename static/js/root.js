@@ -3,20 +3,6 @@ const MODE = {
     UPDATE: 'UPDATE',
     DELETE: 'DELETE',
 };
-const TAXONOMY = {
-    title: 'Land Covers',
-    classes: [
-        {id: 'urban', name: 'Urban or built-up land'},
-        {id: 'agricultural', name: 'Agricultural land'},
-        {id: 'rangeland', name: 'Rangeland'},
-        {id: 'forest', name: 'Forest land'},
-        {id: 'water', name: 'Water'},
-        {id: 'wetland', name: 'Wetland'},
-        {id: 'barren', name: 'Barren land'},
-        {id: 'tundra', name: 'Tundra'},
-        {id: 'perrenial', name: 'Perennial snow or ice'},
-    ]
-};
 
 class MapManager {
 
@@ -30,8 +16,11 @@ class MapManager {
         this.vectorSource.refresh(true);
     }
 
-    constructor(map_div_id, type_select_id) {
+    constructor(protocol, geoserver_url, annotation_namespace, annotation_layer, map_div_id, type_select_id) {
 
+        this.geoserver_url = protocol + geoserver_url;
+        this.annotation_namespace = annotation_namespace;
+        this.annotation_layer = annotation_layer;
         this.type_select_id = type_select_id;
 
         addEventListener('selection_changed', (event) => {
@@ -47,7 +36,6 @@ class MapManager {
             this.refresh();
         });
 
-        this.geoserver_path = '';
         this.cql_filter = '';
 
         /*
@@ -120,8 +108,8 @@ class MapManager {
 
         this.formatWFS = new ol.format.WFS();
         this.formatGML = new ol.format.GML({
-            featureNS: 'GeoImageNet',
-            featureType: 'wfs_geom',
+            featureNS: this.annotation_namespace,
+            featureType: this.annotation_layer,
             srsName: 'EPSG:3857'
         });
         this.XML_serializer = new XMLSerializer();
@@ -156,7 +144,7 @@ class MapManager {
     }
 
     load_layers_from_geoserver() {
-        fetch(`${this.geoserver_path}/rest/layers`)
+        fetch(`${this.geoserver_url}/rest/layers`)
             .then(res => {
                 console.log('received layers from geoserver: %o', res);
             });
@@ -167,7 +155,7 @@ class MapManager {
         if (button) {
             button.addEventListener('click', () => {
                 const input = document.getElementById('geoserver-url');
-                this.geoserver_path = input.value;
+                this.geoserver_url = input.value;
                 this.load_layers_from_geoserver();
             });
         }
@@ -202,7 +190,9 @@ class MapManager {
                 throw 'The transaction mode should be defined when calling WFS_transaction.';
         }
         const payload = this.XML_serializer.serializeToString(node);
-        fetch('http://10.30.90.94:8080/geoserver/GeoImageNet/wfs', {
+        // const url = 'http://10.30.90.94:8080/geoserver/GeoImageNet/wfs';
+        const url = `${this.geoserver_url}/geoserver/GeoImageNet/wfs`;
+        fetch(url, {
             service: 'WFS',
             method: 'POST',
             body: payload,
@@ -244,8 +234,8 @@ class MapManager {
         this.vectorSource = new ol.source.Vector({
             format: new ol.format.GeoJSON(),
             url: () => {
-                let url = 'http://10.30.90.94:8080/geoserver/wfs?service=WFS&' +
-                    'version=1.1.0&request=GetFeature&typename=GeoImageNet:wfs_geom&' +
+                let url = `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
+                    `version=1.1.0&request=GetFeature&typename=${this.annotation_namespace}:${this.annotation_layer}&` +
                     'outputFormat=application/json&srsname=EPSG:3857';
                 if (this.cql_filter.length > 0) {
                     url += `&cql_filter=${this.cql_filter}`;
@@ -269,7 +259,7 @@ class MapManager {
         const some_image = new ol.layer.Image({
             title: 'image',
             source: new ol.source.ImageWMS({
-                url: 'http://132.217.141.12:8087/geoserver/GEOIMAGENET_PUBLIC/wms',
+                url: `${this.geoserver_url}/geoserver/GEOIMAGENET_PUBLIC/wms`,
                 params: {'LAYERS': 'GEOIMAGENET_PUBLIC:OrthoImage_Vancouver_50cm_RGBN_W84U10_8bits_RGB'},
                 ratio: 1,
                 serverType: 'geoserver',
@@ -295,10 +285,9 @@ class TaxonomyBrowser {
     constructor(taxonomy, mapManager) {
 
         this.mapManager = mapManager;
-
-        this.title_element = document.getElementById('taxonomy_title');
         this.classes_element = document.getElementById('taxonomy_classes');
         this.selection = [];
+        this.annotation_is_activated = false;
 
         this.fire_selection_changed = (event) => {
             // receive the checkbox selection event and manage activation state
@@ -314,44 +303,60 @@ class TaxonomyBrowser {
             dispatchEvent(event);
         };
 
+        this.activate_annotation = () => {
+            if (!this.annotation_is_activated) {
+                this.mapManager.activate_interactions();
+                this.annotation_is_activated = true;
+            }
+        };
+
         this.load_taxonomy(taxonomy);
     }
 
-    load_taxonomy(taxonomy) {
-        this.title_element.innerText = taxonomy.title;
-
-        let activated = false;
-        taxonomy.classes.forEach(taxonomy_class => {
+    construct_children(element, collection) {
+        collection.forEach(taxonomy_class => {
             const li = document.createElement('li');
 
-            const checkbox_selector = document.createElement('input');
-            checkbox_selector.type = 'checkbox';
-            checkbox_selector.value = taxonomy_class.id;
-            checkbox_selector.addEventListener('change', this.fire_selection_changed);
+            if (taxonomy_class['children'] && taxonomy_class['children'].length === 0) {
+                // only leafs classes can be annotated, so only create the inputs if there are no children (leaf)
+                const checkbox_selector = document.createElement('input');
+                checkbox_selector.type = 'checkbox';
+                checkbox_selector.value = taxonomy_class.id;
+                checkbox_selector.addEventListener('change', this.fire_selection_changed);
 
-            const radio_selector = document.createElement('input');
-            radio_selector.type = 'radio';
-            radio_selector.value = taxonomy_class.id;
-            radio_selector.name = 'selected_taxonomy';
+                const radio_selector = document.createElement('input');
+                radio_selector.type = 'radio';
+                radio_selector.value = taxonomy_class.id;
+                radio_selector.name = 'selected_taxonomy';
+                radio_selector.addEventListener('change', this.activate_annotation);
 
-            radio_selector.addEventListener('change', () => {
-                if (!activated) {
-                    console.log('activating interactions');
-                    this.mapManager.activate_interactions();
-                    activated = true;
-                }
-            });
+                li.appendChild(checkbox_selector);
+                li.appendChild(radio_selector);
+            }
 
-            li.appendChild(checkbox_selector);
-            li.appendChild(radio_selector);
-            li.appendChild(document.createTextNode(taxonomy_class.name));
-            this.classes_element.appendChild(li);
+            const text = document.createElement('span');
+            text.appendChild(document.createTextNode(taxonomy_class.name));
+
+            li.appendChild(text);
+
+            if (taxonomy_class['children'] && taxonomy_class['children'].length > 0) {
+                li.classList.add('collapsed');
+                // inside the if block because we don't need the toggle if there are no children
+                text.addEventListener('click', event => {
+                    event.target.parentNode.classList.toggle('collapsed');
+                });
+
+                const ul = document.createElement('ul');
+                this.construct_children(ul, taxonomy_class['children']);
+                li.appendChild(ul);
+            }
+
+            element.appendChild(li);
         });
     }
 
-}
+    load_taxonomy(taxonomy) {
+        this.construct_children(this.classes_element, taxonomy);
+    }
 
-addEventListener('DOMContentLoaded', () => {
-    const mapManager = new MapManager('map', 'type');
-    new TaxonomyBrowser(TAXONOMY, mapManager);
-});
+}

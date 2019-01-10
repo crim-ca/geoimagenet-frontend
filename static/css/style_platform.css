@@ -1,7 +1,7 @@
 div.layout {
     display: grid;
     height: 100%;
-    grid-template-columns: minmax(200px, 300px) 1fr minmax(200px, 300px);
+    grid-template-columns: minmax(200px, 300px) 1fr 500px;
     grid-template-rows: 1fr;
 }
 div.layout div.map {
@@ -18,8 +18,27 @@ div.layout div.right {
     z-index: var(--index-front);
     grid-column: 3/4;
     grid-row: 1/2;
+    display: grid;
+    grid-template-rows: max-content 500px 200px;
+}
+div.layout div.right ul.taxonomy_classes {
+    height: 100%;
+    overflow-y: scroll;
 }
 div.layout div.log {
     height: 100%;
     overflow-y: auto;
+}
+ul {
+    list-style: none;
+    padding-left: 20px;
+}
+ul > li.collapsed > ul {
+    display: none;
+}
+ul > li {
+    cursor: pointer;
+}
+span:hover {
+    background-color: antiquewhite;
 }

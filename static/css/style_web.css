@@ -6,6 +6,10 @@ div.layout {
     grid-template-columns: 1fr minmax(600px, 1fr) 1fr;
     grid-template-rows: 1fr max-content 1fr;
 }
+div.layout div.session {
+    grid-column: 1/2;
+    grid-row: 1/2;
+}
 div.layout div.left {
     grid-column: 1/2;
     grid-row: 2/3;

@@ -22,4 +22,4 @@ WORKDIR /deploy/GeoImageNet
 EXPOSE 5000
 
 # Start gunicorn
-CMD ["gunicorn", "--config", "/deploy/gunicorn_config.py", "Framework:app"]
+CMD ["gunicorn", "--config", "/deploy/gunicorn_config.py", "Framework:fl_app", "-k", "eventlet"]

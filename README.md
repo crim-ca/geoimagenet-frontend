@@ -15,7 +15,18 @@ Anything under `GIN/` should technically be agnostic of any framework.
 
 The dependencies are stored with `pip freeze > requirements.txt`, install these with `pip install -r requirements.txt`.
 
-Launch the server with `FLASK_APP=Framework/flask_server.py flask run`.
+Launch the flask server with `FLASK_APP=Framework/flask_server.py flask run`.
+
+Or directly the gunicorn app with `gunicorn -c Framework/gunicorn_config.py Framework:app -k eventlet`
+
+## Environment variables
+
+A few environment variables can be used to customize the behaviour of the client.
+
+- SERVER_PROTOCOL: The protocol to be used for http requests from the client. Defaults to "https://".
+- GEOSERVER_URL: The geoserver installation to be used for the client, *without* the /geoserver. Defaults to "geoimagenetdev.crim.ca".
+- ANNOTATION_NAMESPACE: The geoserver namespace of the annotation data. Defaults to "GeoImageNet".
+- ANNOTATION_LAYER: The geoserver layer configured to accept annotations. Defaults to "annotation_event".
 
 # Open Layers
 
@@ -26,7 +37,9 @@ maybe revisit this idea. For now I just implemented our needs from their code.
 # Geoserver
 
 Geoser needs the postgis extension to be enabled to support the postgis data stores needed to store the annotations.
-On ubuntu `sudo apt install postgis`. Then, in the postgres cli, run `CREATE EXTENSION postgis`.
+On ubuntu `sudo apt install postgis`. Then, in the postgres cli, run `CREATE EXTENSION postgis;`.
+You might need to connect to the postgres server using `sudo -u postgres psql annotations` to have sufficient permission to create extensions.
+We also use uuids in the application, so install the relevant extension using `CREATE EXTENSION "uuid-ossp";`
 
 By default, the installation of geoserver goes to `/usr/share/geoserver`. To start it cd into `/usr/share/geoserver/bin`
 and run `sh startup.sh`. It should run on `localhost:8080/geoserver`

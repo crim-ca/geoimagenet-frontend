@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
 :root {
     --gray: rgba(0, 0, 0, 0.7);
     --light-gray: rgba(0, 0, 0, 0.1);
@@ -10,6 +12,7 @@
 }
 * {
     box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
 }
 html, body {
     color: var(--gray);

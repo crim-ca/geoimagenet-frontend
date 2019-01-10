@@ -1,50 +1,19 @@
 from flask import Flask, request, make_response, redirect
 from GIN.Server import Request as GINRequest
-from GIN.Templating import make_renderer
+from GIN.Templating import renderer
 from GIN.View import Web, Platform, Benchmarks, Models
-from GIN.Controller import Session as SessionController
+from GIN.Controller import session_controller
 from GIN.Model.Service import Benchmark as BenchmarkService
 from GIN.Model.Entity import AnonymousPermission, LoggedInPermission
 from os import path
 from gettext import GNUTranslations, NullTranslations
 
-renderer = make_renderer()
-
 web_view = Web(renderer)
 benchmarks_view = Benchmarks(renderer, BenchmarkService())
 platform_view = Platform(renderer)
 models_view = Models(renderer)
-session_controller = SessionController({
-    'admin': '$pbkdf2-sha512$25000$Y.wd41yLcS7l/F/r3dt7rw$/OqZfZw5I9EBcGtSfa2VN0uqdiQ4ZB0RdSiPukTwm6Yx0rr8xDy.jNDbQME1yoUs9A3k4N3nZ0yBQbwyIw8iQw'
-})
 app = Flask(__name__, static_url_path='', static_folder='../static')
 permission = AnonymousPermission()
-
-
-@app.before_request
-def before_request():
-    if 'session_id' in request.cookies:
-        session_id = request.cookies['session_id'] or ''
-        if session_controller.validate_session(session_id):
-            permission = LoggedInPermission()
-            renderer.add_global('logged_in', True)
-            session = session_controller.session_store[session_id]
-            renderer.add_global('user_name', session['user_name'])
-
-
-@app.route('/')
-def home():
-    return web_view.handle()
-
-
-@app.route('/benchmarks')
-def benchmarks():
-    return benchmarks_view.handle()
-
-
-@app.route('/platform')
-def platform():
-    return platform_view.handle()
 
 
 @app.route('/models/<model_id>')
@@ -71,4 +40,21 @@ def login_request():
         return response
     response = make_response()
     response.status_code = 401
+    return response
+
+
+@app.route('/logout')
+def logout_request():
+    # if there's no cookie no need to actually end the session
+    if 'session_id' in request.cookies:
+        # store request session_id in a variable
+        session_id = request.cookies['session_id'] or ''
+        # destroy the session_id cookie
+        response = make_response(redirect('/'))
+        response.set_cookie('session_id', expires=0)
+        # end the session in the store
+        session_controller.end_session(session_id)
+        return response
+    # otherwise just redirect to home page
+    response = make_response(redirect('/'))
     return response
