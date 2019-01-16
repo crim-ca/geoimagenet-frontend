@@ -43,6 +43,7 @@ pipeline {
                 sh 'docker tag $LOCAL_IMAGE_NAME $LATEST_IMAGE_NAME'
                 sh 'docker push $LATEST_IMAGE_NAME'
                 sh 'ssh ubuntu@geoimagenetdev.crim.ca "cd ~/compose && ./geoimagenet-compose.sh down && ./geoimagenet-compose.sh pull && ./geoimagenet-compose.sh up -d"'
+
                 slackSend channel: '#jenkins-debug', color: 'good', message: "*GeoImageNet Frontend*:\nPushed docker image: `${env.TAGGED_IMAGE_NAME}`\nDeployed to: https://geoimagenetdev.crim.ca"
             }
         }
