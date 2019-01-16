@@ -5,20 +5,19 @@
     <title>{{title}}</title>
     <script src="/js/root.js" type="application/ecmascript"></script>
     <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/build/ol.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mobx/5.8.0/mobx.umd.min.js"></script>
     <script src="/js/layer-switcher.js" type="application/ecmascript"></script>
     <script type="application/ecmascript">
         addEventListener('DOMContentLoaded', () => {
-
-            const mapManager = new MapManager('{{ SERVER_PROTOCOL }}', '{{ GEOSERVER_URL }}', '{{ ANNOTATION_NAMESPACE }}', '{{ ANNOTATION_LAYER }}', 'map', 'type');
-
-            fetch(`/taxonomy/Objets`)
-                .then(res => res.json())
-                .then(json => {
-                    console.log(json);
-
-                    new TaxonomyBrowser(json, mapManager);
-                })
-                .catch(err => console.log(err));
+            const map_manager = new MapManager(
+                '{{ SERVER_PROTOCOL }}',
+                '{{ GEOSERVER_URL }}',
+                '{{ ANNOTATION_NAMESPACE }}',
+                '{{ ANNOTATION_LAYER }}',
+                'map',
+                'type'
+            );
+            new TaxonomyBrowser(null, map_manager)
         });
     </script>
     <link href="/css/base.css" rel="stylesheet">

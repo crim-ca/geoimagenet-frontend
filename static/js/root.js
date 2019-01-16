@@ -289,6 +289,11 @@ class TaxonomyBrowser {
         this.selection = [];
         this.annotation_is_activated = false;
 
+        this.store = mobx.observable({
+            taxonomy: [],
+            taxonomy_class: []
+        });
+
         this.fire_selection_changed = (event) => {
             // receive the checkbox selection event and manage activation state
             // if the checkbox is checked, add it to the selection
@@ -310,7 +315,23 @@ class TaxonomyBrowser {
             }
         };
 
-        this.load_taxonomy(taxonomy);
+        fetch(`/taxonomy`)
+            .then(res => res.json())
+            .then(json => {
+                this.store.taxonomy = json;
+            })
+            .catch(err => console.log(err));
+
+        mobx.autorun(() => {
+            this.construct_children(this.classes_element, this.store.taxonomy_class);
+        });
+
+        fetch(`/taxonomy/Objets`)
+                .then(res => res.json())
+                .then(json => {
+                    this.store.taxonomy_class = json;
+                })
+                .catch(err => console.log(err));
     }
 
     construct_children(element, collection) {
@@ -353,10 +374,6 @@ class TaxonomyBrowser {
 
             element.appendChild(li);
         });
-    }
-
-    load_taxonomy(taxonomy) {
-        this.construct_children(this.classes_element, taxonomy);
     }
 
 }
