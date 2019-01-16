@@ -1,25 +1,21 @@
-FROM ubuntu:18.04
+FROM python:3.6-alpine
 MAINTAINER Félix Gagnon-Grenier <felix.gagnon-grenier@crim.ca>
+
+RUN apk update && \
+    apk add gcc musl-dev && \
+    pip install --upgrade pip && \
+    pip install gunicorn
+
+WORKDIR /code
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update
-RUN apt-get install -y python3 python3-pip python3-setuptools gunicorn
-RUN pip3 install --upgrade pip
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-# Setup flask application
-RUN mkdir -p /deploy/GeoImageNet
-COPY Framework/gunicorn_config.py /deploy/gunicorn_config.py
-COPY Framework /deploy/GeoImageNet/Framework
-COPY GIN /deploy/GeoImageNet/GIN
-COPY templates /deploy/GeoImageNet/templates
-COPY locales /deploy/GeoImageNet/locales
-COPY static /deploy/GeoImageNet/static
-COPY requirements.txt /deploy/GeoImageNet
-RUN pip3 install -r /deploy/GeoImageNet/requirements.txt
-WORKDIR /deploy/GeoImageNet
+COPY . .
 
 EXPOSE 5000
 
 # Start gunicorn
-CMD ["gunicorn", "--config", "/deploy/gunicorn_config.py", "Framework:fl_app", "-k", "eventlet"]
+CMD ["gunicorn", "--config", "/code/Framework/gunicorn_config.py", "Framework:fl_app", "-k", "eventlet"]
