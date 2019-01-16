@@ -34,5 +34,5 @@ class API:
     def GET_taxonomy(self) -> [str, list, str]:
         return json_200_response(dumps(self.taxonomy_service.GET_all_taxonomies()))
 
-    def GET_taxonomy_by_name(self, name) -> [str, list, str]:
-        return json_200_response(dumps(self.taxonomy_service.GET_taxonomy(name)))
+    def GET_taxonomy_by_id(self, taxonomy_id) -> [str, list, str]:
+        return json_200_response(dumps([self.taxonomy_service.GET_taxonomy_by_id(taxonomy_id)]))

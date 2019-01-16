@@ -315,6 +315,12 @@ class TaxonomyBrowser {
             }
         };
 
+        this.reset_taxonomy_elements = () => {
+            while(this.classes_element.firstChild) {
+                this.classes_element.removeChild(this.classes_element.firstChild);
+            }
+        };
+
         fetch(`/taxonomy`)
             .then(res => res.json())
             .then(json => {
@@ -322,16 +328,48 @@ class TaxonomyBrowser {
             })
             .catch(err => console.log(err));
 
+        const taxonomy_table = document.getElementById('taxonomy_root');
+
+        mobx.autorun(() => {
+            this.store.taxonomy.forEach(taxonomy => {
+
+                const taxonomy_row = document.createElement('tr');
+                const name_cell = document.createElement('td');
+                const version_cell = document.createElement('td');
+                const action_cell = document.createElement('td');
+                const load_taxonomy_action = document.createElement('button');
+
+                load_taxonomy_action.appendChild(document.createTextNode('Charger'));
+                load_taxonomy_action.addEventListener('click', () => {
+                    load_taxonomy_by_id(taxonomy['id']);
+                });
+
+                name_cell.appendChild(document.createTextNode(taxonomy['name']));
+                version_cell.appendChild(document.createTextNode(taxonomy['version']));
+                action_cell.appendChild(load_taxonomy_action);
+
+                taxonomy_row.appendChild(version_cell);
+                taxonomy_row.appendChild(name_cell);
+                taxonomy_row.appendChild(action_cell);
+
+                taxonomy_table.appendChild(taxonomy_row);
+
+            });
+        });
+
         mobx.autorun(() => {
             this.construct_children(this.classes_element, this.store.taxonomy_class);
         });
 
-        fetch(`/taxonomy/Objets`)
+        const load_taxonomy_by_id = mobx.action(id => {
+            fetch(`/taxonomy/${id}`)
                 .then(res => res.json())
                 .then(json => {
+                    this.reset_taxonomy_elements();
                     this.store.taxonomy_class = json;
                 })
                 .catch(err => console.log(err));
+        });
     }
 
     construct_children(element, collection) {
