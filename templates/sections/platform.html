@@ -37,10 +37,21 @@
         <p>
             {{ gettext("
             Sélectionnez un type de taxonomie avec les boutons radios afin d'activer la création et l'édition des annotations.
-            Les cases à cocher contrôlent l'affichage des annotations. Quand aucunes n'est cochées, toutes sont affichées par défaut.
+            Les cases à cocher contrôlent l'affichage des annotations. Quand aucune case n'est cochée,
+            toutes les annotations sont affichées par défaut.
             ") }}
         </p>
         <div class="taxonomy" id="taxonomy">
+            <h3>{{ gettext('Taxonomies') }}</h3>
+            <table>
+                <thead>
+                <tr>
+                    <td>{{ gettext('Version') }}</td>
+                    <td>{{ gettext('Nom') }}</td>
+                </tr>
+                </thead>
+                <tbody id="taxonomy_root"></tbody>
+            </table>
             <ul id="taxonomy_classes" class="taxonomy_classes"></ul>
         </div>
         <div id="layer-switcher"></div>

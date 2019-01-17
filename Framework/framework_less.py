@@ -3,6 +3,7 @@ import gunicorn.app.base
 from gunicorn.six import iteritems
 from os import path
 from mimetypes import MimeTypes
+from urllib.error import HTTPError
 
 from GIN.Server.Routing import mapper
 from GIN.DependencyInjection import Injector
@@ -42,10 +43,21 @@ def handler_app(environ, start_response):
 
     handler_instance = injector.make(match['handler'])
     handler_callable = getattr(handler_instance, match['method'])
-    status, headers, data = injector.execute(handler_callable)
 
-    start_response(status, headers)
-    return [bytes(data, 'utf8')]
+    try:
+        status, headers, data = injector.execute(handler_callable)
+    except HTTPError as err:
+        status = f'{err.code} {err.reason}'
+        headers = [('Content-type', 'text/plain')]
+        data = err.msg
+    except Exception:
+        status = '500 SERVER ERROR'
+        headers = [('Content-type', 'text/plain')]
+        data = 'Something happened. Not sure what.'
+    finally:
+        start_response(status, headers)
+        return [bytes(data, 'utf8')]
+
 
 
 def number_of_workers():
