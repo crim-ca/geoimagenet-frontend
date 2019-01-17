@@ -1,6 +1,5 @@
 import multiprocessing
 import gunicorn.app.base
-from gunicorn.six import iteritems
 from os import path
 from mimetypes import MimeTypes
 from urllib.error import HTTPError
@@ -82,8 +81,10 @@ class StandaloneApplication(gunicorn.app.base.BaseApplication):
 
 
 if __name__ == '__main__':
-    options = {
-        'bind': '%s:%s' % ('0.0.0.0', '5000'),
-        'workers': number_of_workers()
-    }
-    StandaloneApplication(handler_app, options).run()
+    from werkzeug.serving import run_simple
+
+    context = (
+        "/projects/local-cert-generator/server.pem",
+        "/projects/local-cert-generator/server.pem"
+    )
+    run_simple('0.0.0.0', 5000, handler_app, use_reloader=True)#, ssl_context=context)
