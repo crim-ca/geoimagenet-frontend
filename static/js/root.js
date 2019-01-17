@@ -210,7 +210,7 @@ class MapManager {
         }
         const payload = this.XML_serializer.serializeToString(node);
         // const url = 'http://10.30.90.94:8080/geoserver/GeoImageNet/wfs';
-        const url = `${this.geoserver_url}/geoserver/GeoImageNet/wfs`;
+        const url = `${this.geoserver_url}/geoserver/wfs`;
         fetch(url, {
             method: 'POST',
             headers: {'Content-Type': 'text/xml'},
