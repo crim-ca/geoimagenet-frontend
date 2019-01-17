@@ -16,9 +16,10 @@ class MapManager {
         this.vectorSource.refresh(true);
     }
 
-    constructor(protocol, geoserver_url, annotation_namespace, annotation_layer, map_div_id, type_select_id) {
+    constructor(protocol, geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id, type_select_id) {
 
         this.geoserver_url = protocol + geoserver_url;
+        this.annotation_namespace_uri = annotation_namespace_uri;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
         this.type_select_id = type_select_id;
@@ -107,15 +108,13 @@ class MapManager {
         this.featureOverlay.setMap(this.map);
 
         this.formatWFS = new ol.format.WFS({
-            featureNS: this.annotation_namespace,
-            featurePrefix: 'GeoImageNet',
+            featureNS: this.annotation_namespace_uri,
             featureType: this.annotation_layer,
         });
         this.formatGML = new ol.format.GML({
-            featureNS: this.annotation_namespace,
-            featurePrefix: 'GeoImageNet',
+            featureNS: this.annotation_namespace_uri,
             featureType: this.annotation_layer,
-            schemaLocation: `${this.geoserver_url}/geoserver/wfs/DescribeFeatureType?version=1.1.0&typeName=geoimagenet:annotation`,
+            // schemaLocation: `${this.geoserver_url}/geoserver/wfs/DescribeFeatureType?version=1.1.0&typeName=geoimagenet:annotation`,
             srsName: 'EPSG:3857'
         });
         this.XML_serializer = new XMLSerializer();
@@ -188,7 +187,7 @@ class MapManager {
                 // node = this.formatWFS.writeTransaction([feature], null, null, this.formatGML);
                 node = this.formatWFS.writeTransaction([feature], null, null, {
                     gmlOptions: this.formatGML,
-                    featureNS: this.annotation_namespace,
+                    featureNS: this.annotation_namespace_uri,
                     featureType: this.annotation_layer,
                     srsName: 'EPSG:3857',
                     version: '1.1.0',
