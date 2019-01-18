@@ -117,10 +117,19 @@ class MapManager {
             // schemaLocation: `${this.geoserver_url}/geoserver/wfs/DescribeFeatureType?version=1.1.0&typeName=geoimagenet:annotation`,
             srsName: 'EPSG:3857'
         });
+        this.wfsOptions = {
+            gmlOptions: this.formatGML,
+            featureNS: this.annotation_namespace_uri,
+            featureType: this.annotation_layer,
+            srsName: 'EPSG:3857',
+            version: '1.1.0',
+        };
         this.XML_serializer = new XMLSerializer();
+
 
         this.register_geoserver_url_button();
     }
+
 
     activate_interactions() {
         this.modify = new ol.interaction.Modify({
@@ -137,7 +146,6 @@ class MapManager {
             this.WFS_transaction(MODE.UPDATE, features);
             console.groupEnd();
         });
-
         this.typeSelect = document.getElementById(this.type_select_id);
 
         this.typeSelect.onchange = () => {
@@ -178,27 +186,24 @@ class MapManager {
                 }
                 const selected_taxonomy = selected_taxonomy_element.value;
 
-                feature.set('geometry', feature.getGeometry());
                 console.log('taxonomy_class_id:', selected_taxonomy);
 
-                feature.setProperties({taxonomy_class_id: selected_taxonomy});
-                feature.setProperties({annotator_id: 1});
-
-                // node = this.formatWFS.writeTransaction([feature], null, null, this.formatGML);
-                node = this.formatWFS.writeTransaction([feature], null, null, {
-                    gmlOptions: this.formatGML,
-                    featureNS: this.annotation_namespace_uri,
-                    featureType: this.annotation_layer,
-                    srsName: 'EPSG:3857',
-                    version: '1.1.0',
-                });
+                feature.setProperties({
+                    geometry: feature.getGeometry(),
+                    taxonomy_class_id: selected_taxonomy,
+                    annotator_id: 1,
+                    image_name: 'My Image'});
+                node = this.formatWFS.writeTransaction([feature], null, null, this.wfsOptions);
                 break;
             case MODE.UPDATE:
                 console.log('firing update transaction');
                 feature.forEach(f => {
+                    // OpenLayers adds the `bbox` property, but it's not in our database
+                    f.unset('bbox');
                     console.log(f.getProperties());
                 });
-                node = this.formatWFS.writeTransaction(null, feature, null, this.formatGML);
+
+                node = this.formatWFS.writeTransaction(null, feature, null, this.wfsOptions);
                 break;
             case MODE.DELETE:
                 console.log('firing delete transaction');
