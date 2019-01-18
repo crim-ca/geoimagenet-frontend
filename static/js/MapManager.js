@@ -27,7 +27,7 @@ export class MapManager {
             const activated_taxonomies = event.detail;
             const filter_bits = [];
             activated_taxonomies.forEach(class_name => {
-                filter_bits.push(`taxonomy_id='${class_name}'`);
+                filter_bits.push(`taxonomy_class_id='${class_name}'`);
             });
             this.cql_filter = filter_bits.join(' OR ');
             this.refresh();
@@ -253,14 +253,15 @@ export class MapManager {
         this.vectorSource = new ol.source.Vector({
             format: new ol.format.GeoJSON(),
             url: (extent) => {
-                let url = `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
+                if (this.cql_filter.length > 0) {
+                    return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
+                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
+                    'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=${this.cql_filter}`;
+                }
+                return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
                     `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
                     'outputFormat=application/json&srsname=EPSG:3857&' +
                     'bbox=' + extent.join(',') + ',EPSG:3857';
-                if (this.cql_filter.length > 0) {
-                     url += `&cql_filter=${this.cql_filter}`;
-                 }
-                return url;
             },
             strategy: ol.loadingstrategy.bbox
         });
