@@ -7,6 +7,8 @@
     --base-unit: 4px;
     --spacing-width: calc(var(--base-unit) * 4);
 
+    --width-sidebar: 400px;
+
     --index-back: 1;
     --index-front: 10;
 }

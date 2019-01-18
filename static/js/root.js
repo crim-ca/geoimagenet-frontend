@@ -110,7 +110,7 @@ class MapManager {
         this.formatGML = new ol.format.GML({
             featureNS: this.annotation_namespace,
             featureType: this.annotation_layer,
-            srsName: 'EPSG:3857'
+            srsName: 'EPSG:4326'
         });
         this.XML_serializer = new XMLSerializer();
 
@@ -236,7 +236,7 @@ class MapManager {
             url: () => {
                 let url = `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
                     `version=1.1.0&request=GetFeature&typename=${this.annotation_namespace}:${this.annotation_layer}&` +
-                    'outputFormat=application/json&srsname=EPSG:3857';
+                    'outputFormat=application/json&srsname=EPSG:4326';
                 if (this.cql_filter.length > 0) {
                     url += `&cql_filter=${this.cql_filter}`;
                 }

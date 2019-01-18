@@ -1,28 +1,9 @@
 {% extends 'index_platform.html' %}
 {% block body %}
 <div class="layout">
+    <!--
     <div class="left paper">
-        <p>{{ gettext("Bienvenue sur la plateforme d'annotation.") }}</p>
-        <!--
-        <label>
-            {{ gettext("Entrez l'url de l'installation geoserver voulue.") }}
-            <input type="text" id="geoserver-url"/>
-            <button type="button" id="populate-layer-switcher-button">
-                {{ gettext('Populer le sélectionneur de couches.') }}
-            </button>
-        </label>
-        -->
-        <label>
-            {{ gettext('Type de géométrie') }}
-            <select id="type">
-                <option value="Point">{{ gettext('Point') }}</option>
-                <option value="LineString">{{ gettext('LineString') }}</option>
-                <option value="Polygon" selected>{{ gettext('Polygon') }}</option>
-                <option value="Circle">{{ gettext('Circle') }}</option>
-                <option value="None">{{ gettext('None') }}</option>
-            </select>
-        </label>
-        <!--
+        eventually we'll have a projection selector
         <label>
             {{ gettext('Projection') }}
             <select id="projection">
@@ -30,17 +11,30 @@
                 <option value="EPSG:4326">EPSG:4326</option>
             </select>
         </label>
-        -->
     </div>
+    -->
     <div id="map" class="map"></div>
     <div class="right paper">
-        <p>
-            {{ gettext("
-            Sélectionnez un type de taxonomie avec les boutons radios afin d'activer la création et l'édition des annotations.
-            Les cases à cocher contrôlent l'affichage des annotations. Quand aucune case n'est cochée,
-            toutes les annotations sont affichées par défaut.
-            ") }}
-        </p>
+        <div>
+            <p>{{ gettext("Bienvenue sur la plateforme d'annotation.") }}</p>
+            <p>
+                {{ gettext("
+                Sélectionnez un type de taxonomie avec les boutons radios afin d'activer la création et l'édition des
+                annotations. Les cases à cocher contrôlent l'affichage des annotations. Quand aucune case n'est cochée,
+                toutes les annotations sont affichées par défaut.
+                ") }}
+            </p>
+            <label>
+                {{ gettext('Type de géométrie') }}
+                <select id="type">
+                    <option value="Point">{{ gettext('Point') }}</option>
+                    <option value="LineString">{{ gettext('LineString') }}</option>
+                    <option value="Polygon" selected>{{ gettext('Polygon') }}</option>
+                    <option value="Circle">{{ gettext('Circle') }}</option>
+                    <option value="None">{{ gettext('None') }}</option>
+                </select>
+            </label>
+        </div>
         <div class="taxonomy" id="taxonomy">
             <h3>{{ gettext('Taxonomies') }}</h3>
             <table>
