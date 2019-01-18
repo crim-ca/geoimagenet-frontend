@@ -316,7 +316,7 @@ class TaxonomyBrowser {
         };
 
         this.reset_taxonomy_elements = () => {
-            while(this.classes_element.firstChild) {
+            while (this.classes_element.firstChild) {
                 this.classes_element.removeChild(this.classes_element.firstChild);
             }
         };
@@ -376,27 +376,32 @@ class TaxonomyBrowser {
         collection.forEach(taxonomy_class => {
             const li = document.createElement('li');
 
-            if (taxonomy_class['children'] && taxonomy_class['children'].length === 0) {
-                // only leafs classes can be annotated, so only create the inputs if there are no children (leaf)
-                const checkbox_selector = document.createElement('input');
-                checkbox_selector.type = 'checkbox';
-                checkbox_selector.value = taxonomy_class.id;
-                checkbox_selector.addEventListener('change', this.fire_selection_changed);
-
-                const radio_selector = document.createElement('input');
-                radio_selector.type = 'radio';
-                radio_selector.value = taxonomy_class.id;
-                radio_selector.name = 'selected_taxonomy';
-                radio_selector.addEventListener('change', this.activate_annotation);
-
-                li.appendChild(checkbox_selector);
-                li.appendChild(radio_selector);
-            }
-
             const text = document.createElement('span');
             text.appendChild(document.createTextNode(taxonomy_class.name));
-
             li.appendChild(text);
+
+            const label = document.createElement('label');
+            const checkbox_input = document.createElement('input');
+            const span = document.createElement('span');
+            checkbox_input.type = 'checkbox';
+            checkbox_input.value = taxonomy_class.id;
+            checkbox_input.addEventListener('change', this.fire_selection_changed);
+            label.appendChild(checkbox_input);
+            label.appendChild(span);
+
+            /*
+            const radio_selector = document.createElement('input');
+            radio_selector.type = 'radio';
+            radio_selector.value = taxonomy_class.id;
+            radio_selector.name = 'selected_taxonomy';
+            radio_selector.addEventListener('change', this.activate_annotation);
+            */
+
+            li.appendChild(label);
+            // li.appendChild(radio_selector);
+
+            // TODO only leafs can be annotated, so if taxonomy_class.children don't add the possibility to select for annotation
+
 
             if (taxonomy_class['children'] && taxonomy_class['children'].length > 0) {
                 li.classList.add('collapsed');
