@@ -3,24 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>{{title}}</title>
-    <script src="/js/root.js" type="application/ecmascript"></script>
+    <script type="application/ecmascript">
+        // Dropping the globals in global scope, because globals
+        // Your IDE might think they are unused, but they really are in bootstrap.js!
+        const SERVER_PROTOCOL = '{{ SERVER_PROTOCOL }}';
+        const GEOSERVER_URL = '{{ GEOSERVER_URL }}';
+        const ANNOTATION_NAMESPACE_URI = '{{ ANNOTATION_NAMESPACE_URI }}';
+        const ANNOTATION_NAMESPACE = '{{ ANNOTATION_NAMESPACE }}';
+        const ANNOTATION_LAYER = '{{ ANNOTATION_LAYER }}';
+    </script>
+    <script type="module" src="/js/bootstrap.js"></script>
     <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/build/ol.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mobx/5.8.0/mobx.umd.min.js"></script>
     <script src="/js/layer-switcher.js" type="application/ecmascript"></script>
-    <script type="application/ecmascript">
-        addEventListener('DOMContentLoaded', () => {
-            const map_manager = new MapManager(
-                '{{ SERVER_PROTOCOL }}',
-                '{{ GEOSERVER_URL }}',
-                '{{ ANNOTATION_NAMESPACE_URI }}',
-                '{{ ANNOTATION_NAMESPACE }}',
-                '{{ ANNOTATION_LAYER }}',
-                'map',
-                'type'
-            );
-            new TaxonomyBrowser(null, map_manager)
-        });
-    </script>
     <link href="/css/base.css" rel="stylesheet">
     <link href="/css/style_platform.css" rel="stylesheet">
     <link href="/css/open_layers.css" rel="stylesheet">

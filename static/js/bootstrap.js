@@ -1,0 +1,15 @@
+import {TaxonomyBrowser} from '/js/TaxonomyBrowser.js';
+import {MapManager} from '/js/MapManager.js';
+
+addEventListener('DOMContentLoaded', () => {
+    const map_manager = new MapManager(
+        SERVER_PROTOCOL,
+        GEOSERVER_URL,
+        ANNOTATION_NAMESPACE_URI,
+        ANNOTATION_NAMESPACE,
+        ANNOTATION_LAYER,
+        'map',
+        'type'
+    );
+    new TaxonomyBrowser(null, map_manager)
+});
