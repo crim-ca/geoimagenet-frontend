@@ -90,13 +90,15 @@ export class TaxonomyBrowser {
         });
     }
 
-    construct_children(element, collection) {
+    construct_children(this_level_root, collection) {
         collection.forEach(taxonomy_class => {
-            const li = document.createElement('li');
+            const taxonomy_class_root_element = document.createElement('li');
+
+            const taxonomy_class_list_element = document.createElement('span');
+            taxonomy_class_list_element.classList.add('taxonomy_class_list_element');
 
             const text = document.createElement('span');
             text.appendChild(document.createTextNode(taxonomy_class.name));
-            li.appendChild(text);
 
             const label = document.createElement('label');
             const checkbox_input = document.createElement('input');
@@ -115,24 +117,30 @@ export class TaxonomyBrowser {
             radio_selector.addEventListener('change', this.activate_annotation);
             */
 
-            li.appendChild(label);
-            // li.appendChild(radio_selector);
+            taxonomy_class_list_element.appendChild(text);
+            taxonomy_class_list_element.appendChild(label);
+
+            taxonomy_class_root_element.appendChild(taxonomy_class_list_element);
+
+            // taxonomy_class_root_element.appendChild(radio_selector);
 
             // TODO only leafs can be annotated, so if taxonomy_class.children don't add the possibility to select for annotation
 
 
             if (taxonomy_class['children'] && taxonomy_class['children'].length > 0) {
-                li.classList.add('collapsed');
+                taxonomy_class_root_element.classList.add('collapsed');
                 // inside the if block because we don't need the toggle if there are no children
                 text.addEventListener('click', event => {
-                    event.target.parentNode.classList.toggle('collapsed');
+                    // ugly following the chain upwards until the parent li
+                    event.target.parentNode.parentNode.classList.toggle('collapsed');
                 });
 
                 const ul = document.createElement('ul');
                 this.construct_children(ul, taxonomy_class['children']);
-                li.appendChild(ul);
+                taxonomy_class_root_element.appendChild(ul);
             }
-            element.appendChild(li);
+
+            this_level_root.appendChild(taxonomy_class_root_element);
         });
     }
 }
