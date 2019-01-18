@@ -8,6 +8,7 @@
     --spacing-width: calc(var(--base-unit) * 4);
 
     --width-sidebar: 400px;
+    --height-taxonomy-browser-classes: 600px;
 
     --index-back: 1;
     --index-front: 10;

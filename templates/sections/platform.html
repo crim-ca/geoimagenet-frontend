@@ -1,54 +1,20 @@
 {% extends 'index_platform.html' %}
 {% block body %}
-<div class="layout">
-    <!--
-    <div class="left paper">
-        eventually we'll have a projection selector
-        <label>
-            {{ gettext('Projection') }}
-            <select id="projection">
-                <option value="EPSG:3857" selected>EPSG:3857</option>
-                <option value="EPSG:4326">EPSG:4326</option>
-            </select>
-        </label>
+<div id="map" class="map"></div>
+<div class="right paper">
+    <div class="taxonomy" id="taxonomy">
+        <h3>{{ gettext('Taxonomies') }}</h3>
+        <table>
+            <thead>
+            <tr>
+                <td>{{ gettext('Version') }}</td>
+                <td>{{ gettext('Nom') }}</td>
+            </tr>
+            </thead>
+            <tbody id="taxonomy_root"></tbody>
+        </table>
+        <ul id="taxonomy_classes" class="taxonomy_classes"></ul>
     </div>
-    -->
-    <div class="map-grid-wrapper"><div id="map" class="map"></div></div>
-    <div class="right paper">
-        <div>
-            <p>{{ gettext("Bienvenue sur la plateforme d'annotation.") }}</p>
-            <p>
-                {{ gettext("
-                Sélectionnez un type de taxonomie avec les boutons radios afin d'activer la création et l'édition des
-                annotations. Les cases à cocher contrôlent l'affichage des annotations. Quand aucune case n'est cochée,
-                toutes les annotations sont affichées par défaut.
-                ") }}
-            </p>
-            <label>
-                {{ gettext('Type de géométrie') }}
-                <select id="type">
-                    <option value="Point">{{ gettext('Point') }}</option>
-                    <option value="LineString">{{ gettext('LineString') }}</option>
-                    <option value="Polygon" selected>{{ gettext('Polygon') }}</option>
-                    <option value="Circle">{{ gettext('Circle') }}</option>
-                    <option value="None">{{ gettext('None') }}</option>
-                </select>
-            </label>
-        </div>
-        <div class="taxonomy" id="taxonomy">
-            <h3>{{ gettext('Taxonomies') }}</h3>
-            <table>
-                <thead>
-                <tr>
-                    <td>{{ gettext('Version') }}</td>
-                    <td>{{ gettext('Nom') }}</td>
-                </tr>
-                </thead>
-                <tbody id="taxonomy_root"></tbody>
-            </table>
-            <ul id="taxonomy_classes" class="taxonomy_classes"></ul>
-        </div>
-        <div id="layer-switcher"></div>
-    </div>
+    <div id="layer-switcher"></div>
 </div>
 {% endblock %}
