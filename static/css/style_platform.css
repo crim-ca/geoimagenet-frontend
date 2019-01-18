@@ -1,37 +1,29 @@
-div.layout {
+:root {
+    --color-non-released: rgba(255, 247, 0, 0.9);
+    --color-released: rgba(238, 97, 0, 0.9);
+    --color-approved: rgba(0, 170, 5, 0.9);
+}
+body {
     display: grid;
-    height: 100%;
-    grid-template-columns: minmax(200px, 300px) 1fr 500px;
+    grid-template-columns: 1fr var(--width-sidebar);
     grid-template-rows: 1fr;
 }
-div.layout div.map {
-    z-index: var(--index-back);
+div.map {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+div.right {
+    z-index: var(--index-front);
+    grid-row: 1/2;
     grid-column: 2/3;
-    grid-row: 1/2;
-}
-div.layout div.left {
-    z-index: var(--index-front);
-    grid-column: 1/2;
-    grid-row: 1/2;
-}
-div.layout div.right {
-    z-index: var(--index-front);
-    grid-column: 3/4;
-    grid-row: 1/2;
-    display: grid;
-    grid-template-rows: max-content 500px 200px;
-}
-div.layout div.right ul.taxonomy_classes {
-    height: 100%;
-    overflow-y: scroll;
-}
-div.layout div.log {
-    height: 100%;
-    overflow-y: auto;
 }
 ul {
     list-style: none;
     padding-left: 20px;
+    margin: 0;
 }
 ul > li.collapsed > ul {
     display: none;
@@ -39,6 +31,38 @@ ul > li.collapsed > ul {
 ul > li {
     cursor: pointer;
 }
+ul.taxonomy_classes {
+    height: var(--height-taxonomy-browser-classes);
+    overflow-y: scroll;
+}
+ul.taxonomy_classes label {
+    cursor: pointer;
+}
 span:hover {
     background-color: antiquewhite;
+}
+input[type=checkbox] {
+    /*
+    TODO if accessibility and using tab becomes a problem, uncomment these, and find a way to have both the input visible but without the alignment issue in the eyes column
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    */
+    display: none;
+}
+label span {
+    width: 30px;
+    height: 30px;
+    position: relative;
+    display: inline-block;
+}
+[type=checkbox] + span:after {
+    content: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAADj0lEQVRIie2WT2idRRTFf+dRQghBQhAXpUgoIRTpIkgUhNiCFS0uYpGCUZEgRSGIiPTNF7roQqSUzDyIUmKqwVBrhdqNIZS6EkGhBBuyKOIiiHQRK0gpoYRQHuEdF28SXtL8Q6pd1Lt6vLlzzpw7955vZMyDiNIDYf2f+L+MXfcLKJRDp6RF4K+YYm27/PuiOJTDXknf2v7O9itFKLbF3ZHiIhTtQDfQCzxlu1NSO/WD3xaq2e6SVLJ9CJgEtlStrea4CEUrcAQYAHqAtry0BCzZbgFaJK1suWX7YKqkX7cTs2lJilD0AF8DXwHPZ9Ka7Wnbx4BngeH8H8Cy7U8lzeX93UUo9u9YcRGKJtt9kkZsPybpKvA4sBeYAgZt75b0tO3XJPXaRtKs7ZdTJc2HcihJ+gHosH1c0lRMsbqp4twURyWNAY9I+hj4MC/fAk7ZfkLSN7ZHG0iXgTOpkuYBculnbLdJGgX61zdcaR3pEdtnqDfdMeCE7XZgN/AzcFtSyOpXw/YV25MZZ09eD5IGM9YIsKbbSw2bO4HhfNoPgMmYYk1SE9BkuxnYD+xrUIWkBUkjqZIWMs7bQHee5UtAsI3tZLvrHmJJ7wOdwARwIaa4nJfuAIuSDtgep37fjXHZ9o9Z7T5J/baXADLGeUkTkjokvbuR4hL1Dv2TtTN4HZizvQt4NOeurP0GnE6VVCtC0Wr7JHBH0vWVhEz+R8Ze9Y1GxZ/YvpHLfHjlPmzftD0uqdqQu/JzHJjLeQckHQa+BG7mCpRCObxk+zgwnxvtHsVzkoYktdoeo+5SpEqqSTqfr6DaoPh34GxMcbkIRVs+8CQw0eDVvZJGM+YQsGosa+Y4z9/rtkckVW2flvR5TLEaymGPpO+zNS4CgzHFC1nZC9Q7/2JM8W4RiibgHeAE0AwE4Fzjx2NDAwGO2h6W1G77oqTPbPdKOmW7WdJl22+udHIohxZJd203Seqy/V4WsCBpCLi03kA29epQDj2STmYXW7JdldRG3aMPpUqaznnNkjqAJ4EXgb5sHFeAj2KK0xvhb+rVqZJmgDckvUW9U9tsL9s+B8zm6jwHXAN+Ar6w3Wd7VtIA8OpmpLDNZzGmuFiEYs52TRKS5oGxhrINAE3AtO1rwFVJMzHFha1wtyXOcROYst0vaTSm+EvDwQZ2sH/D2PalEFO8QX1UngHO/lOi9bHlQ+DfjIfvefvwEf8NsCrj9Atpm+4AAAAASUVORK5CYII=');
+}
+[type=checkbox]:checked + span:after {
+    content: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAACN0lEQVRIie3Wv0uVYRQH8M8VBwmRCBERiRARKrk4iUNLEA0NDtLgFGRbSxAN/gMRTeHkEE0FTRIhIUQSQS01hP0SEQkLoRbJwURut7fhPTdfb+/1XoMQ0ufyDO95zvl+z4/nOecWEom9WE17wnpAvC+ImxtRKig04zD6MYiTOBLHq3iPl3iHb4nkR13QpM4vyG5gEWUkNXY5dK6jvy7uDoSduIYVlDIEXzGJC7ib40AJn3EVHbsiRg9mAmQldoKPOBtpPof7OcQV/RIe4VhDxBjCHDYwjTNYiO+RSP3r+M5L/XzYTIfOHAZ3JI5IXwTgJDoisjW8Qi/u1Kn1Wth0BEY5MHtyidEaqdnEbbSEfDSMp3ACb3cgrVyy0bBtCUc3IwOtecRjUZdn6MrIh7EedXsQ6duJeB3DGfuuwCxhLI94KrwdqUr/AJbqkGX3EgaqMM5XslaRZTvXDH7iUkGhPSP/gCcaX4/DBgTWxcCe+a2V8apNWuMNTIgax1mf9GbXi3YBfRm7lsDaDOy2Wre619atnkB75qyIWdubSbZpzKKY0W8PjMqt7t3NO36Io2iKs25cDpLl2LMh6w6dprB5aOsdD/1N51rGeNaBGjYVwvGwKQVGT55+IYz+WAWFTmk/viJtkZ/wHE+lU+h7qB6SdrPTOBXkq7iFe4nkSy5BrQiqanvT9ulUlr7X9SrZonSSFevh1oy4KvrKPC5K5/Fx2+fxvHQev9HgPG6I+F+s/fef64D4/yf+BXog575HkZGSAAAAAElFTkSuQmCC');
+}
+.taxonomy_class_list_element {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }

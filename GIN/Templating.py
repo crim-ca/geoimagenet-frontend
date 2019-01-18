@@ -16,8 +16,8 @@ class Renderer:
         self.add_global('SERVER_PROTOCOL', environ.get('SERVER_PROTOCOL') or 'https://')
         self.add_global('GEOSERVER_URL', environ.get('GEOSERVER_URL') or 'geoimagenetdev.crim.ca')
         self.add_global('ANNOTATION_NAMESPACE_URI', environ.get('ANNOTATION_NAMESPACE_URI') or 'geoimagenet.public.crim.ca')
-        self.add_global('ANNOTATION_NAMESPACE', environ.get('ANNOTATION_NAMESPACE') or 'GeoImageNet')
-        self.add_global('ANNOTATION_LAYER', environ.get('ANNOTATION_LAYER') or 'annotation_event')
+        self.add_global('ANNOTATION_NAMESPACE', environ.get('ANNOTATION_NAMESPACE') or 'GEOIMAGENET_PUBLIC')
+        self.add_global('ANNOTATION_LAYER', environ.get('ANNOTATION_LAYER') or 'annotation')
         pass
 
     def add_global(self, key, value):
