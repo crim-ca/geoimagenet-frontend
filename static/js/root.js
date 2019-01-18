@@ -16,9 +16,10 @@ class MapManager {
         this.vectorSource.refresh(true);
     }
 
-    constructor(protocol, geoserver_url, annotation_namespace, annotation_layer, map_div_id, type_select_id) {
+    constructor(protocol, geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id, type_select_id) {
 
         this.geoserver_url = protocol + geoserver_url;
+        this.annotation_namespace_uri = annotation_namespace_uri;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
         this.type_select_id = type_select_id;
@@ -106,16 +107,29 @@ class MapManager {
         });
         this.featureOverlay.setMap(this.map);
 
-        this.formatWFS = new ol.format.WFS();
-        this.formatGML = new ol.format.GML({
-            featureNS: this.annotation_namespace,
+        this.formatWFS = new ol.format.WFS({
+            featureNS: this.annotation_namespace_uri,
             featureType: this.annotation_layer,
+        });
+        this.formatGML = new ol.format.GML({
+            featureNS: this.annotation_namespace_uri,
+            featureType: this.annotation_layer,
+            // schemaLocation: `${this.geoserver_url}/geoserver/wfs/DescribeFeatureType?version=1.1.0&typeName=geoimagenet:annotation`,
             srsName: 'EPSG:3857'
         });
+        this.wfsOptions = {
+            gmlOptions: this.formatGML,
+            featureNS: this.annotation_namespace_uri,
+            featureType: this.annotation_layer,
+            srsName: 'EPSG:3857',
+            version: '1.1.0',
+        };
         this.XML_serializer = new XMLSerializer();
+
 
         this.register_geoserver_url_button();
     }
+
 
     activate_interactions() {
         this.modify = new ol.interaction.Modify({
@@ -132,7 +146,6 @@ class MapManager {
             this.WFS_transaction(MODE.UPDATE, features);
             console.groupEnd();
         });
-
         this.typeSelect = document.getElementById(this.type_select_id);
 
         this.typeSelect.onchange = () => {
@@ -172,15 +185,25 @@ class MapManager {
                     throw 'You must select a taxonomy before adding annotations';
                 }
                 const selected_taxonomy = selected_taxonomy_element.value;
-                feature.setProperties({taxonomy_id: selected_taxonomy});
-                node = this.formatWFS.writeTransaction([feature], null, null, this.formatGML);
+
+                console.log('taxonomy_class_id:', selected_taxonomy);
+
+                feature.setProperties({
+                    geometry: feature.getGeometry(),
+                    taxonomy_class_id: selected_taxonomy,
+                    annotator_id: 1,
+                    image_name: 'My Image'});
+                node = this.formatWFS.writeTransaction([feature], null, null, this.wfsOptions);
                 break;
             case MODE.UPDATE:
                 console.log('firing update transaction');
                 feature.forEach(f => {
+                    // OpenLayers adds the `bbox` property, but it's not in our database
+                    f.unset('bbox');
                     console.log(f.getProperties());
                 });
-                node = this.formatWFS.writeTransaction(null, feature, null, this.formatGML);
+
+                node = this.formatWFS.writeTransaction(null, feature, null, this.wfsOptions);
                 break;
             case MODE.DELETE:
                 console.log('firing delete transaction');
@@ -191,10 +214,10 @@ class MapManager {
         }
         const payload = this.XML_serializer.serializeToString(node);
         // const url = 'http://10.30.90.94:8080/geoserver/GeoImageNet/wfs';
-        const url = `${this.geoserver_url}/geoserver/GeoImageNet/wfs`;
+        const url = `${this.geoserver_url}/geoserver/wfs`;
         fetch(url, {
-            service: 'WFS',
             method: 'POST',
+            headers: {'Content-Type': 'text/xml'},
             body: payload,
         }).then(() => {
             this.refresh();
@@ -233,13 +256,14 @@ class MapManager {
         // TODO taxonomy_id is a variable as well
         this.vectorSource = new ol.source.Vector({
             format: new ol.format.GeoJSON(),
-            url: () => {
+            url: (extent) => {
                 let url = `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
-                    `version=1.1.0&request=GetFeature&typename=${this.annotation_namespace}:${this.annotation_layer}&` +
-                    'outputFormat=application/json&srsname=EPSG:3857';
-                if (this.cql_filter.length > 0) {
-                    url += `&cql_filter=${this.cql_filter}`;
-                }
+                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
+                    'outputFormat=application/json&srsname=EPSG:3857&' +
+                    'bbox=' + extent.join(',') + ',EPSG:3857';
+                // if (this.cql_filter.length > 0) {
+                //     url += `&cql_filter=${this.cql_filter}`;
+                // }
                 return url;
             },
             strategy: ol.loadingstrategy.bbox
