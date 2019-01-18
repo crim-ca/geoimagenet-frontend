@@ -1,3 +1,5 @@
+import {toggle_all_nested_checkboxes} from '/js/Utils.js';
+
 export class TaxonomyBrowser {
 
     constructor(taxonomy, mapManager) {
@@ -12,16 +14,25 @@ export class TaxonomyBrowser {
             taxonomy_class: []
         });
 
-        this.fire_selection_changed = (event) => {
-            // receive the checkbox selection event and manage activation state
-            // if the checkbox is checked, add it to the selection
-            // if it's not, remove it
-            console.log('checkbox has been checked. event: %o, checked: %o', event, event.target.checked);
-            if (event.target.checked) {
-                this.selection.push(event.target.value);
-            } else {
-                delete this.selection[this.selection.indexOf(event.target.value)];
-            }
+        const update_selection = mobx.action(() => {
+            this.selection = [];
+            const checkboxes = this.classes_element.querySelectorAll('input[type=checkbox]:checked');
+            checkboxes.forEach(checkbox => {
+                this.selection.push(checkbox.value);
+            });
+        });
+
+        this.check_visibility = (event) => {
+
+            /*
+            when checking a checkbox, there can be children to be checked down the tree first
+            then, add source event value, along with all children values, to the cql filter
+             */
+
+            // ugly going forward because we need to go search the right elem
+            toggle_all_nested_checkboxes(event.target.parentNode.parentNode.parentNode, event.target.checked);
+
+            update_selection();
             event = new CustomEvent('selection_changed', {detail: this.selection});
             dispatchEvent(event);
         };
@@ -105,7 +116,7 @@ export class TaxonomyBrowser {
             const span = document.createElement('span');
             checkbox_input.type = 'checkbox';
             checkbox_input.value = taxonomy_class.id;
-            checkbox_input.addEventListener('change', this.fire_selection_changed);
+            checkbox_input.addEventListener('change', this.check_visibility);
             label.appendChild(checkbox_input);
             label.appendChild(span);
 
