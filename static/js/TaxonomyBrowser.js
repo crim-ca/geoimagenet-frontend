@@ -1,4 +1,11 @@
-import {toggle_all_nested_checkboxes, element, text_node, button, checkbox} from '/js/Utils.js';
+import {
+    toggle_all_nested_checkboxes,
+    element,
+    text_node,
+    button,
+    checkbox,
+    span
+} from '/js/Utils.js';
 
 export class TaxonomyBrowser {
 
@@ -104,7 +111,17 @@ export class TaxonomyBrowser {
             taxonomy_class_list_element.classList.add('taxonomy_class_list_element');
 
             const text = element('span');
+
             text.appendChild(text_node(taxonomy_class.name));
+            if (taxonomy_class['count_new']) {
+                text.appendChild(span(text_node(taxonomy_class['count_new']), 'annotation_new'));
+            }
+            if (taxonomy_class['count_released']) {
+                text.appendChild(span(text_node(taxonomy_class['count_released']), 'annotation_released'));
+            }
+            if (taxonomy_class['count_validated']) {
+                text.appendChild(span(text_node(taxonomy_class['count_validated']), 'annotation_validated'));
+            }
 
             const label = element('label');
             label.appendChild(checkbox(taxonomy_class.id, this.check_visibility));

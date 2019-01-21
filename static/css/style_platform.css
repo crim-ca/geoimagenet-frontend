@@ -1,7 +1,7 @@
 :root {
-    --color-non-released: rgba(255, 247, 0, 0.9);
+    --color-new: rgba(255, 247, 0, 0.9);
     --color-released: rgba(238, 97, 0, 0.9);
-    --color-approved: rgba(0, 170, 5, 0.9);
+    --color-validated: rgba(0, 170, 5, 0.9);
 }
 body {
     display: grid;
@@ -65,4 +65,13 @@ label span {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+.annotation_new {
+    background-color: var(--color-new);
+}
+span.annotation_released {
+    background-color: var(--color-released);
+}
+span.annotation_validated {
+    background-color: var(--color-validated);
 }

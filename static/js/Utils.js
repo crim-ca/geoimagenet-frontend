@@ -8,6 +8,12 @@ export const toggle_all_nested_checkboxes = (parent, checked) => {
 export const element = elem => document.createElement(elem);
 export const text_node = text => document.createTextNode(text);
 
+export const span = (content, class_name) => {
+    const s = element('span');
+    s.appendChild(content);
+    s.classList.add(class_name);
+    return s;
+};
 export const button = (text, click_handler) => {
     const b = element('button');
     b.appendChild(text_node(text));
