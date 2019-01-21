@@ -13,8 +13,7 @@ addEventListener('DOMContentLoaded', () => {
         ANNOTATION_NAMESPACE_URI,
         ANNOTATION_NAMESPACE,
         ANNOTATION_LAYER,
-        'map',
-        'type'
+        'map'
     );
     new TaxonomyBrowser();
     build_actions();

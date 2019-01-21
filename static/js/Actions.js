@@ -3,6 +3,7 @@ import {store, set_mode} from '/js/store.js';
 import {MODE} from '/js/constants.js';
 
 const actions = [
+    {name: 'eye', icon_class: 'fa-eye', mode: MODE.VISUALIZE},
     {name: 'creation', icon_class: 'fa-plus-square', mode: MODE.CREATION},
     {name: 'duplicate', icon_class: 'fa-copy', mode: MODE.DUPLICATE},
     {name: 'modify', icon_class: 'fa-edit', mode: MODE.MODIFY},

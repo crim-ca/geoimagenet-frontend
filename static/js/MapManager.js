@@ -13,7 +13,7 @@ export class MapManager {
         this.vectorSource.refresh(true);
     }
 
-    constructor(protocol, geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id, type_select_id) {
+    constructor(protocol, geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
 
         this.geoserver_url = protocol + geoserver_url;
         this.annotation_namespace_uri = annotation_namespace_uri;
@@ -142,7 +142,6 @@ export class MapManager {
         this.formatGML = new ol.format.GML({
             featureNS: this.annotation_namespace_uri,
             featureType: this.annotation_layer,
-            // schemaLocation: `${this.geoserver_url}/geoserver/wfs/DescribeFeatureType?version=1.1.0&typeName=geoimagenet:annotation`,
             srsName: 'EPSG:3857'
         });
         this.wfsOptions = {
@@ -194,7 +193,6 @@ export class MapManager {
     }
 
     WFS_transaction(mode, feature) {
-        console.groupCollapsed('WFS Transaction');
         let node;
         switch (mode) {
             case MODE.CREATION:
@@ -207,24 +205,20 @@ export class MapManager {
                 node = this.formatWFS.writeTransaction([feature], null, null, this.wfsOptions);
                 break;
             case MODE.MODIFY:
-                console.log('firing update transaction');
                 feature.forEach(f => {
                     // OpenLayers adds the `bbox` property, but it's not in our database
                     f.unset('bbox');
-                    console.log(f.getProperties());
                 });
 
                 node = this.formatWFS.writeTransaction(null, feature, null, this.wfsOptions);
                 break;
             case MODE.DELETE:
-                console.log('firing delete transaction');
                 node = this.formatWFS.writeTransaction(null, null, [feature], this.formatGML);
                 break;
             default:
                 throw 'The transaction mode should be defined when calling WFS_transaction.';
         }
         const payload = this.XML_serializer.serializeToString(node);
-        // const url = 'http://10.30.90.94:8080/geoserver/GeoImageNet/wfs';
         const url = `${this.geoserver_url}/geoserver/wfs`;
         fetch(url, {
             method: 'POST',
@@ -233,7 +227,6 @@ export class MapManager {
         }).then(() => {
             this.refresh();
         });
-        console.groupEnd();
     }
 
     make_layers() {
@@ -242,10 +235,6 @@ export class MapManager {
             type: 'base',
             source: new ol.source.OSM(),
         });
-
-        // TODO taxonomy_id is a variable as well
-
-
         const vector = new ol.layer.Vector({
             source: this.vectorSource,
             style: new ol.style.Style({
@@ -255,7 +244,6 @@ export class MapManager {
                 })
             })
         });
-
         const some_image = new ol.layer.Image({
             title: 'image',
             source: new ol.source.ImageWMS({
@@ -265,7 +253,6 @@ export class MapManager {
                 serverType: 'geoserver',
             }),
         });
-
         return [
             new ol.layer.Group({
                 title: 'Base maps',
