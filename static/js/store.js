@@ -6,12 +6,12 @@ export const store = mobx.observable({
     taxonomy_class: [],
 });
 
-export const set_taxonomy = t => {
+export const set_taxonomy = mobx.action(t => {
     store.taxonomy = t;
-};
-export const set_taxonomy_class = c => {
+});
+export const set_taxonomy_class = mobx.action(c => {
     store.taxonomy_class = c;
-};
+});
 
 export const set_mode = mobx.action(mode => {
     if (Object.values(MODE).indexOf(mode) > -1) {

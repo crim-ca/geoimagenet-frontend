@@ -90,3 +90,12 @@ div.actions button {
 div.actions .active {
     color: var(--color-validated);
 }
+div.taxonomy {
+    margin: 20px 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-evenly;
+}
+div.taxonomy button {
+    padding: 0 20px;
+}
