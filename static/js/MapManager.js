@@ -65,22 +65,6 @@ export class MapManager {
             this.refresh();
         });
 
-
-        mobx.autorun(() => {
-            switch (store.mode) {
-                case MODE.CREATION:
-                    if (store.selected_taxonomy_class_id > 0) {
-                        this.map.addInteraction(this.draw);
-                    }
-                    this.map.removeInteraction(this.modify);
-                    break;
-                case MODE.MODIFY:
-                    this.map.addInteraction(this.modify);
-                    this.map.removeInteraction(this.draw);
-                    break;
-            }
-        });
-
         this.cql_filter = '';
 
         /*
@@ -170,6 +154,23 @@ export class MapManager {
         };
         this.XML_serializer = new XMLSerializer();
 
+        mobx.autorun(() => {
+            switch (store.mode) {
+                case MODE.CREATION:
+                    if (store.selected_taxonomy_class_id > 0) {
+                        this.map.addInteraction(this.draw);
+                    }
+                    this.map.removeInteraction(this.modify);
+                    break;
+                case MODE.MODIFY:
+                    this.map.addInteraction(this.modify);
+                    this.map.removeInteraction(this.draw);
+                    break;
+                default:
+                    this.map.removeInteraction(this.modify);
+                    this.map.removeInteraction(this.draw);
+            }
+        });
 
         this.register_geoserver_url_button();
     }
