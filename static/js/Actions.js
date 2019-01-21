@@ -25,12 +25,12 @@ export const build_actions = () => {
         remove_children(actions_root);
         actions.forEach(action => {
             const span = element('span');
-            span.classList.add('fas', action['icon_class'], 'fa-2x');
+            span.classList.add('fas', action.icon_class, 'fa-2x');
             if (action.mode === store.mode) {
                 span.classList.add('active');
             }
             const b = button(span, () => {
-                set_mode(action['mode'])
+                set_mode(action.mode)
             });
             actions_root.appendChild(b);
         });
