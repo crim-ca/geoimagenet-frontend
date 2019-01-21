@@ -29,10 +29,10 @@ export const build_actions = () => {
             if (action.mode === store.mode) {
                 span.classList.add('active');
             }
-            const new_annotation_mode_button = button(span, () => {
+            const b = button(span, () => {
                 set_mode(action['mode'])
             });
-            actions_root.appendChild(new_annotation_mode_button);
+            actions_root.appendChild(b);
         });
     });
 
