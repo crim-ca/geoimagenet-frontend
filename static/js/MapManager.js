@@ -1,4 +1,4 @@
-import {MODE} from '/js/Constants.js';
+import {MODE} from '/js/constants.js';
 
 export class MapManager {
 
@@ -139,7 +139,7 @@ export class MapManager {
             const feature = e.features.getArray()[0];
             const id = feature.getId();
             console.log('feature: %o, id: %o', feature, id);
-            this.WFS_transaction(MODE.UPDATE, features);
+            this.WFS_transaction(MODE.MODIFY, features);
             console.groupEnd();
         });
         this.typeSelect = document.getElementById(this.type_select_id);
@@ -174,7 +174,7 @@ export class MapManager {
         console.groupCollapsed('WFS Transaction');
         let node;
         switch (mode) {
-            case MODE.INSERT:
+            case MODE.CREATION:
                 console.log('firing write transaction');
                 const selected_taxonomy_element = document.querySelector('input[name=selected_taxonomy]:checked');
                 if (!selected_taxonomy_element) {
@@ -191,7 +191,7 @@ export class MapManager {
                     image_name: 'My Image'});
                 node = this.formatWFS.writeTransaction([feature], null, null, this.wfsOptions);
                 break;
-            case MODE.UPDATE:
+            case MODE.MODIFY:
                 console.log('firing update transaction');
                 feature.forEach(f => {
                     // OpenLayers adds the `bbox` property, but it's not in our database
@@ -234,7 +234,7 @@ export class MapManager {
             const feature = e.feature;
             console.log('got feature: %o', feature);
 
-            this.WFS_transaction(MODE.INSERT, feature);
+            this.WFS_transaction(MODE.CREATION, feature);
 
             console.groupEnd();
         });

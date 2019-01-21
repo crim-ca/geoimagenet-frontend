@@ -1,7 +1,16 @@
 {% extends 'index_platform.html' %}
+{% block head %}
+<script
+        defer
+        src="https://use.fontawesome.com/releases/v5.6.3/js/all.js"
+        integrity="sha384-EIHISlAOj4zgYieurP0SdoiBYfGJKkgWedPHH4jCzpCXLmzVsw1ouK59MuUtP4a1"
+        crossorigin="anonymous"></script>
+{% endblock %}
 {% block body %}
 <div id="map" class="map"></div>
 <div class="right paper">
+    <div id="actions" class="actions"></div>
+    <span id="mode_indicator"></span>
     <div class="taxonomy" id="taxonomy">
         <h3>{{ gettext('Taxonomies') }}</h3>
         <table>

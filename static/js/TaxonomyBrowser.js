@@ -73,7 +73,7 @@ export class TaxonomyBrowser {
                 const name_cell = element('td');
                 const version_cell = element('td');
                 const action_cell = element('td');
-                const load_taxonomy = button('Charger', () => {load_taxonomy_by_id(taxonomy['id'])});
+                const load_taxonomy = button(text_node('Charger'), () => {load_taxonomy_by_id(taxonomy['id'])});
 
                 name_cell.appendChild(text_node(taxonomy['name']));
                 version_cell.appendChild(text_node(taxonomy['version']));

@@ -1,5 +1,6 @@
 import {TaxonomyBrowser} from '/js/TaxonomyBrowser.js';
 import {MapManager} from '/js/MapManager.js';
+import {build_actions} from '/js/Actions.js';
 
 addEventListener('DOMContentLoaded', () => {
     const map_manager = new MapManager(
@@ -11,5 +12,6 @@ addEventListener('DOMContentLoaded', () => {
         'map',
         'type'
     );
-    new TaxonomyBrowser(null, map_manager)
+    new TaxonomyBrowser(null, map_manager);
+    build_actions();
 });
