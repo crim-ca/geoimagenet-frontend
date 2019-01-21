@@ -1,5 +1,6 @@
 import {
     toggle_all_nested_checkboxes,
+    get_by_id,
     element,
     text_node,
     button,
@@ -14,13 +15,14 @@ export class TaxonomyBrowser {
     constructor(taxonomy, mapManager) {
 
         this.mapManager = mapManager;
-        this.classes_element = document.getElementById('taxonomy_classes');
+        this.taxonomy_classes_root = get_by_id('taxonomy_classes');
+        this.taxonomy_root = get_by_id('taxonomy');
         this.selection = [];
         this.annotation_is_activated = false;
 
         const update_selection = mobx.action(() => {
             this.selection = [];
-            const checkboxes = this.classes_element.querySelectorAll('input[type=checkbox]:checked');
+            const checkboxes = this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]:checked');
             checkboxes.forEach(checkbox => {
                 this.selection.push(checkbox.value);
             });
@@ -55,43 +57,28 @@ export class TaxonomyBrowser {
             })
             .catch(err => console.log(err));
 
-        const taxonomy_table = document.getElementById('taxonomy_root');
-
         mobx.autorun(() => {
+            remove_children(this.taxonomy_root);
             store.taxonomy.forEach(taxonomy => {
-
-                const taxonomy_row = element('tr');
-                const name_cell = element('td');
-                const version_cell = element('td');
-                const action_cell = element('td');
-                const load_taxonomy = button(text_node('Charger'), () => {load_taxonomy_by_id(taxonomy['id'])});
-
-                name_cell.appendChild(text_node(taxonomy['name']));
-                version_cell.appendChild(text_node(taxonomy['version']));
-                action_cell.appendChild(load_taxonomy);
-
-                taxonomy_row.appendChild(version_cell);
-                taxonomy_row.appendChild(name_cell);
-                taxonomy_row.appendChild(action_cell);
-
-                taxonomy_table.appendChild(taxonomy_row);
-
+                const version = taxonomy['versions'][0];
+                const b = button(text_node(taxonomy['name']), () => {load_taxonomy_by_id(version['taxonomy_id'])});
+                this.taxonomy_root.appendChild(b);
             });
         });
 
         mobx.autorun(() => {
-            remove_children(this.classes_element);
-            this.construct_children(this.classes_element, store.taxonomy_class);
+            remove_children(this.taxonomy_classes_root);
+            this.construct_children(this.taxonomy_classes_root, store.taxonomy_class);
         });
 
-        const load_taxonomy_by_id = mobx.action(id => {
+        const load_taxonomy_by_id = id => {
             fetch(`/taxonomy/${id}`)
                 .then(res => res.json())
                 .then(json => {
                     set_taxonomy_class(json);
                 })
                 .catch(err => console.log(err));
-        });
+        };
     }
 
     construct_children(this_level_root, collection) {
