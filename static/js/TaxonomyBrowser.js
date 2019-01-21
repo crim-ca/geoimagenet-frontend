@@ -1,4 +1,4 @@
-import {toggle_all_nested_checkboxes} from '/js/Utils.js';
+import {toggle_all_nested_checkboxes, element, text_node, button, checkbox} from '/js/Utils.js';
 
 export class TaxonomyBrowser {
 
@@ -62,20 +62,15 @@ export class TaxonomyBrowser {
         mobx.autorun(() => {
             this.store.taxonomy.forEach(taxonomy => {
 
-                const taxonomy_row = document.createElement('tr');
-                const name_cell = document.createElement('td');
-                const version_cell = document.createElement('td');
-                const action_cell = document.createElement('td');
-                const load_taxonomy_action = document.createElement('button');
+                const taxonomy_row = element('tr');
+                const name_cell = element('td');
+                const version_cell = element('td');
+                const action_cell = element('td');
+                const load_taxonomy = button('Charger', () => {load_taxonomy_by_id(taxonomy['id'])});
 
-                load_taxonomy_action.appendChild(document.createTextNode('Charger'));
-                load_taxonomy_action.addEventListener('click', () => {
-                    load_taxonomy_by_id(taxonomy['id']);
-                });
-
-                name_cell.appendChild(document.createTextNode(taxonomy['name']));
-                version_cell.appendChild(document.createTextNode(taxonomy['version']));
-                action_cell.appendChild(load_taxonomy_action);
+                name_cell.appendChild(text_node(taxonomy['name']));
+                version_cell.appendChild(text_node(taxonomy['version']));
+                action_cell.appendChild(load_taxonomy);
 
                 taxonomy_row.appendChild(version_cell);
                 taxonomy_row.appendChild(name_cell);
@@ -103,25 +98,20 @@ export class TaxonomyBrowser {
 
     construct_children(this_level_root, collection) {
         collection.forEach(taxonomy_class => {
-            const taxonomy_class_root_element = document.createElement('li');
+            const taxonomy_class_root_element = element('li');
 
-            const taxonomy_class_list_element = document.createElement('span');
+            const taxonomy_class_list_element = element('span');
             taxonomy_class_list_element.classList.add('taxonomy_class_list_element');
 
-            const text = document.createElement('span');
-            text.appendChild(document.createTextNode(taxonomy_class.name));
+            const text = element('span');
+            text.appendChild(text_node(taxonomy_class.name));
 
-            const label = document.createElement('label');
-            const checkbox_input = document.createElement('input');
-            const span = document.createElement('span');
-            checkbox_input.type = 'checkbox';
-            checkbox_input.value = taxonomy_class.id;
-            checkbox_input.addEventListener('change', this.check_visibility);
-            label.appendChild(checkbox_input);
-            label.appendChild(span);
+            const label = element('label');
+            label.appendChild(checkbox(taxonomy_class.id, this.check_visibility));
+            label.appendChild(element('span'));
 
             /*
-            const radio_selector = document.createElement('input');
+            const radio_selector = element('input');
             radio_selector.type = 'radio';
             radio_selector.value = taxonomy_class.id;
             radio_selector.name = 'selected_taxonomy';
@@ -146,7 +136,7 @@ export class TaxonomyBrowser {
                     event.target.parentNode.parentNode.classList.toggle('collapsed');
                 });
 
-                const ul = document.createElement('ul');
+                const ul = element('ul');
                 this.construct_children(ul, taxonomy_class['children']);
                 taxonomy_class_root_element.appendChild(ul);
             }
