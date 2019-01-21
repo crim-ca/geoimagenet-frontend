@@ -8,7 +8,7 @@ import {
     span,
     remove_children
 } from '/js/Utils.js';
-import {store, set_taxonomy, set_taxonomy_class} from '/js/store.js';
+import {store, set_taxonomy, set_taxonomy_class, select_taxonomy_class, set_selected_taxonomy} from '/js/store.js';
 
 export class TaxonomyBrowser {
 
@@ -61,14 +61,22 @@ export class TaxonomyBrowser {
             remove_children(this.taxonomy_root);
             store.taxonomy.forEach(taxonomy => {
                 const version = taxonomy['versions'][0];
-                const b = button(text_node(taxonomy['name']), () => {load_taxonomy_by_id(version['taxonomy_id'])});
+                const b = button(text_node(taxonomy['name']), () => {
+                    set_selected_taxonomy({
+                        id: version['taxonomy_id'],
+                        name: taxonomy['name'],
+                        version: version['version'],
+                        elements: [],
+                    });
+                    load_taxonomy_by_id(version['taxonomy_id']);
+                });
                 this.taxonomy_root.appendChild(b);
             });
         });
 
         mobx.autorun(() => {
             remove_children(this.taxonomy_classes_root);
-            this.construct_children(this.taxonomy_classes_root, store.taxonomy_class);
+            this.construct_children(this.taxonomy_classes_root, store.selected_taxonomy.elements);
         });
 
         const load_taxonomy_by_id = id => {
@@ -121,8 +129,6 @@ export class TaxonomyBrowser {
             // taxonomy_class_root_element.appendChild(radio_selector);
 
             // TODO only leafs can be annotated, so if taxonomy_class.children don't add the possibility to select for annotation
-
-
             if (taxonomy_class['children'] && taxonomy_class['children'].length > 0) {
                 taxonomy_class_root_element.classList.add('collapsed');
                 // inside the if block because we don't need the toggle if there are no children
@@ -134,6 +140,14 @@ export class TaxonomyBrowser {
                 const ul = element('ul');
                 this.construct_children(ul, taxonomy_class['children']);
                 taxonomy_class_root_element.appendChild(ul);
+            } else {
+                text.addEventListener('click', event => {
+                    select_taxonomy_class(taxonomy_class['id']);
+                    this.taxonomy_classes_root.querySelectorAll('.selected').forEach(elem => {
+                        elem.classList.remove('selected');
+                    });
+                    event.target.parentNode.classList.add('selected');
+                });
             }
 
             this_level_root.appendChild(taxonomy_class_root_element);
