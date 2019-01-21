@@ -189,7 +189,7 @@ export class MapManager {
             case MODE.CREATION:
                 feature.setProperties({
                     geometry: feature.getGeometry(),
-                    taxonomy_class_id: store.selected_taxonomy.id,
+                    taxonomy_class_id: store.selected_taxonomy_class_id,
                     annotator_id: 1,
                     image_name: 'My Image',
                 });
