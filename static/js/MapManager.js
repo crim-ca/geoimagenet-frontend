@@ -1,4 +1,5 @@
 import {MODE} from '/js/constants.js';
+import {store} from '/js/store.js';
 
 export class MapManager {
 
@@ -31,6 +32,15 @@ export class MapManager {
             });
             this.cql_filter = filter_bits.join(' OR ');
             this.refresh();
+        });
+
+        mobx.autorun(() => {
+            switch (store.mode) {
+                case MODE.CREATION:
+                    if (store.selected_taxonomy_class_id > 0) {
+                        this.activate_interactions();
+                    }
+            }
         });
 
         this.cql_filter = '';
@@ -142,12 +152,14 @@ export class MapManager {
             this.WFS_transaction(MODE.MODIFY, features);
             console.groupEnd();
         });
+        /*
+        TODO keep for maybe change annotation shape in the future
         this.typeSelect = document.getElementById(this.type_select_id);
-
         this.typeSelect.onchange = () => {
             this.map.removeInteraction(this.draw);
             this.addInteraction();
         };
+        */
 
         this.addInteraction();
     }
@@ -175,20 +187,12 @@ export class MapManager {
         let node;
         switch (mode) {
             case MODE.CREATION:
-                console.log('firing write transaction');
-                const selected_taxonomy_element = document.querySelector('input[name=selected_taxonomy]:checked');
-                if (!selected_taxonomy_element) {
-                    throw 'You must select a taxonomy before adding annotations';
-                }
-                const selected_taxonomy = selected_taxonomy_element.value;
-
-                console.log('taxonomy_class_id:', selected_taxonomy);
-
                 feature.setProperties({
                     geometry: feature.getGeometry(),
-                    taxonomy_class_id: selected_taxonomy,
+                    taxonomy_class_id: store.selected_taxonomy.id,
                     annotator_id: 1,
-                    image_name: 'My Image'});
+                    image_name: 'My Image',
+                });
                 node = this.formatWFS.writeTransaction([feature], null, null, this.wfsOptions);
                 break;
             case MODE.MODIFY:
@@ -222,23 +226,14 @@ export class MapManager {
     }
 
     addInteraction() {
-
         this.draw = new ol.interaction.Draw({
             features: this.features,
-            type: (this.typeSelect.value)
+            type: 'Polygon',
         });
-
         this.draw.on('drawend', (e) => {
-            console.groupCollapsed('Draw events');
-
             const feature = e.feature;
-            console.log('got feature: %o', feature);
-
             this.WFS_transaction(MODE.CREATION, feature);
-
-            console.groupEnd();
         });
-
         this.map.addInteraction(this.draw);
     }
 

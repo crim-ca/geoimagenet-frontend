@@ -12,13 +12,11 @@ import {store, set_taxonomy, set_taxonomy_class, select_taxonomy_class, set_sele
 
 export class TaxonomyBrowser {
 
-    constructor(taxonomy, mapManager) {
+    constructor() {
 
-        this.mapManager = mapManager;
         this.taxonomy_classes_root = get_by_id('taxonomy_classes');
         this.taxonomy_root = get_by_id('taxonomy');
         this.selection = [];
-        this.annotation_is_activated = false;
 
         const update_selection = mobx.action(() => {
             this.selection = [];
@@ -41,13 +39,6 @@ export class TaxonomyBrowser {
             update_selection();
             event = new CustomEvent('selection_changed', {detail: this.selection});
             dispatchEvent(event);
-        };
-
-        this.activate_annotation = () => {
-            if (!this.annotation_is_activated) {
-                this.mapManager.activate_interactions();
-                this.annotation_is_activated = true;
-            }
         };
 
         fetch(`/taxonomy`)
