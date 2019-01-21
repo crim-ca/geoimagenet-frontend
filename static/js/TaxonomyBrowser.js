@@ -4,8 +4,10 @@ import {
     text_node,
     button,
     checkbox,
-    span
+    span,
+    remove_children
 } from '/js/Utils.js';
+import {store, set_taxonomy, set_taxonomy_class} from '/js/store.js';
 
 export class TaxonomyBrowser {
 
@@ -15,11 +17,6 @@ export class TaxonomyBrowser {
         this.classes_element = document.getElementById('taxonomy_classes');
         this.selection = [];
         this.annotation_is_activated = false;
-
-        this.store = mobx.observable({
-            taxonomy: [],
-            taxonomy_class: []
-        });
 
         const update_selection = mobx.action(() => {
             this.selection = [];
@@ -51,23 +48,17 @@ export class TaxonomyBrowser {
             }
         };
 
-        this.reset_taxonomy_elements = () => {
-            while (this.classes_element.firstChild) {
-                this.classes_element.removeChild(this.classes_element.firstChild);
-            }
-        };
-
         fetch(`/taxonomy`)
             .then(res => res.json())
             .then(json => {
-                this.store.taxonomy = json;
+                set_taxonomy(json);
             })
             .catch(err => console.log(err));
 
         const taxonomy_table = document.getElementById('taxonomy_root');
 
         mobx.autorun(() => {
-            this.store.taxonomy.forEach(taxonomy => {
+            store.taxonomy.forEach(taxonomy => {
 
                 const taxonomy_row = element('tr');
                 const name_cell = element('td');
@@ -89,15 +80,15 @@ export class TaxonomyBrowser {
         });
 
         mobx.autorun(() => {
-            this.construct_children(this.classes_element, this.store.taxonomy_class);
+            remove_children(this.classes_element);
+            this.construct_children(this.classes_element, store.taxonomy_class);
         });
 
         const load_taxonomy_by_id = mobx.action(id => {
             fetch(`/taxonomy/${id}`)
                 .then(res => res.json())
                 .then(json => {
-                    this.reset_taxonomy_elements();
-                    this.store.taxonomy_class = json;
+                    set_taxonomy_class(json);
                 })
                 .catch(err => console.log(err));
         });
