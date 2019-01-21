@@ -19,7 +19,38 @@ export class MapManager {
         this.annotation_namespace_uri = annotation_namespace_uri;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
-        this.type_select_id = type_select_id;
+
+        this.vectorSource = new ol.source.Vector({
+            format: new ol.format.GeoJSON(),
+            url: (extent) => {
+                if (this.cql_filter.length > 0) {
+                    return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
+                        `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
+                        'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=${this.cql_filter}`;
+                }
+                return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
+                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
+                    'outputFormat=application/json&srsname=EPSG:3857&' +
+                    'bbox=' + extent.join(',') + ',EPSG:3857';
+            },
+            strategy: ol.loadingstrategy.bbox
+        });
+
+        this.modify = new ol.interaction.Modify({
+            source: this.vectorSource,
+        });
+        this.modify.on('modifyend', (e) => {
+            const features = e.features.getArray();
+            this.WFS_transaction(MODE.MODIFY, features);
+        });
+        this.draw = new ol.interaction.Draw({
+            features: this.features,
+            type: 'Polygon',
+        });
+        this.draw.on('drawend', (e) => {
+            const feature = e.feature;
+            this.WFS_transaction(MODE.CREATION, feature);
+        });
 
         addEventListener('selection_changed', (event) => {
             // create the cql filter from detail elements
@@ -34,12 +65,19 @@ export class MapManager {
             this.refresh();
         });
 
+
         mobx.autorun(() => {
             switch (store.mode) {
                 case MODE.CREATION:
                     if (store.selected_taxonomy_class_id > 0) {
-                        this.activate_interactions();
+                        this.map.addInteraction(this.draw);
                     }
+                    this.map.removeInteraction(this.modify);
+                    break;
+                case MODE.MODIFY:
+                    this.map.addInteraction(this.modify);
+                    this.map.removeInteraction(this.draw);
+                    break;
             }
         });
 
@@ -136,34 +174,6 @@ export class MapManager {
         this.register_geoserver_url_button();
     }
 
-
-    activate_interactions() {
-        this.modify = new ol.interaction.Modify({
-            source: this.vectorSource,
-        });
-        this.map.addInteraction(this.modify);
-        this.modify.on('modifyend', (e) => {
-            console.groupCollapsed('Modify event has fired.');
-            console.log('modifyend event: %o', e);
-            const features = e.features.getArray();
-            const feature = e.features.getArray()[0];
-            const id = feature.getId();
-            console.log('feature: %o, id: %o', feature, id);
-            this.WFS_transaction(MODE.MODIFY, features);
-            console.groupEnd();
-        });
-        /*
-        TODO keep for maybe change annotation shape in the future
-        this.typeSelect = document.getElementById(this.type_select_id);
-        this.typeSelect.onchange = () => {
-            this.map.removeInteraction(this.draw);
-            this.addInteraction();
-        };
-        */
-
-        this.addInteraction();
-    }
-
     load_layers_from_geoserver() {
         fetch(`${this.geoserver_url}/rest/layers`)
             .then(res => {
@@ -225,18 +235,6 @@ export class MapManager {
         console.groupEnd();
     }
 
-    addInteraction() {
-        this.draw = new ol.interaction.Draw({
-            features: this.features,
-            type: 'Polygon',
-        });
-        this.draw.on('drawend', (e) => {
-            const feature = e.feature;
-            this.WFS_transaction(MODE.CREATION, feature);
-        });
-        this.map.addInteraction(this.draw);
-    }
-
     make_layers() {
         const raster = new ol.layer.Tile({
             title: 'OSM',
@@ -245,21 +243,6 @@ export class MapManager {
         });
 
         // TODO taxonomy_id is a variable as well
-        this.vectorSource = new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
-            url: (extent) => {
-                if (this.cql_filter.length > 0) {
-                    return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
-                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                    'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=${this.cql_filter}`;
-                }
-                return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
-                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                    'outputFormat=application/json&srsname=EPSG:3857&' +
-                    'bbox=' + extent.join(',') + ',EPSG:3857';
-            },
-            strategy: ol.loadingstrategy.bbox
-        });
 
 
         const vector = new ol.layer.Vector({
