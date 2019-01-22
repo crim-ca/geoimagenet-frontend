@@ -4,6 +4,8 @@
     --color-validated: rgba(0, 170, 5, 0.9);
 
     --gutter-small: 5px;
+
+    --selected-taxonomy-element-background: rgba(0, 0, 0, 0.2);
 }
 body {
     display: grid;
@@ -98,4 +100,7 @@ div.taxonomy {
 }
 div.taxonomy button {
     padding: 0 20px;
+}
+span.selected {
+    background-color: var(--selected-taxonomy-element-background);
 }

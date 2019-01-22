@@ -1,4 +1,5 @@
 import {MODE} from '/js/constants.js';
+import {store} from '/js/store.js';
 
 export class MapManager {
 
@@ -12,13 +13,44 @@ export class MapManager {
         this.vectorSource.refresh(true);
     }
 
-    constructor(protocol, geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id, type_select_id) {
+    constructor(protocol, geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
 
         this.geoserver_url = protocol + geoserver_url;
         this.annotation_namespace_uri = annotation_namespace_uri;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
-        this.type_select_id = type_select_id;
+
+        this.vectorSource = new ol.source.Vector({
+            format: new ol.format.GeoJSON(),
+            url: (extent) => {
+                if (this.cql_filter.length > 0) {
+                    return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
+                        `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
+                        'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=${this.cql_filter}`;
+                }
+                return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
+                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
+                    'outputFormat=application/json&srsname=EPSG:3857&' +
+                    'bbox=' + extent.join(',') + ',EPSG:3857';
+            },
+            strategy: ol.loadingstrategy.bbox
+        });
+
+        this.modify = new ol.interaction.Modify({
+            source: this.vectorSource,
+        });
+        this.modify.on('modifyend', (e) => {
+            const features = e.features.getArray();
+            this.WFS_transaction(MODE.MODIFY, features);
+        });
+        this.draw = new ol.interaction.Draw({
+            features: this.features,
+            type: 'Polygon',
+        });
+        this.draw.on('drawend', (e) => {
+            const feature = e.feature;
+            this.WFS_transaction(MODE.CREATION, feature);
+        });
 
         addEventListener('selection_changed', (event) => {
             // create the cql filter from detail elements
@@ -83,25 +115,29 @@ export class MapManager {
         // select a default base map
 
         this.features = new ol.Collection();
-        this.featureOverlay = new ol.layer.Vector({
+
+        const style = getComputedStyle(document.body);
+        const new_annotation_color = style.getPropertyValue('--color-new');
+
+        this.new_annotations_overlay = new ol.layer.Vector({
             source: this.vectorSource,
             style: new ol.style.Style({
                 fill: new ol.style.Fill({
-                    color: 'rgba(255, 255, 255, 0.2)'
+                    color: 'rgba(255, 255, 255, 0.25)',
                 }),
                 stroke: new ol.style.Stroke({
-                    color: '#ffcc33',
+                    color: new_annotation_color,
                     width: 2
                 }),
                 image: new ol.style.Circle({
                     radius: 7,
                     fill: new ol.style.Fill({
-                        color: '#ffcc33'
+                        color: new_annotation_color,
                     })
                 })
             })
         });
-        this.featureOverlay.setMap(this.map);
+        this.new_annotations_overlay.setMap(this.map);
 
         this.formatWFS = new ol.format.WFS({
             featureNS: this.annotation_namespace_uri,
@@ -110,7 +146,6 @@ export class MapManager {
         this.formatGML = new ol.format.GML({
             featureNS: this.annotation_namespace_uri,
             featureType: this.annotation_layer,
-            // schemaLocation: `${this.geoserver_url}/geoserver/wfs/DescribeFeatureType?version=1.1.0&typeName=geoimagenet:annotation`,
             srsName: 'EPSG:3857'
         });
         this.wfsOptions = {
@@ -122,34 +157,25 @@ export class MapManager {
         };
         this.XML_serializer = new XMLSerializer();
 
+        mobx.autorun(() => {
+            switch (store.mode) {
+                case MODE.CREATION:
+                    if (store.selected_taxonomy_class_id > 0) {
+                        this.map.addInteraction(this.draw);
+                    }
+                    this.map.removeInteraction(this.modify);
+                    break;
+                case MODE.MODIFY:
+                    this.map.addInteraction(this.modify);
+                    this.map.removeInteraction(this.draw);
+                    break;
+                default:
+                    this.map.removeInteraction(this.modify);
+                    this.map.removeInteraction(this.draw);
+            }
+        });
 
         this.register_geoserver_url_button();
-    }
-
-
-    activate_interactions() {
-        this.modify = new ol.interaction.Modify({
-            source: this.vectorSource,
-        });
-        this.map.addInteraction(this.modify);
-        this.modify.on('modifyend', (e) => {
-            console.groupCollapsed('Modify event has fired.');
-            console.log('modifyend event: %o', e);
-            const features = e.features.getArray();
-            const feature = e.features.getArray()[0];
-            const id = feature.getId();
-            console.log('feature: %o, id: %o', feature, id);
-            this.WFS_transaction(MODE.MODIFY, features);
-            console.groupEnd();
-        });
-        this.typeSelect = document.getElementById(this.type_select_id);
-
-        this.typeSelect.onchange = () => {
-            this.map.removeInteraction(this.draw);
-            this.addInteraction();
-        };
-
-        this.addInteraction();
     }
 
     load_layers_from_geoserver() {
@@ -171,45 +197,32 @@ export class MapManager {
     }
 
     WFS_transaction(mode, feature) {
-        console.groupCollapsed('WFS Transaction');
         let node;
         switch (mode) {
             case MODE.CREATION:
-                console.log('firing write transaction');
-                const selected_taxonomy_element = document.querySelector('input[name=selected_taxonomy]:checked');
-                if (!selected_taxonomy_element) {
-                    throw 'You must select a taxonomy before adding annotations';
-                }
-                const selected_taxonomy = selected_taxonomy_element.value;
-
-                console.log('taxonomy_class_id:', selected_taxonomy);
-
                 feature.setProperties({
                     geometry: feature.getGeometry(),
-                    taxonomy_class_id: selected_taxonomy,
+                    taxonomy_class_id: store.selected_taxonomy_class_id,
                     annotator_id: 1,
-                    image_name: 'My Image'});
+                    image_name: 'My Image',
+                });
                 node = this.formatWFS.writeTransaction([feature], null, null, this.wfsOptions);
                 break;
             case MODE.MODIFY:
-                console.log('firing update transaction');
                 feature.forEach(f => {
                     // OpenLayers adds the `bbox` property, but it's not in our database
                     f.unset('bbox');
-                    console.log(f.getProperties());
                 });
 
                 node = this.formatWFS.writeTransaction(null, feature, null, this.wfsOptions);
                 break;
             case MODE.DELETE:
-                console.log('firing delete transaction');
                 node = this.formatWFS.writeTransaction(null, null, [feature], this.formatGML);
                 break;
             default:
                 throw 'The transaction mode should be defined when calling WFS_transaction.';
         }
         const payload = this.XML_serializer.serializeToString(node);
-        // const url = 'http://10.30.90.94:8080/geoserver/GeoImageNet/wfs';
         const url = `${this.geoserver_url}/geoserver/wfs`;
         fetch(url, {
             method: 'POST',
@@ -218,28 +231,6 @@ export class MapManager {
         }).then(() => {
             this.refresh();
         });
-        console.groupEnd();
-    }
-
-    addInteraction() {
-
-        this.draw = new ol.interaction.Draw({
-            features: this.features,
-            type: (this.typeSelect.value)
-        });
-
-        this.draw.on('drawend', (e) => {
-            console.groupCollapsed('Draw events');
-
-            const feature = e.feature;
-            console.log('got feature: %o', feature);
-
-            this.WFS_transaction(MODE.CREATION, feature);
-
-            console.groupEnd();
-        });
-
-        this.map.addInteraction(this.draw);
     }
 
     make_layers() {
@@ -248,25 +239,6 @@ export class MapManager {
             type: 'base',
             source: new ol.source.OSM(),
         });
-
-        // TODO taxonomy_id is a variable as well
-        this.vectorSource = new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
-            url: (extent) => {
-                if (this.cql_filter.length > 0) {
-                    return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
-                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                    'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=${this.cql_filter}`;
-                }
-                return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
-                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                    'outputFormat=application/json&srsname=EPSG:3857&' +
-                    'bbox=' + extent.join(',') + ',EPSG:3857';
-            },
-            strategy: ol.loadingstrategy.bbox
-        });
-
-
         const vector = new ol.layer.Vector({
             source: this.vectorSource,
             style: new ol.style.Style({
@@ -276,7 +248,6 @@ export class MapManager {
                 })
             })
         });
-
         const some_image = new ol.layer.Image({
             title: 'image',
             source: new ol.source.ImageWMS({
@@ -286,7 +257,6 @@ export class MapManager {
                 serverType: 'geoserver',
             }),
         });
-
         return [
             new ol.layer.Group({
                 title: 'Base maps',
