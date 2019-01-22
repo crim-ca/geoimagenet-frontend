@@ -115,25 +115,29 @@ export class MapManager {
         // select a default base map
 
         this.features = new ol.Collection();
-        this.featureOverlay = new ol.layer.Vector({
+
+        const style = getComputedStyle(document.body);
+        const new_annotation_color = style.getPropertyValue('--color-new');
+
+        this.new_annotations_overlay = new ol.layer.Vector({
             source: this.vectorSource,
             style: new ol.style.Style({
                 fill: new ol.style.Fill({
-                    color: 'rgba(255, 255, 255, 0.2)'
+                    color: 'rgba(255, 255, 255, 0.25)',
                 }),
                 stroke: new ol.style.Stroke({
-                    color: '#ffcc33',
+                    color: new_annotation_color,
                     width: 2
                 }),
                 image: new ol.style.Circle({
                     radius: 7,
                     fill: new ol.style.Fill({
-                        color: '#ffcc33'
+                        color: new_annotation_color,
                     })
                 })
             })
         });
-        this.featureOverlay.setMap(this.map);
+        this.new_annotations_overlay.setMap(this.map);
 
         this.formatWFS = new ol.format.WFS({
             featureNS: this.annotation_namespace_uri,
