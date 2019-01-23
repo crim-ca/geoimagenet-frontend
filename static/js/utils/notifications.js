@@ -19,11 +19,13 @@ const make_notif = (text_content, close_on_click = false) => {
 export const notifier = {
     err: text => {
         const notif = make_notif(text, true);
+        notif.classList.add('error');
         root.appendChild(notif);
     },
     confirm: text => {
         return new Promise((resolve, reject) => {
             const notif = make_notif(text);
+            notif.classList.add('confirm');
             const yes = button(text_node('Confirm'), () => {
                 remove_notif(notif);
                 resolve();

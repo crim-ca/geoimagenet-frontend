@@ -1,4 +1,6 @@
 div.notification {
+    border-radius: 5px;
+    color: white;
     padding: 24px;
     margin: 24px;
     position: absolute;
@@ -7,6 +9,12 @@ div.notification {
     z-index: 1000;
     background-color: white;
     cursor: pointer;
+}
+div.notification.error {
+    background-color: var(--color-red);
+}
+div.notification.confirm {
+    background-color: var(--color-light-red);
 }
 div.notification div.actions {
     display: flex;
