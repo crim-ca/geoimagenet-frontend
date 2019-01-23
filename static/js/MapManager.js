@@ -111,12 +111,12 @@ export class MapManager {
             this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), feature => {
                 if (store.mode === MODE.DELETE) {
                     notifier.confirm(`Do you really want to delete the highlighted feature?`)
-                    .then(() => {
-                        this.geoJsonRequest(MODE.DELETE, feature);
-                    })
-                    .catch((err) => {
-                        console.log('rejected: %o', err);
-                    });
+                        .then(() => {
+                            this.geoJsonRequest(MODE.DELETE, feature);
+                        })
+                        .catch((err) => {
+                            console.log('rejected: %o', err);
+                        });
                 }
             });
         });
@@ -229,11 +229,15 @@ export class MapManager {
             method: method,
             headers: {'Content-Type': 'application/json'},
             body: payload,
-        }).then(response => response.json())
+        })
+            .then(response => response.json())
             .then((responseJson) => {
                 feature.setProperties({'annotation_id': responseJson[0]});
             })
-            .catch(error => console.log(error));
+            .catch(error => {
+                notifier.err('The api rejected our request.');
+                console.log('we had a problem with the geojson transaction: %o', error);
+            });
 
     }
 

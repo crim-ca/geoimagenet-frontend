@@ -1,24 +1,35 @@
 import {element, text_node, button} from '/js/utils/dom.js'
 
 const root = document.body;
+const remove_notif = notif => { notif.parentNode.removeChild(notif); };
+
+const make_notif = (text_content, close_on_click = false) => {
+    const notif = element('div');
+    notif.classList.add('notification');
+    const p = element('p', text_node(text_content));
+    notif.appendChild(p);
+    if (close_on_click) {
+        notif.addEventListener('click', () => {
+            remove_notif(notif);
+        })
+    }
+    return notif;
+};
 
 export const notifier = {
     err: text => {
-        const div = element('div');
-        div.appendChild(text_node(text));
-        root.appendChild(div);
+        const notif = make_notif(text, true);
+        root.appendChild(notif);
     },
     confirm: text => {
         return new Promise((resolve, reject) => {
-            const notif = element('div');
-            const p = element('p', text_node(text));
-            notif.appendChild(p);
+            const notif = make_notif(text);
             const yes = button(text_node('Confirm'), () => {
-                notif.parentNode.removeChild(notif);
+                remove_notif(notif);
                 resolve();
             });
             const no = button(text_node('Cancel'), () => {
-                notif.parentNode.removeChild(notif);
+                remove_notif(notif);
                 reject();
             });
             const div = element('div');
@@ -26,7 +37,6 @@ export const notifier = {
             div.appendChild(yes);
             div.appendChild(no);
             notif.appendChild(div);
-            notif.classList.add('notification');
             root.appendChild(notif);
         });
     },
