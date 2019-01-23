@@ -1,6 +1,8 @@
 import {MODE} from '/js/constants.js';
 import {store} from '/js/store.js';
 
+const single_click = new ol.interaction.Select();
+
 export class MapManager {
 
     /*
@@ -103,6 +105,18 @@ export class MapManager {
             undefinedHTML: '&nbsp;'
         });
         this.map.addControl(this.mouse_position);
+
+        this.map.addInteraction(single_click);
+        single_click.on('select', event => {
+            // for some reason the structure returned by getFeatures does not seem to play nicely with writeTransaction.
+            // wrapping it in a simple array effectively launches the delete correctly.
+            const features = event.target.getFeatures();
+            const feature_wrapper = [];
+            features.forEach(feature => {
+                feature_wrapper.push(feature);
+            });
+            this.WFS_transaction(MODE.DELETE, feature_wrapper);
+        });
 
         // create layer switcher, populate with base layers and feature layers
         this.layer_switcher = new ol.control.LayerSwitcher({
@@ -217,7 +231,7 @@ export class MapManager {
                 node = this.formatWFS.writeTransaction(null, feature, null, this.wfsOptions);
                 break;
             case MODE.DELETE:
-                node = this.formatWFS.writeTransaction(null, null, [feature], this.formatGML);
+                node = this.formatWFS.writeTransaction(null, null, feature, this.wfsOptions);
                 break;
             default:
                 throw 'The transaction mode should be defined when calling WFS_transaction.';
