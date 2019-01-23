@@ -40,16 +40,17 @@ export class MapManager {
             source: this.vectorSource,
         });
         this.modify.on('modifyend', (e) => {
-            const features = e.features.getArray();
-            this.WFS_transaction(MODE.MODIFY, features);
+            const feature = e.features.getArray()[0];
+            this.geoJsonRequest(MODE.MODIFY, feature);
         });
         this.draw = new ol.interaction.Draw({
-            features: this.features,
+            source: this.vectorSource,
             type: 'Polygon',
         });
         this.draw.on('drawend', (e) => {
             const feature = e.feature;
-            this.WFS_transaction(MODE.CREATION, feature);
+            this.vectorSource.refresh();
+            this.geoJsonRequest(MODE.CREATION, feature);
         });
 
         addEventListener('selection_changed', (event) => {
@@ -139,23 +140,11 @@ export class MapManager {
         });
         this.new_annotations_overlay.setMap(this.map);
 
-        this.formatWFS = new ol.format.WFS({
-            featureNS: this.annotation_namespace_uri,
-            featureType: this.annotation_layer,
+        this.formatGeoJson = new ol.format.GeoJSON({
+            dataProjection: 'EPSG:3857',
+            featureProjection: 'EPSG:3857',
+            geometryName: 'geometry',
         });
-        this.formatGML = new ol.format.GML({
-            featureNS: this.annotation_namespace_uri,
-            featureType: this.annotation_layer,
-            srsName: 'EPSG:3857'
-        });
-        this.wfsOptions = {
-            gmlOptions: this.formatGML,
-            featureNS: this.annotation_namespace_uri,
-            featureType: this.annotation_layer,
-            srsName: 'EPSG:3857',
-            version: '1.1.0',
-        };
-        this.XML_serializer = new XMLSerializer();
 
         mobx.autorun(() => {
             switch (store.mode) {
@@ -196,41 +185,40 @@ export class MapManager {
         }
     }
 
-    WFS_transaction(mode, feature) {
-        let node;
+    geoJsonRequest(mode, feature) {
+        let payload;
+        let method;
         switch (mode) {
             case MODE.CREATION:
+                method = "POST";
                 feature.setProperties({
-                    geometry: feature.getGeometry(),
                     taxonomy_class_id: store.selected_taxonomy_class_id,
                     annotator_id: 1,
                     image_name: 'My Image',
                 });
-                node = this.formatWFS.writeTransaction([feature], null, null, this.wfsOptions);
+                payload = this.formatGeoJson.writeFeature(feature);
                 break;
             case MODE.MODIFY:
-                feature.forEach(f => {
-                    // OpenLayers adds the `bbox` property, but it's not in our database
-                    f.unset('bbox');
-                });
-
-                node = this.formatWFS.writeTransaction(null, feature, null, this.wfsOptions);
+                method = "PUT";
+                payload = this.formatGeoJson.writeFeature(feature);
                 break;
             case MODE.DELETE:
-                node = this.formatWFS.writeTransaction(null, null, [feature], this.formatGML);
+                method = "DELETE";
+                payload = JSON.stringify([feature.getProperty('annotation_id')]);
                 break;
             default:
-                throw 'The transaction mode should be defined when calling WFS_transaction.';
+                throw 'The transaction mode should be defined when calling geoJsonRequest.';
         }
-        const payload = this.XML_serializer.serializeToString(node);
-        const url = `${this.geoserver_url}/geoserver/wfs`;
-        fetch(url, {
-            method: 'POST',
-            headers: {'Content-Type': 'text/xml'},
+        fetch("https://192.168.99.201/api/v1/annotations", {
+            method: method,
+            headers: {'Content-Type': 'application/json'},
             body: payload,
-        }).then(() => {
-            this.refresh();
-        });
+        }).then(response => response.json())
+            .then((responseJson) => {
+                feature.setProperties({'annotation_id': responseJson[0]});
+            })
+            .catch(error => console.log(error));
+
     }
 
     make_layers() {
