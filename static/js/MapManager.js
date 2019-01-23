@@ -13,9 +13,10 @@ export class MapManager {
         this.vectorSource.refresh(true);
     }
 
-    constructor(protocol, geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
+    constructor(protocol, geoserver_url, geoimagenet_api_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
 
         this.geoserver_url = protocol + geoserver_url;
+        this.geoimagenet_api_url = protocol + geoimagenet_api_url;
         this.annotation_namespace_uri = annotation_namespace_uri;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
@@ -209,7 +210,7 @@ export class MapManager {
             default:
                 throw 'The transaction mode should be defined when calling geoJsonRequest.';
         }
-        fetch("https://192.168.99.201/api/v1/annotations", {
+        fetch(`${this.geoimagenet_api_url}/annotations`, {
             method: method,
             headers: {'Content-Type': 'application/json'},
             body: payload,
