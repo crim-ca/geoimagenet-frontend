@@ -1,0 +1,14 @@
+div.notification {
+    padding: 24px;
+    margin: 24px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background-color: white;
+}
+div.notification div.actions {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+}

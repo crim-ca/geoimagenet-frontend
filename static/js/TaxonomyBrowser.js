@@ -7,7 +7,7 @@ import {
     checkbox,
     span,
     remove_children
-} from '/js/Utils.js';
+} from '/js/utils/dom.js';
 import {store, set_taxonomy, set_taxonomy_class, select_taxonomy_class, set_selected_taxonomy} from '/js/store.js';
 
 export class TaxonomyBrowser {

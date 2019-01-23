@@ -1,4 +1,4 @@
-import {get_by_id, button, element, remove_children} from '/js/Utils.js';
+import {get_by_id, button, element, remove_children} from '/js/utils/dom.js';
 import {store, set_mode} from '/js/store.js';
 import {MODE} from '/js/constants.js';
 

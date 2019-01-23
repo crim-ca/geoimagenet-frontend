@@ -1,7 +1,6 @@
 import {MODE} from '/js/constants.js';
 import {store} from '/js/store.js';
-
-const single_click = new ol.interaction.Select();
+import {notifier} from '/js/utils/notifications.js'
 
 export class MapManager {
 
@@ -106,16 +105,26 @@ export class MapManager {
         });
         this.map.addControl(this.mouse_position);
 
+        const single_click = new ol.interaction.Select();
         this.map.addInteraction(single_click);
         single_click.on('select', event => {
             // for some reason the structure returned by getFeatures does not seem to play nicely with writeTransaction.
             // wrapping it in a simple array effectively launches the delete correctly.
-            const features = event.target.getFeatures();
-            const feature_wrapper = [];
-            features.forEach(feature => {
-                feature_wrapper.push(feature);
-            });
-            this.WFS_transaction(MODE.DELETE, feature_wrapper);
+
+            if (store.mode === MODE.DELETE) {
+                notifier.confirm(`Do you really want to delete the highlighted feature?`)
+                    .then(() => {
+                        const features = event.target.getFeatures();
+                        const feature_wrapper = [];
+                        features.forEach(feature => {
+                            feature_wrapper.push(feature);
+                        });
+                        this.WFS_transaction(MODE.DELETE, feature_wrapper);
+                    })
+                    .catch(() => {
+                        console.log('rejected.');
+                    });
+            }
         });
 
         // create layer switcher, populate with base layers and feature layers
