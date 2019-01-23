@@ -25,6 +25,7 @@ A few environment variables can be used to customize the behaviour of the client
 
 - SERVER_PROTOCOL: The protocol to be used for http requests from the client. Defaults to "https://".
 - GEOSERVER_URL: The geoserver installation to be used for the client, *without* the /geoserver. Defaults to "geoimagenetdev.crim.ca".
+- GEOIMAGENET_API_URL: Url to GeoImageNet api. Defaults to "geoimagenetdev.crim.ca/api/v1".
 - ANNOTATION_NAMESPACE_URI: The geoserver namespace uri of the annotation data. Defaults to "geoimagenet.public.crim.ca".
 - ANNOTATION_NAMESPACE: The geoserver namespace of the annotation data. Defaults to "GEOIMAGENET_PUBLIC".
 - ANNOTATION_LAYER: The geoserver layer configured to accept annotations. Defaults to "annotation".
