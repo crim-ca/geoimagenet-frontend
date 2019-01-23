@@ -1,6 +1,7 @@
 import {MODE} from '/js/constants.js';
 import {store} from '/js/store.js';
 import {notifier} from '/js/utils/notifications.js'
+import {make_http_request} from '/js/utils/http.js';
 
 export class MapManager {
 
@@ -225,7 +226,7 @@ export class MapManager {
             default:
                 throw 'The transaction mode should be defined when calling geoJsonRequest.';
         }
-        fetch(`${this.geoimagenet_api_url}/annotations`, {
+        make_http_request(`${this.geoimagenet_api_url}/annotations`, {
             method: method,
             headers: {'Content-Type': 'application/json'},
             body: payload,
@@ -235,7 +236,7 @@ export class MapManager {
                 feature.setProperties({'annotation_id': responseJson[0]});
             })
             .catch(error => {
-                notifier.err('The api rejected our request.');
+                notifier.err('The api rejected our request. There is likely more information in the console.');
                 console.log('we had a problem with the geojson transaction: %o', error);
             });
 

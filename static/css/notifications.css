@@ -9,6 +9,7 @@ div.notification {
     z-index: 1000;
     background-color: white;
     cursor: pointer;
+    max-width: calc(100% / 2);
 }
 div.notification.error {
     background-color: var(--color-red);
