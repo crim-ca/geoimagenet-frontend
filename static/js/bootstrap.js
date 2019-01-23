@@ -10,6 +10,7 @@ addEventListener('DOMContentLoaded', () => {
     new MapManager(
         SERVER_PROTOCOL,
         GEOSERVER_URL,
+        GEOIMAGENET_API_URL,
         ANNOTATION_NAMESPACE_URI,
         ANNOTATION_NAMESPACE,
         ANNOTATION_LAYER,
