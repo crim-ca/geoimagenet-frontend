@@ -6,9 +6,24 @@ import {
     button,
     span,
     remove_children,
-    stylable_checkbox
+    stylable_checkbox,
+    get_parent_by_tag_name
 } from '/js/utils/dom.js';
 import {store, set_taxonomy, set_taxonomy_class, select_taxonomy_class, set_selected_taxonomy} from '/js/store.js';
+
+const request_annotations_release = (annotations_ids_list) => {
+
+};
+
+const release_annotations_click_event_handler = (event) => {
+    const parent_li = get_parent_by_tag_name(event.target, 'li');
+    const checkboxes = parent_li.querySelectorAll('input[type=checkbox');
+    const values = [];
+    checkboxes.forEach(c => {
+        values.push(c.value);
+    });
+    request_annotations_release(values);
+};
 
 export class TaxonomyBrowser {
 
@@ -99,8 +114,9 @@ export class TaxonomyBrowser {
                 text.appendChild(span(text_node(taxonomy_class['count_validated']), 'annotation_validated'));
             }
 
-            const actions = element('span');
+            const actions = span(null, 'actions');
             actions.appendChild(stylable_checkbox(taxonomy_class.id, 'checkbox_eye', this.check_visibility));
+            actions.appendChild(button(span(null, 'fas', 'fa-paper-plane', 'fa-lg', 'release'), release_annotations_click_event_handler));
 
             taxonomy_class_list_element.appendChild(text);
             taxonomy_class_list_element.appendChild(actions);

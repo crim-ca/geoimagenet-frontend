@@ -53,22 +53,38 @@ input[type=checkbox] {
     */
     display: none;
 }
-label span {
+label.checkbox_eye {
+    font-size: 30px;
+    height: 30px;
+    width: 30px;
+}
+label.checkbox_eye span {
     width: 30px;
     height: 30px;
     position: relative;
     display: inline-block;
 }
-label.checkbox_eye [type=checkbox] + span:after {
+label.checkbox_eye [type=checkbox] + span {
     content: var(--icon-eye-slash);
 }
-label.checkbox_eye [type=checkbox]:checked + span:after {
+label.checkbox_eye [type=checkbox]:checked + span {
     content: var(--icon-eye);
 }
 .taxonomy_class_list_element {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+.release {
+    opacity: 0.55;
+}
+.release:hover {
+    opacity: 1;
+}
+.taxonomy_class_list_element .actions {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
 }
 .annotation_new {
     background-color: var(--color-new);

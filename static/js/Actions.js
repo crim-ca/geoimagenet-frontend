@@ -30,7 +30,7 @@ export const build_actions = () => {
                 icon.classList.add('active');
             }
             const b = button(icon, () => {
-                set_mode(action.mode)
+                set_mode(action.mode);
             });
             actions_root.appendChild(b);
         });

@@ -53,3 +53,13 @@ export const stylable_checkbox = (checkbox_value, label_class, change_handler) =
     label.appendChild(element('span'));
     return label;
 };
+export const get_parent_by_tag_name = (element, target_parent_tag_name) => {
+    while (element.parentNode) {
+        const parent = element.parentNode;
+        if (parent.tagName.toLowerCase() === target_parent_tag_name.toLowerCase()) {
+            return parent;
+        }
+        element = parent;
+    }
+    return false;
+};
