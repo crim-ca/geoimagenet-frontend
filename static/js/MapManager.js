@@ -1,5 +1,7 @@
 import {MODE} from '/js/constants.js';
 import {store} from '/js/store.js';
+import {notifier} from '/js/utils/notifications.js'
+import {make_http_request} from '/js/utils/http.js';
 
 export class MapManager {
 
@@ -114,6 +116,20 @@ export class MapManager {
         });
         this.map.addControl(this.mouse_position);
 
+        this.map.getViewport().addEventListener('click', event => {
+            this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), feature => {
+                if (store.mode === MODE.DELETE) {
+                    notifier.confirm(`Do you really want to delete the highlighted feature?`)
+                        .then(() => {
+                            this.geoJsonRequest(MODE.DELETE, feature);
+                        })
+                        .catch((err) => {
+                            console.log('rejected: %o', err);
+                        });
+                }
+            });
+        });
+
         // create layer switcher, populate with base layers and feature layers
         this.layer_switcher = new ol.control.LayerSwitcher({
             target: 'layer-switcher',
@@ -213,25 +229,31 @@ export class MapManager {
                 break;
             case MODE.DELETE:
                 method = "DELETE";
-                payload = JSON.stringify([feature.getProperty('annotation_id')]);
+                payload = JSON.stringify([feature['id_']]);
                 break;
             default:
                 throw 'The transaction mode should be defined when calling geoJsonRequest.';
         }
-        fetch(`${this.geoimagenet_api_url}/annotations`, {
+        make_http_request(`${this.geoimagenet_api_url}/annotations`, {
             method: method,
             headers: {'Content-Type': 'application/json'},
             body: payload,
         }).then((response) => {
-            if (mode === MODE.CREATION) {
-                return response.json();
+            switch (mode) {
+                case MODE.CREATION:
+                    return response.json();
+                case MODE.DELETE:
+                    this.vectorSource.removeFeature(feature);
+                    break;
             }
         }).then((responseJson) => {
             if (mode === MODE.CREATION) {
                 feature.setId(`${this.annotation_layer}.${responseJson}`);
             }
-        }).catch(error => console.log(error));
-
+        }).catch(error => {
+            notifier.err('The api rejected our request. There is likely more information in the console.');
+            console.log('we had a problem with the geojson transaction: %o', error);
+        });
     }
 
     make_layers() {

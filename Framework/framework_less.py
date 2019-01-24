@@ -49,6 +49,10 @@ def handler_app(environ, start_response):
         status = f'{err.code} {err.reason}'
         headers = [('Content-type', 'text/plain')]
         data = err.msg
+    except ConnectionError:
+        status = '500 CONNECTION REFUSED'
+        headers = [('Content-type', 'text/plain')]
+        data = 'The API is down at the moment. We could not fetch the resource.'
     except Exception:
         status = '500 SERVER ERROR'
         headers = [('Content-type', 'text/plain')]
@@ -56,7 +60,6 @@ def handler_app(environ, start_response):
     finally:
         start_response(status, headers)
         return [bytes(data, 'utf8')]
-
 
 
 def number_of_workers():

@@ -90,7 +90,7 @@ div.actions button {
     padding: var(--gutter-small);
 }
 div.actions .active {
-    color: var(--color-validated);
+    color: var(--color-blue);
 }
 div.taxonomy {
     margin: 20px 0;

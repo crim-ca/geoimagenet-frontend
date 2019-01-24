@@ -5,7 +5,13 @@ export const toggle_all_nested_checkboxes = (parent, checked) => {
     });
 };
 
-export const element = elem => document.createElement(elem);
+export const element = (elem, content) => {
+    const e = document.createElement(elem);
+    if (content) {
+        e.appendChild(content);
+    }
+    return e;
+};
 export const text_node = text => document.createTextNode(text);
 export const get_by_id = id => document.getElementById(id);
 
