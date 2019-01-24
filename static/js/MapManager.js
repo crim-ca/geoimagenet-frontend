@@ -21,8 +21,10 @@ export class MapManager {
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
 
+        this.annotations = new ol.Collection();
         this.vectorSource = new ol.source.Vector({
             format: new ol.format.GeoJSON(),
+            features: this.annotations,
             url: (extent) => {
                 if (this.cql_filter.length > 0) {
                     return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
@@ -36,13 +38,19 @@ export class MapManager {
             },
             strategy: ol.loadingstrategy.bbox
         });
-
         this.modify = new ol.interaction.Modify({
-            source: this.vectorSource,
+            features: this.annotations,
         });
         this.modify.on('modifyend', (e) => {
-            const feature = e.features.getArray()[0];
-            this.geoJsonRequest(MODE.MODIFY, feature);
+            e.features.forEach((feature) => {
+                if (feature.revision_ >= 1) {
+                    this.geoJsonRequest(MODE.MODIFY, feature);
+                }
+                feature.revision_ = 0;
+            })
+        });
+        this.annotations.on('add', (e) => {
+            e.element.revision_ = 0;
         });
         this.draw = new ol.interaction.Draw({
             source: this.vectorSource,
@@ -214,11 +222,15 @@ export class MapManager {
             method: method,
             headers: {'Content-Type': 'application/json'},
             body: payload,
-        }).then(response => response.json())
-            .then((responseJson) => {
-                feature.setProperties({'annotation_id': responseJson[0]});
-            })
-            .catch(error => console.log(error));
+        }).then((response) => {
+            if (mode === MODE.CREATION) {
+                return response.json();
+            }
+        }).then((responseJson) => {
+            if (mode === MODE.CREATION) {
+                feature.setId(`${this.annotation_layer}.${responseJson}`);
+            }
+        }).catch(error => console.log(error));
 
     }
 
