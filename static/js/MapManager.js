@@ -239,17 +239,21 @@ export class MapManager {
             headers: {'Content-Type': 'application/json'},
             body: payload,
         }).then((response) => {
-            if (mode === MODE.CREATION) {
-                return response.json();
+            switch (mode) {
+                case MODE.CREATION:
+                    return response.json();
+                case MODE.DELETE:
+                    this.vectorSource.removeFeature(feature);
+                    break;
             }
         }).then((responseJson) => {
             if (mode === MODE.CREATION) {
                 feature.setId(`${this.annotation_layer}.${responseJson}`);
             }
         }).catch(error => {
-                notifier.err('The api rejected our request. There is likely more information in the console.');
-                console.log('we had a problem with the geojson transaction: %o', error);
-            });
+            notifier.err('The api rejected our request. There is likely more information in the console.');
+            console.log('we had a problem with the geojson transaction: %o', error);
+        });
     }
 
     make_layers() {
