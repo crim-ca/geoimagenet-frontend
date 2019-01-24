@@ -4,9 +4,9 @@ import {
     element,
     text_node,
     button,
-    checkbox,
     span,
-    remove_children
+    remove_children,
+    stylable_checkbox
 } from '/js/utils/dom.js';
 import {store, set_taxonomy, set_taxonomy_class, select_taxonomy_class, set_selected_taxonomy} from '/js/store.js';
 
@@ -34,7 +34,8 @@ export class TaxonomyBrowser {
              */
 
             // ugly going forward because we need to go search the right elem
-            toggle_all_nested_checkboxes(event.target.parentNode.parentNode.parentNode, event.target.checked);
+            // FIXME dude seriously. do something, maybe find_parent_by_tagname or whatevs
+            toggle_all_nested_checkboxes(event.target.parentNode.parentNode.parentNode.parentNode, event.target.checked);
 
             update_selection();
             event = new CustomEvent('selection_changed', {detail: this.selection});
@@ -83,10 +84,8 @@ export class TaxonomyBrowser {
     construct_children(this_level_root, collection, level_is_opened = false) {
         collection.forEach(taxonomy_class => {
             const taxonomy_class_root_element = element('li');
-
             const taxonomy_class_list_element = element('span');
             taxonomy_class_list_element.classList.add('taxonomy_class_list_element');
-
             const text = element('span');
 
             text.appendChild(text_node(taxonomy_class.name));
@@ -100,24 +99,13 @@ export class TaxonomyBrowser {
                 text.appendChild(span(text_node(taxonomy_class['count_validated']), 'annotation_validated'));
             }
 
-            const label = element('label');
-            label.appendChild(checkbox(taxonomy_class.id, this.check_visibility));
-            label.appendChild(element('span'));
-
-            /*
-            const radio_selector = element('input');
-            radio_selector.type = 'radio';
-            radio_selector.value = taxonomy_class.id;
-            radio_selector.name = 'selected_taxonomy';
-            radio_selector.addEventListener('change', this.activate_annotation);
-            */
+            const actions = element('span');
+            actions.appendChild(stylable_checkbox(taxonomy_class.id, 'checkbox_eye', this.check_visibility));
 
             taxonomy_class_list_element.appendChild(text);
-            taxonomy_class_list_element.appendChild(label);
+            taxonomy_class_list_element.appendChild(actions);
 
             taxonomy_class_root_element.appendChild(taxonomy_class_list_element);
-
-            // taxonomy_class_root_element.appendChild(radio_selector);
 
             // TODO only leafs can be annotated, so if taxonomy_class.children don't add the possibility to select for annotation
             if (taxonomy_class['children'] && taxonomy_class['children'].length > 0) {

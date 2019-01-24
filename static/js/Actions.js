@@ -1,4 +1,4 @@
-import {get_by_id, button, element, remove_children} from '/js/utils/dom.js';
+import {get_by_id, button, remove_children, span} from '/js/utils/dom.js';
 import {store, set_mode} from '/js/store.js';
 import {MODE} from '/js/constants.js';
 
@@ -25,12 +25,11 @@ export const build_actions = () => {
     mobx.autorun(() => {
         remove_children(actions_root);
         actions.forEach(action => {
-            const span = element('span');
-            span.classList.add('fas', action.icon_class, 'fa-2x');
+            const icon = span(null, 'fas', action.icon_class, 'fa-2x');
             if (action.mode === store.mode) {
-                span.classList.add('active');
+                icon.classList.add('active');
             }
-            const b = button(span, () => {
+            const b = button(icon, () => {
                 set_mode(action.mode)
             });
             actions_root.appendChild(b);

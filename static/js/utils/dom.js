@@ -15,10 +15,14 @@ export const element = (elem, content) => {
 export const text_node = text => document.createTextNode(text);
 export const get_by_id = id => document.getElementById(id);
 
-export const span = (content, class_name) => {
+export const span = (content, ...class_name) => {
     const s = element('span');
-    s.appendChild(content);
-    s.classList.add(class_name);
+    if (content) {
+        s.appendChild(content);
+    }
+    if (class_name) {
+        s.classList.add(...class_name);
+    }
     return s;
 };
 export const button = (content, click_handler) => {
@@ -41,4 +45,11 @@ export const remove_children = elem => {
     while (elem.firstChild) {
         elem.removeChild(elem.firstChild);
     }
+};
+export const stylable_checkbox = (checkbox_value, label_class, change_handler) => {
+    const label = element('label');
+    label.classList.add(label_class);
+    label.appendChild(checkbox(checkbox_value, change_handler));
+    label.appendChild(element('span'));
+    return label;
 };
