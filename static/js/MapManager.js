@@ -274,8 +274,8 @@ export class MapManager {
         const some_image = new ol.layer.Image({
             title: 'image',
             source: new ol.source.ImageWMS({
-                url: `${this.geoserver_url}/geoserver/GEOIMAGENET_PUBLIC/wms`,
-                params: {'LAYERS': 'GEOIMAGENET_PUBLIC:OrthoImage_Vancouver_50cm_RGBN_W84U10_8bits_RGB'},
+                url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
+                params: {'LAYERS': 'GeoImageNet:Pleiades_RGB'},
                 ratio: 1,
                 serverType: 'geoserver',
             }),
