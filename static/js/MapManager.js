@@ -271,9 +271,9 @@ export class MapManager {
                 })
             })
         });
-        const some_image = new ol.layer.Image({
+        const some_image = new ol.layer.Tile({
             title: 'image',
-            source: new ol.source.ImageWMS({
+            source: new ol.source.TileWMS({
                 url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
                 params: {'LAYERS': 'GeoImageNet:Pleiades_RGB'},
                 ratio: 1,
