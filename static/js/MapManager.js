@@ -96,9 +96,10 @@ export class MapManager {
          */
 
         // create a view centered around canada
+        let CRIM = [-73.623173, 45.531694];
         this.view = new ol.View({
-            center: ol.proj.fromLonLat([-122.37, 49.03]),
-            zoom: 13
+            center: ol.proj.fromLonLat(CRIM),
+            zoom: 16
         });
 
         // create the map
