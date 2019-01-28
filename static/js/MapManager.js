@@ -44,12 +44,14 @@ export class MapManager {
             features: this.annotations,
         });
         this.modify.on('modifyend', (e) => {
+            let modifiedFeatures = [];
             e.features.forEach((feature) => {
                 if (feature.revision_ >= 1) {
-                    this.geoJsonRequest(MODE.MODIFY, feature);
+                    modifiedFeatures.push(feature);
+                    feature.revision_ = 0;
                 }
-                feature.revision_ = 0;
-            })
+            });
+            this.geoJsonPut(modifiedFeatures);
         });
         this.annotations.on('add', (e) => {
             e.element.revision_ = 0;
@@ -61,7 +63,7 @@ export class MapManager {
         this.draw.on('drawend', (e) => {
             const feature = e.feature;
             this.vectorSource.refresh();
-            this.geoJsonRequest(MODE.CREATION, feature);
+            this.geoJsonPost(feature);
         });
 
         addEventListener('selection_changed', (event) => {
@@ -122,7 +124,7 @@ export class MapManager {
                 if (store.mode === MODE.DELETE) {
                     notifier.confirm(`Do you really want to delete the highlighted feature?`)
                         .then(() => {
-                            this.geoJsonRequest(MODE.DELETE, feature);
+                            this.geoJsonDelete(feature);
                         })
                         .catch((err) => {
                             console.log('rejected: %o', err);
@@ -211,50 +213,53 @@ export class MapManager {
         }
     }
 
-    geoJsonRequest(mode, feature) {
-        let payload;
-        let method;
-        switch (mode) {
-            case MODE.CREATION:
-                method = "POST";
-                feature.setProperties({
-                    taxonomy_class_id: store.selected_taxonomy_class_id,
-                    annotator_id: 1,
-                    image_name: 'My Image',
-                });
-                payload = this.formatGeoJson.writeFeature(feature);
-                break;
-            case MODE.MODIFY:
-                method = "PUT";
-                payload = this.formatGeoJson.writeFeature(feature);
-                break;
-            case MODE.DELETE:
-                method = "DELETE";
-                payload = JSON.stringify([feature['id_']]);
-                break;
-            default:
-                throw 'The transaction mode should be defined when calling geoJsonRequest.';
-        }
+    geoJsonPost(feature) {
+        feature.setProperties({
+            taxonomy_class_id: store.selected_taxonomy_class_id,
+            annotator_id: 1,
+            image_name: 'My Image',
+        });
+        let payload = this.formatGeoJson.writeFeature(feature);
         make_http_request(`${this.geoimagenet_api_url}/annotations`, {
-            method: method,
+            method: "POST",
             headers: {'Content-Type': 'application/json'},
             body: payload,
         }).then((response) => {
-            switch (mode) {
-                case MODE.CREATION:
-                    return response.json();
-                case MODE.DELETE:
-                    this.vectorSource.removeFeature(feature);
-                    break;
-            }
+            return response.json();
         }).then((responseJson) => {
-            if (mode === MODE.CREATION) {
-                feature.setId(`${this.annotation_layer}.${responseJson}`);
-            }
+            feature.setId(`${this.annotation_layer}.${responseJson}`);
         }).catch(error => {
-            notifier.err('The api rejected our request. There is likely more information in the console.');
-            console.log('we had a problem with the geojson transaction: %o', error);
+            MapManager.geojsonLogError(error);
         });
+    }
+
+    geoJsonPut(features) {
+        let payload = this.formatGeoJson.writeFeatures(features);
+        make_http_request(`${this.geoimagenet_api_url}/annotations`, {
+            method: "PUT",
+            headers: {'Content-Type': 'application/json'},
+            body: payload,
+        }).catch(error => {
+            MapManager.geojsonLogError(error);
+        });
+    }
+
+    geoJsonDelete(feature) {
+        let payload = JSON.stringify([feature.getId()]);
+        make_http_request(`${this.geoimagenet_api_url}/annotations`, {
+            method: "DELETE",
+            headers: {'Content-Type': 'application/json'},
+            body: payload,
+        }).then((response) => {
+            this.vectorSource.removeFeature(feature);
+        }).catch(error => {
+            MapManager.geojsonLogError(error);
+        });
+    }
+
+    static geojsonLogError(error) {
+        notifier.err('The api rejected our request. There is likely more information in the console.');
+        console.log('we had a problem with the geojson transaction: %o', error);
     }
 
     make_layers() {
