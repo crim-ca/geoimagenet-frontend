@@ -11,27 +11,14 @@ import {
 } from '/js/utils/dom.js';
 import {store, set_taxonomy, set_taxonomy_class, select_taxonomy_class, set_selected_taxonomy} from '/js/store.js';
 
-const request_annotations_release = (annotations_ids_list) => {
-
-};
-
-const release_annotations_click_event_handler = (event) => {
-    const parent_li = get_parent_by_tag_name(event.target, 'li');
-    const checkboxes = parent_li.querySelectorAll('input[type=checkbox');
-    const values = [];
-    checkboxes.forEach(c => {
-        values.push(c.value);
-    });
-    request_annotations_release(values);
-};
-
 export class TaxonomyBrowser {
 
-    constructor() {
+    constructor(map_manager) {
 
         this.taxonomy_classes_root = get_by_id('taxonomy_classes');
         this.taxonomy_root = get_by_id('taxonomy');
         this.selection = [];
+        this.map_manager = map_manager;
 
         const update_selection = mobx.action(() => {
             this.selection = [];
@@ -55,6 +42,16 @@ export class TaxonomyBrowser {
             update_selection();
             event = new CustomEvent('selection_changed', {detail: this.selection});
             dispatchEvent(event);
+        };
+
+        this.release_annotations_click_event_handler = (event) => {
+            const parent_li = get_parent_by_tag_name(event.target, 'li');
+            const checkboxes = parent_li.querySelectorAll('input[type=checkbox');
+            const values = [];
+            checkboxes.forEach(c => {
+                values.push(c.value);
+            });
+            this.map_manager.release_features_by_ids_list(values);
         };
 
         fetch(`/taxonomy`)
@@ -116,7 +113,7 @@ export class TaxonomyBrowser {
 
             const actions = span(null, 'actions');
             actions.appendChild(stylable_checkbox(taxonomy_class.id, 'checkbox_eye', this.check_visibility));
-            actions.appendChild(button(span(null, 'fas', 'fa-paper-plane', 'fa-lg', 'release'), release_annotations_click_event_handler));
+            actions.appendChild(button(span(null, 'fas', 'fa-paper-plane', 'fa-lg', 'release'), this.release_annotations_click_event_handler));
 
             taxonomy_class_list_element.appendChild(text);
             taxonomy_class_list_element.appendChild(actions);

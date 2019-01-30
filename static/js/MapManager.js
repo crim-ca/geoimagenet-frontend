@@ -195,6 +195,10 @@ export class MapManager {
         this.register_geoserver_url_button();
     }
 
+    release_features_by_ids_list(ids_list) {
+        console.log(ids_list);
+    }
+
     load_layers_from_geoserver() {
         fetch(`${this.geoserver_url}/rest/layers`)
             .then(res => {

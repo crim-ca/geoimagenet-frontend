@@ -7,7 +7,7 @@ mobx.configure({
 });
 
 addEventListener('DOMContentLoaded', () => {
-    new MapManager(
+    const map_manager = new MapManager(
         SERVER_PROTOCOL,
         GEOSERVER_URL,
         GEOIMAGENET_API_URL,
@@ -16,6 +16,6 @@ addEventListener('DOMContentLoaded', () => {
         ANNOTATION_LAYER,
         'map'
     );
-    new TaxonomyBrowser();
+    new TaxonomyBrowser(map_manager);
     build_actions();
 });
