@@ -96,9 +96,10 @@ export class MapManager {
          */
 
         // create a view centered around canada
+        let CRIM = [-73.623173, 45.531694];
         this.view = new ol.View({
-            center: ol.proj.fromLonLat([-122.37, 49.03]),
-            zoom: 13
+            center: ol.proj.fromLonLat(CRIM),
+            zoom: 16
         });
 
         // create the map
@@ -271,11 +272,11 @@ export class MapManager {
                 })
             })
         });
-        const some_image = new ol.layer.Image({
+        const some_image = new ol.layer.Tile({
             title: 'image',
-            source: new ol.source.ImageWMS({
-                url: `${this.geoserver_url}/geoserver/GEOIMAGENET_PUBLIC/wms`,
-                params: {'LAYERS': 'GEOIMAGENET_PUBLIC:OrthoImage_Vancouver_50cm_RGBN_W84U10_8bits_RGB'},
+            source: new ol.source.TileWMS({
+                url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
+                params: {'LAYERS': 'GeoImageNet:Pleiades_RGB'},
                 ratio: 1,
                 serverType: 'geoserver',
             }),
