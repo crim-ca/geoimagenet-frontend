@@ -66,13 +66,12 @@ export class MapManager {
             this.geoJsonPost(feature);
         });
 
-        addEventListener('selection_changed', (event) => {
+        mobx.autorun(() => {
             // create the cql filter from detail elements
             // prepend each bit with taxonomy_id=
             // join all the bits with OR
-            const activated_taxonomies = event.detail;
             const filter_bits = [];
-            activated_taxonomies.forEach(class_name => {
+            store.visible_classes.forEach(class_name => {
                 filter_bits.push(`taxonomy_class_id='${class_name}'`);
             });
             this.cql_filter = filter_bits.join(' OR ');

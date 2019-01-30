@@ -36,9 +36,12 @@ export class TaxonomyBrowser {
             // FIXME dude seriously. do something, maybe find_parent_by_tagname or whatevs
             toggle_all_nested_checkboxes(event.target.parentNode.parentNode.parentNode.parentNode, event.target.checked);
 
-            this.update_selection();
-            event = new CustomEvent('selection_changed', {detail: store.visible_classes});
-            dispatchEvent(event);
+            const selection = [];
+            const checkboxes = this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]:checked');
+            checkboxes.forEach(checkbox => {
+                selection.push(checkbox.value);
+            });
+            set_visible_classes(selection);
         };
 
         this.release_annotations_click_handler = (event) => {
@@ -88,15 +91,6 @@ export class TaxonomyBrowser {
                 })
                 .catch(err => console.log(err));
         };
-    }
-
-    update_selection() {
-        const selection = [];
-        const checkboxes = this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]:checked');
-        checkboxes.forEach(checkbox => {
-            selection.push(checkbox.value);
-        });
-        set_visible_classes(selection);
     }
 
     construct_children(this_level_root, collection, level_is_opened = false) {
