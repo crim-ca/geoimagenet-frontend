@@ -9,7 +9,14 @@ import {
     stylable_checkbox,
     get_parent_by_tag_name
 } from '/js/utils/dom.js';
-import {store, set_taxonomy, set_taxonomy_class, select_taxonomy_class, set_selected_taxonomy} from '/js/store.js';
+import {
+    store,
+    set_taxonomy,
+    set_taxonomy_class,
+    select_taxonomy_class,
+    set_selected_taxonomy,
+    set_visible_classes
+} from '/js/store.js';
 
 export class TaxonomyBrowser {
 
@@ -17,19 +24,9 @@ export class TaxonomyBrowser {
 
         this.taxonomy_classes_root = get_by_id('taxonomy_classes');
         this.taxonomy_root = get_by_id('taxonomy');
-        this.selection = [];
         this.map_manager = map_manager;
 
-        const update_selection = mobx.action(() => {
-            this.selection = [];
-            const checkboxes = this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]:checked');
-            checkboxes.forEach(checkbox => {
-                this.selection.push(checkbox.value);
-            });
-        });
-
-        this.check_visibility = (event) => {
-
+        this.toggle_classes_click_handler = (event) => {
             /*
             when checking a checkbox, there can be children to be checked down the tree first
             then, add source event value, along with all children values, to the cql filter
@@ -39,12 +36,12 @@ export class TaxonomyBrowser {
             // FIXME dude seriously. do something, maybe find_parent_by_tagname or whatevs
             toggle_all_nested_checkboxes(event.target.parentNode.parentNode.parentNode.parentNode, event.target.checked);
 
-            update_selection();
-            event = new CustomEvent('selection_changed', {detail: this.selection});
+            this.update_selection();
+            event = new CustomEvent('selection_changed', {detail: store.visible_classes});
             dispatchEvent(event);
         };
 
-        this.release_annotations_click_event_handler = (event) => {
+        this.release_annotations_click_handler = (event) => {
             const parent_li = get_parent_by_tag_name(event.target, 'li');
             const checkboxes = parent_li.querySelectorAll('input[type=checkbox');
             const values = [];
@@ -93,6 +90,15 @@ export class TaxonomyBrowser {
         };
     }
 
+    update_selection() {
+        const selection = [];
+        const checkboxes = this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]:checked');
+        checkboxes.forEach(checkbox => {
+            selection.push(checkbox.value);
+        });
+        set_visible_classes(selection);
+    }
+
     construct_children(this_level_root, collection, level_is_opened = false) {
         collection.forEach(taxonomy_class => {
             const taxonomy_class_root_element = element('li');
@@ -112,8 +118,8 @@ export class TaxonomyBrowser {
             }
 
             const actions = span(null, 'actions');
-            actions.appendChild(stylable_checkbox(taxonomy_class.id, 'checkbox_eye', this.check_visibility));
-            actions.appendChild(button(span(null, 'fas', 'fa-paper-plane', 'fa-lg', 'release'), this.release_annotations_click_event_handler));
+            actions.appendChild(stylable_checkbox(taxonomy_class.id, 'checkbox_eye', this.toggle_classes_click_handler));
+            actions.appendChild(button(span(null, 'fas', 'fa-paper-plane', 'fa-lg', 'release'), this.release_annotations_click_handler));
 
             taxonomy_class_list_element.appendChild(text);
             taxonomy_class_list_element.appendChild(actions);
