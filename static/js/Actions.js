@@ -1,6 +1,6 @@
-import {get_by_id, button, remove_children, span} from '/js/utils/dom.js';
-import {store, set_mode} from '/js/store.js';
-import {MODE} from '/js/constants.js';
+import {get_by_id, button, remove_children, span} from './utils/dom.js';
+import {store, set_mode} from './store.js';
+import {MODE} from './constants.js';
 
 const actions = [
     {name: 'eye', icon_class: 'fa-eye', mode: MODE.VISUALIZE},

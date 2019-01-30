@@ -1,6 +1,6 @@
-import {TaxonomyBrowser} from '/js/TaxonomyBrowser.js';
-import {MapManager} from '/js/MapManager.js';
-import {build_actions} from '/js/Actions.js';
+import {TaxonomyBrowser} from './TaxonomyBrowser.js';
+import {MapManager} from './MapManager.js';
+import {build_actions} from './Actions.js';
 
 mobx.configure({
     enforceActions: 'always',

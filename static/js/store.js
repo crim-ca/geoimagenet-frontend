@@ -1,4 +1,4 @@
-import {MODE} from '/js/constants.js';
+import {MODE} from './constants.js';
 
 export const store = mobx.observable({
     mode: MODE.VISUALIZE,

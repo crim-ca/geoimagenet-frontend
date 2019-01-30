@@ -8,7 +8,7 @@ import {
     remove_children,
     stylable_checkbox,
     get_parent_by_tag_name
-} from '/js/utils/dom.js';
+} from './utils/dom.js';
 import {
     store,
     set_taxonomy,
@@ -16,7 +16,7 @@ import {
     select_taxonomy_class,
     set_selected_taxonomy,
     set_visible_classes
-} from '/js/store.js';
+} from './store.js';
 
 export class TaxonomyBrowser {
 

@@ -1,7 +1,7 @@
-import {MODE} from '/js/constants.js';
-import {store} from '/js/store.js';
-import {notifier} from '/js/utils/notifications.js'
-import {make_http_request} from '/js/utils/http.js';
+import {MODE} from './constants.js';
+import {store} from './store.js';
+import {notifier} from './utils/notifications.js'
+import {make_http_request} from './utils/http.js';
 
 export class MapManager {
 
