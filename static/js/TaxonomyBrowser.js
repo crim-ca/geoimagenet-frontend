@@ -85,6 +85,7 @@ export class TaxonomyBrowser {
         mobx.autorun(() => {
             remove_children(this.taxonomy_classes_root);
             this.construct_children(this.taxonomy_classes_root, store.selected_taxonomy.elements, true);
+            this.check_all_checkboxes_hack();
         });
 
         const load_taxonomy_by_id = id => {
@@ -95,6 +96,18 @@ export class TaxonomyBrowser {
                 })
                 .catch(err => console.log(err));
         };
+    }
+
+    check_all_checkboxes_hack() {
+        // check all classes after building the tree
+        // a better method for dispatching the change is used in a branch merged in the future
+        // FIXME use mobx when other branch is merged
+        this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]').forEach(c => {
+            c.checked = true;
+        });
+        this.update_selection();
+        event = new CustomEvent('selection_changed', {detail: this.selection});
+        dispatchEvent(event);
     }
 
     construct_children(this_level_root, collection, level_is_opened = false) {
