@@ -16,11 +16,6 @@ const actions = [
 export const build_actions = () => {
 
     const actions_root = get_by_id('actions');
-    const mode_indicator = get_by_id('mode_indicator');
-
-    mobx.autorun(() => {
-        mode_indicator.innerHTML = `Current mode: ${store.mode}`;
-    });
 
     mobx.autorun(() => {
         remove_children(actions_root);
