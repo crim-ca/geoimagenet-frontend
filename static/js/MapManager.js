@@ -1,8 +1,7 @@
-import {MODE} from './constants.js';
+import {MODE, ANNOTATION} from './constants.js';
 import {store} from './store.js';
 import {notifier} from './utils/notifications.js'
 import {make_http_request} from './utils/http.js';
-
 
 const create_vector_layer = (source, color) => {
     return new ol.layer.Vector({
@@ -49,8 +48,8 @@ export class MapManager {
         this.new_annotations_collection = new ol.Collection();
         this.released_annotations_collection = new ol.Collection();
 
-        this.new_annotations_source = this.create_vector_source(this.new_annotations_collection, 'false');
-        this.released_annotations_source = this.create_vector_source(this.released_annotations_collection, 'true');
+        this.new_annotations_source = this.create_vector_source(this.new_annotations_collection, ANNOTATION.STATUS.NEW);
+        this.released_annotations_source = this.create_vector_source(this.released_annotations_collection, ANNOTATION.STATUS.RELEASED);
 
         this.modify = new ol.interaction.Modify({
             features: this.new_annotations_collection,
@@ -194,7 +193,7 @@ export class MapManager {
     }
 
     // FIXME released_value will be only boolean until enum on status is implemented
-    create_vector_source(features, released_value) {
+    create_vector_source(features, status) {
         return new ol.source.Vector({
             format: new ol.format.GeoJSON(),
             features: features,
@@ -202,11 +201,11 @@ export class MapManager {
                 if (this.cql_filter.length > 0) {
                     return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
                         `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                        'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=${this.cql_filter}`;
+                        `outputFormat=application/json&srsname=EPSG:3857&cql_filter=status='${status}' AND ${this.cql_filter}`;
                 }
                 return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
                     `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                    'outputFormat=application/json&srsname=EPSG:3857&cql_filter=taxonomy_class_id IN (-1)';
+                    `outputFormat=application/json&srsname=EPSG:3857&cql_filter=status='${status}' AND taxonomy_class_id IN (-1)`;
             },
             strategy: ol.loadingstrategy.bbox
         });
