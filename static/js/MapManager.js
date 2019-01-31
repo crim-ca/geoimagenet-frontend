@@ -11,8 +11,8 @@ export class MapManager {
      */
 
     refresh() {
-        this.vectorSource.clear();
-        this.vectorSource.refresh(true);
+        this.new_annotations_source.clear();
+        this.new_annotations_source.refresh(true);
     }
 
     constructor(protocol, geoserver_url, geoimagenet_api_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
@@ -24,19 +24,18 @@ export class MapManager {
         this.annotation_layer = annotation_layer;
 
         this.annotations = new ol.Collection();
-        this.vectorSource = new ol.source.Vector({
+        this.new_annotations_source = new ol.source.Vector({
             format: new ol.format.GeoJSON(),
             features: this.annotations,
-            url: (extent) => {
+            url: () => {
                 if (this.cql_filter.length > 0) {
                     return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
                         `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                        'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=${this.cql_filter}`;
+                        'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=released=false AND ${this.cql_filter}`;
                 }
                 return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
-                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                    'outputFormat=application/json&srsname=EPSG:3857&' +
-                    'bbox=' + extent.join(',') + ',EPSG:3857';
+                        `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
+                        'outputFormat=application/json&srsname=EPSG:3857&cql_filter=released=false';
             },
             strategy: ol.loadingstrategy.bbox
         });
@@ -57,12 +56,12 @@ export class MapManager {
             e.element.revision_ = 0;
         });
         this.draw = new ol.interaction.Draw({
-            source: this.vectorSource,
+            source: this.new_annotations_source,
             type: 'Polygon',
         });
         this.draw.on('drawend', (e) => {
             const feature = e.feature;
-            this.vectorSource.refresh();
+            this.new_annotations_source.refresh();
             this.geoJsonPost(feature);
         });
 
@@ -70,11 +69,11 @@ export class MapManager {
             // create the cql filter from detail elements
             // prepend each bit with taxonomy_id=
             // join all the bits with OR
-            const filter_bits = [];
-            store.visible_classes.forEach(class_name => {
-                filter_bits.push(`taxonomy_class_id='${class_name}'`);
-            });
-            this.cql_filter = filter_bits.join(' OR ');
+            if (store.visible_classes.length > 0) {
+                this.cql_filter = `taxonomy_class_id IN (${store.visible_classes.join(',')})`;
+            } else {
+                this.cql_filter = '';
+            }
             this.refresh();
         });
 
@@ -148,7 +147,7 @@ export class MapManager {
         const new_annotation_color = style.getPropertyValue('--color-new');
 
         this.new_annotations_overlay = new ol.layer.Vector({
-            source: this.vectorSource,
+            source: this.new_annotations_source,
             style: new ol.style.Style({
                 fill: new ol.style.Fill({
                     color: 'rgba(255, 255, 255, 0.25)',
@@ -196,7 +195,7 @@ export class MapManager {
 
     release_features_by_ids_list(ids_list) {
         const to_be_released = [];
-        this.vectorSource.getFeatures().forEach(feature => {
+        this.new_annotations_source.getFeatures().forEach(feature => {
             const feature_class_id = feature.get('taxonomy_class_id');
             if (ids_list.includes(feature_class_id)) {
                 feature.set('released', true);
@@ -261,12 +260,14 @@ export class MapManager {
 
     geoJsonDelete(feature) {
         let payload = JSON.stringify([feature.getId()]);
+        // TODO verify if deleting annotations can only happen on new, unreleased annotations
+        // otherwise, this is a bit more complicated, as the feature could be on any of the layers (and vector sources)
         make_http_request(`${this.geoimagenet_api_url}/annotations`, {
             method: "DELETE",
             headers: {'Content-Type': 'application/json'},
             body: payload,
         }).then((response) => {
-            this.vectorSource.removeFeature(feature);
+            this.new_annotations_source.removeFeature(feature);
         }).catch(error => {
             MapManager.geojsonLogError(error);
         });
@@ -284,7 +285,7 @@ export class MapManager {
             source: new ol.source.OSM(),
         });
         const vector = new ol.layer.Vector({
-            source: this.vectorSource,
+            source: this.new_annotations_source,
             style: new ol.style.Style({
                 stroke: new ol.style.Stroke({
                     color: 'rgba(0, 0, 255, 1.0)',
