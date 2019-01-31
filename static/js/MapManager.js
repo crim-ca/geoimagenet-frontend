@@ -195,7 +195,19 @@ export class MapManager {
     }
 
     release_features_by_ids_list(ids_list) {
-        console.log(ids_list);
+        const to_be_released = [];
+        this.vectorSource.getFeatures().forEach(feature => {
+            const feature_class_id = feature.get('taxonomy_class_id');
+            if (ids_list.includes(feature_class_id)) {
+                feature.set('released', true);
+                to_be_released.push(feature);
+            }
+        });
+        if (to_be_released.length > 0) {
+            this.geoJsonPut(to_be_released);
+        } else {
+            notifier.warn('No annotations of the selected class(es) are present currently. Nothing have been released.');
+        }
     }
 
     load_layers_from_geoserver() {

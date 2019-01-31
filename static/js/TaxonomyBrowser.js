@@ -17,6 +17,7 @@ import {
     set_selected_taxonomy,
     set_visible_classes
 } from './store.js';
+import {notifier} from "./utils/notifications.js";
 
 export class TaxonomyBrowser {
 
@@ -45,13 +46,16 @@ export class TaxonomyBrowser {
         };
 
         this.release_annotations_click_handler = (event) => {
-            const parent_li = get_parent_by_tag_name(event.target, 'li');
-            const checkboxes = parent_li.querySelectorAll('input[type=checkbox');
-            const values = [];
-            checkboxes.forEach(c => {
-                values.push(c.value);
-            });
-            this.map_manager.release_features_by_ids_list(values);
+            notifier.confirm("Do you really want to release all the annotations of the selected class, as well as its children?")
+                .then(() => {
+                    const parent_li = get_parent_by_tag_name(event.target, 'li');
+                    const checkboxes = parent_li.querySelectorAll('input[type=checkbox');
+                    const values = [];
+                    checkboxes.forEach(c => {
+                        values.push(parseInt(c.value));
+                    });
+                    this.map_manager.release_features_by_ids_list(values);
+                });
         };
 
         fetch(`/taxonomy`)
