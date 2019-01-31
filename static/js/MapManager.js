@@ -1,4 +1,4 @@
-import {MODE, ANNOTATION} from './constants.js';
+import {MODE, ANNOTATION, IMAGES_NRG} from './constants.js';
 import {store} from './store.js';
 import {notifier} from './utils/notifications.js'
 import {make_http_request} from './utils/http.js';
@@ -314,19 +314,23 @@ export class MapManager {
                 })
             })
         });
-        const some_image = new ol.layer.Tile({
-            title: 'image',
-            source: new ol.source.TileWMS({
-                url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
-                params: {'LAYERS': 'GeoImageNet:Pleiades_RGB'},
-                ratio: 1,
-                serverType: 'geoserver',
-            }),
+        const layers = [];
+        layers.push(raster);
+        IMAGES_NRG.forEach(i => {
+            layers.push(new ol.layer.Tile({
+                title: i,
+                source: new ol.source.TileWMS({
+                    url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
+                    params: {'LAYERS': `GeoImageNet:${i}`},
+                    ratio: 1,
+                    serverType: 'geoserver',
+                }),
+            }));
         });
         return [
             new ol.layer.Group({
                 title: 'Base maps',
-                layers: [raster, some_image]
+                layers: layers
             }),
             new ol.layer.Group({
                 title: 'Annotations',
