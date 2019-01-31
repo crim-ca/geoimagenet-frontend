@@ -35,6 +35,8 @@ export class MapManager {
     refresh() {
         this.new_annotations_source.clear();
         this.new_annotations_source.refresh(true);
+        this.released_annotations_source.clear();
+        this.released_annotations_source.refresh(true);
     }
 
     constructor(protocol, geoserver_url, geoimagenet_api_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
@@ -44,10 +46,14 @@ export class MapManager {
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
 
-        this.annotations = new ol.Collection();
-        this.new_annotations_source = this.create_vector_source('false');
+        this.new_annotations_collection = new ol.Collection();
+        this.released_annotations_collection = new ol.Collection();
+
+        this.new_annotations_source = this.create_vector_source(this.new_annotations_collection, 'false');
+        this.released_annotations_source = this.create_vector_source(this.released_annotations_collection, 'true');
+
         this.modify = new ol.interaction.Modify({
-            features: this.annotations,
+            features: this.new_annotations_collection,
         });
         this.modify.on('modifyend', (e) => {
             let modifiedFeatures = [];
@@ -59,7 +65,7 @@ export class MapManager {
             });
             this.geoJsonPut(modifiedFeatures);
         });
-        this.annotations.on('add', (e) => {
+        this.new_annotations_collection.on('add', (e) => {
             e.element.revision_ = 0;
         });
         this.draw = new ol.interaction.Draw({
@@ -152,9 +158,13 @@ export class MapManager {
 
         const style = getComputedStyle(document.body);
         const color_new = style.getPropertyValue('--color-new');
+        const color_released = style.getPropertyValue('--color-released');
 
         this.new_annotations_layer = create_vector_layer(this.new_annotations_source, color_new);
         this.new_annotations_layer.setMap(this.map);
+
+        this.released_annotations_layer = create_vector_layer(this.released_annotations_source, color_released);
+        this.released_annotations_layer.setMap(this.map);
 
         this.formatGeoJson = new ol.format.GeoJSON({
             dataProjection: 'EPSG:3857',
@@ -184,10 +194,10 @@ export class MapManager {
     }
 
     // FIXME released_value will be only boolean until enum on status is implemented
-    create_vector_source(released_value) {
+    create_vector_source(features, released_value) {
         return new ol.source.Vector({
             format: new ol.format.GeoJSON(),
-            features: this.annotations,
+            features: features,
             url: () => {
                 if (this.cql_filter.length > 0) {
                     return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
@@ -262,6 +272,9 @@ export class MapManager {
             method: "PUT",
             headers: {'Content-Type': 'application/json'},
             body: payload,
+        }).then(() => {
+            // FIXME refreshing everything is probably not efficient
+            this.refresh();
         }).catch(error => {
             MapManager.geojsonLogError(error);
         });
