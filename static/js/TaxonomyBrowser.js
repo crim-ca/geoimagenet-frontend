@@ -83,6 +83,8 @@ export class TaxonomyBrowser {
 
     check_all_checkboxes_hack() {
         // check all classes after building the tree
+        // a better method for dispatching the change is used in a branch merged in the future
+        // FIXME use mobx when other branch is merged
         this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]').forEach(c => {
             c.checked = true;
         });
