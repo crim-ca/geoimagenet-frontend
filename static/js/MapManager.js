@@ -206,7 +206,7 @@ export class MapManager {
                 }
                 return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
                     `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                    'outputFormat=application/json&srsname=EPSG:3857';
+                    'outputFormat=application/json&srsname=EPSG:3857&cql_filter=taxonomy_class_id IN (-1)';
             },
             strategy: ol.loadingstrategy.bbox
         });
