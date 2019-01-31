@@ -123,3 +123,23 @@ div.taxonomy button {
 span.selected {
     background-color: var(--selected-taxonomy-element-background);
 }
+button.section-handle {
+    line-height: 20px;
+    border-top: 1px solid var(--light-gray);
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    padding: 10px 0;
+}
+section {
+    transition: height ease-in 1s;
+    height: auto;
+}
+section.opened button.section-handle {
+    background-color: var(--light-gray);
+}
+section.closed {
+    height: 41px;
+    overflow: hidden;
+}

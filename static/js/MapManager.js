@@ -202,11 +202,11 @@ export class MapManager {
                 if (this.cql_filter.length > 0) {
                     return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
                         `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                        'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=released=${released_value} AND ${this.cql_filter}`;
+                        'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=${this.cql_filter}`;
                 }
                 return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
                     `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                    'outputFormat=application/json&srsname=EPSG:3857&cql_filter=released=' + released_value;
+                    'outputFormat=application/json&srsname=EPSG:3857';
             },
             strategy: ol.loadingstrategy.bbox
         });
