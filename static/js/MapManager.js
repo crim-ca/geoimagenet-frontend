@@ -3,6 +3,28 @@ import {store} from './store.js';
 import {notifier} from './utils/notifications.js'
 import {make_http_request} from './utils/http.js';
 
+
+const create_vector_layer = (source, color) => {
+    return new ol.layer.Vector({
+        source: source,
+        style: new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(255, 255, 255, 0.25)',
+            }),
+            stroke: new ol.style.Stroke({
+                color: color,
+                width: 2
+            }),
+            image: new ol.style.Circle({
+                radius: 7,
+                fill: new ol.style.Fill({
+                    color: color,
+                })
+            })
+        })
+    });
+};
+
 export class MapManager {
 
     /*
@@ -19,26 +41,11 @@ export class MapManager {
 
         this.geoserver_url = protocol + geoserver_url;
         this.geoimagenet_api_url = protocol + geoimagenet_api_url;
-        this.annotation_namespace_uri = annotation_namespace_uri;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
 
         this.annotations = new ol.Collection();
-        this.new_annotations_source = new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
-            features: this.annotations,
-            url: () => {
-                if (this.cql_filter.length > 0) {
-                    return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
-                        `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                        'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=released=false AND ${this.cql_filter}`;
-                }
-                return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
-                        `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                        'outputFormat=application/json&srsname=EPSG:3857&cql_filter=released=false';
-            },
-            strategy: ol.loadingstrategy.bbox
-        });
+        this.new_annotations_source = this.create_vector_source('false');
         this.modify = new ol.interaction.Modify({
             features: this.annotations,
         });
@@ -144,27 +151,10 @@ export class MapManager {
         this.features = new ol.Collection();
 
         const style = getComputedStyle(document.body);
-        const new_annotation_color = style.getPropertyValue('--color-new');
+        const color_new = style.getPropertyValue('--color-new');
 
-        this.new_annotations_overlay = new ol.layer.Vector({
-            source: this.new_annotations_source,
-            style: new ol.style.Style({
-                fill: new ol.style.Fill({
-                    color: 'rgba(255, 255, 255, 0.25)',
-                }),
-                stroke: new ol.style.Stroke({
-                    color: new_annotation_color,
-                    width: 2
-                }),
-                image: new ol.style.Circle({
-                    radius: 7,
-                    fill: new ol.style.Fill({
-                        color: new_annotation_color,
-                    })
-                })
-            })
-        });
-        this.new_annotations_overlay.setMap(this.map);
+        this.new_annotations_layer = create_vector_layer(this.new_annotations_source, color_new);
+        this.new_annotations_layer.setMap(this.map);
 
         this.formatGeoJson = new ol.format.GeoJSON({
             dataProjection: 'EPSG:3857',
@@ -191,6 +181,25 @@ export class MapManager {
         });
 
         this.register_geoserver_url_button();
+    }
+
+    // FIXME released_value will be only boolean until enum on status is implemented
+    create_vector_source(released_value) {
+        return new ol.source.Vector({
+            format: new ol.format.GeoJSON(),
+            features: this.annotations,
+            url: () => {
+                if (this.cql_filter.length > 0) {
+                    return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
+                        `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
+                        'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=released=${released_value} AND ${this.cql_filter}`;
+                }
+                return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
+                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
+                    'outputFormat=application/json&srsname=EPSG:3857&cql_filter=released=' + released_value;
+            },
+            strategy: ol.loadingstrategy.bbox
+        });
     }
 
     release_features_by_ids_list(ids_list) {
