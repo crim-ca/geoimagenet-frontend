@@ -18,7 +18,7 @@ export class TaxonomyBrowser {
         this.taxonomy_root = get_by_id('taxonomy');
         this.selection = [];
 
-        const update_selection = mobx.action(() => {
+        this.update_selection = mobx.action(() => {
             this.selection = [];
             const checkboxes = this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]:checked');
             checkboxes.forEach(checkbox => {
@@ -36,7 +36,7 @@ export class TaxonomyBrowser {
             // ugly going forward because we need to go search the right elem
             toggle_all_nested_checkboxes(event.target.parentNode.parentNode.parentNode, event.target.checked);
 
-            update_selection();
+            this.update_selection();
             event = new CustomEvent('selection_changed', {detail: this.selection});
             dispatchEvent(event);
         };
@@ -68,6 +68,7 @@ export class TaxonomyBrowser {
         mobx.autorun(() => {
             remove_children(this.taxonomy_classes_root);
             this.construct_children(this.taxonomy_classes_root, store.selected_taxonomy.elements, true);
+            this.check_all_checkboxes_hack();
         });
 
         const load_taxonomy_by_id = id => {
@@ -78,6 +79,16 @@ export class TaxonomyBrowser {
                 })
                 .catch(err => console.log(err));
         };
+    }
+
+    check_all_checkboxes_hack() {
+        // check all classes after building the tree
+        this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]').forEach(c => {
+            c.checked = true;
+        });
+        this.update_selection();
+        event = new CustomEvent('selection_changed', {detail: this.selection});
+        dispatchEvent(event);
     }
 
     construct_children(this_level_root, collection, level_is_opened = false) {
