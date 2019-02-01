@@ -196,7 +196,6 @@ export class MapManager {
             }
         });
 
-        this.register_geoserver_url_button();
     }
 
     create_vector_source(features, status) {
@@ -215,40 +214,6 @@ export class MapManager {
             },
             strategy: ol.loadingstrategy.bbox
         });
-    }
-
-    release_features_by_ids_list(ids_list) {
-        const to_be_released = [];
-        this.new_annotations_source.getFeatures().forEach(feature => {
-            const feature_class_id = feature.get('taxonomy_class_id');
-            if (ids_list.includes(feature_class_id)) {
-                feature.set('released', true);
-                to_be_released.push(feature);
-            }
-        });
-        if (to_be_released.length > 0) {
-            this.geoJsonPut(to_be_released);
-        } else {
-            notifier.warn('No annotations of the selected class(es) are present currently. Nothing have been released.');
-        }
-    }
-
-    load_layers_from_geoserver() {
-        fetch(`${this.geoserver_url}/rest/layers`)
-            .then(res => {
-                console.log('received layers from geoserver: %o', res);
-            });
-    }
-
-    register_geoserver_url_button() {
-        const button = document.getElementById('populate-layer-switcher-button');
-        if (button) {
-            button.addEventListener('click', () => {
-                const input = document.getElementById('geoserver-url');
-                this.geoserver_url = input.value;
-                this.load_layers_from_geoserver();
-            });
-        }
     }
 
     geoJsonPost(feature) {
