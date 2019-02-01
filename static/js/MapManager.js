@@ -1,4 +1,4 @@
-import {MODE, ANNOTATION, IMAGES_NRG} from './constants.js';
+import {MODE, ANNOTATION, IMAGES_NRG, IMAGES_RGB} from './constants.js';
 import {store} from './store.js';
 import {notifier} from './utils/notifications.js'
 import {make_http_request} from './utils/http.js';
@@ -193,7 +193,6 @@ export class MapManager {
         this.register_geoserver_url_button();
     }
 
-    // FIXME released_value will be only boolean until enum on status is implemented
     create_vector_source(features, status) {
         return new ol.source.Vector({
             format: new ol.format.GeoJSON(),
@@ -305,10 +304,11 @@ export class MapManager {
             title: 'OSM',
             type: 'base',
             source: new ol.source.OSM(),
+            zIndex: -10
         });
-        const layers = [];
+        const NRG_layers = [];
         IMAGES_NRG.forEach(i => {
-            layers.push(new ol.layer.Tile({
+            NRG_layers.push(new ol.layer.Tile({
                 title: i,
                 source: new ol.source.TileWMS({
                     url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
@@ -316,20 +316,38 @@ export class MapManager {
                     ratio: 1,
                     serverType: 'geoserver',
                 }),
+                visible: false,
+            }));
+        });
+        const RGB_layers = [];
+        IMAGES_RGB.forEach(i => {
+            RGB_layers.push(new ol.layer.Tile({
+                title: i,
+                source: new ol.source.TileWMS({
+                    url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
+                    params: {'LAYERS': `GeoImageNet:${i}`},
+                    ratio: 1,
+                    serverType: 'geoserver',
+                }),
+                visible: false,
             }));
         });
         return [
             new ol.layer.Group({
-                title: 'Annotations',
-                layers: [this.new_annotations_layer]
+                title: 'RGB Images',
+                layers: RGB_layers
+            }),
+            new ol.layer.Group({
+                title: 'NRG Images',
+                layers: NRG_layers
             }),
             new ol.layer.Group({
                 title: 'Base maps',
                 layers: [raster]
             }),
             new ol.layer.Group({
-                title: 'NRG Images',
-                layers: layers
+                title: 'Annotations',
+                layers: [this.new_annotations_layer]
             }),
         ];
     }
