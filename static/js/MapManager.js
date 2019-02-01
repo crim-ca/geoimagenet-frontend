@@ -45,10 +45,10 @@ export class MapManager {
         this.released_annotations_source.refresh(true);
     }
 
-    constructor(protocol, geoserver_url, geoimagenet_api_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
+    constructor(geoserver_url, geoimagenet_api_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
 
-        this.geoserver_url = protocol + geoserver_url;
-        this.geoimagenet_api_url = protocol + geoimagenet_api_url;
+        this.geoserver_url = geoserver_url;
+        this.geoimagenet_api_url = geoimagenet_api_url;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
 
@@ -205,11 +205,11 @@ export class MapManager {
             features: features,
             url: () => {
                 if (this.cql_filter.length > 0) {
-                    return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
+                    return `${this.geoserver_url}/wfs?service=WFS&` +
                         `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
                         `outputFormat=application/json&srsname=EPSG:3857&cql_filter=status='${status}' AND ${this.cql_filter}`;
                 }
-                return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
+                return `${this.geoserver_url}/wfs?service=WFS&` +
                     `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
                     `outputFormat=application/json&srsname=EPSG:3857&cql_filter=status='${status}' AND taxonomy_class_id IN (-1)`;
             },

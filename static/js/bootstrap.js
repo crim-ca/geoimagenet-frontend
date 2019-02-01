@@ -12,7 +12,6 @@ mobx.configure({
 
 addEventListener('DOMContentLoaded', () => {
     const map_manager = new MapManager(
-        SERVER_PROTOCOL,
         GEOSERVER_URL,
         GEOIMAGENET_API_URL,
         ANNOTATION_NAMESPACE_URI,
