@@ -1,11 +1,17 @@
-import {MODE} from './constants.js';
+import {
+    MODE,
+    ANNOTATION,
+    IMAGES_NRG,
+    IMAGES_RGB, BING_API_KEY,
+    Z_INDEX,
+} from './constants.js';
 import {store} from './store.js';
 import {notifier} from './utils/notifications.js'
 import {make_http_request} from './utils/http.js';
 
-
-const create_vector_layer = (source, color) => {
+const create_vector_layer = (title, source, color) => {
     return new ol.layer.Vector({
+        title: title,
         source: source,
         style: new ol.style.Style({
             fill: new ol.style.Fill({
@@ -46,11 +52,14 @@ export class MapManager {
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
 
+        const style = getComputedStyle(document.body);
+        const color_new = style.getPropertyValue('--color-new');
         this.new_annotations_collection = new ol.Collection();
         this.released_annotations_collection = new ol.Collection();
+        this.new_annotations_source = this.create_vector_source(this.new_annotations_collection, ANNOTATION.STATUS.NEW);
+        this.new_annotations_layer = create_vector_layer(ANNOTATION.STATUS.NEW, this.new_annotations_source, color_new);
 
-        this.new_annotations_source = this.create_vector_source(this.new_annotations_collection, 'false');
-        this.released_annotations_source = this.create_vector_source(this.released_annotations_collection, 'true');
+        this.released_annotations_source = this.create_vector_source(this.released_annotations_collection, ANNOTATION.STATUS.RELEASED);
 
         this.modify = new ol.interaction.Modify({
             features: this.new_annotations_collection,
@@ -156,14 +165,11 @@ export class MapManager {
 
         this.features = new ol.Collection();
 
-        const style = getComputedStyle(document.body);
-        const color_new = style.getPropertyValue('--color-new');
         const color_released = style.getPropertyValue('--color-released');
 
-        this.new_annotations_layer = create_vector_layer(this.new_annotations_source, color_new);
         this.new_annotations_layer.setMap(this.map);
 
-        this.released_annotations_layer = create_vector_layer(this.released_annotations_source, color_released);
+        this.released_annotations_layer = create_vector_layer(ANNOTATION.STATUS.RELEASED, this.released_annotations_source, color_released);
         this.released_annotations_layer.setMap(this.map);
 
         this.formatGeoJson = new ol.format.GeoJSON({
@@ -193,8 +199,7 @@ export class MapManager {
         this.register_geoserver_url_button();
     }
 
-    // FIXME released_value will be only boolean until enum on status is implemented
-    create_vector_source(features, released_value) {
+    create_vector_source(features, status) {
         return new ol.source.Vector({
             format: new ol.format.GeoJSON(),
             features: features,
@@ -202,11 +207,11 @@ export class MapManager {
                 if (this.cql_filter.length > 0) {
                     return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
                         `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                        'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=released=${released_value} AND ${this.cql_filter}`;
+                        `outputFormat=application/json&srsname=EPSG:3857&cql_filter=status='${status}' AND ${this.cql_filter}`;
                 }
                 return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
                     `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                    'outputFormat=application/json&srsname=EPSG:3857&cql_filter=released=' + released_value;
+                    `outputFormat=application/json&srsname=EPSG:3857&cql_filter=status='${status}' AND taxonomy_class_id IN (-1)`;
             },
             strategy: ol.loadingstrategy.bbox
         });
@@ -301,38 +306,78 @@ export class MapManager {
     }
 
     make_layers() {
-        const raster = new ol.layer.Tile({
+        const base_maps = [];
+        base_maps.push(new ol.layer.Tile({
             title: 'OSM',
             type: 'base',
             source: new ol.source.OSM(),
-        });
-        const vector = new ol.layer.Vector({
-            source: this.new_annotations_source,
-            style: new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'rgba(0, 0, 255, 1.0)',
-                    width: 2
-                })
-            })
-        });
-        const some_image = new ol.layer.Tile({
-            title: 'image',
-            source: new ol.source.TileWMS({
-                url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
-                params: {'LAYERS': 'GeoImageNet:Pleiades_RGB'},
-                ratio: 1,
-                serverType: 'geoserver',
+            zIndex:Z_INDEX.BASEMAP,
+            visible: false,
+        }));
+        base_maps.push(new ol.layer.Tile({
+            title: 'Aerial with labels',
+            type: 'base',
+            preload: Infinity,
+            source: new ol.source.BingMaps({
+                key: BING_API_KEY,
+                imagerySet: 'AerialWithLabels',
             }),
+            zIndex:Z_INDEX.BASEMAP,
+            visible: false,
+        }));
+        base_maps.push(new ol.layer.Tile({
+            title: 'Aerial',
+            type: 'base',
+            preload: Infinity,
+            source: new ol.source.BingMaps({
+                key: BING_API_KEY,
+                imagerySet: 'Aerial',
+            }),
+            zIndex:Z_INDEX.BASEMAP,
+        }));
+        const NRG_layers = [];
+        IMAGES_NRG.forEach(i => {
+            NRG_layers.push(new ol.layer.Tile({
+                title: i,
+                source: new ol.source.TileWMS({
+                    url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
+                    params: {'LAYERS': `GeoImageNet:${i}`},
+                    ratio: 1,
+                    serverType: 'geoserver',
+                }),
+                visible: false,
+            }));
+        });
+        const RGB_layers = [];
+        IMAGES_RGB.forEach(i => {
+            RGB_layers.push(new ol.layer.Tile({
+                title: i,
+                source: new ol.source.TileWMS({
+                    url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
+                    params: {'LAYERS': `GeoImageNet:${i}`},
+                    ratio: 1,
+                    serverType: 'geoserver',
+                }),
+                visible: false,
+            }));
         });
         return [
             new ol.layer.Group({
+                title: 'RGB Images',
+                layers: RGB_layers
+            }),
+            new ol.layer.Group({
+                title: 'NRG Images',
+                layers: NRG_layers
+            }),
+            new ol.layer.Group({
                 title: 'Base maps',
-                layers: [raster, some_image]
+                layers: base_maps
             }),
             new ol.layer.Group({
                 title: 'Annotations',
-                layers: [vector]
-            })
+                layers: [this.new_annotations_layer]
+            }),
         ];
     }
 

@@ -1,4 +1,10 @@
 :root {
+    --line-height: 20px;
+    --border-height: 1px;
+    --padding-height: 10px;
+
+    --total-handle-height: calc(var(--line-height) + var(--border-height) + ( 2 * var(--padding-height) ));
+
     --color-new: rgba(255, 247, 0, 0.9);
     --color-released: rgba(238, 97, 0, 0.9);
     --color-validated: rgba(0, 170, 5, 0.9);
@@ -122,4 +128,31 @@ div.taxonomy button {
 }
 span.selected {
     background-color: var(--selected-taxonomy-element-background);
+}
+button.section-handle {
+    line-height: var(--line-height);
+    border-top: var(--border-height) solid var(--light-gray);
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    padding: var(--padding-height) 0;
+}
+section.opened {
+    height: calc(100% - (2 * var(--total-handle-height)));
+    overflow-y: auto;
+}
+section.opened button.section-handle {
+    background-color: var(--light-gray);
+}
+section.closed {
+    height: var(--total-handle-height);
+    overflow: hidden;
+}
+div.layer-switcher-container {
+    height: 800px;
+}
+div.layer-switcher-container div.layer-switcher {
+    height: inherit;
+    overflow-y: scroll;
 }

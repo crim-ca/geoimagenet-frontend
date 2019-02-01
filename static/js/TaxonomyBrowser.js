@@ -87,6 +87,7 @@ export class TaxonomyBrowser {
         mobx.autorun(() => {
             remove_children(this.taxonomy_classes_root);
             this.construct_children(this.taxonomy_classes_root, store.selected_taxonomy.elements, true);
+            this.check_all_checkboxes_hack();
         });
 
         const load_taxonomy_by_id = (taxonomy_class_root_id) => {
@@ -98,6 +99,18 @@ export class TaxonomyBrowser {
                 })
                 .catch(err => console.log(err));
         };
+    }
+
+    check_all_checkboxes_hack() {
+        this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]').forEach(c => {
+            c.checked = true;
+        });
+        const selection = [];
+        const checkboxes = this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]:checked');
+        checkboxes.forEach(checkbox => {
+            selection.push(checkbox.value);
+        });
+        set_visible_classes(selection);
     }
 
     construct_children(this_level_root, collection, level_is_opened = false) {

@@ -27,9 +27,14 @@
 <div id="map" class="map"></div>
 <div class="right paper">
     <div id="actions" class="actions"></div>
-    <span id="mode_indicator"></span>
-    <div id="taxonomy" class="taxonomy"></div>
-    <ul id="taxonomy_classes" class="taxonomy_classes"></ul>
-    <div id="layer-switcher"></div>
+    <section class="taxonomy opened">
+        <button class="section-handle">{{ gettext('Taxonomies and Classes') }}</button>
+        <div id="taxonomy" class="taxonomy"></div>
+        <ul id="taxonomy_classes" class="taxonomy_classes"></ul>
+    </section>
+    <section class="layer-switcher closed">
+        <button class="section-handle">{{ gettext('Basemaps, Images and Filters') }}</button>
+        <div id="layer-switcher" class="layer-switcher-container"></div>
+    </section>
 </div>
 {% endblock %}
