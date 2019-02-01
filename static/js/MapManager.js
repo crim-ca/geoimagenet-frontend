@@ -7,7 +7,7 @@ import {
 } from './constants.js';
 import {store} from './store.js';
 import {notifier} from './utils/notifications.js'
-import {make_http_request} from './utils/http.js';
+import {create_geojson_feature, delete_geojson_feature, modify_geojson_features} from './data-queries.js';
 
 const create_vector_layer = (title, source, color) => {
     return new ol.layer.Vector({
@@ -45,12 +45,16 @@ export class MapManager {
         this.released_annotations_source.refresh(true);
     }
 
-    constructor(geoserver_url, geoimagenet_api_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
+    constructor(geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
 
         this.geoserver_url = geoserver_url;
-        this.geoimagenet_api_url = geoimagenet_api_url;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
+
+        // bind class methods passed as event handlers to prevent the changed execution context from breaking class functionality
+        this.receive_drawend_event = this.receive_drawend_event.bind(this);
+        this.receive_modifyend_event = this.receive_modifyend_event.bind(this);
+        this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
 
         const style = getComputedStyle(document.body);
         const color_new = style.getPropertyValue('--color-new');
@@ -64,27 +68,16 @@ export class MapManager {
         this.modify = new ol.interaction.Modify({
             features: this.new_annotations_collection,
         });
-        this.modify.on('modifyend', (e) => {
-            let modifiedFeatures = [];
-            e.features.forEach((feature) => {
-                if (feature.revision_ >= 1) {
-                    modifiedFeatures.push(feature);
-                    feature.revision_ = 0;
-                }
-            });
-            this.geoJsonPut(modifiedFeatures);
-        });
-        this.new_annotations_collection.on('add', (e) => {
-            e.element.revision_ = 0;
-        });
         this.draw = new ol.interaction.Draw({
             source: this.new_annotations_source,
             type: 'Polygon',
         });
-        this.draw.on('drawend', (e) => {
-            const feature = e.feature;
-            this.new_annotations_source.refresh();
-            this.geoJsonPost(feature);
+
+        this.draw.on('drawend', this.receive_drawend_event);
+        this.modify.on('modifyend', this.receive_modifyend_event);
+
+        this.new_annotations_collection.on('add', (e) => {
+            e.element.revision_ = 0;
         });
 
         mobx.autorun(() => {
@@ -139,19 +132,7 @@ export class MapManager {
         });
         this.map.addControl(this.mouse_position);
 
-        this.map.getViewport().addEventListener('click', event => {
-            this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), feature => {
-                if (store.mode === MODE.DELETE) {
-                    notifier.confirm(`Do you really want to delete the highlighted feature?`)
-                        .then(() => {
-                            this.geoJsonDelete(feature);
-                        })
-                        .catch((err) => {
-                            console.log('rejected: %o', err);
-                        });
-                }
-            });
-        });
+        this.map.getViewport().addEventListener('click', this.receive_map_viewport_click_event);
 
         // create layer switcher, populate with base layers and feature layers
         this.layer_switcher = new ol.control.LayerSwitcher({
@@ -198,6 +179,68 @@ export class MapManager {
 
     }
 
+    async receive_drawend_event(event) {
+
+        const feature = event.feature;
+        feature.setProperties({
+            taxonomy_class_id: store.selected_taxonomy_class_id,
+            annotator_id: 1,
+            image_name: 'My Image',
+        });
+        const payload = this.formatGeoJson.writeFeature(feature);
+
+        try {
+            const new_feature_id = await create_geojson_feature(payload);
+            feature.setId(`${this.annotation_layer}.${new_feature_id}`);
+        } catch (error) {
+            MapManager.geojsonLogError(error);
+        }
+
+    }
+
+    async receive_modifyend_event(event) {
+
+        let modifiedFeatures = [];
+        event.features.forEach((feature) => {
+            if (feature.revision_ >= 1) {
+                modifiedFeatures.push(feature);
+                feature.revision_ = 0;
+            }
+        });
+        let payload = this.formatGeoJson.writeFeatures(modifiedFeatures);
+
+        try {
+            await modify_geojson_features(payload);
+        } catch (error) {
+            MapManager.geojsonLogError(error);
+        }
+
+    }
+
+    receive_map_viewport_click_event(event) {
+
+        this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), async feature => {
+            if (store.mode === MODE.DELETE) {
+                // TODO the feature to be deleted should be highlited at this point
+                await notifier.confirm(`Do you really want to delete the highlighted feature?`);
+
+                let payload = JSON.stringify([feature.getId()]);
+
+                // TODO deleting annotations that are of a higher status than new should be reserved to users with higher rights
+
+                try {
+                    await delete_geojson_feature(payload);
+                    // FIXME the feature is not necessarily from the new_annotations source
+                    // find the right source from which to remove it
+                    this.new_annotations_source.removeFeature(feature);
+                } catch (error) {
+                    MapManager.geojsonLogError(error);
+                }
+            }
+        });
+
+    }
+
     create_vector_source(features, status) {
         return new ol.source.Vector({
             format: new ol.format.GeoJSON(),
@@ -216,55 +259,6 @@ export class MapManager {
         });
     }
 
-    geoJsonPost(feature) {
-        feature.setProperties({
-            taxonomy_class_id: store.selected_taxonomy_class_id,
-            annotator_id: 1,
-            image_name: 'My Image',
-        });
-        let payload = this.formatGeoJson.writeFeature(feature);
-        make_http_request(`${this.geoimagenet_api_url}/annotations`, {
-            method: "POST",
-            headers: {'Content-Type': 'application/json'},
-            body: payload,
-        }).then((response) => {
-            return response.json();
-        }).then((responseJson) => {
-            feature.setId(`${this.annotation_layer}.${responseJson}`);
-        }).catch(error => {
-            MapManager.geojsonLogError(error);
-        });
-    }
-
-    geoJsonPut(features) {
-        let payload = this.formatGeoJson.writeFeatures(features);
-        make_http_request(`${this.geoimagenet_api_url}/annotations`, {
-            method: "PUT",
-            headers: {'Content-Type': 'application/json'},
-            body: payload,
-        }).then(() => {
-            // FIXME refreshing everything is probably not efficient
-            this.refresh();
-        }).catch(error => {
-            MapManager.geojsonLogError(error);
-        });
-    }
-
-    geoJsonDelete(feature) {
-        let payload = JSON.stringify([feature.getId()]);
-        // TODO verify if deleting annotations can only happen on new, unreleased annotations
-        // otherwise, this is a bit more complicated, as the feature could be on any of the layers (and vector sources)
-        make_http_request(`${this.geoimagenet_api_url}/annotations`, {
-            method: "DELETE",
-            headers: {'Content-Type': 'application/json'},
-            body: payload,
-        }).then((response) => {
-            this.new_annotations_source.removeFeature(feature);
-        }).catch(error => {
-            MapManager.geojsonLogError(error);
-        });
-    }
-
     static geojsonLogError(error) {
         notifier.err('The api rejected our request. There is likely more information in the console.');
         console.log('we had a problem with the geojson transaction: %o', error);
@@ -276,7 +270,7 @@ export class MapManager {
             title: 'OSM',
             type: 'base',
             source: new ol.source.OSM(),
-            zIndex:Z_INDEX.BASEMAP,
+            zIndex: Z_INDEX.BASEMAP,
             visible: false,
         }));
         base_maps.push(new ol.layer.Tile({
@@ -287,7 +281,7 @@ export class MapManager {
                 key: BING_API_KEY,
                 imagerySet: 'AerialWithLabels',
             }),
-            zIndex:Z_INDEX.BASEMAP,
+            zIndex: Z_INDEX.BASEMAP,
             visible: false,
         }));
         base_maps.push(new ol.layer.Tile({
@@ -298,7 +292,7 @@ export class MapManager {
                 key: BING_API_KEY,
                 imagerySet: 'Aerial',
             }),
-            zIndex:Z_INDEX.BASEMAP,
+            zIndex: Z_INDEX.BASEMAP,
         }));
         const NRG_layers = [];
         IMAGES_NRG.forEach(i => {

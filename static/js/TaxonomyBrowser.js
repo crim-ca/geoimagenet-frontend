@@ -10,15 +10,13 @@ import {
 } from './utils/dom.js';
 import {
     store,
-    set_taxonomy,
     set_taxonomy_class,
     select_taxonomy_class,
     set_selected_taxonomy,
     set_visible_classes
 } from './store.js';
-import {notifier} from "./utils/notifications.js";
-import {make_http_request} from "./utils/http.js";
-import {release_annotations_by_taxonomy_class_id} from './data-queries.js'
+import {notifier} from './utils/notifications.js';
+import {fetch_taxonomy_classes_by_root_class_id, release_annotations_by_taxonomy_class_id} from './data-queries.js'
 
 export class TaxonomyBrowser {
 
@@ -47,7 +45,7 @@ export class TaxonomyBrowser {
         };
 
         this.release_annotations_user_interaction = taxonomy_class_id => {
-            notifier.confirm("Do you really want to release all the annotations of the selected class, as well as its children?")
+            notifier.confirm('Do you really want to release all the annotations of the selected class, as well as its children?')
                 .then(() => {
                     release_annotations_by_taxonomy_class_id(taxonomy_class_id)
                         .then(() => {
@@ -60,18 +58,11 @@ export class TaxonomyBrowser {
                 });
         };
 
-        make_http_request(`${GEOIMAGENET_API_URL}/taxonomy`)
-            .then(res => res.json())
-            .then(json => {
-                set_taxonomy(json);
-            })
-            .catch(err => console.log(err));
-
         mobx.autorun(() => {
             remove_children(this.taxonomy_root);
             store.taxonomy.forEach(taxonomy => {
                 const version = taxonomy['versions'][0];
-                const b = button(text_node(taxonomy['name']), () => {
+                const b = button(text_node(taxonomy['name']), async () => {
                     set_selected_taxonomy({
                         id: version['taxonomy_id'],
                         name: taxonomy['name'],
@@ -79,7 +70,12 @@ export class TaxonomyBrowser {
                         taxonomy_class_root_id: version['taxonomy_class_root_id'],
                         elements: [],
                     });
-                    load_taxonomy_by_id(version['taxonomy_class_root_id']);
+                    try {
+                        const taxonomy_classes = await fetch_taxonomy_classes_by_root_class_id(version['taxonomy_class_root_id']);
+                        set_taxonomy_class([taxonomy_classes]);
+                    } catch (e) {
+                        notifier.err('We were unable to fetch the taxonomy classes.');
+                    }
                 });
                 this.taxonomy_root.appendChild(b);
             });
@@ -90,16 +86,6 @@ export class TaxonomyBrowser {
             this.construct_children(this.taxonomy_classes_root, store.selected_taxonomy.elements, true);
             this.check_all_checkboxes_hack();
         });
-
-        const load_taxonomy_by_id = (taxonomy_class_root_id) => {
-            let url = `${GEOIMAGENET_API_URL}/taxonomy_classes/${taxonomy_class_root_id}`;
-            make_http_request(url)
-                .then(res => res.json())
-                .then(json => {
-                    set_taxonomy_class([json]);
-                })
-                .catch(err => console.log(err));
-        };
     }
 
     check_all_checkboxes_hack() {
