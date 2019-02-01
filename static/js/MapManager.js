@@ -1,4 +1,10 @@
-import {MODE, ANNOTATION, IMAGES_NRG, IMAGES_RGB} from './constants.js';
+import {
+    MODE,
+    ANNOTATION,
+    IMAGES_NRG,
+    IMAGES_RGB, BING_API_KEY,
+    Z_INDEX,
+} from './constants.js';
 import {store} from './store.js';
 import {notifier} from './utils/notifications.js'
 import {make_http_request} from './utils/http.js';
@@ -300,12 +306,35 @@ export class MapManager {
     }
 
     make_layers() {
-        const raster = new ol.layer.Tile({
+        const base_maps = [];
+        base_maps.push(new ol.layer.Tile({
             title: 'OSM',
             type: 'base',
             source: new ol.source.OSM(),
-            zIndex: -10
-        });
+            zIndex:Z_INDEX.BASEMAP,
+            visible: false,
+        }));
+        base_maps.push(new ol.layer.Tile({
+            title: 'Aerial with labels',
+            type: 'base',
+            preload: Infinity,
+            source: new ol.source.BingMaps({
+                key: BING_API_KEY,
+                imagerySet: 'AerialWithLabels',
+            }),
+            zIndex:Z_INDEX.BASEMAP,
+            visible: false,
+        }));
+        base_maps.push(new ol.layer.Tile({
+            title: 'Aerial',
+            type: 'base',
+            preload: Infinity,
+            source: new ol.source.BingMaps({
+                key: BING_API_KEY,
+                imagerySet: 'Aerial',
+            }),
+            zIndex:Z_INDEX.BASEMAP,
+        }));
         const NRG_layers = [];
         IMAGES_NRG.forEach(i => {
             NRG_layers.push(new ol.layer.Tile({
@@ -343,7 +372,7 @@ export class MapManager {
             }),
             new ol.layer.Group({
                 title: 'Base maps',
-                layers: [raster]
+                layers: base_maps
             }),
             new ol.layer.Group({
                 title: 'Annotations',

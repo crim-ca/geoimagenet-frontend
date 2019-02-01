@@ -1,3 +1,9 @@
+export const BING_API_KEY = 'AtXX65CBBfZXBxm6oMyf_5idMAMI7W6a5GuZ5acVcrYi6lCQayiiBz7_aMHB7JR7';
+
+export const Z_INDEX = {
+    BASEMAP: -10,
+};
+
 export const MODE = {
     VISUALIZE: 'VISUALIZE',
     DUPLICATE: 'DUPLICATE',
