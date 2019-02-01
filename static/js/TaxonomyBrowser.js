@@ -94,7 +94,7 @@ export class TaxonomyBrowser {
             make_http_request(url)
                 .then(res => res.json())
                 .then(json => {
-                    set_taxonomy_class(json);
+                    set_taxonomy_class([json]);
                 })
                 .catch(err => console.log(err));
         };
