@@ -3,8 +3,9 @@ import {store} from './store.js';
 import {notifier} from './utils/notifications.js'
 import {make_http_request} from './utils/http.js';
 
-const create_vector_layer = (source, color) => {
+const create_vector_layer = (title, source, color) => {
     return new ol.layer.Vector({
+        title: title,
         source: source,
         style: new ol.style.Style({
             fill: new ol.style.Fill({
@@ -45,10 +46,13 @@ export class MapManager {
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
 
+        const style = getComputedStyle(document.body);
+        const color_new = style.getPropertyValue('--color-new');
         this.new_annotations_collection = new ol.Collection();
         this.released_annotations_collection = new ol.Collection();
-
         this.new_annotations_source = this.create_vector_source(this.new_annotations_collection, ANNOTATION.STATUS.NEW);
+        this.new_annotations_layer = create_vector_layer(ANNOTATION.STATUS.NEW, this.new_annotations_source, color_new);
+
         this.released_annotations_source = this.create_vector_source(this.released_annotations_collection, ANNOTATION.STATUS.RELEASED);
 
         this.modify = new ol.interaction.Modify({
@@ -155,14 +159,11 @@ export class MapManager {
 
         this.features = new ol.Collection();
 
-        const style = getComputedStyle(document.body);
-        const color_new = style.getPropertyValue('--color-new');
         const color_released = style.getPropertyValue('--color-released');
 
-        this.new_annotations_layer = create_vector_layer(this.new_annotations_source, color_new);
         this.new_annotations_layer.setMap(this.map);
 
-        this.released_annotations_layer = create_vector_layer(this.released_annotations_source, color_released);
+        this.released_annotations_layer = create_vector_layer(ANNOTATION.STATUS.RELEASED, this.released_annotations_source, color_released);
         this.released_annotations_layer.setMap(this.map);
 
         this.formatGeoJson = new ol.format.GeoJSON({
@@ -305,17 +306,7 @@ export class MapManager {
             type: 'base',
             source: new ol.source.OSM(),
         });
-        const vector = new ol.layer.Vector({
-            source: this.new_annotations_source,
-            style: new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'rgba(0, 0, 255, 1.0)',
-                    width: 2
-                })
-            })
-        });
         const layers = [];
-        layers.push(raster);
         IMAGES_NRG.forEach(i => {
             layers.push(new ol.layer.Tile({
                 title: i,
@@ -329,13 +320,17 @@ export class MapManager {
         });
         return [
             new ol.layer.Group({
-                title: 'Base maps',
-                layers: layers
+                title: 'Annotations',
+                layers: [this.new_annotations_layer]
             }),
             new ol.layer.Group({
-                title: 'Annotations',
-                layers: [vector]
-            })
+                title: 'Base maps',
+                layers: [raster]
+            }),
+            new ol.layer.Group({
+                title: 'NRG Images',
+                layers: layers
+            }),
         ];
     }
 
