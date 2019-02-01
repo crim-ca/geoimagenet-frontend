@@ -305,7 +305,7 @@ export class MapManager {
             NRG_layers.push(new ol.layer.Tile({
                 title: i,
                 source: new ol.source.TileWMS({
-                    url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
+                    url: `${this.geoserver_url}/GeoImageNet/wms`,
                     params: {'LAYERS': `GeoImageNet:${i}`},
                     ratio: 1,
                     serverType: 'geoserver',
@@ -318,7 +318,7 @@ export class MapManager {
             RGB_layers.push(new ol.layer.Tile({
                 title: i,
                 source: new ol.source.TileWMS({
-                    url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
+                    url: `${this.geoserver_url}/GeoImageNet/wms`,
                     params: {'LAYERS': `GeoImageNet:${i}`},
                     ratio: 1,
                     serverType: 'geoserver',
