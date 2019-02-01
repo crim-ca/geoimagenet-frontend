@@ -18,6 +18,7 @@ import {
     set_visible_classes
 } from './store.js';
 import {notifier} from "./utils/notifications.js";
+import {make_http_request} from "./utils/http.js";
 
 export class TaxonomyBrowser {
 
@@ -58,7 +59,7 @@ export class TaxonomyBrowser {
                 });
         };
 
-        fetch(`${SERVER_PROTOCOL}${GEOIMAGENET_API_URL}/taxonomy`)
+        make_http_request(`${SERVER_PROTOCOL}${GEOIMAGENET_API_URL}/taxonomy`)
             .then(res => res.json())
             .then(json => {
                 set_taxonomy(json);
@@ -77,7 +78,6 @@ export class TaxonomyBrowser {
                         taxonomy_class_root_id: version['taxonomy_class_root_id'],
                         elements: [],
                     });
-                    console.log(taxonomy);
                     load_taxonomy_by_id(version['taxonomy_class_root_id']);
                 });
                 this.taxonomy_root.appendChild(b);
@@ -91,7 +91,7 @@ export class TaxonomyBrowser {
 
         const load_taxonomy_by_id = (taxonomy_class_root_id) => {
             let url = `${SERVER_PROTOCOL}${GEOIMAGENET_API_URL}/taxonomy_classes/${taxonomy_class_root_id}`;
-            fetch(url)
+            make_http_request(url)
                 .then(res => res.json())
                 .then(json => {
                     set_taxonomy_class(json);
