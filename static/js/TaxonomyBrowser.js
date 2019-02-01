@@ -58,7 +58,7 @@ export class TaxonomyBrowser {
                 });
         };
 
-        fetch(`/taxonomy`)
+        fetch(`${SERVER_PROTOCOL}${GEOIMAGENET_API_URL}/taxonomy`)
             .then(res => res.json())
             .then(json => {
                 set_taxonomy(json);
@@ -74,9 +74,11 @@ export class TaxonomyBrowser {
                         id: version['taxonomy_id'],
                         name: taxonomy['name'],
                         version: version['version'],
+                        taxonomy_class_root_id: version['taxonomy_class_root_id'],
                         elements: [],
                     });
-                    load_taxonomy_by_id(version['taxonomy_id']);
+                    console.log(taxonomy);
+                    load_taxonomy_by_id(version['taxonomy_class_root_id']);
                 });
                 this.taxonomy_root.appendChild(b);
             });
@@ -87,8 +89,9 @@ export class TaxonomyBrowser {
             this.construct_children(this.taxonomy_classes_root, store.selected_taxonomy.elements, true);
         });
 
-        const load_taxonomy_by_id = id => {
-            fetch(`/taxonomy/${id}`)
+        const load_taxonomy_by_id = (taxonomy_class_root_id) => {
+            let url = `${SERVER_PROTOCOL}${GEOIMAGENET_API_URL}/taxonomy_classes/${taxonomy_class_root_id}`;
+            fetch(url)
                 .then(res => res.json())
                 .then(json => {
                     set_taxonomy_class(json);
