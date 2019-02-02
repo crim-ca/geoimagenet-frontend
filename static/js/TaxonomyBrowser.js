@@ -6,19 +6,17 @@ import {
     button,
     span,
     remove_children,
-    stylable_checkbox,
-    get_parent_by_tag_name
+    stylable_checkbox
 } from './utils/dom.js';
 import {
     store,
-    set_taxonomy,
     set_taxonomy_class,
     select_taxonomy_class,
     set_selected_taxonomy,
     set_visible_classes
 } from './store.js';
-import {notifier} from "./utils/notifications.js";
-import {make_http_request} from "./utils/http.js";
+import {notifier} from './utils/notifications.js';
+import {fetch_taxonomy_classes_by_root_class_id, release_annotations_by_taxonomy_class_id} from './data-queries.js'
 
 export class TaxonomyBrowser {
 
@@ -27,6 +25,8 @@ export class TaxonomyBrowser {
         this.taxonomy_classes_root = get_by_id('taxonomy_classes');
         this.taxonomy_root = get_by_id('taxonomy');
         this.map_manager = map_manager;
+
+        this.release_annotations_user_interaction = this.release_annotations_user_interaction.bind(this);
 
         this.toggle_classes_click_handler = (event) => {
             /*
@@ -46,31 +46,11 @@ export class TaxonomyBrowser {
             set_visible_classes(selection);
         };
 
-        this.release_annotations_click_handler = (event) => {
-            notifier.confirm("Do you really want to release all the annotations of the selected class, as well as its children?")
-                .then(() => {
-                    const parent_li = get_parent_by_tag_name(event.target, 'li');
-                    const checkboxes = parent_li.querySelectorAll('input[type=checkbox');
-                    const values = [];
-                    checkboxes.forEach(c => {
-                        values.push(parseInt(c.value));
-                    });
-                    this.map_manager.release_features_by_ids_list(values);
-                });
-        };
-
-        make_http_request(`${SERVER_PROTOCOL}${GEOIMAGENET_API_URL}/taxonomy`)
-            .then(res => res.json())
-            .then(json => {
-                set_taxonomy(json);
-            })
-            .catch(err => console.log(err));
-
         mobx.autorun(() => {
             remove_children(this.taxonomy_root);
             store.taxonomy.forEach(taxonomy => {
                 const version = taxonomy['versions'][0];
-                const b = button(text_node(taxonomy['name']), () => {
+                const b = button(text_node(taxonomy['name']), async () => {
                     set_selected_taxonomy({
                         id: version['taxonomy_id'],
                         name: taxonomy['name'],
@@ -78,7 +58,12 @@ export class TaxonomyBrowser {
                         taxonomy_class_root_id: version['taxonomy_class_root_id'],
                         elements: [],
                     });
-                    load_taxonomy_by_id(version['taxonomy_class_root_id']);
+                    try {
+                        const taxonomy_classes = await fetch_taxonomy_classes_by_root_class_id(version['taxonomy_class_root_id']);
+                        set_taxonomy_class([taxonomy_classes]);
+                    } catch (e) {
+                        notifier.err('We were unable to fetch the taxonomy classes.');
+                    }
                 });
                 this.taxonomy_root.appendChild(b);
             });
@@ -89,16 +74,6 @@ export class TaxonomyBrowser {
             this.construct_children(this.taxonomy_classes_root, store.selected_taxonomy.elements, true);
             this.check_all_checkboxes_hack();
         });
-
-        const load_taxonomy_by_id = (taxonomy_class_root_id) => {
-            let url = `${SERVER_PROTOCOL}${GEOIMAGENET_API_URL}/taxonomy_classes/${taxonomy_class_root_id}`;
-            make_http_request(url)
-                .then(res => res.json())
-                .then(json => {
-                    set_taxonomy_class([json]);
-                })
-                .catch(err => console.log(err));
-        };
     }
 
     check_all_checkboxes_hack() {
@@ -111,6 +86,22 @@ export class TaxonomyBrowser {
             selection.push(checkbox.value);
         });
         set_visible_classes(selection);
+    }
+
+    async release_annotations_user_interaction(taxonomy_class_id) {
+
+        await notifier.confirm('Do you really want to release all the annotations of the selected class, as well as its children?');
+
+        try {
+
+            await release_annotations_by_taxonomy_class_id(taxonomy_class_id);
+            notifier.ok('Annotations were released.');
+            // TODO only refesh the concerned layer
+            this.map_manager.refresh();
+
+        } catch (error) {
+            notifier.err('We were unable to release the annotations.')
+        }
     }
 
     construct_children(this_level_root, collection, level_is_opened = false) {
@@ -133,7 +124,10 @@ export class TaxonomyBrowser {
 
             const actions = span(null, 'actions');
             actions.appendChild(stylable_checkbox(taxonomy_class.id, 'checkbox_eye', this.toggle_classes_click_handler));
-            actions.appendChild(button(span(null, 'fas', 'fa-paper-plane', 'fa-lg', 'release'), this.release_annotations_click_handler));
+            actions.appendChild(button(
+                span(null, 'fas', 'fa-paper-plane', 'fa-lg', 'release'),
+                () => this.release_annotations_user_interaction(taxonomy_class.id)
+            ));
 
             taxonomy_class_list_element.appendChild(text);
             taxonomy_class_list_element.appendChild(actions);

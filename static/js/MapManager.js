@@ -7,7 +7,7 @@ import {
 } from './constants.js';
 import {store} from './store.js';
 import {notifier} from './utils/notifications.js'
-import {make_http_request} from './utils/http.js';
+import {create_geojson_feature, delete_geojson_feature, modify_geojson_features} from './data-queries.js';
 
 const create_vector_layer = (title, source, color) => {
     return new ol.layer.Vector({
@@ -45,12 +45,16 @@ export class MapManager {
         this.released_annotations_source.refresh(true);
     }
 
-    constructor(protocol, geoserver_url, geoimagenet_api_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
+    constructor(geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
 
-        this.geoserver_url = protocol + geoserver_url;
-        this.geoimagenet_api_url = protocol + geoimagenet_api_url;
+        this.geoserver_url = geoserver_url;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
+
+        // bind class methods passed as event handlers to prevent the changed execution context from breaking class functionality
+        this.receive_drawend_event = this.receive_drawend_event.bind(this);
+        this.receive_modifyend_event = this.receive_modifyend_event.bind(this);
+        this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
 
         const style = getComputedStyle(document.body);
         const color_new = style.getPropertyValue('--color-new');
@@ -64,27 +68,16 @@ export class MapManager {
         this.modify = new ol.interaction.Modify({
             features: this.new_annotations_collection,
         });
-        this.modify.on('modifyend', (e) => {
-            let modifiedFeatures = [];
-            e.features.forEach((feature) => {
-                if (feature.revision_ >= 1) {
-                    modifiedFeatures.push(feature);
-                    feature.revision_ = 0;
-                }
-            });
-            this.geoJsonPut(modifiedFeatures);
-        });
-        this.new_annotations_collection.on('add', (e) => {
-            e.element.revision_ = 0;
-        });
         this.draw = new ol.interaction.Draw({
             source: this.new_annotations_source,
             type: 'Polygon',
         });
-        this.draw.on('drawend', (e) => {
-            const feature = e.feature;
-            this.new_annotations_source.refresh();
-            this.geoJsonPost(feature);
+
+        this.draw.on('drawend', this.receive_drawend_event);
+        this.modify.on('modifyend', this.receive_modifyend_event);
+
+        this.new_annotations_collection.on('add', (e) => {
+            e.element.revision_ = 0;
         });
 
         mobx.autorun(() => {
@@ -139,19 +132,7 @@ export class MapManager {
         });
         this.map.addControl(this.mouse_position);
 
-        this.map.getViewport().addEventListener('click', event => {
-            this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), feature => {
-                if (store.mode === MODE.DELETE) {
-                    notifier.confirm(`Do you really want to delete the highlighted feature?`)
-                        .then(() => {
-                            this.geoJsonDelete(feature);
-                        })
-                        .catch((err) => {
-                            console.log('rejected: %o', err);
-                        });
-                }
-            });
-        });
+        this.map.getViewport().addEventListener('click', this.receive_map_viewport_click_event);
 
         // create layer switcher, populate with base layers and feature layers
         this.layer_switcher = new ol.control.LayerSwitcher({
@@ -196,7 +177,68 @@ export class MapManager {
             }
         });
 
-        this.register_geoserver_url_button();
+    }
+
+    async receive_drawend_event(event) {
+
+        const feature = event.feature;
+        feature.setProperties({
+            taxonomy_class_id: store.selected_taxonomy_class_id,
+            annotator_id: 1,
+            image_name: 'My Image',
+        });
+        const payload = this.formatGeoJson.writeFeature(feature);
+
+        try {
+            const new_feature_id = await create_geojson_feature(payload);
+            feature.setId(`${this.annotation_layer}.${new_feature_id}`);
+        } catch (error) {
+            MapManager.geojsonLogError(error);
+        }
+
+    }
+
+    async receive_modifyend_event(event) {
+
+        let modifiedFeatures = [];
+        event.features.forEach((feature) => {
+            if (feature.revision_ >= 1) {
+                modifiedFeatures.push(feature);
+                feature.revision_ = 0;
+            }
+        });
+        let payload = this.formatGeoJson.writeFeatures(modifiedFeatures);
+
+        try {
+            await modify_geojson_features(payload);
+        } catch (error) {
+            MapManager.geojsonLogError(error);
+        }
+
+    }
+
+    receive_map_viewport_click_event(event) {
+
+        this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), async feature => {
+            if (store.mode === MODE.DELETE) {
+                // TODO the feature to be deleted should be highlited at this point
+                await notifier.confirm(`Do you really want to delete the highlighted feature?`);
+
+                let payload = JSON.stringify([feature.getId()]);
+
+                // TODO deleting annotations that are of a higher status than new should be reserved to users with higher rights
+
+                try {
+                    await delete_geojson_feature(payload);
+                    // FIXME the feature is not necessarily from the new_annotations source
+                    // find the right source from which to remove it
+                    this.new_annotations_source.removeFeature(feature);
+                } catch (error) {
+                    MapManager.geojsonLogError(error);
+                }
+            }
+        });
+
     }
 
     create_vector_source(features, status) {
@@ -205,98 +247,15 @@ export class MapManager {
             features: features,
             url: () => {
                 if (this.cql_filter.length > 0) {
-                    return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
+                    return `${this.geoserver_url}/wfs?service=WFS&` +
                         `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
                         `outputFormat=application/json&srsname=EPSG:3857&cql_filter=status='${status}' AND ${this.cql_filter}`;
                 }
-                return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
+                return `${this.geoserver_url}/wfs?service=WFS&` +
                     `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
                     `outputFormat=application/json&srsname=EPSG:3857&cql_filter=status='${status}' AND taxonomy_class_id IN (-1)`;
             },
             strategy: ol.loadingstrategy.bbox
-        });
-    }
-
-    release_features_by_ids_list(ids_list) {
-        const to_be_released = [];
-        this.new_annotations_source.getFeatures().forEach(feature => {
-            const feature_class_id = feature.get('taxonomy_class_id');
-            if (ids_list.includes(feature_class_id)) {
-                feature.set('released', true);
-                to_be_released.push(feature);
-            }
-        });
-        if (to_be_released.length > 0) {
-            this.geoJsonPut(to_be_released);
-        } else {
-            notifier.warn('No annotations of the selected class(es) are present currently. Nothing have been released.');
-        }
-    }
-
-    load_layers_from_geoserver() {
-        fetch(`${this.geoserver_url}/rest/layers`)
-            .then(res => {
-                console.log('received layers from geoserver: %o', res);
-            });
-    }
-
-    register_geoserver_url_button() {
-        const button = document.getElementById('populate-layer-switcher-button');
-        if (button) {
-            button.addEventListener('click', () => {
-                const input = document.getElementById('geoserver-url');
-                this.geoserver_url = input.value;
-                this.load_layers_from_geoserver();
-            });
-        }
-    }
-
-    geoJsonPost(feature) {
-        feature.setProperties({
-            taxonomy_class_id: store.selected_taxonomy_class_id,
-            annotator_id: 1,
-            image_name: 'My Image',
-        });
-        let payload = this.formatGeoJson.writeFeature(feature);
-        make_http_request(`${this.geoimagenet_api_url}/annotations`, {
-            method: "POST",
-            headers: {'Content-Type': 'application/json'},
-            body: payload,
-        }).then((response) => {
-            return response.json();
-        }).then((responseJson) => {
-            feature.setId(`${this.annotation_layer}.${responseJson}`);
-        }).catch(error => {
-            MapManager.geojsonLogError(error);
-        });
-    }
-
-    geoJsonPut(features) {
-        let payload = this.formatGeoJson.writeFeatures(features);
-        make_http_request(`${this.geoimagenet_api_url}/annotations`, {
-            method: "PUT",
-            headers: {'Content-Type': 'application/json'},
-            body: payload,
-        }).then(() => {
-            // FIXME refreshing everything is probably not efficient
-            this.refresh();
-        }).catch(error => {
-            MapManager.geojsonLogError(error);
-        });
-    }
-
-    geoJsonDelete(feature) {
-        let payload = JSON.stringify([feature.getId()]);
-        // TODO verify if deleting annotations can only happen on new, unreleased annotations
-        // otherwise, this is a bit more complicated, as the feature could be on any of the layers (and vector sources)
-        make_http_request(`${this.geoimagenet_api_url}/annotations`, {
-            method: "DELETE",
-            headers: {'Content-Type': 'application/json'},
-            body: payload,
-        }).then((response) => {
-            this.new_annotations_source.removeFeature(feature);
-        }).catch(error => {
-            MapManager.geojsonLogError(error);
         });
     }
 
@@ -311,7 +270,7 @@ export class MapManager {
             title: 'OSM',
             type: 'base',
             source: new ol.source.OSM(),
-            zIndex:Z_INDEX.BASEMAP,
+            zIndex: Z_INDEX.BASEMAP,
             visible: false,
         }));
         base_maps.push(new ol.layer.Tile({
@@ -322,7 +281,7 @@ export class MapManager {
                 key: BING_API_KEY,
                 imagerySet: 'AerialWithLabels',
             }),
-            zIndex:Z_INDEX.BASEMAP,
+            zIndex: Z_INDEX.BASEMAP,
             visible: false,
         }));
         base_maps.push(new ol.layer.Tile({
@@ -333,14 +292,14 @@ export class MapManager {
                 key: BING_API_KEY,
                 imagerySet: 'Aerial',
             }),
-            zIndex:Z_INDEX.BASEMAP,
+            zIndex: Z_INDEX.BASEMAP,
         }));
         const NRG_layers = [];
         IMAGES_NRG.forEach(i => {
             NRG_layers.push(new ol.layer.Tile({
                 title: i,
                 source: new ol.source.TileWMS({
-                    url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
+                    url: `${this.geoserver_url}/GeoImageNet/wms`,
                     params: {'LAYERS': `GeoImageNet:${i}`},
                     ratio: 1,
                     serverType: 'geoserver',
@@ -353,7 +312,7 @@ export class MapManager {
             RGB_layers.push(new ol.layer.Tile({
                 title: i,
                 source: new ol.source.TileWMS({
-                    url: `${this.geoserver_url}/geoserver/GeoImageNet/wms`,
+                    url: `${this.geoserver_url}/GeoImageNet/wms`,
                     params: {'LAYERS': `GeoImageNet:${i}`},
                     ratio: 1,
                     serverType: 'geoserver',
