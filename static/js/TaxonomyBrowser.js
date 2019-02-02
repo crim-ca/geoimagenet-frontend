@@ -26,6 +26,8 @@ export class TaxonomyBrowser {
         this.taxonomy_root = get_by_id('taxonomy');
         this.map_manager = map_manager;
 
+        this.release_annotations_user_interaction = this.release_annotations_user_interaction.bind(this);
+
         this.toggle_classes_click_handler = (event) => {
             /*
             when checking a checkbox, there can be children to be checked down the tree first
@@ -42,20 +44,6 @@ export class TaxonomyBrowser {
                 selection.push(checkbox.value);
             });
             set_visible_classes(selection);
-        };
-
-        this.release_annotations_user_interaction = taxonomy_class_id => {
-            notifier.confirm('Do you really want to release all the annotations of the selected class, as well as its children?')
-                .then(() => {
-                    release_annotations_by_taxonomy_class_id(taxonomy_class_id)
-                        .then(() => {
-                            notifier.ok('Annotations were released.');
-                            this.map_manager.refresh();
-                        })
-                        .catch(() => {
-                            notifier.err('We were unable to release the annotations.')
-                        });
-                });
         };
 
         mobx.autorun(() => {
@@ -98,6 +86,22 @@ export class TaxonomyBrowser {
             selection.push(checkbox.value);
         });
         set_visible_classes(selection);
+    }
+
+    async release_annotations_user_interaction(taxonomy_class_id) {
+
+        await notifier.confirm('Do you really want to release all the annotations of the selected class, as well as its children?');
+
+        try {
+
+            await release_annotations_by_taxonomy_class_id(taxonomy_class_id);
+            notifier.ok('Annotations were released.');
+            // TODO only refesh the concerned layer
+            this.map_manager.refresh();
+
+        } catch (error) {
+            notifier.err('We were unable to release the annotations.')
+        }
     }
 
     construct_children(this_level_root, collection, level_is_opened = false) {
