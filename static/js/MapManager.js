@@ -223,10 +223,10 @@ export class MapManager {
 
         if (!layers.some(at_least_one_layer_is_an_image)) {
             if (store.current_annotation.initialized) {
-                notifier.err('All corners of an annotation polygon must be on an image.');
+                notifier.warning('All corners of an annotation polygon must be on an image.');
                 return false;
             }
-            notifier.err('You must select an image to begin creating annotations.');
+            notifier.warning('You must select an image to begin creating annotations.');
             return false;
         }
 
@@ -236,7 +236,7 @@ export class MapManager {
             if (first_layer.get('title') === store.current_annotation.image_title) {
                 return true;
             }
-            notifier.err('Annotations must be made on a single image, make sure that all polygon points are on the same image.');
+            notifier.warning('Annotations must be made on a single image, make sure that all polygon points are on the same image.');
             return false;
         }
 
@@ -286,15 +286,13 @@ export class MapManager {
 
     receive_map_viewport_click_event(event) {
 
-        this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), async feature => {
-            if (store.mode === MODE.DELETE) {
+        if (store.mode === MODE.DELETE) {
+            this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), async feature => {
                 // TODO the feature to be deleted should be highlited at this point
                 await notifier.confirm(`Do you really want to delete the highlighted feature?`);
-
                 let payload = JSON.stringify([feature.getId()]);
 
                 // TODO deleting annotations that are of a higher status than new should be reserved to users with higher rights
-
                 try {
                     await delete_geojson_feature(payload);
                     // FIXME the feature is not necessarily from the new_annotations source
@@ -303,9 +301,12 @@ export class MapManager {
                 } catch (error) {
                     MapManager.geojsonLogError(error);
                 }
-            }
-        });
+            });
+        }
 
+        if (store.mode === MODE.CREATION && store.selected_taxonomy_class_id === -1) {
+            notifier.warning('You must select a taxonomy class to begin annotating content.');
+        }
     }
 
     create_vector_source(features, status) {
@@ -327,7 +328,7 @@ export class MapManager {
     }
 
     static geojsonLogError(error) {
-        notifier.err('The api rejected our request. There is likely more information in the console.');
+        notifier.error('The api rejected our request. There is likely more information in the console.');
         console.log('we had a problem with the geojson transaction: %o', error);
     }
 

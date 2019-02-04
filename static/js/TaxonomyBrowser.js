@@ -61,7 +61,7 @@ export class TaxonomyBrowser {
                         const taxonomy_classes = await fetch_taxonomy_classes_by_root_class_id(version['taxonomy_class_root_id']);
                         set_taxonomy_class([taxonomy_classes]);
                     } catch (e) {
-                        notifier.err('We were unable to fetch the taxonomy classes.');
+                        notifier.error('We were unable to fetch the taxonomy classes.');
                     }
                 });
                 this.taxonomy_root.appendChild(b);
@@ -99,7 +99,7 @@ export class TaxonomyBrowser {
             notifier.ok('Annotations were released.');
 
         } catch (error) {
-            notifier.err('We were unable to release the annotations.')
+            notifier.error('We were unable to release the annotations.')
         }
     }
 

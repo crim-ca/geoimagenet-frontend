@@ -1,5 +1,6 @@
 export const BING_API_KEY = 'AtXX65CBBfZXBxm6oMyf_5idMAMI7W6a5GuZ5acVcrYi6lCQayiiBz7_aMHB7JR7';
 export const CUSTOM_GEOIM_IMAGE_LAYER = 'custom_geiom_image_layer';
+export const NOTIFICATION_LIFE_SPAN_MS = 10000;
 
 export const Z_INDEX = {
     BASEMAP: -10,

@@ -1,4 +1,5 @@
 import {element, text_node, button} from '/js/utils/dom.js'
+import {NOTIFICATION_LIFE_SPAN_MS} from '../constants.js';
 
 const root = document.body;
 const remove_notif = notif => { notif.parentNode.removeChild(notif); };
@@ -11,13 +12,14 @@ const make_notif = (text_content, close_on_click = false) => {
     if (close_on_click) {
         notif.addEventListener('click', () => {
             remove_notif(notif);
-        })
+        });
+        setTimeout(() => { remove_notif(notif); }, NOTIFICATION_LIFE_SPAN_MS)
     }
     return notif;
 };
 
 export const notifier = {
-    err: text => {
+    error: text => {
         const notif = make_notif(text, true);
         notif.classList.add('error');
         root.appendChild(notif);
@@ -42,7 +44,7 @@ export const notifier = {
             root.appendChild(notif);
         });
     },
-    warn: text => {
+    warning: text => {
         const notif = make_notif(text, true);
         notif.classList.add('warning');
         root.appendChild(notif);
