@@ -286,15 +286,13 @@ export class MapManager {
 
     receive_map_viewport_click_event(event) {
 
-        this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), async feature => {
-            if (store.mode === MODE.DELETE) {
+        if (store.mode === MODE.DELETE) {
+            this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), async feature => {
                 // TODO the feature to be deleted should be highlited at this point
                 await notifier.confirm(`Do you really want to delete the highlighted feature?`);
-
                 let payload = JSON.stringify([feature.getId()]);
 
                 // TODO deleting annotations that are of a higher status than new should be reserved to users with higher rights
-
                 try {
                     await delete_geojson_feature(payload);
                     // FIXME the feature is not necessarily from the new_annotations source
@@ -303,9 +301,12 @@ export class MapManager {
                 } catch (error) {
                     MapManager.geojsonLogError(error);
                 }
-            }
-        });
+            });
+        }
 
+        if (store.mode === MODE.CREATION && store.selected_taxonomy_class_id === -1) {
+            notifier.err('You must select a taxonomy class to begin annotating content.');
+        }
     }
 
     create_vector_source(features, status) {
