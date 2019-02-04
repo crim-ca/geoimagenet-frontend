@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.2.2
+-----
+
+New
+~~~
+
+- Saving image name with annotation
+- Serve changelog as plain-text
+
 0.2.1 (2019-02-04)
 ------------------
 
