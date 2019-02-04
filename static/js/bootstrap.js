@@ -28,7 +28,14 @@ addEventListener('DOMContentLoaded', async () => {
         const taxonomies = await fetch_taxonomies();
         set_taxonomy(taxonomies);
     } catch (e) {
-        notifier.err('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
+        switch (e.status) {
+            case 404:
+                notifier.err("There doesn't seem to be any taxonomy available in the API. " +
+                    "This will likely render the platform unusable until someone populates the taxonomies.");
+                break;
+            default:
+                notifier.err('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
+        }
     }
 
     build_actions(get_by_id('actions'));
