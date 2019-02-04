@@ -58,9 +58,6 @@ export class MapManager {
 
     constructor(geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
 
-        this.initialized = false;
-        this.annotated_image_title = '';
-
         this.geoserver_url = geoserver_url;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
