@@ -10,6 +10,11 @@ New
 - Saving image name with annotation
 - Serve changelog as plain-text
 
+Changes
+~~~~~~~
+
+- More notifications to guide user interactions
+
 0.2.1 (2019-02-04)
 ------------------
 
