@@ -1,17 +1,14 @@
 FROM python:3.6-alpine
 MAINTAINER Félix Gagnon-Grenier <felix.gagnon-grenier@crim.ca>
 
-RUN apk update && \
-    apk add gcc musl-dev && \
-    pip install --upgrade pip && \
-    pip install gunicorn
-
 WORKDIR /code
-
-ENV DEBIAN_FRONTEND noninteractive
-
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+
+RUN apk update && \
+    apk add --virtual .build-deps gcc musl-dev && \
+    pip install --upgrade pip gunicorn && \
+    pip install -r requirements.txt --no-cache-dir && \
+    apk --purge del .build-deps
 
 COPY . .
 
