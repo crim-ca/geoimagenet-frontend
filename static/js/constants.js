@@ -26,6 +26,21 @@ export const ANNOTATION = {
         DELETED: 'deleted',
     }
 };
+export const ANNOTATION_STATUS_AS_ARRAY = [
+    'new',
+    'pre_released',
+    'released',
+    'review',
+    'validated',
+    'rejected',
+    'deleted',
+];
+export const VISIBLE_LAYERS_BY_DEFAULT = [
+    ANNOTATION.STATUS.NEW,
+    ANNOTATION.STATUS.RELEASED,
+    ANNOTATION.STATUS.REVIEW,
+    ANNOTATION.STATUS.VALIDATED,
+];
 
 export const IMAGES_NRG = [
     'NRG_Pleiades_20120912_RGBN_50cm_8bits_AOI_35_Montreal_QC',

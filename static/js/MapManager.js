@@ -4,12 +4,14 @@ import {
     IMAGES_NRG,
     IMAGES_RGB, BING_API_KEY,
     Z_INDEX,
+    ANNOTATION_STATUS_AS_ARRAY,
+    VISIBLE_LAYERS_BY_DEFAULT,
 } from './constants.js';
 import {store, set_annotation_collection, set_annotation_source, set_annotation_layer} from './store.js';
 import {notifier} from './utils/notifications.js'
 import {create_geojson_feature, delete_geojson_feature, modify_geojson_features} from './data-queries.js';
 
-const create_vector_layer = (title, source, color) => {
+const create_vector_layer = (title, source, color, visible = true) => {
     return new ol.layer.Vector({
         title: title,
         source: source,
@@ -27,8 +29,14 @@ const create_vector_layer = (title, source, color) => {
                     color: color,
                 })
             })
-        })
+        }),
+        visible: visible
     });
+};
+
+export const refresh_source_by_status = status => {
+    store.annotations_sources[status].clear();
+    store.annotations_sources[status].refresh(true);
 };
 
 export class MapManager {
@@ -59,12 +67,12 @@ export class MapManager {
         const style = getComputedStyle(document.body);
 
         // Initialize empty collections for each annotation status so we can hold references to them in the global store
-        Object.keys(ANNOTATION.STATUS).forEach(key => {
-            const status = ANNOTATION.STATUS[key];
+        ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
             const color = style.getPropertyValue(`--color-${status}`);
             set_annotation_collection(status, new ol.Collection());
             set_annotation_source(status, this.create_vector_source(store.annotations_collections[status], status));
-            set_annotation_layer(status, create_vector_layer(status, store.annotations_sources[status], color));
+            const this_layer_is_visible = VISIBLE_LAYERS_BY_DEFAULT.indexOf(status) > -1;
+            set_annotation_layer(status, create_vector_layer(status, store.annotations_sources[status], color, this_layer_is_visible));
         });
 
         this.modify = new ol.interaction.Modify({
@@ -91,7 +99,9 @@ export class MapManager {
             } else {
                 this.cql_filter = '';
             }
-            MapManager.refresh();
+            ANNOTATION_STATUS_AS_ARRAY.forEach(s => {
+                refresh_source_by_status(s);
+            });
         });
 
         this.cql_filter = '';
@@ -130,8 +140,7 @@ export class MapManager {
         // because to create the map, we need the layers to be created already
         // some kind of deadlock
         // FIXME maybe that's not exactly true, maybe investigate
-        Object.keys(ANNOTATION.STATUS).forEach(key => {
-            const status = ANNOTATION.STATUS[key];
+        ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
             store.annotations_layers[status].setMap(this.map);
         });
 
@@ -322,22 +331,26 @@ export class MapManager {
                 visible: false,
             }));
         });
+        const annotation_layers = [];
+        ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
+            annotation_layers.unshift(store.annotations_layers[status]);
+        });
         return [
             new ol.layer.Group({
                 title: 'RGB Images',
-                layers: RGB_layers
+                layers: RGB_layers,
             }),
             new ol.layer.Group({
                 title: 'NRG Images',
-                layers: NRG_layers
+                layers: NRG_layers,
             }),
             new ol.layer.Group({
                 title: 'Base maps',
-                layers: base_maps
+                layers: base_maps,
             }),
             new ol.layer.Group({
                 title: 'Annotations',
-                layers: [store.annotations_layers[ANNOTATION.STATUS.NEW]]
+                layers: annotation_layers,
             }),
         ];
     }

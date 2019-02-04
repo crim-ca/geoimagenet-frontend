@@ -17,7 +17,8 @@ import {
 } from './store.js';
 import {notifier} from './utils/notifications.js';
 import {fetch_taxonomy_classes_by_root_class_id, release_annotations_by_taxonomy_class_id} from './data-queries.js'
-import {MapManager} from './MapManager.js';
+import {MapManager, refresh_source_by_status} from './MapManager.js';
+import {ANNOTATION} from './constants.js';
 
 export class TaxonomyBrowser {
 
@@ -93,9 +94,9 @@ export class TaxonomyBrowser {
         try {
 
             await release_annotations_by_taxonomy_class_id(taxonomy_class_id);
+            refresh_source_by_status(ANNOTATION.STATUS.NEW);
+            refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
             notifier.ok('Annotations were released.');
-            // TODO only refesh the concerned layer
-            MapManager.refresh();
 
         } catch (error) {
             notifier.err('We were unable to release the annotations.')
