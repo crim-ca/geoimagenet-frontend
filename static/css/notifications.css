@@ -17,7 +17,7 @@ div.notification.error {
 div.notification.confirm {
     background-color: var(--color-light-red);
 }
-div.notification.warn {
+div.notification.warning {
     background-color: var(--color-released);
 }
 div.notification.ok {

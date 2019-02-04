@@ -30,11 +30,11 @@ addEventListener('DOMContentLoaded', async () => {
     } catch (e) {
         switch (e.status) {
             case 404:
-                notifier.err("There doesn't seem to be any taxonomy available in the API. " +
+                notifier.warning("There doesn't seem to be any taxonomy available in the API (we received a 404 not-found status). " +
                     "This will likely render the platform unusable until someone populates the taxonomies.");
                 break;
             default:
-                notifier.err('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
+                notifier.error('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
         }
     }
 

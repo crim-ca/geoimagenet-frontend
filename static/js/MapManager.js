@@ -223,10 +223,10 @@ export class MapManager {
 
         if (!layers.some(at_least_one_layer_is_an_image)) {
             if (store.current_annotation.initialized) {
-                notifier.err('All corners of an annotation polygon must be on an image.');
+                notifier.warning('All corners of an annotation polygon must be on an image.');
                 return false;
             }
-            notifier.err('You must select an image to begin creating annotations.');
+            notifier.warning('You must select an image to begin creating annotations.');
             return false;
         }
 
@@ -236,7 +236,7 @@ export class MapManager {
             if (first_layer.get('title') === store.current_annotation.image_title) {
                 return true;
             }
-            notifier.err('Annotations must be made on a single image, make sure that all polygon points are on the same image.');
+            notifier.warning('Annotations must be made on a single image, make sure that all polygon points are on the same image.');
             return false;
         }
 
@@ -305,7 +305,7 @@ export class MapManager {
         }
 
         if (store.mode === MODE.CREATION && store.selected_taxonomy_class_id === -1) {
-            notifier.err('You must select a taxonomy class to begin annotating content.');
+            notifier.warning('You must select a taxonomy class to begin annotating content.');
         }
     }
 
@@ -328,7 +328,7 @@ export class MapManager {
     }
 
     static geojsonLogError(error) {
-        notifier.err('The api rejected our request. There is likely more information in the console.');
+        notifier.error('The api rejected our request. There is likely more information in the console.');
         console.log('we had a problem with the geojson transaction: %o', error);
     }
 

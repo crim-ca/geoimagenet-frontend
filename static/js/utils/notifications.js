@@ -17,7 +17,7 @@ const make_notif = (text_content, close_on_click = false) => {
 };
 
 export const notifier = {
-    err: text => {
+    error: text => {
         const notif = make_notif(text, true);
         notif.classList.add('error');
         root.appendChild(notif);
@@ -42,7 +42,7 @@ export const notifier = {
             root.appendChild(notif);
         });
     },
-    warn: text => {
+    warning: text => {
         const notif = make_notif(text, true);
         notif.classList.add('warning');
         root.appendChild(notif);
