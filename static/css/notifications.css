@@ -17,6 +17,12 @@ div.notification.error {
 div.notification.confirm {
     background-color: var(--color-light-red);
 }
+div.notification.warn {
+    background-color: var(--color-released);
+}
+div.notification.ok {
+    background-color: var(--color-green);
+}
 div.notification div.actions {
     display: flex;
     align-items: baseline;

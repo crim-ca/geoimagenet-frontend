@@ -1,7 +1,35 @@
-import {MODE} from '/js/constants.js';
-import {store} from '/js/store.js';
-import {notifier} from '/js/utils/notifications.js'
-import {make_http_request} from '/js/utils/http.js';
+import {
+    MODE,
+    ANNOTATION,
+    IMAGES_NRG,
+    IMAGES_RGB, BING_API_KEY,
+    Z_INDEX,
+} from './constants.js';
+import {store} from './store.js';
+import {notifier} from './utils/notifications.js'
+import {create_geojson_feature, delete_geojson_feature, modify_geojson_features} from './data-queries.js';
+
+const create_vector_layer = (title, source, color) => {
+    return new ol.layer.Vector({
+        title: title,
+        source: source,
+        style: new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(255, 255, 255, 0.25)',
+            }),
+            stroke: new ol.style.Stroke({
+                color: color,
+                width: 2
+            }),
+            image: new ol.style.Circle({
+                radius: 7,
+                fill: new ol.style.Fill({
+                    color: color,
+                })
+            })
+        })
+    });
+};
 
 export class MapManager {
 
@@ -11,69 +39,56 @@ export class MapManager {
      */
 
     refresh() {
-        this.vectorSource.clear();
-        this.vectorSource.refresh(true);
+        this.new_annotations_source.clear();
+        this.new_annotations_source.refresh(true);
+        this.released_annotations_source.clear();
+        this.released_annotations_source.refresh(true);
     }
 
-    constructor(protocol, geoserver_url, geoimagenet_api_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
+    constructor(geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
 
-        this.geoserver_url = protocol + geoserver_url;
-        this.geoimagenet_api_url = protocol + geoimagenet_api_url;
-        this.annotation_namespace_uri = annotation_namespace_uri;
+        this.geoserver_url = geoserver_url;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
 
-        this.annotations = new ol.Collection();
-        this.vectorSource = new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
-            features: this.annotations,
-            url: (extent) => {
-                if (this.cql_filter.length > 0) {
-                    return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
-                        `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                        'outputFormat=application/json&srsname=EPSG:3857&' + `cql_filter=${this.cql_filter}`;
-                }
-                return `${this.geoserver_url}/geoserver/wfs?service=WFS&` +
-                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                    'outputFormat=application/json&srsname=EPSG:3857&' +
-                    'bbox=' + extent.join(',') + ',EPSG:3857';
-            },
-            strategy: ol.loadingstrategy.bbox
-        });
+        // bind class methods passed as event handlers to prevent the changed execution context from breaking class functionality
+        this.receive_drawend_event = this.receive_drawend_event.bind(this);
+        this.receive_modifyend_event = this.receive_modifyend_event.bind(this);
+        this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
+
+        const style = getComputedStyle(document.body);
+        const color_new = style.getPropertyValue('--color-new');
+        this.new_annotations_collection = new ol.Collection();
+        this.released_annotations_collection = new ol.Collection();
+        this.new_annotations_source = this.create_vector_source(this.new_annotations_collection, ANNOTATION.STATUS.NEW);
+        this.new_annotations_layer = create_vector_layer(ANNOTATION.STATUS.NEW, this.new_annotations_source, color_new);
+
+        this.released_annotations_source = this.create_vector_source(this.released_annotations_collection, ANNOTATION.STATUS.RELEASED);
+
         this.modify = new ol.interaction.Modify({
-            features: this.annotations,
-        });
-        this.modify.on('modifyend', (e) => {
-            e.features.forEach((feature) => {
-                if (feature.revision_ >= 1) {
-                    this.geoJsonRequest(MODE.MODIFY, feature);
-                }
-                feature.revision_ = 0;
-            })
-        });
-        this.annotations.on('add', (e) => {
-            e.element.revision_ = 0;
+            features: this.new_annotations_collection,
         });
         this.draw = new ol.interaction.Draw({
-            source: this.vectorSource,
+            source: this.new_annotations_source,
             type: 'Polygon',
         });
-        this.draw.on('drawend', (e) => {
-            const feature = e.feature;
-            this.vectorSource.refresh();
-            this.geoJsonRequest(MODE.CREATION, feature);
+
+        this.draw.on('drawend', this.receive_drawend_event);
+        this.modify.on('modifyend', this.receive_modifyend_event);
+
+        this.new_annotations_collection.on('add', (e) => {
+            e.element.revision_ = 0;
         });
 
-        addEventListener('selection_changed', (event) => {
+        mobx.autorun(() => {
             // create the cql filter from detail elements
             // prepend each bit with taxonomy_id=
             // join all the bits with OR
-            const activated_taxonomies = event.detail;
-            const filter_bits = [];
-            activated_taxonomies.forEach(class_name => {
-                filter_bits.push(`taxonomy_class_id='${class_name}'`);
-            });
-            this.cql_filter = filter_bits.join(' OR ');
+            if (store.visible_classes.length > 0) {
+                this.cql_filter = `taxonomy_class_id IN (${store.visible_classes.join(',')})`;
+            } else {
+                this.cql_filter = '';
+            }
             this.refresh();
         });
 
@@ -96,9 +111,10 @@ export class MapManager {
          */
 
         // create a view centered around canada
+        let CRIM = [-73.623173, 45.531694];
         this.view = new ol.View({
-            center: ol.proj.fromLonLat([-122.37, 49.03]),
-            zoom: 13
+            center: ol.proj.fromLonLat(CRIM),
+            zoom: 16
         });
 
         // create the map
@@ -116,19 +132,7 @@ export class MapManager {
         });
         this.map.addControl(this.mouse_position);
 
-        this.map.getViewport().addEventListener('click', event => {
-            this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), feature => {
-                if (store.mode === MODE.DELETE) {
-                    notifier.confirm(`Do you really want to delete the highlighted feature?`)
-                        .then(() => {
-                            this.geoJsonRequest(MODE.DELETE, feature);
-                        })
-                        .catch((err) => {
-                            console.log('rejected: %o', err);
-                        });
-                }
-            });
-        });
+        this.map.getViewport().addEventListener('click', this.receive_map_viewport_click_event);
 
         // create layer switcher, populate with base layers and feature layers
         this.layer_switcher = new ol.control.LayerSwitcher({
@@ -142,28 +146,12 @@ export class MapManager {
 
         this.features = new ol.Collection();
 
-        const style = getComputedStyle(document.body);
-        const new_annotation_color = style.getPropertyValue('--color-new');
+        const color_released = style.getPropertyValue('--color-released');
 
-        this.new_annotations_overlay = new ol.layer.Vector({
-            source: this.vectorSource,
-            style: new ol.style.Style({
-                fill: new ol.style.Fill({
-                    color: 'rgba(255, 255, 255, 0.25)',
-                }),
-                stroke: new ol.style.Stroke({
-                    color: new_annotation_color,
-                    width: 2
-                }),
-                image: new ol.style.Circle({
-                    radius: 7,
-                    fill: new ol.style.Fill({
-                        color: new_annotation_color,
-                    })
-                })
-            })
-        });
-        this.new_annotations_overlay.setMap(this.map);
+        this.new_annotations_layer.setMap(this.map);
+
+        this.released_annotations_layer = create_vector_layer(ANNOTATION.STATUS.RELEASED, this.released_annotations_source, color_released);
+        this.released_annotations_layer.setMap(this.map);
 
         this.formatGeoJson = new ol.format.GeoJSON({
             dataProjection: 'EPSG:3857',
@@ -189,106 +177,166 @@ export class MapManager {
             }
         });
 
-        this.register_geoserver_url_button();
     }
 
-    load_layers_from_geoserver() {
-        fetch(`${this.geoserver_url}/rest/layers`)
-            .then(res => {
-                console.log('received layers from geoserver: %o', res);
-            });
-    }
+    async receive_drawend_event(event) {
 
-    register_geoserver_url_button() {
-        const button = document.getElementById('populate-layer-switcher-button');
-        if (button) {
-            button.addEventListener('click', () => {
-                const input = document.getElementById('geoserver-url');
-                this.geoserver_url = input.value;
-                this.load_layers_from_geoserver();
-            });
-        }
-    }
-
-    geoJsonRequest(mode, feature) {
-        let payload;
-        let method;
-        switch (mode) {
-            case MODE.CREATION:
-                method = "POST";
-                feature.setProperties({
-                    taxonomy_class_id: store.selected_taxonomy_class_id,
-                    annotator_id: 1,
-                    image_name: 'My Image',
-                });
-                payload = this.formatGeoJson.writeFeature(feature);
-                break;
-            case MODE.MODIFY:
-                method = "PUT";
-                payload = this.formatGeoJson.writeFeature(feature);
-                break;
-            case MODE.DELETE:
-                method = "DELETE";
-                payload = JSON.stringify([feature['id_']]);
-                break;
-            default:
-                throw 'The transaction mode should be defined when calling geoJsonRequest.';
-        }
-        make_http_request(`${this.geoimagenet_api_url}/annotations`, {
-            method: method,
-            headers: {'Content-Type': 'application/json'},
-            body: payload,
-        }).then((response) => {
-            switch (mode) {
-                case MODE.CREATION:
-                    return response.json();
-                case MODE.DELETE:
-                    this.vectorSource.removeFeature(feature);
-                    break;
-            }
-        }).then((responseJson) => {
-            if (mode === MODE.CREATION) {
-                feature.setId(`${this.annotation_layer}.${responseJson}`);
-            }
-        }).catch(error => {
-            notifier.err('The api rejected our request. There is likely more information in the console.');
-            console.log('we had a problem with the geojson transaction: %o', error);
+        const feature = event.feature;
+        feature.setProperties({
+            taxonomy_class_id: store.selected_taxonomy_class_id,
+            annotator_id: 1,
+            image_name: 'My Image',
         });
+        const payload = this.formatGeoJson.writeFeature(feature);
+
+        try {
+            const new_feature_id = await create_geojson_feature(payload);
+            feature.setId(`${this.annotation_layer}.${new_feature_id}`);
+        } catch (error) {
+            MapManager.geojsonLogError(error);
+        }
+
+    }
+
+    async receive_modifyend_event(event) {
+
+        let modifiedFeatures = [];
+        event.features.forEach((feature) => {
+            if (feature.revision_ >= 1) {
+                modifiedFeatures.push(feature);
+                feature.revision_ = 0;
+            }
+        });
+        let payload = this.formatGeoJson.writeFeatures(modifiedFeatures);
+
+        try {
+            await modify_geojson_features(payload);
+        } catch (error) {
+            MapManager.geojsonLogError(error);
+        }
+
+    }
+
+    receive_map_viewport_click_event(event) {
+
+        this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), async feature => {
+            if (store.mode === MODE.DELETE) {
+                // TODO the feature to be deleted should be highlited at this point
+                await notifier.confirm(`Do you really want to delete the highlighted feature?`);
+
+                let payload = JSON.stringify([feature.getId()]);
+
+                // TODO deleting annotations that are of a higher status than new should be reserved to users with higher rights
+
+                try {
+                    await delete_geojson_feature(payload);
+                    // FIXME the feature is not necessarily from the new_annotations source
+                    // find the right source from which to remove it
+                    this.new_annotations_source.removeFeature(feature);
+                } catch (error) {
+                    MapManager.geojsonLogError(error);
+                }
+            }
+        });
+
+    }
+
+    create_vector_source(features, status) {
+        return new ol.source.Vector({
+            format: new ol.format.GeoJSON(),
+            features: features,
+            url: () => {
+                if (this.cql_filter.length > 0) {
+                    return `${this.geoserver_url}/wfs?service=WFS&` +
+                        `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
+                        `outputFormat=application/json&srsname=EPSG:3857&cql_filter=status='${status}' AND ${this.cql_filter}`;
+                }
+                return `${this.geoserver_url}/wfs?service=WFS&` +
+                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
+                    `outputFormat=application/json&srsname=EPSG:3857&cql_filter=status='${status}' AND taxonomy_class_id IN (-1)`;
+            },
+            strategy: ol.loadingstrategy.bbox
+        });
+    }
+
+    static geojsonLogError(error) {
+        notifier.err('The api rejected our request. There is likely more information in the console.');
+        console.log('we had a problem with the geojson transaction: %o', error);
     }
 
     make_layers() {
-        const raster = new ol.layer.Tile({
+        const base_maps = [];
+        base_maps.push(new ol.layer.Tile({
             title: 'OSM',
             type: 'base',
             source: new ol.source.OSM(),
-        });
-        const vector = new ol.layer.Vector({
-            source: this.vectorSource,
-            style: new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'rgba(0, 0, 255, 1.0)',
-                    width: 2
-                })
-            })
-        });
-        const some_image = new ol.layer.Image({
-            title: 'image',
-            source: new ol.source.ImageWMS({
-                url: `${this.geoserver_url}/geoserver/GEOIMAGENET_PUBLIC/wms`,
-                params: {'LAYERS': 'GEOIMAGENET_PUBLIC:OrthoImage_Vancouver_50cm_RGBN_W84U10_8bits_RGB'},
-                ratio: 1,
-                serverType: 'geoserver',
+            zIndex: Z_INDEX.BASEMAP,
+            visible: false,
+        }));
+        base_maps.push(new ol.layer.Tile({
+            title: 'Aerial with labels',
+            type: 'base',
+            preload: Infinity,
+            source: new ol.source.BingMaps({
+                key: BING_API_KEY,
+                imagerySet: 'AerialWithLabels',
             }),
+            zIndex: Z_INDEX.BASEMAP,
+            visible: false,
+        }));
+        base_maps.push(new ol.layer.Tile({
+            title: 'Aerial',
+            type: 'base',
+            preload: Infinity,
+            source: new ol.source.BingMaps({
+                key: BING_API_KEY,
+                imagerySet: 'Aerial',
+            }),
+            zIndex: Z_INDEX.BASEMAP,
+        }));
+        const NRG_layers = [];
+        IMAGES_NRG.forEach(i => {
+            NRG_layers.push(new ol.layer.Tile({
+                title: i,
+                source: new ol.source.TileWMS({
+                    url: `${this.geoserver_url}/GeoImageNet/wms`,
+                    params: {'LAYERS': `GeoImageNet:${i}`},
+                    ratio: 1,
+                    serverType: 'geoserver',
+                }),
+                visible: false,
+            }));
+        });
+        const RGB_layers = [];
+        IMAGES_RGB.forEach(i => {
+            RGB_layers.push(new ol.layer.Tile({
+                title: i,
+                source: new ol.source.TileWMS({
+                    url: `${this.geoserver_url}/GeoImageNet/wms`,
+                    params: {'LAYERS': `GeoImageNet:${i}`},
+                    ratio: 1,
+                    serverType: 'geoserver',
+                }),
+                visible: false,
+            }));
         });
         return [
             new ol.layer.Group({
+                title: 'RGB Images',
+                layers: RGB_layers
+            }),
+            new ol.layer.Group({
+                title: 'NRG Images',
+                layers: NRG_layers
+            }),
+            new ol.layer.Group({
                 title: 'Base maps',
-                layers: [raster, some_image]
+                layers: base_maps
             }),
             new ol.layer.Group({
                 title: 'Annotations',
-                layers: [vector]
-            })
+                layers: [this.new_annotations_layer]
+            }),
         ];
     }
 

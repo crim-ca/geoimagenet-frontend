@@ -42,4 +42,14 @@ export const notifier = {
             root.appendChild(notif);
         });
     },
+    warn: text => {
+        const notif = make_notif(text, true);
+        notif.classList.add('warning');
+        root.appendChild(notif);
+    },
+    ok: text => {
+        const notif = make_notif(text, true);
+        notif.classList.add('ok');
+        root.appendChild(notif);
+    },
 };

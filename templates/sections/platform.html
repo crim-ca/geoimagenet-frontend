@@ -7,7 +7,6 @@
 <script type="application/ecmascript">
     // Dropping the globals in global scope, because globals
     // Your IDE might think they are unused, but they really are in bootstrap.js!
-    const SERVER_PROTOCOL = '{{ SERVER_PROTOCOL }}';
     const GEOSERVER_URL = '{{ GEOSERVER_URL }}';
     const GEOIMAGENET_API_URL = '{{ GEOIMAGENET_API_URL }}';
     const ANNOTATION_NAMESPACE_URI = '{{ ANNOTATION_NAMESPACE_URI }}';
@@ -15,8 +14,8 @@
     const ANNOTATION_LAYER = '{{ ANNOTATION_LAYER }}';
 </script>
 <script type="module" src="/js/bootstrap.js"></script>
-<script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/build/ol.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mobx/5.8.0/mobx.umd.js"></script>
+<script src="/js/lib/ol.js"></script>
+<script src="/js/lib/mobx.js"></script>
 <script src="/js/layer-switcher.js" type="application/ecmascript"></script>
 <link href="/css/style_platform.css" rel="stylesheet">
 <link href="/css/open_layers.css" rel="stylesheet">
@@ -27,9 +26,14 @@
 <div id="map" class="map"></div>
 <div class="right paper">
     <div id="actions" class="actions"></div>
-    <span id="mode_indicator"></span>
-    <div id="taxonomy" class="taxonomy"></div>
-    <ul id="taxonomy_classes" class="taxonomy_classes"></ul>
-    <div id="layer-switcher"></div>
+    <section class="taxonomy opened">
+        <button class="section-handle">{{ gettext('Taxonomies and Classes') }}</button>
+        <div id="taxonomy" class="taxonomy"></div>
+        <ul id="taxonomy_classes" class="taxonomy_classes"></ul>
+    </section>
+    <section class="layer-switcher closed">
+        <button class="section-handle">{{ gettext('Basemaps, Images and Filters') }}</button>
+        <div id="layer-switcher" class="layer-switcher-container"></div>
+    </section>
 </div>
 {% endblock %}

@@ -24,7 +24,7 @@ copied the old layer switcher (from ol3-layerswitcher) as we don't need the on m
 
         this.mapListeners = [];
 
-        this.hiddenClassName = 'ol-unselectable ol-control layer-switcher';
+        this.hiddenClassName = 'layer-switcher';
         if (ol.control.LayerSwitcher.isTouchDevice_()) {
             this.hiddenClassName += ' touch';
         }
@@ -54,15 +54,6 @@ copied the old layer switcher (from ol3-layerswitcher) as we don't need the on m
         if (!this.element.classList.contains(this.shownClassName)) {
             this.element.classList.add(this.shownClassName);
             this.renderPanel();
-        }
-    };
-
-    /**
-     * Hide the layer panel.
-     */
-    ol.control.LayerSwitcher.prototype.hidePanel = function() {
-        if (this.element.classList.contains(this.shownClassName)) {
-            this.element.classList.remove(this.shownClassName);
         }
     };
 

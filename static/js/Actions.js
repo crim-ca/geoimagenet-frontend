@@ -1,6 +1,6 @@
-import {get_by_id, button, element, remove_children} from '/js/utils/dom.js';
-import {store, set_mode} from '/js/store.js';
-import {MODE} from '/js/constants.js';
+import {button, remove_children, span} from './utils/dom.js';
+import {store, set_mode} from './store.js';
+import {MODE} from './constants.js';
 
 const actions = [
     {name: 'eye', icon_class: 'fa-eye', mode: MODE.VISUALIZE},
@@ -13,27 +13,19 @@ const actions = [
     {name: 'refuse', icon_class: 'fa-times', mode: MODE.REFUSE},
 ];
 
-export const build_actions = () => {
-
-    const actions_root = get_by_id('actions');
-    const mode_indicator = get_by_id('mode_indicator');
+export const build_actions = (root_element) => {
 
     mobx.autorun(() => {
-        mode_indicator.innerHTML = `Current mode: ${store.mode}`;
-    });
-
-    mobx.autorun(() => {
-        remove_children(actions_root);
+        remove_children(root_element);
         actions.forEach(action => {
-            const span = element('span');
-            span.classList.add('fas', action.icon_class, 'fa-2x');
+            const icon = span(null, 'fas', action.icon_class, 'fa-2x');
             if (action.mode === store.mode) {
-                span.classList.add('active');
+                icon.classList.add('active');
             }
-            const b = button(span, () => {
-                set_mode(action.mode)
+            const b = button(icon, () => {
+                set_mode(action.mode);
             });
-            actions_root.appendChild(b);
+            root_element.appendChild(b);
         });
     });
 
