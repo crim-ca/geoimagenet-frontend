@@ -15,14 +15,14 @@ mobx.configure({
 
 addEventListener('DOMContentLoaded', async () => {
 
-    const map_manager = new MapManager(
+    new MapManager(
         GEOSERVER_URL,
         ANNOTATION_NAMESPACE_URI,
         ANNOTATION_NAMESPACE,
         ANNOTATION_LAYER,
         'map'
     );
-    new TaxonomyBrowser(map_manager);
+    new TaxonomyBrowser();
 
     try {
         const taxonomies = await fetch_taxonomies();

@@ -5,7 +5,7 @@ import {
     IMAGES_RGB, BING_API_KEY,
     Z_INDEX,
 } from './constants.js';
-import {store} from './store.js';
+import {store, set_annotation_collection, set_annotation_source, set_annotation_layer} from './store.js';
 import {notifier} from './utils/notifications.js'
 import {create_geojson_feature, delete_geojson_feature, modify_geojson_features} from './data-queries.js';
 
@@ -38,11 +38,11 @@ export class MapManager {
     changing foo = () => {}; to foo = function() {} _will_ break things in interesting and unexpected ways
      */
 
-    refresh() {
-        this.new_annotations_source.clear();
-        this.new_annotations_source.refresh(true);
-        this.released_annotations_source.clear();
-        this.released_annotations_source.refresh(true);
+    static refresh() {
+        store.annotations_sources[ANNOTATION.STATUS.NEW].clear();
+        store.annotations_sources[ANNOTATION.STATUS.NEW].refresh(true);
+        store.annotations_sources[ANNOTATION.STATUS.RELEASED].clear();
+        store.annotations_sources[ANNOTATION.STATUS.RELEASED].refresh(true);
     }
 
     constructor(geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
@@ -57,26 +57,28 @@ export class MapManager {
         this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
 
         const style = getComputedStyle(document.body);
-        const color_new = style.getPropertyValue('--color-new');
-        this.new_annotations_collection = new ol.Collection();
-        this.released_annotations_collection = new ol.Collection();
-        this.new_annotations_source = this.create_vector_source(this.new_annotations_collection, ANNOTATION.STATUS.NEW);
-        this.new_annotations_layer = create_vector_layer(ANNOTATION.STATUS.NEW, this.new_annotations_source, color_new);
 
-        this.released_annotations_source = this.create_vector_source(this.released_annotations_collection, ANNOTATION.STATUS.RELEASED);
+        // Initialize empty collections for each annotation status so we can hold references to them in the global store
+        Object.keys(ANNOTATION.STATUS).forEach(key => {
+            const status = ANNOTATION.STATUS[key];
+            const color = style.getPropertyValue(`--color-${status}`);
+            set_annotation_collection(status, new ol.Collection());
+            set_annotation_source(status, this.create_vector_source(store.annotations_collections[status], status));
+            set_annotation_layer(status, create_vector_layer(status, store.annotations_sources[status], color));
+        });
 
         this.modify = new ol.interaction.Modify({
-            features: this.new_annotations_collection,
+            features: store.annotations_collections[ANNOTATION.STATUS.NEW],
         });
         this.draw = new ol.interaction.Draw({
-            source: this.new_annotations_source,
+            source: store.annotations_sources[ANNOTATION.STATUS.NEW],
             type: 'Polygon',
         });
 
         this.draw.on('drawend', this.receive_drawend_event);
         this.modify.on('modifyend', this.receive_modifyend_event);
 
-        this.new_annotations_collection.on('add', (e) => {
+        store.annotations_collections[ANNOTATION.STATUS.NEW].on('add', (e) => {
             e.element.revision_ = 0;
         });
 
@@ -89,7 +91,7 @@ export class MapManager {
             } else {
                 this.cql_filter = '';
             }
-            this.refresh();
+            MapManager.refresh();
         });
 
         this.cql_filter = '';
@@ -124,6 +126,15 @@ export class MapManager {
             view: this.view,
         });
 
+        // We need to set the maps of the layers after creating the map
+        // because to create the map, we need the layers to be created already
+        // some kind of deadlock
+        // FIXME maybe that's not exactly true, maybe investigate
+        Object.keys(ANNOTATION.STATUS).forEach(key => {
+            const status = ANNOTATION.STATUS[key];
+            store.annotations_layers[status].setMap(this.map);
+        });
+
         // add base controls (mouse position, projection selection)
         this.mouse_position = new ol.control.MousePosition({
             coordinateFormat: ol.coordinate.createStringXY(4),
@@ -143,15 +154,6 @@ export class MapManager {
         this.layer_switcher.showPanel();
         this.layer_switcher.onmouseover = null;
         // select a default base map
-
-        this.features = new ol.Collection();
-
-        const color_released = style.getPropertyValue('--color-released');
-
-        this.new_annotations_layer.setMap(this.map);
-
-        this.released_annotations_layer = create_vector_layer(ANNOTATION.STATUS.RELEASED, this.released_annotations_source, color_released);
-        this.released_annotations_layer.setMap(this.map);
 
         this.formatGeoJson = new ol.format.GeoJSON({
             dataProjection: 'EPSG:3857',
@@ -232,7 +234,7 @@ export class MapManager {
                     await delete_geojson_feature(payload);
                     // FIXME the feature is not necessarily from the new_annotations source
                     // find the right source from which to remove it
-                    this.new_annotations_source.removeFeature(feature);
+                    store.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(feature);
                 } catch (error) {
                     MapManager.geojsonLogError(error);
                 }
@@ -335,7 +337,7 @@ export class MapManager {
             }),
             new ol.layer.Group({
                 title: 'Annotations',
-                layers: [this.new_annotations_layer]
+                layers: [store.annotations_layers[ANNOTATION.STATUS.NEW]]
             }),
         ];
     }
