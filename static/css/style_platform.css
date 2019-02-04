@@ -6,8 +6,12 @@
     --total-handle-height: calc(var(--line-height) + var(--border-height) + ( 2 * var(--padding-height) ));
 
     --color-new: rgba(255, 247, 0, 0.9);
+    --color-pre-released: rgba(238, 97, 0, 0.9);
     --color-released: rgba(238, 97, 0, 0.9);
+    --color-review: rgba(238, 97, 0, 0.9);
     --color-validated: rgba(0, 170, 5, 0.9);
+    --color-rejected: var(--color-red);
+    --color-deleted: rgba(0, 170, 5, 0.9);
 
     --gutter-small: 5px;
 
