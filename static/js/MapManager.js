@@ -46,13 +46,6 @@ export class MapManager {
     changing foo = () => {}; to foo = function() {} _will_ break things in interesting and unexpected ways
      */
 
-    static refresh() {
-        store.annotations_sources[ANNOTATION.STATUS.NEW].clear();
-        store.annotations_sources[ANNOTATION.STATUS.NEW].refresh(true);
-        store.annotations_sources[ANNOTATION.STATUS.RELEASED].clear();
-        store.annotations_sources[ANNOTATION.STATUS.RELEASED].refresh(true);
-    }
-
     constructor(geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
 
         this.geoserver_url = geoserver_url;
