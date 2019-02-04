@@ -12,8 +12,20 @@ export const store = mobx.observable({
     },
     selected_taxonomy_class_id: -1,
     visible_classes: [],
+    annotations_collections: {},
+    annotations_sources: {},
+    annotations_layers: {},
 });
 
+export const set_annotation_collection = mobx.action((key, collection) => {
+    store.annotations_collections[key] = collection;
+});
+export const set_annotation_source = mobx.action((key, source) => {
+    store.annotations_sources[key] = source;
+});
+export const set_annotation_layer = mobx.action((key, layer) => {
+    store.annotations_layers[key] = layer;
+});
 export const set_taxonomy = mobx.action(t => {
     store.taxonomy = t;
 });

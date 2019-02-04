@@ -4,12 +4,14 @@ import {
     IMAGES_NRG,
     IMAGES_RGB, BING_API_KEY,
     Z_INDEX,
+    ANNOTATION_STATUS_AS_ARRAY,
+    VISIBLE_LAYERS_BY_DEFAULT,
 } from './constants.js';
-import {store} from './store.js';
+import {store, set_annotation_collection, set_annotation_source, set_annotation_layer} from './store.js';
 import {notifier} from './utils/notifications.js'
 import {create_geojson_feature, delete_geojson_feature, modify_geojson_features} from './data-queries.js';
 
-const create_vector_layer = (title, source, color) => {
+const create_vector_layer = (title, source, color, visible = true) => {
     return new ol.layer.Vector({
         title: title,
         source: source,
@@ -27,8 +29,14 @@ const create_vector_layer = (title, source, color) => {
                     color: color,
                 })
             })
-        })
+        }),
+        visible: visible
     });
+};
+
+export const refresh_source_by_status = status => {
+    store.annotations_sources[status].clear();
+    store.annotations_sources[status].refresh(true);
 };
 
 export class MapManager {
@@ -37,13 +45,6 @@ export class MapManager {
     using arrow functions to bind the scope of member methods
     changing foo = () => {}; to foo = function() {} _will_ break things in interesting and unexpected ways
      */
-
-    refresh() {
-        this.new_annotations_source.clear();
-        this.new_annotations_source.refresh(true);
-        this.released_annotations_source.clear();
-        this.released_annotations_source.refresh(true);
-    }
 
     constructor(geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
 
@@ -57,26 +58,28 @@ export class MapManager {
         this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
 
         const style = getComputedStyle(document.body);
-        const color_new = style.getPropertyValue('--color-new');
-        this.new_annotations_collection = new ol.Collection();
-        this.released_annotations_collection = new ol.Collection();
-        this.new_annotations_source = this.create_vector_source(this.new_annotations_collection, ANNOTATION.STATUS.NEW);
-        this.new_annotations_layer = create_vector_layer(ANNOTATION.STATUS.NEW, this.new_annotations_source, color_new);
 
-        this.released_annotations_source = this.create_vector_source(this.released_annotations_collection, ANNOTATION.STATUS.RELEASED);
+        // Initialize empty collections for each annotation status so we can hold references to them in the global store
+        ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
+            const color = style.getPropertyValue(`--color-${status}`);
+            set_annotation_collection(status, new ol.Collection());
+            set_annotation_source(status, this.create_vector_source(store.annotations_collections[status], status));
+            const this_layer_is_visible = VISIBLE_LAYERS_BY_DEFAULT.indexOf(status) > -1;
+            set_annotation_layer(status, create_vector_layer(status, store.annotations_sources[status], color, this_layer_is_visible));
+        });
 
         this.modify = new ol.interaction.Modify({
-            features: this.new_annotations_collection,
+            features: store.annotations_collections[ANNOTATION.STATUS.NEW],
         });
         this.draw = new ol.interaction.Draw({
-            source: this.new_annotations_source,
+            source: store.annotations_sources[ANNOTATION.STATUS.NEW],
             type: 'Polygon',
         });
 
         this.draw.on('drawend', this.receive_drawend_event);
         this.modify.on('modifyend', this.receive_modifyend_event);
 
-        this.new_annotations_collection.on('add', (e) => {
+        store.annotations_collections[ANNOTATION.STATUS.NEW].on('add', (e) => {
             e.element.revision_ = 0;
         });
 
@@ -89,7 +92,9 @@ export class MapManager {
             } else {
                 this.cql_filter = '';
             }
-            this.refresh();
+            ANNOTATION_STATUS_AS_ARRAY.forEach(s => {
+                refresh_source_by_status(s);
+            });
         });
 
         this.cql_filter = '';
@@ -124,6 +129,14 @@ export class MapManager {
             view: this.view,
         });
 
+        // We need to set the maps of the layers after creating the map
+        // because to create the map, we need the layers to be created already
+        // some kind of deadlock
+        // FIXME maybe that's not exactly true, maybe investigate
+        ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
+            store.annotations_layers[status].setMap(this.map);
+        });
+
         // add base controls (mouse position, projection selection)
         this.mouse_position = new ol.control.MousePosition({
             coordinateFormat: ol.coordinate.createStringXY(4),
@@ -143,15 +156,6 @@ export class MapManager {
         this.layer_switcher.showPanel();
         this.layer_switcher.onmouseover = null;
         // select a default base map
-
-        this.features = new ol.Collection();
-
-        const color_released = style.getPropertyValue('--color-released');
-
-        this.new_annotations_layer.setMap(this.map);
-
-        this.released_annotations_layer = create_vector_layer(ANNOTATION.STATUS.RELEASED, this.released_annotations_source, color_released);
-        this.released_annotations_layer.setMap(this.map);
 
         this.formatGeoJson = new ol.format.GeoJSON({
             dataProjection: 'EPSG:3857',
@@ -232,7 +236,7 @@ export class MapManager {
                     await delete_geojson_feature(payload);
                     // FIXME the feature is not necessarily from the new_annotations source
                     // find the right source from which to remove it
-                    this.new_annotations_source.removeFeature(feature);
+                    store.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(feature);
                 } catch (error) {
                     MapManager.geojsonLogError(error);
                 }
@@ -320,22 +324,26 @@ export class MapManager {
                 visible: false,
             }));
         });
+        const annotation_layers = [];
+        ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
+            annotation_layers.unshift(store.annotations_layers[status]);
+        });
         return [
             new ol.layer.Group({
                 title: 'RGB Images',
-                layers: RGB_layers
+                layers: RGB_layers,
             }),
             new ol.layer.Group({
                 title: 'NRG Images',
-                layers: NRG_layers
+                layers: NRG_layers,
             }),
             new ol.layer.Group({
                 title: 'Base maps',
-                layers: base_maps
+                layers: base_maps,
             }),
             new ol.layer.Group({
                 title: 'Annotations',
-                layers: [this.new_annotations_layer]
+                layers: annotation_layers,
             }),
         ];
     }

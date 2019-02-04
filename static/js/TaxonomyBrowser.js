@@ -17,16 +17,15 @@ import {
 } from './store.js';
 import {notifier} from './utils/notifications.js';
 import {fetch_taxonomy_classes_by_root_class_id, release_annotations_by_taxonomy_class_id} from './data-queries.js'
+import {MapManager, refresh_source_by_status} from './MapManager.js';
+import {ANNOTATION} from './constants.js';
 
 export class TaxonomyBrowser {
 
-    constructor(map_manager) {
+    constructor() {
 
         this.taxonomy_classes_root = get_by_id('taxonomy_classes');
         this.taxonomy_root = get_by_id('taxonomy');
-        this.map_manager = map_manager;
-
-        this.release_annotations_user_interaction = this.release_annotations_user_interaction.bind(this);
 
         this.toggle_classes_click_handler = (event) => {
             /*
@@ -88,16 +87,16 @@ export class TaxonomyBrowser {
         set_visible_classes(selection);
     }
 
-    async release_annotations_user_interaction(taxonomy_class_id) {
+    static async release_annotations_user_interaction(taxonomy_class_id) {
 
         await notifier.confirm('Do you really want to release all the annotations of the selected class, as well as its children?');
 
         try {
 
             await release_annotations_by_taxonomy_class_id(taxonomy_class_id);
+            refresh_source_by_status(ANNOTATION.STATUS.NEW);
+            refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
             notifier.ok('Annotations were released.');
-            // TODO only refesh the concerned layer
-            this.map_manager.refresh();
 
         } catch (error) {
             notifier.err('We were unable to release the annotations.')
@@ -126,7 +125,7 @@ export class TaxonomyBrowser {
             actions.appendChild(stylable_checkbox(taxonomy_class.id, 'checkbox_eye', this.toggle_classes_click_handler));
             actions.appendChild(button(
                 span(null, 'fas', 'fa-paper-plane', 'fa-lg', 'release'),
-                () => this.release_annotations_user_interaction(taxonomy_class.id)
+                () => TaxonomyBrowser.release_annotations_user_interaction(taxonomy_class.id)
             ));
 
             taxonomy_class_list_element.appendChild(text);
