@@ -42,6 +42,11 @@ export const VISIBLE_LAYERS_BY_DEFAULT = [
     ANNOTATION.STATUS.VALIDATED,
 ];
 
+export const ALLOWED_BING_MAPS = [
+    {title: 'Aerial with labels', imagerySet: 'AerialWithLabels', visible: false},
+    {title: 'Aerial', imagerySet: 'Aerial', visible: true},
+];
+
 export const IMAGES_NRG = [
     'NRG_Pleiades_20120912_RGBN_50cm_8bits_AOI_35_Montreal_QC',
     'NRG_Pleiades_20120912_RGBN_50cm_8bits_AOI_5_Edmunston_NB',

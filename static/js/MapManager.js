@@ -2,10 +2,12 @@ import {
     MODE,
     ANNOTATION,
     IMAGES_NRG,
-    IMAGES_RGB, BING_API_KEY,
+    IMAGES_RGB,
+    BING_API_KEY,
     Z_INDEX,
     ANNOTATION_STATUS_AS_ARRAY,
     VISIBLE_LAYERS_BY_DEFAULT,
+    ALLOWED_BING_MAPS,
 } from './constants.js';
 import {store, set_annotation_collection, set_annotation_source, set_annotation_layer} from './store.js';
 import {notifier} from './utils/notifications.js'
@@ -277,27 +279,21 @@ export class MapManager {
             zIndex: Z_INDEX.BASEMAP,
             visible: false,
         }));
-        base_maps.push(new ol.layer.Tile({
-            title: 'Aerial with labels',
-            type: 'base',
-            preload: Infinity,
-            source: new ol.source.BingMaps({
-                key: BING_API_KEY,
-                imagerySet: 'AerialWithLabels',
-            }),
-            zIndex: Z_INDEX.BASEMAP,
-            visible: false,
-        }));
-        base_maps.push(new ol.layer.Tile({
-            title: 'Aerial',
-            type: 'base',
-            preload: Infinity,
-            source: new ol.source.BingMaps({
-                key: BING_API_KEY,
-                imagerySet: 'Aerial',
-            }),
-            zIndex: Z_INDEX.BASEMAP,
-        }));
+
+        ALLOWED_BING_MAPS.forEach(bing_map => {
+            base_maps.push(new ol.layer.Tile({
+                title: bing_map.title,
+                type: 'base',
+                preload: Infinity,
+                source: new ol.source.BingMaps({
+                    key: BING_API_KEY,
+                    imagerySet: bing_map.imagerySet,
+                }),
+                zIndex: Z_INDEX.BASEMAP,
+                visible: bing_map.visible,
+            }));
+        });
+
         const NRG_layers = [];
         IMAGES_NRG.forEach(i => {
             NRG_layers.push(new ol.layer.Tile({
