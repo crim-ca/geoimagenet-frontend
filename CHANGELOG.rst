@@ -1,8 +1,8 @@
 Changelog
 =========
 
-0.2.1
------
+0.2.1 (2019-02-04)
+------------------
 
 New
 ~~~
@@ -17,7 +17,7 @@ Changes
 - Seven different colors in prevision for every annotation status
 
 0.2.0 (2019-02-01)
------
+------------------
 
 New
 ~~~
