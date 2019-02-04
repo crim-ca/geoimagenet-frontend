@@ -8,8 +8,16 @@ import {
     ANNOTATION_STATUS_AS_ARRAY,
     VISIBLE_LAYERS_BY_DEFAULT,
     ALLOWED_BING_MAPS,
+    CUSTOM_GEOIM_IMAGE_LAYER,
 } from './constants.js';
-import {store, set_annotation_collection, set_annotation_source, set_annotation_layer} from './store.js';
+import {
+    store,
+    set_annotation_collection,
+    set_annotation_source,
+    set_annotation_layer,
+    start_annotation,
+    end_annotation
+} from './store.js';
 import {notifier} from './utils/notifications.js'
 import {create_geojson_feature, delete_geojson_feature, modify_geojson_features} from './data-queries.js';
 
@@ -50,11 +58,15 @@ export class MapManager {
 
     constructor(geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
 
+        this.initialized = false;
+        this.annotated_image_title = '';
+
         this.geoserver_url = geoserver_url;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
 
         // bind class methods passed as event handlers to prevent the changed execution context from breaking class functionality
+        this.draw_condition_callback = this.draw_condition_callback.bind(this);
         this.receive_drawend_event = this.receive_drawend_event.bind(this);
         this.receive_modifyend_event = this.receive_modifyend_event.bind(this);
         this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
@@ -76,6 +88,7 @@ export class MapManager {
         this.draw = new ol.interaction.Draw({
             source: store.annotations_sources[ANNOTATION.STATUS.NEW],
             type: 'Polygon',
+            condition: this.draw_condition_callback
         });
 
         this.draw.on('drawend', this.receive_drawend_event);
@@ -185,13 +198,63 @@ export class MapManager {
 
     }
 
+    draw_condition_callback(event) {
+
+        /*
+        make sure that each click is correct to create the annotation
+
+        if we are the first click, only verify that we are over an image layer
+        if we are clicks afterwards, verify that we are over the same image
+
+         */
+
+        let layer_index = -1;
+
+        const layers = [];
+        this.map.forEachLayerAtPixel(event.pixel, l => {
+            layers.push(l);
+        });
+
+        const at_least_one_layer_is_an_image = (element, index) => {
+            const layer_is_image = element.get('type') === CUSTOM_GEOIM_IMAGE_LAYER;
+            if (layer_is_image) {
+                layer_index = index;
+                return true;
+            }
+            return false;
+        };
+
+        if (!layers.some(at_least_one_layer_is_an_image)) {
+            if (store.current_annotation.initialized) {
+                notifier.err('All corners of an annotation polygon must be on an image.');
+                return false;
+            }
+            notifier.err('You must select an image to begin creating annotations.');
+            return false;
+        }
+
+        const first_layer = layers[layer_index];
+
+        if (store.current_annotation.initialized) {
+            if (first_layer.get('title') === store.current_annotation.image_title) {
+                return true;
+            }
+            notifier.err('Annotations must be made on a single image, make sure that all polygon points are on the same image.');
+            return false;
+        }
+
+        start_annotation(first_layer.get('title'));
+
+        return true;
+    }
+
     async receive_drawend_event(event) {
 
         const feature = event.feature;
         feature.setProperties({
             taxonomy_class_id: store.selected_taxonomy_class_id,
             annotator_id: 1,
-            image_name: 'My Image',
+            image_name: store.current_annotation.image_title,
         });
         const payload = this.formatGeoJson.writeFeature(feature);
 
@@ -202,6 +265,7 @@ export class MapManager {
             MapManager.geojsonLogError(error);
         }
 
+        end_annotation();
     }
 
     async receive_modifyend_event(event) {
@@ -298,11 +362,13 @@ export class MapManager {
         IMAGES_NRG.forEach(i => {
             NRG_layers.push(new ol.layer.Tile({
                 title: i,
+                type: CUSTOM_GEOIM_IMAGE_LAYER,
                 source: new ol.source.TileWMS({
                     url: `${this.geoserver_url}/GeoImageNet/wms`,
                     params: {'LAYERS': `GeoImageNet:${i}`},
                     ratio: 1,
                     serverType: 'geoserver',
+                    crossOrigin: 'anonymous',
                 }),
                 visible: false,
             }));
@@ -311,11 +377,13 @@ export class MapManager {
         IMAGES_RGB.forEach(i => {
             RGB_layers.push(new ol.layer.Tile({
                 title: i,
+                type: CUSTOM_GEOIM_IMAGE_LAYER,
                 source: new ol.source.TileWMS({
                     url: `${this.geoserver_url}/GeoImageNet/wms`,
                     params: {'LAYERS': `GeoImageNet:${i}`},
                     ratio: 1,
                     serverType: 'geoserver',
+                    crossOrigin: 'anonymous',
                 }),
                 visible: false,
             }));

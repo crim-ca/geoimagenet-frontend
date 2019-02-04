@@ -1,7 +1,9 @@
 import {MODE} from './constants.js';
 
 export const store = mobx.observable({
+
     mode: MODE.VISUALIZE,
+
     taxonomy: [],
     selected_taxonomy: {
         id: 0,
@@ -12,9 +14,25 @@ export const store = mobx.observable({
     },
     selected_taxonomy_class_id: -1,
     visible_classes: [],
+
     annotations_collections: {},
     annotations_sources: {},
     annotations_layers: {},
+
+    current_annotation: {
+        initialized: false,
+        image_title: ''
+    },
+
+});
+
+export const start_annotation = mobx.action(image_title => {
+    store.current_annotation.initialized = true;
+    store.current_annotation.image_title = image_title;
+});
+export const end_annotation = mobx.action(() => {
+    store.current_annotation.initialized = false;
+    store.current_annotation.image_title = '';
 });
 
 export const set_annotation_collection = mobx.action((key, collection) => {
