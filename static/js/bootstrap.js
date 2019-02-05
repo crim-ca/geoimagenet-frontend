@@ -3,7 +3,7 @@ import {MapManager} from './MapManager.js';
 import {build_actions} from './Actions.js';
 import {register_section_handles} from './utils/sections.js';
 import {get_by_id} from './utils/dom.js';
-import {fetch_taxonomies} from './data-queries.js';
+import {fetch_taxonomies} from './domain/data-queries.js';
 import {set_taxonomy} from './store.js';
 import {notifier} from './utils/notifications.js';
 

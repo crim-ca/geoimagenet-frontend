@@ -14,7 +14,7 @@ import {
     set_visible_classes
 } from './store.js';
 import {notifier} from './utils/notifications.js';
-import {release_annotations_by_taxonomy_class_id} from './data-queries.js'
+import {release_annotations_by_taxonomy_class_id} from './domain/data-queries.js'
 import {refresh_source_by_status} from './MapManager.js';
 import {ANNOTATION} from './constants.js';
 import {select_taxonomy} from './domain/user-interactions.js';
