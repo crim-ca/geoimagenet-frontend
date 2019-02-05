@@ -94,14 +94,15 @@ export class TaxonomyBrowser {
             const text = element('span');
 
             text.appendChild(text_node(taxonomy_class.name));
-            if (taxonomy_class['count_new']) {
-                text.appendChild(span(text_node(taxonomy_class['count_new']), 'annotation_new'));
+            const counts = taxonomy_class['counts'];
+            if (counts[ANNOTATION.STATUS.NEW]) {
+                text.appendChild(span(text_node(counts[ANNOTATION.STATUS.NEW]), 'annotation_new'));
             }
-            if (taxonomy_class['count_released']) {
-                text.appendChild(span(text_node(taxonomy_class['count_released']), 'annotation_released'));
+            if (counts[ANNOTATION.STATUS.RELEASED]) {
+                text.appendChild(span(text_node(counts[ANNOTATION.STATUS.RELEASED]), 'annotation_released'));
             }
-            if (taxonomy_class['count_validated']) {
-                text.appendChild(span(text_node(taxonomy_class['count_validated']), 'annotation_validated'));
+            if (counts[ANNOTATION.STATUS.VALIDATED]) {
+                text.appendChild(span(text_node(counts[ANNOTATION.STATUS.VALIDATED]), 'annotation_validated'));
             }
 
             const actions = span(null, 'actions');
