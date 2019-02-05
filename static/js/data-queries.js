@@ -77,3 +77,15 @@ export const delete_geojson_feature = payload => {
         }
     })
 };
+
+export const fetch_flat_taxonomy_classes_counts_by_root_taxonomy_id = id => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const res = await make_http_request(`${GEOIMAGENET_API_URL}/annotations/${id}/counts`);
+            const json = await res.json();
+            resolve(json);
+        } catch (e) {
+            reject(e);
+        }
+    });
+};

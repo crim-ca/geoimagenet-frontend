@@ -32,8 +32,8 @@ export class TaxonomyBrowser {
             remove_children(this.taxonomy_root);
             store.taxonomy.forEach(taxonomy => {
                 const version = taxonomy['versions'][0];
-                const b = button(text_node(taxonomy['name']), () => {
-                    select_taxonomy(version, taxonomy['name']);
+                const b = button(text_node(taxonomy['name']), async () => {
+                    await select_taxonomy(version, taxonomy['name']);
                 });
                 this.taxonomy_root.appendChild(b);
             });
