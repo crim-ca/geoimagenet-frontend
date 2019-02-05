@@ -57,9 +57,14 @@ export class TaxonomyBrowser {
     }
 
     toggle_classes_click_handler(event) {
-        // ugly going forward because we need to go search the right elem
-        // FIXME dude seriously. do something, maybe find_parent_by_tagname or whatevs
-        toggle_all_nested_checkboxes(event.target.parentNode.parentNode.parentNode.parentNode, event.target.checked);
+        const parent_list_item = document.evaluate(
+            "./ancestor::span[contains(concat(' ', @class, ' '), ' taxonomy_class_list_element ')]/ancestor::li[1]",
+            event.target,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+        );
+        toggle_all_nested_checkboxes(parent_list_item.singleNodeValue, event.target.checked);
 
         this.update_visible_classes_from_checked_checkboxes();
     }

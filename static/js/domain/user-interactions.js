@@ -24,6 +24,7 @@ export const select_taxonomy = async (version, taxonomy_name) => {
         elements: [],
     });
     try {
+        // TODO eventually make both requests under a Promise.all as they are not co-dependant
         const taxonomy_classes = await fetch_taxonomy_classes_by_root_class_id(version['root_taxonomy_class_id']);
         const counts = await fetch_flat_taxonomy_classes_counts_by_root_taxonomy_id(version['root_taxonomy_class_id']);
         build_counts(taxonomy_classes, counts)
