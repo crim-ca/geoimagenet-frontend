@@ -54,11 +54,11 @@ export class TaxonomyBrowser {
                         id: version['taxonomy_id'],
                         name: taxonomy['name'],
                         version: version['version'],
-                        taxonomy_class_root_id: version['taxonomy_class_root_id'],
+                        root_taxonomy_class_id: version['root_taxonomy_class_id'],
                         elements: [],
                     });
                     try {
-                        const taxonomy_classes = await fetch_taxonomy_classes_by_root_class_id(version['taxonomy_class_root_id']);
+                        const taxonomy_classes = await fetch_taxonomy_classes_by_root_class_id(version['root_taxonomy_class_id']);
                         set_taxonomy_class([taxonomy_classes]);
                     } catch (e) {
                         notifier.error('We were unable to fetch the taxonomy classes.');

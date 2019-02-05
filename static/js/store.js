@@ -10,7 +10,7 @@ export const store = mobx.observable({
         name: '',
         version: 0,
         elements: [],
-        taxonomy_class_root_id: 0,
+        root_taxonomy_class_id: 0,
     },
     selected_taxonomy_class_id: -1,
     visible_classes: [],
