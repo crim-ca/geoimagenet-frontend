@@ -10,15 +10,14 @@ import {
 } from './utils/dom.js';
 import {
     store,
-    set_taxonomy_class,
     select_taxonomy_class,
-    set_selected_taxonomy,
     set_visible_classes
 } from './store.js';
 import {notifier} from './utils/notifications.js';
-import {fetch_taxonomy_classes_by_root_class_id, release_annotations_by_taxonomy_class_id} from './data-queries.js'
+import {release_annotations_by_taxonomy_class_id} from './data-queries.js'
 import {refresh_source_by_status} from './MapManager.js';
 import {ANNOTATION} from './constants.js';
+import {select_taxonomy} from './domain/user-interactions.js';
 
 export class TaxonomyBrowser {
 
@@ -33,20 +32,8 @@ export class TaxonomyBrowser {
             remove_children(this.taxonomy_root);
             store.taxonomy.forEach(taxonomy => {
                 const version = taxonomy['versions'][0];
-                const b = button(text_node(taxonomy['name']), async () => {
-                    set_selected_taxonomy({
-                        id: version['taxonomy_id'],
-                        name: taxonomy['name'],
-                        version: version['version'],
-                        root_taxonomy_class_id: version['root_taxonomy_class_id'],
-                        elements: [],
-                    });
-                    try {
-                        const taxonomy_classes = await fetch_taxonomy_classes_by_root_class_id(version['root_taxonomy_class_id']);
-                        set_taxonomy_class([taxonomy_classes]);
-                    } catch (e) {
-                        notifier.error('We were unable to fetch the taxonomy classes.');
-                    }
+                const b = button(text_node(taxonomy['name']), () => {
+                    select_taxonomy(version, taxonomy['name']);
                 });
                 this.taxonomy_root.appendChild(b);
             });
