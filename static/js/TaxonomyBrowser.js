@@ -17,7 +17,7 @@ import {
 } from './store.js';
 import {notifier} from './utils/notifications.js';
 import {fetch_taxonomy_classes_by_root_class_id, release_annotations_by_taxonomy_class_id} from './data-queries.js'
-import {MapManager, refresh_source_by_status} from './MapManager.js';
+import {refresh_source_by_status} from './MapManager.js';
 import {ANNOTATION} from './constants.js';
 
 export class TaxonomyBrowser {
@@ -27,23 +27,7 @@ export class TaxonomyBrowser {
         this.taxonomy_classes_root = get_by_id('taxonomy_classes');
         this.taxonomy_root = get_by_id('taxonomy');
 
-        this.toggle_classes_click_handler = (event) => {
-            /*
-            when checking a checkbox, there can be children to be checked down the tree first
-            then, add source event value, along with all children values, to the cql filter
-             */
-
-            // ugly going forward because we need to go search the right elem
-            // FIXME dude seriously. do something, maybe find_parent_by_tagname or whatevs
-            toggle_all_nested_checkboxes(event.target.parentNode.parentNode.parentNode.parentNode, event.target.checked);
-
-            const selection = [];
-            const checkboxes = this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]:checked');
-            checkboxes.forEach(checkbox => {
-                selection.push(checkbox.value);
-            });
-            set_visible_classes(selection);
-        };
+        this.toggle_classes_click_handler = this.toggle_classes_click_handler.bind(this);
 
         mobx.autorun(() => {
             remove_children(this.taxonomy_root);
@@ -71,20 +55,32 @@ export class TaxonomyBrowser {
         mobx.autorun(() => {
             remove_children(this.taxonomy_classes_root);
             this.construct_children(this.taxonomy_classes_root, store.selected_taxonomy.elements, true);
-            this.check_all_checkboxes_hack();
+            this.check_all_checkboxes();
+            this.update_visible_classes_from_checked_checkboxes();
         });
     }
 
-    check_all_checkboxes_hack() {
-        this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]').forEach(c => {
-            c.checked = true;
-        });
+    update_visible_classes_from_checked_checkboxes() {
         const selection = [];
         const checkboxes = this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]:checked');
         checkboxes.forEach(checkbox => {
             selection.push(checkbox.value);
         });
         set_visible_classes(selection);
+    }
+
+    toggle_classes_click_handler(event) {
+        // ugly going forward because we need to go search the right elem
+        // FIXME dude seriously. do something, maybe find_parent_by_tagname or whatevs
+        toggle_all_nested_checkboxes(event.target.parentNode.parentNode.parentNode.parentNode, event.target.checked);
+
+        this.update_visible_classes_from_checked_checkboxes();
+    }
+
+    check_all_checkboxes() {
+        this.taxonomy_classes_root.querySelectorAll('input[type=checkbox]').forEach(c => {
+            c.checked = true;
+        });
     }
 
     static async release_annotations_user_interaction(taxonomy_class_id) {
