@@ -1,4 +1,9 @@
-import {set_annotation_counts, set_selected_taxonomy, set_taxonomy_class, store} from './store.js';
+import {
+    set_annotation_counts,
+    set_selected_taxonomy,
+    set_taxonomy_class,
+    toggle_taxonomy_class_tree_element
+} from './store.js';
 import {
     flat_taxonomy_classes_counts,
     nested_taxonomy_classes,
@@ -34,6 +39,7 @@ export const select_taxonomy = async (version, taxonomy_name) => {
         const counts = await flat_taxonomy_classes_counts(version['root_taxonomy_class_id']);
         set_annotation_counts(counts);
         set_taxonomy_class([taxonomy_classes]);
+        toggle_taxonomy_class_tree_element(version['root_taxonomy_class_id']);
     } catch (e) {
         notifier.error('We were unable to fetch the taxonomy classes.');
     }
