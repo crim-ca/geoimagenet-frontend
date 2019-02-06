@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+"""
 
 driver = webdriver.Chrome()
 driver.get('https://10.30.90.98/platform')
@@ -14,3 +15,5 @@ try:
 
 finally:
     driver.quit()
+
+"""
