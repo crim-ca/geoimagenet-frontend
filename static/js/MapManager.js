@@ -19,7 +19,7 @@ import {
     end_annotation
 } from './store.js';
 import {notifier} from './utils/notifications.js'
-import {create_geojson_feature, delete_geojson_feature, modify_geojson_features} from './data-queries.js';
+import {create_geojson_feature, delete_geojson_feature, modify_geojson_features} from './domain/data-queries.js';
 
 const create_vector_layer = (title, source, color, visible = true) => {
     return new ol.layer.Vector({

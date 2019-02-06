@@ -1,4 +1,4 @@
-import {make_http_request} from './utils/http.js';
+import {make_http_request} from '../utils/http.js';
 
 export const release_annotations_by_taxonomy_class_id = id => {
     return new Promise((resolve, reject) => {
@@ -20,10 +20,22 @@ export const fetch_taxonomies = () => {
     });
 };
 
-export const fetch_taxonomy_classes_by_root_class_id = id => {
+export const nested_taxonomy_classes = root_taxonomy_class_id => {
     return new Promise(async (resolve, reject) => {
         try {
-            const res = await make_http_request(`${GEOIMAGENET_API_URL}/taxonomy_classes/${id}`);
+            const res = await make_http_request(`${GEOIMAGENET_API_URL}/taxonomy_classes/${root_taxonomy_class_id}`);
+            const json = await res.json();
+            resolve(json);
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+export const flat_taxonomy_classes_counts = root_taxonomy_class_id => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const res = await make_http_request(`${GEOIMAGENET_API_URL}/annotations/${root_taxonomy_class_id}/counts`);
             const json = await res.json();
             resolve(json);
         } catch (e) {
