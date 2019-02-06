@@ -6,7 +6,7 @@ import {
     button,
     span,
     remove_children,
-    stylable_checkbox
+    stylable_checkbox, xpath_query
 } from './utils/dom.js';
 import {
     store,
@@ -26,7 +26,7 @@ export class TaxonomyBrowser {
         this.taxonomy_classes_root = get_by_id('taxonomy_classes');
         this.taxonomy_root = get_by_id('taxonomy');
 
-        this.toggle_classes_click_handler = this.toggle_classes_click_handler.bind(this);
+        this.toggle_visible_classes_click_handler = this.toggle_visible_classes_click_handler.bind(this);
 
         mobx.autorun(() => {
             remove_children(this.taxonomy_root);
@@ -56,15 +56,12 @@ export class TaxonomyBrowser {
         set_visible_classes(selection);
     }
 
-    toggle_classes_click_handler(event) {
-        const parent_list_item = document.evaluate(
+    toggle_visible_classes_click_handler(event) {
+        const parent_list_item = xpath_query(
             "./ancestor::span[contains(concat(' ', @class, ' '), ' taxonomy_class_list_element ')]/ancestor::li[1]",
-            event.target,
-            null,
-            XPathResult.FIRST_ORDERED_NODE_TYPE,
-            null
+            event.target
         );
-        toggle_all_nested_checkboxes(parent_list_item.singleNodeValue, event.target.checked);
+        toggle_all_nested_checkboxes(parent_list_item, event.target.checked);
 
         this.update_visible_classes_from_checked_checkboxes();
     }
@@ -111,7 +108,7 @@ export class TaxonomyBrowser {
             }
 
             const actions = span(null, 'actions');
-            actions.appendChild(stylable_checkbox(taxonomy_class.id, 'checkbox_eye', this.toggle_classes_click_handler));
+            actions.appendChild(stylable_checkbox(taxonomy_class.id, 'checkbox_eye', this.toggle_visible_classes_click_handler));
             actions.appendChild(button(
                 span(null, 'fas', 'fa-paper-plane', 'fa-lg', 'release'),
                 () => TaxonomyBrowser.release_annotations_user_interaction(taxonomy_class.id)
