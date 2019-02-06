@@ -1,14 +1,15 @@
-import {set_selected_taxonomy, set_taxonomy_class} from '../store.js';
+import {set_annotation_counts, set_selected_taxonomy, set_taxonomy_class, store} from '../store.js';
 import {
     flat_taxonomy_classes_counts,
-    nested_taxonomy_classes
+    nested_taxonomy_classes,
+    release_annotations_request
 } from './data-queries.js';
 import {notifier} from '../utils/notifications.js';
-import {xpath_query} from '../utils/dom.js';
+import {refresh_source_by_status} from '../MapManager.js';
+import {ANNOTATION} from '../constants.js';
 
 const build_counts = (taxonomy_class, counts) => {
     const taxonomy_class_id = taxonomy_class['id'];
-    taxonomy_class['opened'] = false;
     if (counts[taxonomy_class_id]) {
         taxonomy_class['counts'] = counts[taxonomy_class_id];
     }
@@ -31,13 +32,24 @@ export const select_taxonomy = async (version, taxonomy_name) => {
         // TODO eventually make both requests under a Promise.all as they are not co-dependant
         const taxonomy_classes = await nested_taxonomy_classes(version['root_taxonomy_class_id']);
         const counts = await flat_taxonomy_classes_counts(version['root_taxonomy_class_id']);
-        build_counts(taxonomy_classes, counts);
+        set_annotation_counts(counts);
         set_taxonomy_class([taxonomy_classes]);
     } catch (e) {
         notifier.error('We were unable to fetch the taxonomy classes.');
     }
 };
 
-export const toggle_taxonomy_tree_element = (event, taxonomy_class_id) => {
-    xpath_query('./ancestor::*[2]', event.target).classList.toggle('collapsed');
+export const release_annotations = async (taxonomy_class_id) => {
+    await notifier.confirm('Do you really want to release all the annotations of the selected class, as well as its children?');
+    try {
+        await release_annotations_request(taxonomy_class_id);
+        refresh_source_by_status(ANNOTATION.STATUS.NEW);
+        refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
+        const counts = await flat_taxonomy_classes_counts(taxonomy_class_id);
+        set_annotation_counts(counts);
+        notifier.ok('Annotations were released.');
+    } catch (error) {
+        console.log(error);
+        notifier.error('We were unable to release the annotations.')
+    }
 };

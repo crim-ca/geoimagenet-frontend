@@ -1,6 +1,6 @@
 import {make_http_request} from '../utils/http.js';
 
-export const release_annotations_by_taxonomy_class_id = id => {
+export const release_annotations_request = id => {
     return new Promise((resolve, reject) => {
         make_http_request(`${GEOIMAGENET_API_URL}/annotations/release?taxonomy_class_id=${id}`, {method: 'POST'})
             .then(res => resolve(res))
