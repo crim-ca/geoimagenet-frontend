@@ -8,6 +8,7 @@ import {xpath_query} from '../utils/dom.js';
 
 const build_counts = (taxonomy_class, counts) => {
     const taxonomy_class_id = taxonomy_class['id'];
+    taxonomy_class['opened'] = false;
     if (counts[taxonomy_class_id]) {
         taxonomy_class['counts'] = counts[taxonomy_class_id];
     }
@@ -37,7 +38,6 @@ export const select_taxonomy = async (version, taxonomy_name) => {
     }
 };
 
-export const toggle_taxonomy_tree_element = (event) => {
-    // ugly following the chain upwards until the parent li
+export const toggle_taxonomy_tree_element = (event, taxonomy_class_id) => {
     xpath_query('./ancestor::*[2]', event.target).classList.toggle('collapsed');
 };

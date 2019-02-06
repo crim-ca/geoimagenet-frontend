@@ -26,6 +26,37 @@ export const store = mobx.observable({
 
 });
 
+const find_element_by_id = (collection, target_id) => {
+
+    // Here, we work around the fact that array.find returns the first result of the array
+    // It would work perfectly on a flat array, but here, if the result is nested, returning true from the inner loop,
+    // makes the outer loop element be returned from the find
+    // hence, when we find the element, we assign it to result and return true to exit the loop
+    // this makes finding the element some kind of side effect of the find, instead of its primary function
+    const loop = (collection, target_id, result) => {
+        collection.find(e => {
+            if (e.id === target_id) {
+                result = e;
+                return true;
+            }
+            if (e.children) {
+                return loop(e.children, target_id, result);
+            }
+            return false;
+        });
+    };
+
+    let result = null;
+    loop(collection, target_id, result);
+
+    return result;
+};
+
+export const toggle_taxonomy_class_tree_element = mobx.action(taxonomy_class_id => {
+    let taxonomy_class = find_element_by_id(store.selected_taxonomy.elements, taxonomy_class_id);
+    taxonomy_class['opened'] = !taxonomy_class['opened'];
+});
+
 export const increment_new_annotations_count = mobx.action(taxonomy_class_id => {
 
     const loop_elements = (collection, target_id) => {

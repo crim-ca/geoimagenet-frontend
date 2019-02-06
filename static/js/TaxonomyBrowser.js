@@ -11,7 +11,7 @@ import {
 import {
     store,
     select_taxonomy_class,
-    set_visible_classes
+    set_visible_classes, toggle_taxonomy_class_tree_element
 } from './store.js';
 import {notifier} from './utils/notifications.js';
 import {release_annotations_by_taxonomy_class_id} from './domain/data-queries.js'
@@ -121,11 +121,13 @@ export class TaxonomyBrowser {
 
             // TODO only leafs can be annotated, so if taxonomy_class.children don't add the possibility to select for annotation
             if (taxonomy_class['children'] && taxonomy_class['children'].length > 0) {
-                if (!level_is_opened) {
+                if (!taxonomy_class['opened']) {
                     taxonomy_class_root_element.classList.add('collapsed');
                 }
                 // inside the if block because we don't need the toggle if there are no children
-                text.addEventListener('click', toggle_taxonomy_tree_element);
+                text.addEventListener('click', () => {
+                    toggle_taxonomy_class_tree_element(taxonomy_class.id);
+                });
 
                 const ul = element('ul');
                 this.construct_children(ul, taxonomy_class['children']);
