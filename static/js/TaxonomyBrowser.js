@@ -17,7 +17,7 @@ import {notifier} from './utils/notifications.js';
 import {release_annotations_by_taxonomy_class_id} from './domain/data-queries.js'
 import {refresh_source_by_status} from './MapManager.js';
 import {ANNOTATION} from './constants.js';
-import {select_taxonomy} from './domain/user-interactions.js';
+import {toggle_taxonomy_tree_element, select_taxonomy} from './domain/user-interactions.js';
 
 export class TaxonomyBrowser {
 
@@ -128,10 +128,7 @@ export class TaxonomyBrowser {
                     taxonomy_class_root_element.classList.add('collapsed');
                 }
                 // inside the if block because we don't need the toggle if there are no children
-                text.addEventListener('click', event => {
-                    // ugly following the chain upwards until the parent li
-                    event.target.parentNode.parentNode.classList.toggle('collapsed');
-                });
+                text.addEventListener('click', toggle_taxonomy_tree_element);
 
                 const ul = element('ul');
                 this.construct_children(ul, taxonomy_class['children']);
