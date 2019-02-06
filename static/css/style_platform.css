@@ -3,7 +3,7 @@
     --border-height: 1px;
     --padding-height: 10px;
 
-    --total-handle-height: calc(var(--line-height) + var(--border-height) + ( 2 * var(--padding-height) ));
+    --total-handle-height: calc(var(--line-height) + var(--border-height) + (2 * var(--padding-height)));
 
     --color-new: rgba(255, 247, 0, 0.9);
     --color-pre-released: rgba(238, 97, 0, 0.9);
@@ -27,6 +27,19 @@ body {
 div.map {
     height: 100%;
     width: calc(100% - var(--width-sidebar));
+    position: relative;
+}
+div.map span.coordinates {
+    display: flex;
+    align-items: center;
+    width: 200px;
+    z-index: 100;
+    padding: var(--gutter-small);
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: var(--gutter-small);
+    background-color: rgba(255, 255, 255, 0.8);
 }
 div.right {
     height: 100%;

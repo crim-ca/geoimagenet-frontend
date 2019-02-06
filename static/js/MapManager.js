@@ -130,7 +130,8 @@ export class MapManager {
         this.mouse_position = new ol.control.MousePosition({
             coordinateFormat: ol.coordinate.createStringXY(4),
             projection: 'EPSG:4326',
-            undefinedHTML: '&nbsp;'
+            undefinedHTML: '&nbsp;',
+            target: 'coordinates',
         });
         this.map.addControl(this.mouse_position);
 
