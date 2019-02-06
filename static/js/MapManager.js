@@ -386,11 +386,55 @@ export class MapManager {
                 visible: false,
             }));
         });
+        const bbox_features = [];
+        let wms_parser = new ol.format.WMSCapabilities();
+        let url = `${this.geoserver_url}/GeoImageNet/wms?request=GetCapabilities`;
+        fetch(url)
+            .then(response => {
+                return response.text();
+            })
+            .then(text => {
+                let caps = wms_parser.read(text);
+                caps['Capability']['Layer']['Layer'].forEach(layer => {
+                    let extent = layer['EX_GeographicBoundingBox'];
+                    // extent is an array of [minx, miny, maxx, maxy] in EPSG:4326
+                    let feature = new ol.Feature({
+                        geometry: new ol.geom.Polygon.fromExtent(extent)
+                    });
+                    bbox_features.push(feature);
+                });
+            });
+        let vectorSource = new ol.source.Vector({
+            // format: new ol.format.GeoJSON({
+            //     dataProjection: 'EPSG:3857',
+            //     featureProjection: 'EPSG:4326',
+            //     geometryName: 'geometry',
+            // }),
+            format: new ol.format.GeoJSON(),
+            features: bbox_features,
+            strategy: ol.loadingstrategy.bbox
+        });
+        let bbox_layer = new ol.layer.VectorLayer({
+            title: "Raster bounding boxes",
+            source: vectorSource,
+            style: new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(255, 0, 0, 0.5)',
+                }),
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(255, 255, 255)',
+                    width: 2
+                })
+            }),
+            visible: true,
+        });
+
         const annotation_layers = [];
         ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
             annotation_layers.unshift(store.annotations_layers[status]);
         });
         return [
+            bbox_layer,
             new ol.layer.Group({
                 title: 'RGB Images',
                 layers: RGB_layers,
