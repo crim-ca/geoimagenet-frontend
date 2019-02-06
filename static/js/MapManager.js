@@ -9,15 +9,15 @@ import {
     VISIBLE_LAYERS_BY_DEFAULT,
     ALLOWED_BING_MAPS,
     CUSTOM_GEOIM_IMAGE_LAYER,
-} from './constants.js';
+} from './domain/constants.js';
 import {
     store,
     set_annotation_collection,
     set_annotation_source,
     set_annotation_layer,
     start_annotation,
-    end_annotation
-} from './store.js';
+    end_annotation, increment_new_annotations_count
+} from './domain/store.js';
 import {notifier} from './utils/notifications.js'
 import {create_geojson_feature, delete_geojson_feature, modify_geojson_features} from './domain/data-queries.js';
 
@@ -68,15 +68,30 @@ export class MapManager {
         this.receive_modifyend_event = this.receive_modifyend_event.bind(this);
         this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
 
+        // create a view centered around CRIM
+        const CRIM = [-73.623173, 45.531694];
+        this.view = new ol.View({
+            center: ol.proj.fromLonLat(CRIM),
+            zoom: 16
+        });
+
+        this.map = new ol.Map({
+            target: map_div_id,
+            view: this.view,
+        });
+
         const style = getComputedStyle(document.body);
 
-        // Initialize empty collections for each annotation status so we can hold references to them in the global store
         ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
+
             const color = style.getPropertyValue(`--color-${status}`);
             set_annotation_collection(status, new ol.Collection());
             set_annotation_source(status, this.create_vector_source(store.annotations_collections[status], status));
+
             const this_layer_is_visible = VISIBLE_LAYERS_BY_DEFAULT.indexOf(status) > -1;
-            set_annotation_layer(status, create_vector_layer(status, store.annotations_sources[status], color, this_layer_is_visible));
+            const vectorLayer = create_vector_layer(status, store.annotations_sources[status], color, this_layer_is_visible);
+
+            set_annotation_layer(status, vectorLayer);
         });
 
         this.modify = new ol.interaction.Modify({
@@ -96,9 +111,6 @@ export class MapManager {
         });
 
         mobx.autorun(() => {
-            // create the cql filter from detail elements
-            // prepend each bit with taxonomy_id=
-            // join all the bits with OR
             if (store.visible_classes.length > 0) {
                 this.cql_filter = `taxonomy_class_id IN (${store.visible_classes.join(',')})`;
             } else {
@@ -111,49 +123,15 @@ export class MapManager {
 
         this.cql_filter = '';
 
-        /*
-        we want to create a base open layers map that will be used by the annotation tool
-
-        we need to have a layer switcher control to select
-          - base maps
-          - images
-          - annotations
-
-        a way to load features/annotations from geoserver
-          have an input text, user enters the location of a geoserver installatino
-          from there, script loads layers visible from that geoserver's rest api
-          populates the layer switcher
-        the possibility to edit these features and add new ones
-        a projection selector
-         */
-
-        // create a view centered around canada
-        let CRIM = [-73.623173, 45.531694];
-        this.view = new ol.View({
-            center: ol.proj.fromLonLat(CRIM),
-            zoom: 16
+        this.make_layers().forEach(l => {
+            this.map.addLayer(l);
         });
 
-        // create the map
-        this.map = new ol.Map({
-            layers: this.make_layers(),
-            target: map_div_id,
-            view: this.view,
-        });
-
-        // We need to set the maps of the layers after creating the map
-        // because to create the map, we need the layers to be created already
-        // some kind of deadlock
-        // FIXME maybe that's not exactly true, maybe investigate
-        ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
-            store.annotations_layers[status].setMap(this.map);
-        });
-
-        // add base controls (mouse position, projection selection)
         this.mouse_position = new ol.control.MousePosition({
             coordinateFormat: ol.coordinate.createStringXY(4),
             projection: 'EPSG:4326',
-            undefinedHTML: '&nbsp;'
+            undefinedHTML: '&nbsp;',
+            target: 'coordinates',
         });
         this.map.addControl(this.mouse_position);
 
@@ -258,6 +236,7 @@ export class MapManager {
         try {
             const new_feature_id = await create_geojson_feature(payload);
             feature.setId(`${this.annotation_layer}.${new_feature_id}`);
+            increment_new_annotations_count(store.selected_taxonomy_class_id);
         } catch (error) {
             MapManager.geojsonLogError(error);
         }
@@ -329,7 +308,6 @@ export class MapManager {
 
     static geojsonLogError(error) {
         notifier.error('The api rejected our request. There is likely more information in the console.');
-        console.log('we had a problem with the geojson transaction: %o', error);
     }
 
     make_layers() {

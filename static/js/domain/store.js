@@ -1,10 +1,11 @@
-import {MODE} from './constants.js';
+import {ANNOTATION, MODE} from './constants.js';
 
 export const store = mobx.observable({
 
     mode: MODE.VISUALIZE,
 
     taxonomy: [],
+    annotation_counts: {},
     selected_taxonomy: {
         id: 0,
         name: '',
@@ -26,6 +27,41 @@ export const store = mobx.observable({
 
 });
 
+const find_element_by_id = (collection, target_id) => {
+
+    // Here, we work around the fact that array.find returns the first result of the array
+    // It would work perfectly on a flat array, but here, if the result is nested, returning true from the inner loop,
+    // makes the outer loop element be returned from the find
+    // hence, when we find the element, we assign it to result and return true to exit the loop
+    // this makes finding the element some kind of side effect of the find, instead of its primary function
+    const loop = (collection, target_id, result) => {
+        collection.find(e => {
+            if (e.id === target_id) {
+                result.element = e;
+                return true;
+            }
+            if (e.children) {
+                return loop(e.children, target_id, result);
+            }
+            return false;
+        });
+    };
+
+    let result = {};
+    loop(collection, target_id, result);
+
+    return result.element;
+};
+
+export const toggle_taxonomy_class_tree_element = mobx.action(taxonomy_class_id => {
+    let taxonomy_class = find_element_by_id(store.selected_taxonomy.elements, taxonomy_class_id);
+    taxonomy_class['opened'] = !taxonomy_class['opened'];
+});
+
+export const increment_new_annotations_count = mobx.action(taxonomy_class_id => {
+    store.annotation_counts[taxonomy_class_id][ANNOTATION.STATUS.NEW]++;
+});
+
 export const start_annotation = mobx.action(image_title => {
     store.current_annotation.initialized = true;
     store.current_annotation.image_title = image_title;
@@ -35,6 +71,9 @@ export const end_annotation = mobx.action(() => {
     store.current_annotation.image_title = '';
 });
 
+export const set_annotation_counts = mobx.action(counts => {
+    store.annotation_counts = Object.assign({}, store.annotation_counts, counts);
+});
 export const set_annotation_collection = mobx.action((key, collection) => {
     store.annotations_collections[key] = collection;
 });

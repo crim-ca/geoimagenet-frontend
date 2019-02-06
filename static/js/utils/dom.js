@@ -63,3 +63,14 @@ export const get_parent_by_tag_name = (element, target_parent_tag_name) => {
     }
     return false;
 };
+export const xpath_query = (query, root_element = null, result_mode =XPathResult.FIRST_ORDERED_NODE_TYPE) => {
+    const root = root_element === null ? document : root_element;
+    const result = document.evaluate(
+        query,
+        root,
+        null,
+        result_mode,
+        null
+    );
+    return result.singleNodeValue;
+};
