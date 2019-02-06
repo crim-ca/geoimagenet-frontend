@@ -1,5 +1,5 @@
 import {element, text_node, button} from '/js/utils/dom.js'
-import {NOTIFICATION_LIFE_SPAN_MS} from '../constants.js';
+import {NOTIFICATION_LIFE_SPAN_MS} from '../domain/constants.js';
 
 const root = document.body;
 const remove_notif = notif => { notif.parentNode.removeChild(notif); };
