@@ -386,9 +386,22 @@ export class MapManager {
                 visible: false,
             }));
         });
-        const bbox_features = [];
+        let bbox_features = new ol.Collection();
         let wms_parser = new ol.format.WMSCapabilities();
         let url = `${this.geoserver_url}/GeoImageNet/wms?request=GetCapabilities`;
+        let bbox_layer = new ol.layer.Vector({
+            title: "Raster bounding boxes",
+            source: new ol.source.Vector({
+                features: bbox_features
+            }),
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(35, 110, 225)',
+                    width: 10
+                })
+            }),
+            visible: true,
+        });
         fetch(url)
             .then(response => {
                 return response.text();
@@ -396,38 +409,18 @@ export class MapManager {
             .then(text => {
                 let caps = wms_parser.read(text);
                 caps['Capability']['Layer']['Layer'].forEach(layer => {
-                    let extent = layer['EX_GeographicBoundingBox'];
                     // extent is an array of [minx, miny, maxx, maxy] in EPSG:4326
-                    let feature = new ol.Feature({
-                        geometry: new ol.geom.Polygon.fromExtent(extent)
-                    });
-                    bbox_features.push(feature);
+                    let extent = new ol.geom.Polygon.fromExtent(layer['EX_GeographicBoundingBox']);
+                    extent.transform("EPSG:4326", "EPSG:3857");
+                    let maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
+                    if (extent.getArea() < maxArea) {
+                        let feature = new ol.Feature({
+                            geometry: extent
+                        });
+                        bbox_features.push(feature);
+                    }
                 });
             });
-        let vectorSource = new ol.source.Vector({
-            // format: new ol.format.GeoJSON({
-            //     dataProjection: 'EPSG:3857',
-            //     featureProjection: 'EPSG:4326',
-            //     geometryName: 'geometry',
-            // }),
-            format: new ol.format.GeoJSON(),
-            features: bbox_features,
-            strategy: ol.loadingstrategy.bbox
-        });
-        let bbox_layer = new ol.layer.VectorLayer({
-            title: "Raster bounding boxes",
-            source: vectorSource,
-            style: new ol.style.Style({
-                fill: new ol.style.Fill({
-                    color: 'rgba(255, 0, 0, 0.5)',
-                }),
-                stroke: new ol.style.Stroke({
-                    color: 'rgba(255, 255, 255)',
-                    width: 2
-                })
-            }),
-            visible: true,
-        });
 
         const annotation_layers = [];
         ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
