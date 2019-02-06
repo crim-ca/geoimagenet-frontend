@@ -68,15 +68,32 @@ export class MapManager {
         this.receive_modifyend_event = this.receive_modifyend_event.bind(this);
         this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
 
+        // create a view centered around canada
+        let CRIM = [-73.623173, 45.531694];
+        this.view = new ol.View({
+            center: ol.proj.fromLonLat(CRIM),
+            zoom: 16
+        });
+
+        // create the map
+        this.map = new ol.Map({
+            target: map_div_id,
+            view: this.view,
+        });
+
         const style = getComputedStyle(document.body);
 
         // Initialize empty collections for each annotation status so we can hold references to them in the global store
         ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
+
             const color = style.getPropertyValue(`--color-${status}`);
             set_annotation_collection(status, new ol.Collection());
             set_annotation_source(status, this.create_vector_source(store.annotations_collections[status], status));
+
             const this_layer_is_visible = VISIBLE_LAYERS_BY_DEFAULT.indexOf(status) > -1;
-            set_annotation_layer(status, create_vector_layer(status, store.annotations_sources[status], color, this_layer_is_visible));
+            const vectorLayer = create_vector_layer(status, store.annotations_sources[status], color, this_layer_is_visible);
+
+            set_annotation_layer(status, vectorLayer);
         });
 
         this.modify = new ol.interaction.Modify({
@@ -127,27 +144,7 @@ export class MapManager {
         a projection selector
          */
 
-        // create a view centered around canada
-        let CRIM = [-73.623173, 45.531694];
-        this.view = new ol.View({
-            center: ol.proj.fromLonLat(CRIM),
-            zoom: 16
-        });
-
-        // create the map
-        this.map = new ol.Map({
-            layers: this.make_layers(),
-            target: map_div_id,
-            view: this.view,
-        });
-
-        // We need to set the maps of the layers after creating the map
-        // because to create the map, we need the layers to be created already
-        // some kind of deadlock
-        // FIXME maybe that's not exactly true, maybe investigate
-        ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
-            store.annotations_layers[status].setMap(this.map);
-        });
+        this.make_layers().forEach(l => { this.map.addLayer(l); });
 
         // add base controls (mouse position, projection selection)
         this.mouse_position = new ol.control.MousePosition({
