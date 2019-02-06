@@ -60,6 +60,10 @@ To support wfs treansactions:
 - in WFS services settings, enable 'transactional' option (https://gis.stackexchange.com/a/141047/83943)
 - in Data (security section) add a role for anonymous_role to write on the chosen feature type (in this example case, wfs_geom) (https://gis.stackexchange.com/a/258203/83943)
 
+# Selenium
+
+Follow installation instructions from official doc: make sure to install the drivers for desired browsers and make the symlink in /usr/bin/<driver>
+
 # surface vs objet
 le point avec rayon autour est surface
 le carré being dragged est objet (instance)
