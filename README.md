@@ -17,7 +17,7 @@ The dependencies are stored with `pip freeze > requirements.txt`, install these 
 
 Launch the flask server with `FLASK_APP=Framework/flask_server.py flask run`.
 
-Or directly the gunicorn app with `gunicorn -c Framework/gunicorn_config.py Framework:app -k eventlet`
+Or directly the gunicorn app with `gunicorn -c Framework/gunicorn_config.py Framework:fl_app -k eventlet`
 
 ## Environment variables
 
