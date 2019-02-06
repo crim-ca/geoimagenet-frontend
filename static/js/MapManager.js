@@ -9,7 +9,7 @@ import {
     VISIBLE_LAYERS_BY_DEFAULT,
     ALLOWED_BING_MAPS,
     CUSTOM_GEOIM_IMAGE_LAYER,
-} from './constants.js';
+} from './domain/constants.js';
 import {
     store,
     set_annotation_collection,
@@ -17,7 +17,7 @@ import {
     set_annotation_layer,
     start_annotation,
     end_annotation, increment_new_annotations_count
-} from './store.js';
+} from './domain/store.js';
 import {notifier} from './utils/notifications.js'
 import {create_geojson_feature, delete_geojson_feature, modify_geojson_features} from './domain/data-queries.js';
 
@@ -308,7 +308,6 @@ export class MapManager {
 
     static geojsonLogError(error) {
         notifier.error('The api rejected our request. There is likely more information in the console.');
-        console.log('we had a problem with the geojson transaction: %o', error);
     }
 
     make_layers() {

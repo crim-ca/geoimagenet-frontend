@@ -12,8 +12,8 @@ import {
     store,
     select_taxonomy_class,
     set_visible_classes, toggle_taxonomy_class_tree_element
-} from './store.js';
-import {ANNOTATION} from './constants.js';
+} from './domain/store.js';
+import {ANNOTATION} from './domain/constants.js';
 import {
     select_taxonomy,
     release_annotations

@@ -1,4 +1,4 @@
-import {set_annotation_counts, set_selected_taxonomy, set_taxonomy_class, store} from '../store.js';
+import {set_annotation_counts, set_selected_taxonomy, set_taxonomy_class, store} from './store.js';
 import {
     flat_taxonomy_classes_counts,
     nested_taxonomy_classes,
@@ -6,7 +6,7 @@ import {
 } from './data-queries.js';
 import {notifier} from '../utils/notifications.js';
 import {refresh_source_by_status} from '../MapManager.js';
-import {ANNOTATION} from '../constants.js';
+import {ANNOTATION} from './constants.js';
 
 const build_counts = (taxonomy_class, counts) => {
     const taxonomy_class_id = taxonomy_class['id'];
@@ -49,7 +49,6 @@ export const release_annotations = async (taxonomy_class_id) => {
         set_annotation_counts(counts);
         notifier.ok('Annotations were released.');
     } catch (error) {
-        console.log(error);
         notifier.error('We were unable to release the annotations.')
     }
 };
