@@ -10,7 +10,7 @@ const actions = [
     {name: 'delete', icon_class: 'fa-trash-alt', mode: MODE.DELETE},
     {name: 'ask_expertise', icon_class: 'fa-question-circle', mode: MODE.ASK_EXPERTISE},
     {name: 'validate', icon_class: 'fa-check', mode: MODE.VALIDATE},
-    {name: 'refuse', icon_class: 'fa-times', mode: MODE.REFUSE},
+    {name: 'refuse', icon_class: 'fa-times', mode: MODE.REJECT},
 ];
 
 export const build_actions = (root_element) => {
