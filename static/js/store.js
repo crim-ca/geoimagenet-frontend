@@ -1,4 +1,4 @@
-import {MODE} from './constants.js';
+import {ANNOTATION, MODE} from './constants.js';
 
 export const store = mobx.observable({
 
@@ -24,6 +24,31 @@ export const store = mobx.observable({
         image_title: ''
     },
 
+});
+
+export const increment_new_annotations_count = mobx.action(taxonomy_class_id => {
+
+    const loop_elements = (collection, target_id) => {
+
+        let found = false;
+
+        collection.forEach(element => {
+            if (element.id === target_id) {
+                element.counts[ANNOTATION.STATUS.NEW]++;
+                found = true;
+            }
+            if (element.children) {
+                if (loop_elements(element.children, target_id)) {
+                    element.counts[ANNOTATION.STATUS.NEW]++;
+                    found = true;
+                }
+            }
+        });
+
+        return found;
+    };
+
+    loop_elements(store.selected_taxonomy.elements, taxonomy_class_id);
 });
 
 export const start_annotation = mobx.action(image_title => {

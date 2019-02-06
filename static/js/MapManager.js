@@ -16,7 +16,7 @@ import {
     set_annotation_source,
     set_annotation_layer,
     start_annotation,
-    end_annotation
+    end_annotation, increment_new_annotations_count
 } from './store.js';
 import {notifier} from './utils/notifications.js'
 import {create_geojson_feature, delete_geojson_feature, modify_geojson_features} from './domain/data-queries.js';
@@ -236,6 +236,7 @@ export class MapManager {
         try {
             const new_feature_id = await create_geojson_feature(payload);
             feature.setId(`${this.annotation_layer}.${new_feature_id}`);
+            increment_new_annotations_count(store.selected_taxonomy_class_id);
         } catch (error) {
             MapManager.geojsonLogError(error);
         }
