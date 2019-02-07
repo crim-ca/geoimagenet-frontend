@@ -384,53 +384,57 @@ export class MapManager {
         // Get map projection
         const dst_epsg = this.map.getView().getProjection().getCode();
 
-        const result = await geoserver_capabilities(`${GEOSERVER_URL}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
-        const capability = result.Capability;
-        const layers_info = capability.Layer.Layer;
-        for (let i = 0; i < layers_info.length; i++) {
-            const layer_name = layers_info[i].Name;
-            const src_proj = layers_info[i].BoundingBox[1].crs;
-            // Get layer's extent
-            let extent = layers_info[i].BoundingBox[1].extent;
-            // The coordinates must be reordered for Openlayers
-            const extent_for_OL = [extent[1], extent[0], extent[3], extent[2]];
-            const layer_base_name = layer_name.split(":")[1];
+        try {
+            const result = await geoserver_capabilities(`${GEOSERVER_URL}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
+            const capability = result.Capability;
+            const layers_info = capability.Layer.Layer;
+            for (let i = 0; i < layers_info.length; i++) {
+                const layer_name = layers_info[i].Name;
+                const src_proj = layers_info[i].BoundingBox[1].crs;
+                // Get layer's extent
+                let extent = layers_info[i].BoundingBox[1].extent;
+                // The coordinates must be reordered for Openlayers
+                const extent_for_OL = [extent[1], extent[0], extent[3], extent[2]];
+                const layer_base_name = layer_name.split(":")[1];
 
-            if (layer_name.includes('GeoImageNet:NRG')) {
-                // The coordinates must be set to the same projection as the map
-                let extent = transform(extent_for_OL, src_proj, dst_epsg);
-                const lyr = new ol.layer.Tile({
-                    title: layer_base_name,
-                    type: CUSTOM_GEOIM_IMAGE_LAYER,
-                    source: new ol.source.TileWMS({
-                        url: `${GEOSERVER_URL}/GeoImageNet/wms`,
-                        params: {'LAYERS': layer_name},
-                        ratio: 1,
-                        serverType: 'geoserver',
-                        crossOrigin: 'anonymous',
-                    }),
-                    extent: extent,
-                });
-                NRG_layers.push(lyr);
-            }
+                if (layer_name.includes('GeoImageNet:NRG')) {
+                    // The coordinates must be set to the same projection as the map
+                    let extent = transform(extent_for_OL, src_proj, dst_epsg);
+                    const lyr = new ol.layer.Tile({
+                        title: layer_base_name,
+                        type: CUSTOM_GEOIM_IMAGE_LAYER,
+                        source: new ol.source.TileWMS({
+                            url: `${GEOSERVER_URL}/GeoImageNet/wms`,
+                            params: {'LAYERS': layer_name},
+                            ratio: 1,
+                            serverType: 'geoserver',
+                            crossOrigin: 'anonymous',
+                        }),
+                        extent: extent,
+                    });
+                    NRG_layers.push(lyr);
+                }
 
-            if (layer_name.includes('GeoImageNet:RGB')) {
-                // The coordinates must be set to the same projection as the map
-                let extent = transform(extent_for_OL, src_proj, dst_epsg);
-                const lyr = new ol.layer.Tile({
-                    title: layer_base_name,
-                    type: CUSTOM_GEOIM_IMAGE_LAYER,
-                    source: new ol.source.TileWMS({
-                        url: `${GEOSERVER_URL}/GeoImageNet/wms`,
-                        params: {'LAYERS': layer_name},
-                        ratio: 1,
-                        serverType: 'geoserver',
-                        crossOrigin: 'anonymous',
-                    }),
-                    extent: extent,
-                });
-                RGB_layers.push(lyr);
+                if (layer_name.includes('GeoImageNet:RGB')) {
+                    // The coordinates must be set to the same projection as the map
+                    let extent = transform(extent_for_OL, src_proj, dst_epsg);
+                    const lyr = new ol.layer.Tile({
+                        title: layer_base_name,
+                        type: CUSTOM_GEOIM_IMAGE_LAYER,
+                        source: new ol.source.TileWMS({
+                            url: `${GEOSERVER_URL}/GeoImageNet/wms`,
+                            params: {'LAYERS': layer_name},
+                            ratio: 1,
+                            serverType: 'geoserver',
+                            crossOrigin: 'anonymous',
+                        }),
+                        extent: extent,
+                    });
+                    RGB_layers.push(lyr);
+                }
             }
+        } catch (e) {
+            notifier.error('We could not interrogate Geoserver capabilities. No images will be available.');
         }
 
         let bboxFeatures = new ol.Collection();
@@ -492,19 +496,24 @@ export class MapManager {
             visible: true,
         });
 
-        const result_for_bbox = await geoserver_capabilities(`${GEOSERVER_URL}/GeoImageNet/wms?request=GetCapabilities`);
-        result_for_bbox['Capability']['Layer']['Layer'].forEach(layer => {
-            // EX_GeographicBoundingBox is an array of [minx, miny, maxx, maxy] in EPSG:4326
-            let extent = new ol.geom.Polygon.fromExtent(layer['EX_GeographicBoundingBox']);
-            extent.transform("EPSG:4326", "EPSG:3857");
-            let maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
-            if (extent.getArea() < maxArea) {
-                let feature = new ol.Feature({
-                    geometry: extent
-                });
-                bboxFeatures.push(feature);
-            }
-        });
+        try {
+            const result_for_bbox = await geoserver_capabilities(`${GEOSERVER_URL}/GeoImageNet/wms?request=GetCapabilities`);
+            result_for_bbox['Capability']['Layer']['Layer'].forEach(layer => {
+                // EX_GeographicBoundingBox is an array of [minx, miny, maxx, maxy] in EPSG:4326
+                let extent = new ol.geom.Polygon.fromExtent(layer['EX_GeographicBoundingBox']);
+                extent.transform("EPSG:4326", "EPSG:3857");
+                let maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
+                if (extent.getArea() < maxArea) {
+                    let feature = new ol.Feature({
+                        geometry: extent
+                    });
+                    bboxFeatures.push(feature);
+                }
+            });
+        } catch (e) {
+            notifier.error('We could no interrogate Geoserver capabilities. The image marker layer will be unavailable.');
+        }
+
 
         const annotation_layers = [];
         ANNOTATION_STATUS_AS_ARRAY.forEach(function (status) {
