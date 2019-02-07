@@ -443,7 +443,7 @@ export class MapManager {
                 if (resolution < 25) {
                     // don't display anything
                     return new ol.style.Style();
-                } else if (resolution > 700 || size > 1) {
+                } else if (resolution > 700 || size > 2) {
                     return new ol.style.Style({
                         image: new ol.style.Circle({
                             radius: 12,
