@@ -429,7 +429,7 @@ export class MapManager {
                 NRG_layers.push(lyr);
             }
 
-            if(layer_name.includes('GeoImageNet:RGBc')){
+            if(layer_name.includes('GeoImageNet:RGB')){
                 // The coordinates must be set to the same projection as the map
                 var extent = transform(extent , crs, epsg)
                 var lyr = new ol.layer.Tile({
@@ -481,7 +481,7 @@ export class MapManager {
         this.map.addControl(this.layer_switcher);
         this.layer_switcher.showPanel();
         this.layer_switcher.onmouseover = null;
-        // select a default base map
+
     }
 
     static geojsonLogError(error) {
