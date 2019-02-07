@@ -445,6 +445,7 @@ export class MapManager {
                     }),
                     visible: false,
                 });
+                lyr.setExtent(extent)
                 RGB_layers.push(lyr);
             }
         }
