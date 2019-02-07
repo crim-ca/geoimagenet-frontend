@@ -9,6 +9,9 @@ New
 
 - Saving image name with annotation
 - Serve changelog as plain-text
+- Show annotation counts
+- Barebone selenium test script (not activated until docker installation is fixed)
+- Validate and Reject annotations from frontend (directly writing the status)
 
 Changes
 ~~~~~~~

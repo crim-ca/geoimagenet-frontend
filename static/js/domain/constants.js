@@ -14,7 +14,7 @@ export const MODE = {
     DELETE: 'DELETE',
     ASK_EXPERTISE: 'ASK_EXPERTISE',
     VALIDATE: 'VALIDATE',
-    REFUSE: 'REFUSE',
+    REJECT: 'REJECT',
 };
 
 export const ANNOTATION = {

@@ -246,14 +246,14 @@ export class MapManager {
 
     async receive_modifyend_event(event) {
 
-        let modifiedFeatures = [];
+        const modifiedFeatures = [];
         event.features.forEach((feature) => {
             if (feature.revision_ >= 1) {
                 modifiedFeatures.push(feature);
                 feature.revision_ = 0;
             }
         });
-        let payload = this.formatGeoJson.writeFeatures(modifiedFeatures);
+        const payload = this.formatGeoJson.writeFeatures(modifiedFeatures);
 
         try {
             await modify_geojson_features(payload);
@@ -263,28 +263,75 @@ export class MapManager {
 
     }
 
-    receive_map_viewport_click_event(event) {
+    async receive_map_viewport_click_event(event) {
+        let features = [];
+        let payload;
 
-        if (store.mode === MODE.DELETE) {
-            this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), async feature => {
-                // TODO the feature to be deleted should be highlited at this point
-                await notifier.confirm(`Do you really want to delete the highlighted feature?`);
-                let payload = JSON.stringify([feature.getId()]);
+        switch (store.mode) {
 
-                // TODO deleting annotations that are of a higher status than new should be reserved to users with higher rights
+            case MODE.DELETE:
+                this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), async feature => {
+                    // TODO the feature to be deleted should be highlited at this point
+                    await notifier.confirm(`Do you really want to delete the highlighted feature?`);
+                    let payload = JSON.stringify([feature.getId()]);
+
+                    // TODO deleting annotations that are of a higher status than new should be reserved to users with higher rights
+                    try {
+                        await delete_geojson_feature(payload);
+                        // FIXME the feature is not necessarily from the new_annotations source
+                        // find the right source from which to remove it
+                        store.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(feature);
+                    } catch (error) {
+                        MapManager.geojsonLogError(error);
+                    }
+                });
+                break;
+
+            case MODE.VALIDATE:
+                this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), feature => {
+                    if (feature.get('status') !== ANNOTATION.STATUS.RELEASED) {
+                        notifier.warning('No released annotations were selected. ' +
+                            'Annotations must be of status "released" to be available for validation.');
+                    } else {
+                        feature.set('status', ANNOTATION.STATUS.VALIDATED);
+                        features.push(feature);
+                    }
+                });
+                payload = this.formatGeoJson.writeFeatures(features);
                 try {
-                    await delete_geojson_feature(payload);
-                    // FIXME the feature is not necessarily from the new_annotations source
-                    // find the right source from which to remove it
-                    store.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(feature);
-                } catch (error) {
-                    MapManager.geojsonLogError(error);
+                    await modify_geojson_features(payload);
+                } catch (e) {
+                    notifier.error('We could not validate the features.');
                 }
-            });
-        }
+                refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
+                refresh_source_by_status(ANNOTATION.STATUS.VALIDATED);
+                break;
 
-        if (store.mode === MODE.CREATION && store.selected_taxonomy_class_id === -1) {
-            notifier.warning('You must select a taxonomy class to begin annotating content.');
+            case MODE.REJECT:
+                this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), feature => {
+                    if (feature.get('status') !== ANNOTATION.STATUS.RELEASED) {
+                        notifier.warning('No released annotations were selected. ' +
+                            'Annotations must be of status "released" to be available for rejection.');
+                    } else {
+                        feature.set('status', ANNOTATION.STATUS.REJECTED);
+                        features.push(feature);
+                    }
+                });
+                payload = this.formatGeoJson.writeFeatures(features);
+                try {
+                    await modify_geojson_features(payload);
+                } catch (e) {
+                    notifier.error('We could not reject the features.');
+                }
+                refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
+                refresh_source_by_status(ANNOTATION.STATUS.REJECTED);
+                break;
+
+            case MODE.CREATION:
+                if (store.selected_taxonomy_class_id === -1) {
+                    notifier.warning('You must select a taxonomy class to begin annotating content.');
+                }
+                break;
         }
     }
 
