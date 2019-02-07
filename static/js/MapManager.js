@@ -411,30 +411,73 @@ export class MapManager {
                 visible: false,
             }));
         });
-        let bbox_features = new ol.Collection();
-        let wms_parser = new ol.format.WMSCapabilities();
-        let url = `${this.geoserver_url}/GeoImageNet/wms?request=GetCapabilities`;
-        let bbox_layer = new ol.layer.Vector({
-            title: "Raster bounding boxes",
-            source: new ol.source.Vector({
-                features: bbox_features
+        let bboxFeatures = new ol.Collection();
+        let bboxSource = new ol.source.Vector({
+            features: bboxFeatures
+        });
+        let bboxClusterSource = new ol.source.Cluster({
+            distance: 10,
+            source: bboxSource,
+            geometryFunction: feature => {
+                return feature.getGeometry().getInteriorPoint();
+            }
+        });
+        let zoomedInStyle = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: 'orange',
+                width: 3
             }),
-            style: new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: 'rgba(35, 110, 225)',
-                    width: 10
-                })
+            fill: new ol.style.Fill({
+                color: 'rgba(255, 165, 0, 0.1)'
             }),
+            geometry: function (feature) {
+                let originalFeature = feature.get('features');
+                return originalFeature[0].getGeometry();
+            }
+        });
+
+        let bboxClusterLayer = new ol.layer.Vector({
+            source: bboxClusterSource,
+            style: (feature, resolution) =>  {
+                let size = feature.get('features').length;
+                if (resolution < 25) {
+                    // don't display anything
+                    return new ol.style.Style();
+                } else if (resolution > 700 || size > 1) {
+                    return new ol.style.Style({
+                        image: new ol.style.Circle({
+                            radius: 12,
+                            stroke: new ol.style.Stroke({
+                                color: '#fff'
+                            }),
+                            fill: new ol.style.Fill({
+                                color: '#3399CC'
+                            })
+                        }),
+                        text: new ol.style.Text({
+                            text: size.toString(),
+                            fill: new ol.style.Fill({
+                                color: '#fff'
+                            }),
+                            font: '12px sans-serif'
+                        })
+                    });
+                } else {
+                    return zoomedInStyle;
+                }
+            },
             visible: true,
         });
-        fetch(url)
+
+        let wms_parser = new ol.format.WMSCapabilities();
+        fetch(`${this.geoserver_url}/GeoImageNet/wms?request=GetCapabilities`)
             .then(response => {
                 return response.text();
             })
             .then(text => {
                 let caps = wms_parser.read(text);
                 caps['Capability']['Layer']['Layer'].forEach(layer => {
-                    // extent is an array of [minx, miny, maxx, maxy] in EPSG:4326
+                    // EX_GeographicBoundingBox is an array of [minx, miny, maxx, maxy] in EPSG:4326
                     let extent = new ol.geom.Polygon.fromExtent(layer['EX_GeographicBoundingBox']);
                     extent.transform("EPSG:4326", "EPSG:3857");
                     let maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
@@ -442,7 +485,7 @@ export class MapManager {
                         let feature = new ol.Feature({
                             geometry: extent
                         });
-                        bbox_features.push(feature);
+                        bboxFeatures.push(feature);
                     }
                 });
             });
@@ -452,7 +495,7 @@ export class MapManager {
             annotation_layers.unshift(store.annotations_layers[status]);
         });
         return [
-            bbox_layer,
+            bboxClusterLayer,
             new ol.layer.Group({
                 title: 'RGB Images',
                 layers: RGB_layers,
