@@ -66,8 +66,8 @@ export const fetch_getcapabilities = (url_get_cap) => {
 
 // To transform coordinates from a project to another
 function transform(extent, src_epsg, dst_epsg) {
-        return ol.proj.transformExtent(extent, src_epsg, dst_epsg);
-      }
+    return ol.proj.transformExtent(extent, src_epsg, dst_epsg);
+}
 
 export class MapManager {
 
@@ -88,11 +88,12 @@ export class MapManager {
         this.receive_modifyend_event = this.receive_modifyend_event.bind(this);
         this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
 
-        // create a view centered around CRIM
-        const CRIM = [-73.623173, 45.531694];
+        // create a view centered around this coordinate
+        const CENTRE_ON = [-95, 57];
+        const ZOOM_LEVEL = 4;
         this.view = new ol.View({
-            center: ol.proj.fromLonLat(CRIM),
-            zoom: 16
+            center: ol.proj.fromLonLat(CENTRE_ON),
+            zoom:  ZOOM_LEVEL
         });
 
         this.map = new ol.Map({
@@ -153,6 +154,9 @@ export class MapManager {
             target: 'coordinates',
         });
         this.map.addControl(this.mouse_position);
+
+        this.scaleLineControl = new ol.control.ScaleLine();
+        this.map.addControl(this.scaleLineControl);
 
         this.map.getViewport().addEventListener('click', this.receive_map_viewport_click_event);
 
@@ -362,7 +366,7 @@ export class MapManager {
         });
     }
 
-    async make_layers(geoserver_url ){
+    async make_layers(geoserver_url) {
 
         const base_maps = [];
         base_maps.push(new ol.layer.Tile({
@@ -373,7 +377,7 @@ export class MapManager {
             visible: false,
         }));
 
-        ALLOWED_BING_MAPS.forEach(function(bing_map) {
+        ALLOWED_BING_MAPS.forEach(function (bing_map) {
             base_maps.push(new ol.layer.Tile({
                 title: bing_map.title,
                 type: 'base',
@@ -389,6 +393,7 @@ export class MapManager {
 
         const NRG_layers = [];
         const RGB_layers = [];
+
         // WMS Get capabilities request's url
         var url_get_cap = `${geoserver_url}/wms?request=GetCapabilities&service=WMS&version=1.3.0`;
         // To parse the reponse
@@ -401,16 +406,16 @@ export class MapManager {
         var result = parser.read(cap)
         var capability = result.Capability
         var layers_info = capability.Layer.Layer
-        for(var i = 0; i < layers_info.length; i ++){
+        for (var i = 0; i < layers_info.length; i++) {
             var layer_name = layers_info[i].Name;
             var src_proj = layers_info[i].BoundingBox[1].crs
             // Get layer's extent
-            var extent =  layers_info[i].BoundingBox[1].extent;
+            var extent = layers_info[i].BoundingBox[1].extent;
             // The coordinates must be reordered for Openlayers
             extent = [extent[1], extent[0], extent[3], extent[2]]
             var layer_base_name = layer_name.split(":")[1]
 
-            if(layer_name.includes('GeoImageNet:NRG')){
+            if (layer_name.includes('GeoImageNet:NRG')) {
                 // The coordinates must be set to the same projection as the map
                 var extent = transform(extent, src_proj, dst_epsg)
                 var lyr = new ol.layer.Tile({
@@ -429,9 +434,10 @@ export class MapManager {
                 NRG_layers.push(lyr);
             }
 
-            if(layer_name.includes('GeoImageNet:RGB')){
+            if (layer_name.includes('GeoImageNet:RGB')) {
                 // The coordinates must be set to the same projection as the map
                 var extent = transform(extent , src_proj, dst_epsg)
+
                 var lyr = new ol.layer.Tile({
                     title: layer_base_name,
                     type: CUSTOM_GEOIM_IMAGE_LAYER,
@@ -448,30 +454,110 @@ export class MapManager {
             }
         }
 
+        let bboxFeatures = new ol.Collection();
+        let bboxSource = new ol.source.Vector({
+            features: bboxFeatures
+        });
+        let bboxClusterSource = new ol.source.Cluster({
+            distance: 10,
+            source: bboxSource,
+            geometryFunction: feature => {
+                return feature.getGeometry().getInteriorPoint();
+            }
+        });
+        let zoomedInStyle = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: 'orange',
+                width: 3
+            }),
+            fill: new ol.style.Fill({
+                color: 'rgba(255, 165, 0, 0.3)'
+            }),
+            geometry: function (feature) {
+                let originalFeature = feature.get('features');
+                return originalFeature[0].getGeometry();
+            }
+        });
+
+        let bboxClusterLayer = new ol.layer.Vector({
+            source: bboxClusterSource,
+            style: (feature, resolution) => {
+                let size = feature.get('features').length;
+                if (resolution < 25) {
+                    // don't display anything
+                    return new ol.style.Style();
+                } else if (resolution > 700 || size > 2) {
+                    return new ol.style.Style({
+                        image: new ol.style.Circle({
+                            radius: 12,
+                            stroke: new ol.style.Stroke({
+                                color: '#fff'
+                            }),
+                            fill: new ol.style.Fill({
+                                color: '#3399CC'
+                            })
+                        }),
+                        text: new ol.style.Text({
+                            text: size.toString(),
+                            fill: new ol.style.Fill({
+                                color: '#fff'
+                            }),
+                            font: '12px sans-serif'
+                        })
+                    });
+                } else {
+                    return zoomedInStyle;
+                }
+            },
+            visible: true,
+        });
+
+        let wms_parser = new ol.format.WMSCapabilities();
+        fetch(`${this.geoserver_url}/GeoImageNet/wms?request=GetCapabilities`)
+            .then(response => {
+                return response.text();
+            })
+            .then(text => {
+                let caps = wms_parser.read(text);
+                caps['Capability']['Layer']['Layer'].forEach(layer => {
+                    // EX_GeographicBoundingBox is an array of [minx, miny, maxx, maxy] in EPSG:4326
+                    let extent = new ol.geom.Polygon.fromExtent(layer['EX_GeographicBoundingBox']);
+                    extent.transform("EPSG:4326", "EPSG:3857");
+                    let maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
+                    if (extent.getArea() < maxArea) {
+                        let feature = new ol.Feature({
+                            geometry: extent
+                        });
+                        bboxFeatures.push(feature);
+                    }
+                });
+            });
+
         const annotation_layers = [];
-        ANNOTATION_STATUS_AS_ARRAY.forEach(function(status) {
+        ANNOTATION_STATUS_AS_ARRAY.forEach(function (status) {
             annotation_layers.unshift(store.annotations_layers[status]);
         });
 
         this.map.addLayer(new ol.layer.Group({
-                title: 'Annotations',
-                layers: annotation_layers
-            }));
+            title: 'Annotations',
+            layers: annotation_layers
+        }));
 
         this.map.addLayer(new ol.layer.Group({
-                title: 'RGB Images',
-                layers: RGB_layers
-            }));
+            title: 'RGB Images',
+            layers: RGB_layers
+        }));
 
         this.map.addLayer(new ol.layer.Group({
-                title: 'NRG Images',
-                layers: NRG_layers
-            }));
+            title: 'NRG Images',
+            layers: NRG_layers
+        }));
 
         this.map.addLayer(new ol.layer.Group({
-                title: 'Base maps',
-                layers: base_maps
-            }));
+            title: 'Base maps',
+            layers: base_maps
+        }));
+        this.map.addLayer(bboxClusterLayer);
 
         // create layer switcher, populate with base layers and feature layers
         this.layer_switcher = new ol.control.LayerSwitcher({
@@ -487,7 +573,6 @@ export class MapManager {
     static geojsonLogError(error) {
         notifier.error('The api rejected our request. There is likely more information in the console.');
     }
-
 
 
 }
