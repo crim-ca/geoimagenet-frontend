@@ -7,6 +7,7 @@ import {
     VISIBLE_LAYERS_BY_DEFAULT,
     ALLOWED_BING_MAPS,
     CUSTOM_GEOIM_IMAGE_LAYER,
+    VIEW_CENTER
 } from './domain/constants.js';
 import {
     store,
@@ -14,7 +15,8 @@ import {
     set_annotation_source,
     set_annotation_layer,
     start_annotation,
-    end_annotation, increment_new_annotations_count
+    end_annotation,
+    increment_new_annotations_count
 } from './domain/store.js';
 import {notifier} from './utils/notifications.js'
 import {
@@ -76,11 +78,9 @@ export class MapManager {
         this.receive_modifyend_event = this.receive_modifyend_event.bind(this);
         this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
 
-        // create a view centered around CRIM
-        const CRIM = [-73.623173, 45.531694];
         this.view = new ol.View({
-            center: ol.proj.fromLonLat(CRIM),
-            zoom: 16
+            center: ol.proj.fromLonLat(VIEW_CENTER.CENTRE),
+            zoom:  VIEW_CENTER.ZOOM_LEVEL
         });
 
         this.map = new ol.Map({
@@ -148,6 +148,9 @@ export class MapManager {
         this.drag = false;
         document.addEventListener('mousedown', () => { this.drag = false; });
         document.addEventListener('mousemove', () => { this.drag = true; });
+
+        this.scaleLineControl = new ol.control.ScaleLine();
+        this.map.addControl(this.scaleLineControl);
 
         this.map.getViewport().addEventListener('click', this.receive_map_viewport_click_event);
 
