@@ -1,8 +1,8 @@
 Changelog
 =========
 
-0.2.2
------
+0.2.2 (2019-02-07)
+------------------
 
 New
 ~~~
@@ -12,11 +12,14 @@ New
 - Show annotation counts
 - Barebone selenium test script (not activated until docker installation is fixed)
 - Validate and Reject annotations from frontend (directly writing the status)
+- Image Markers layer in openlayers [David Caron]
+- Scale Line
 
 Changes
 ~~~~~~~
 
 - More notifications to guide user interactions
+- Image Layers now have correct extent [Mario Beaulieu]
 
 0.2.1 (2019-02-04)
 ------------------
