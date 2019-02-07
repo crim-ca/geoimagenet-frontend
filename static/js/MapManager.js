@@ -431,7 +431,7 @@ export class MapManager {
 
             if(layer_name.includes('GeoImageNet:RGB')){
                 // The coordinates must be set to the same projection as the map
-                var extent = transform(extent , crs, epsg)
+                var extent = transform(extent , src_proj, dst_epsg)
                 var lyr = new ol.layer.Tile({
                     title: layer_base_name,
                     type: CUSTOM_GEOIM_IMAGE_LAYER,
