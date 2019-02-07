@@ -53,4 +53,4 @@ export const ALLOWED_BING_MAPS = [
 export const VIEW_CENTER = {
      CENTRE: [-95, 57],
      ZOOM_LEVEL:  4,
-}
+};

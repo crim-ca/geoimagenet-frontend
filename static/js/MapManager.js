@@ -15,7 +15,8 @@ import {
     set_annotation_source,
     set_annotation_layer,
     start_annotation,
-    end_annotation, increment_new_annotations_count
+    end_annotation,
+    increment_new_annotations_count
 } from './domain/store.js';
 import {notifier} from './utils/notifications.js'
 import {
