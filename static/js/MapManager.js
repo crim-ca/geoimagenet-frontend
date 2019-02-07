@@ -411,6 +411,85 @@ export class MapManager {
                 visible: false,
             }));
         });
+        let bboxFeatures = new ol.Collection();
+        let bboxSource = new ol.source.Vector({
+            features: bboxFeatures
+        });
+        let bboxClusterSource = new ol.source.Cluster({
+            distance: 10,
+            source: bboxSource,
+            geometryFunction: feature => {
+                return feature.getGeometry().getInteriorPoint();
+            }
+        });
+        let zoomedInStyle = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: 'orange',
+                width: 3
+            }),
+            fill: new ol.style.Fill({
+                color: 'rgba(255, 165, 0, 0.3)'
+            }),
+            geometry: function (feature) {
+                let originalFeature = feature.get('features');
+                return originalFeature[0].getGeometry();
+            }
+        });
+
+        let bboxClusterLayer = new ol.layer.Vector({
+            source: bboxClusterSource,
+            style: (feature, resolution) =>  {
+                let size = feature.get('features').length;
+                if (resolution < 25) {
+                    // don't display anything
+                    return new ol.style.Style();
+                } else if (resolution > 700 || size > 1) {
+                    return new ol.style.Style({
+                        image: new ol.style.Circle({
+                            radius: 12,
+                            stroke: new ol.style.Stroke({
+                                color: '#fff'
+                            }),
+                            fill: new ol.style.Fill({
+                                color: '#3399CC'
+                            })
+                        }),
+                        text: new ol.style.Text({
+                            text: size.toString(),
+                            fill: new ol.style.Fill({
+                                color: '#fff'
+                            }),
+                            font: '12px sans-serif'
+                        })
+                    });
+                } else {
+                    return zoomedInStyle;
+                }
+            },
+            visible: true,
+        });
+
+        let wms_parser = new ol.format.WMSCapabilities();
+        fetch(`${this.geoserver_url}/GeoImageNet/wms?request=GetCapabilities`)
+            .then(response => {
+                return response.text();
+            })
+            .then(text => {
+                let caps = wms_parser.read(text);
+                caps['Capability']['Layer']['Layer'].forEach(layer => {
+                    // EX_GeographicBoundingBox is an array of [minx, miny, maxx, maxy] in EPSG:4326
+                    let extent = new ol.geom.Polygon.fromExtent(layer['EX_GeographicBoundingBox']);
+                    extent.transform("EPSG:4326", "EPSG:3857");
+                    let maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
+                    if (extent.getArea() < maxArea) {
+                        let feature = new ol.Feature({
+                            geometry: extent
+                        });
+                        bboxFeatures.push(feature);
+                    }
+                });
+            });
+
         const annotation_layers = [];
         ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
             annotation_layers.unshift(store.annotations_layers[status]);
@@ -432,6 +511,7 @@ export class MapManager {
                 title: 'Annotations',
                 layers: annotation_layers,
             }),
+            bboxClusterLayer,
         ];
     }
 
