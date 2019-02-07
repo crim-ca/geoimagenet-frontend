@@ -1,14 +1,13 @@
 import {
     MODE,
     ANNOTATION,
-    IMAGES_NRG,
-    IMAGES_RGB,
     BING_API_KEY,
     Z_INDEX,
     ANNOTATION_STATUS_AS_ARRAY,
     VISIBLE_LAYERS_BY_DEFAULT,
     ALLOWED_BING_MAPS,
     CUSTOM_GEOIM_IMAGE_LAYER,
+    VIEW_CENTER
 } from './domain/constants.js';
 import {
     store,
@@ -19,7 +18,12 @@ import {
     end_annotation, increment_new_annotations_count
 } from './domain/store.js';
 import {notifier} from './utils/notifications.js'
-import {create_geojson_feature, delete_geojson_feature, modify_geojson_features} from './domain/data-queries.js';
+import {
+    create_geojson_feature,
+    delete_geojson_feature,
+    geoserver_capabilities,
+    modify_geojson_features
+} from './domain/data-queries.js';
 
 const create_vector_layer = (title, source, color, visible = true) => {
     return new ol.layer.Vector({
@@ -49,21 +53,6 @@ export const refresh_source_by_status = status => {
     store.annotations_sources[status].refresh(true);
 };
 
-import {make_http_request} from './utils/http.js';
-
-
-export const fetch_getcapabilities = (url_get_cap) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const res = await make_http_request(url_get_cap);
-            const capability = await res.text();
-            resolve(capability);
-        } catch (e) {
-            reject(e);
-        }
-    });
-};
-
 // To transform coordinates from a project to another
 function transform(extent, src_epsg, dst_epsg) {
     return ol.proj.transformExtent(extent, src_epsg, dst_epsg);
@@ -88,12 +77,9 @@ export class MapManager {
         this.receive_modifyend_event = this.receive_modifyend_event.bind(this);
         this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
 
-        // create a view centered around this coordinate
-        const CENTRE_ON = [-95, 57];
-        const ZOOM_LEVEL = 4;
         this.view = new ol.View({
-            center: ol.proj.fromLonLat(CENTRE_ON),
-            zoom:  ZOOM_LEVEL
+            center: ol.proj.fromLonLat(VIEW_CENTER.CENTRE),
+            zoom:  VIEW_CENTER.ZOOM_LEVEL
         });
 
         this.map = new ol.Map({
@@ -145,7 +131,7 @@ export class MapManager {
         this.cql_filter = '';
 
         // We set the layers and the layer switcher here
-        this.make_layers(this.geoserver_url)
+        this.make_layers();
 
         this.mouse_position = new ol.control.MousePosition({
             coordinateFormat: ol.coordinate.createStringXY(4),
@@ -366,7 +352,7 @@ export class MapManager {
         });
     }
 
-    async make_layers(geoserver_url) {
+    async make_layers() {
 
         const base_maps = [];
         base_maps.push(new ol.layer.Tile({
@@ -394,61 +380,54 @@ export class MapManager {
         const NRG_layers = [];
         const RGB_layers = [];
 
-        // WMS Get capabilities request's url
-        var url_get_cap = `${geoserver_url}/wms?request=GetCapabilities&service=WMS&version=1.3.0`;
-        // To parse the reponse
-        var parser = new ol.format.WMSCapabilities();
-        // get catalog from geoserver
-        var cap = await fetch_getcapabilities(url_get_cap)
         // Get map projection
-        var dst_epsg = this.map.getView().getProjection().getCode();
+        const dst_epsg = this.map.getView().getProjection().getCode();
 
-        var result = parser.read(cap)
-        var capability = result.Capability
-        var layers_info = capability.Layer.Layer
-        for (var i = 0; i < layers_info.length; i++) {
-            var layer_name = layers_info[i].Name;
-            var src_proj = layers_info[i].BoundingBox[1].crs
+        const result = await geoserver_capabilities(`${GEOSERVER_URL}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
+        const capability = result.Capability;
+        const layers_info = capability.Layer.Layer;
+        for (let i = 0; i < layers_info.length; i++) {
+            const layer_name = layers_info[i].Name;
+            const src_proj = layers_info[i].BoundingBox[1].crs;
             // Get layer's extent
-            var extent = layers_info[i].BoundingBox[1].extent;
+            let extent = layers_info[i].BoundingBox[1].extent;
             // The coordinates must be reordered for Openlayers
-            extent = [extent[1], extent[0], extent[3], extent[2]]
-            var layer_base_name = layer_name.split(":")[1]
+            const extent_for_OL = [extent[1], extent[0], extent[3], extent[2]];
+            const layer_base_name = layer_name.split(":")[1];
 
             if (layer_name.includes('GeoImageNet:NRG')) {
                 // The coordinates must be set to the same projection as the map
-                var extent = transform(extent, src_proj, dst_epsg)
-                var lyr = new ol.layer.Tile({
+                let extent = transform(extent_for_OL, src_proj, dst_epsg);
+                const lyr = new ol.layer.Tile({
                     title: layer_base_name,
                     type: CUSTOM_GEOIM_IMAGE_LAYER,
                     source: new ol.source.TileWMS({
-                        url: `${geoserver_url}/GeoImageNet/wms`,
+                        url: `${GEOSERVER_URL}/GeoImageNet/wms`,
                         params: {'LAYERS': layer_name},
                         ratio: 1,
                         serverType: 'geoserver',
                         crossOrigin: 'anonymous',
                     }),
-                    visible: false,
+                    extent: extent,
                 });
-                lyr.setExtent(extent)
                 NRG_layers.push(lyr);
             }
 
             if (layer_name.includes('GeoImageNet:RGB')) {
                 // The coordinates must be set to the same projection as the map
-                var extent = transform(extent , src_proj, dst_epsg)
 
-                var lyr = new ol.layer.Tile({
+                let extent = transform(extent_for_OL, src_proj, dst_epsg);
+                const lyr = new ol.layer.Tile({
                     title: layer_base_name,
                     type: CUSTOM_GEOIM_IMAGE_LAYER,
                     source: new ol.source.TileWMS({
-                        url: `${geoserver_url}/GeoImageNet/wms`,
+                        url: `${GEOSERVER_URL}/GeoImageNet/wms`,
                         params: {'LAYERS': layer_name},
                         ratio: 1,
                         serverType: 'geoserver',
                         crossOrigin: 'anonymous',
                     }),
-                    visible: false,
+                    extent: extent,
                 });
                 RGB_layers.push(lyr);
             }
@@ -481,6 +460,7 @@ export class MapManager {
 
         let bboxClusterLayer = new ol.layer.Vector({
             source: bboxClusterSource,
+            title: 'Image Markers',
             style: (feature, resolution) => {
                 let size = feature.get('features').length;
                 if (resolution < 25) {
@@ -512,26 +492,19 @@ export class MapManager {
             visible: true,
         });
 
-        let wms_parser = new ol.format.WMSCapabilities();
-        fetch(`${this.geoserver_url}/GeoImageNet/wms?request=GetCapabilities`)
-            .then(response => {
-                return response.text();
-            })
-            .then(text => {
-                let caps = wms_parser.read(text);
-                caps['Capability']['Layer']['Layer'].forEach(layer => {
-                    // EX_GeographicBoundingBox is an array of [minx, miny, maxx, maxy] in EPSG:4326
-                    let extent = new ol.geom.Polygon.fromExtent(layer['EX_GeographicBoundingBox']);
-                    extent.transform("EPSG:4326", "EPSG:3857");
-                    let maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
-                    if (extent.getArea() < maxArea) {
-                        let feature = new ol.Feature({
-                            geometry: extent
-                        });
-                        bboxFeatures.push(feature);
-                    }
+        const result_for_bbox = await geoserver_capabilities(`${GEOSERVER_URL}/GeoImageNet/wms?request=GetCapabilities`);
+        result_for_bbox['Capability']['Layer']['Layer'].forEach(layer => {
+            // EX_GeographicBoundingBox is an array of [minx, miny, maxx, maxy] in EPSG:4326
+            let extent = new ol.geom.Polygon.fromExtent(layer['EX_GeographicBoundingBox']);
+            extent.transform("EPSG:4326", "EPSG:3857");
+            let maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
+            if (extent.getArea() < maxArea) {
+                let feature = new ol.Feature({
+                    geometry: extent
                 });
-            });
+                bboxFeatures.push(feature);
+            }
+        });
 
         const annotation_layers = [];
         ANNOTATION_STATUS_AS_ARRAY.forEach(function (status) {
@@ -539,25 +512,29 @@ export class MapManager {
         });
 
         this.map.addLayer(new ol.layer.Group({
-            title: 'Annotations',
-            layers: annotation_layers
-        }));
-
-        this.map.addLayer(new ol.layer.Group({
             title: 'RGB Images',
-            layers: RGB_layers
+            layers: RGB_layers,
         }));
 
         this.map.addLayer(new ol.layer.Group({
             title: 'NRG Images',
-            layers: NRG_layers
+            layers: NRG_layers,
+        }));
+
+        this.map.addLayer(new ol.layer.Group({
+            title: 'Image Markers',
+            layers: [bboxClusterLayer],
         }));
 
         this.map.addLayer(new ol.layer.Group({
             title: 'Base maps',
-            layers: base_maps
+            layers: base_maps,
         }));
-        this.map.addLayer(bboxClusterLayer);
+
+        this.map.addLayer(new ol.layer.Group({
+            title: 'Annotations',
+            layers: annotation_layers,
+        }));
 
         // create layer switcher, populate with base layers and feature layers
         this.layer_switcher = new ol.control.LayerSwitcher({

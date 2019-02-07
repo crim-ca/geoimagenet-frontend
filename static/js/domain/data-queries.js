@@ -89,3 +89,17 @@ export const delete_geojson_feature = payload => {
         }
     })
 };
+
+export const geoserver_capabilities = (url) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let parser = new ol.format.WMSCapabilities();
+            const res = await make_http_request(url);
+            const text = await res.text();
+            const capabilities = parser.read(text);
+            resolve(capabilities);
+        } catch(e) {
+            reject(e);
+        }
+    });
+};
