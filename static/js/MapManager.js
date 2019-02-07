@@ -428,7 +428,7 @@ export class MapManager {
                 width: 3
             }),
             fill: new ol.style.Fill({
-                color: 'rgba(255, 165, 0, 0.1)'
+                color: 'rgba(255, 165, 0, 0.3)'
             }),
             geometry: function (feature) {
                 let originalFeature = feature.get('features');
@@ -495,7 +495,6 @@ export class MapManager {
             annotation_layers.unshift(store.annotations_layers[status]);
         });
         return [
-            bboxClusterLayer,
             new ol.layer.Group({
                 title: 'RGB Images',
                 layers: RGB_layers,
@@ -512,6 +511,7 @@ export class MapManager {
                 title: 'Annotations',
                 layers: annotation_layers,
             }),
+            bboxClusterLayer,
         ];
     }
 
