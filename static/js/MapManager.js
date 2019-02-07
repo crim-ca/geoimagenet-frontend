@@ -1,8 +1,6 @@
 import {
     MODE,
     ANNOTATION,
-    IMAGES_NRG,
-    IMAGES_RGB,
     BING_API_KEY,
     Z_INDEX,
     ANNOTATION_STATUS_AS_ARRAY,
@@ -52,21 +50,6 @@ const create_vector_layer = (title, source, color, visible = true) => {
 export const refresh_source_by_status = status => {
     store.annotations_sources[status].clear();
     store.annotations_sources[status].refresh(true);
-};
-
-import {make_http_request} from './utils/http.js';
-
-
-export const fetch_getcapabilities = (url_get_cap) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const res = await make_http_request(url_get_cap);
-            const capability = await res.text();
-            resolve(capability);
-        } catch (e) {
-            reject(e);
-        }
-    });
 };
 
 // To transform coordinates from a project to another
@@ -474,6 +457,7 @@ export class MapManager {
 
         let bboxClusterLayer = new ol.layer.Vector({
             source: bboxClusterSource,
+            title: 'Image Markers',
             style: (feature, resolution) => {
                 let size = feature.get('features').length;
                 if (resolution < 25) {
@@ -525,25 +509,29 @@ export class MapManager {
         });
 
         this.map.addLayer(new ol.layer.Group({
-            title: 'Annotations',
-            layers: annotation_layers
-        }));
-
-        this.map.addLayer(new ol.layer.Group({
             title: 'RGB Images',
-            layers: RGB_layers
+            layers: RGB_layers,
         }));
 
         this.map.addLayer(new ol.layer.Group({
             title: 'NRG Images',
-            layers: NRG_layers
+            layers: NRG_layers,
+        }));
+
+        this.map.addLayer(new ol.layer.Group({
+            title: 'Image Markers',
+            layers: [bboxClusterLayer],
         }));
 
         this.map.addLayer(new ol.layer.Group({
             title: 'Base maps',
-            layers: base_maps
+            layers: base_maps,
         }));
-        this.map.addLayer(bboxClusterLayer);
+
+        this.map.addLayer(new ol.layer.Group({
+            title: 'Annotations',
+            layers: annotation_layers,
+        }));
 
         // create layer switcher, populate with base layers and feature layers
         this.layer_switcher = new ol.control.LayerSwitcher({
