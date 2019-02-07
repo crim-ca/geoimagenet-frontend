@@ -69,7 +69,9 @@ function transform(extent, src_epsg, dst_epsg) {
         return ol.proj.transformExtent(extent, src_epsg, dst_epsg);
       }
 
-async function make_layers(geoserver_url, mapManagerObj ){
+/* To remove */
+/*
+async function make_layers0(geoserver_url, mapManagerObj ){
 
         const base_maps = [];
         base_maps.push(new ol.layer.Tile({
@@ -190,6 +192,7 @@ async function make_layers(geoserver_url, mapManagerObj ){
         mapManagerObj.layer_switcher.onmouseover = null;
         // select a default base map
     }
+*/
 
 export class MapManager {
 
@@ -266,7 +269,7 @@ export class MapManager {
         this.cql_filter = '';
 
         // We set the layers and the layer switcher here
-        make_layers(this.geoserver_url, this)
+        this.make_layers(this.geoserver_url)
 
         this.mouse_position = new ol.control.MousePosition({
             coordinateFormat: ol.coordinate.createStringXY(4),
@@ -482,6 +485,128 @@ export class MapManager {
             },
             strategy: ol.loadingstrategy.bbox
         });
+    }
+
+    async make_layers(geoserver_url ){
+
+        const base_maps = [];
+        base_maps.push(new ol.layer.Tile({
+            title: 'OSM',
+            type: 'base',
+            source: new ol.source.OSM(),
+            zIndex: Z_INDEX.BASEMAP,
+            visible: false,
+        }));
+
+        ALLOWED_BING_MAPS.forEach(function(bing_map) {
+            base_maps.push(new ol.layer.Tile({
+                title: bing_map.title,
+                type: 'base',
+                preload: Infinity,
+                source: new ol.source.BingMaps({
+                    key: BING_API_KEY,
+                    imagerySet: bing_map.imagerySet,
+                }),
+                zIndex: Z_INDEX.BASEMAP,
+                visible: bing_map.visible,
+            }));
+        });
+
+        const NRG_layers = [];
+        const RGB_layers = [];
+        // WMS Get capabilities request's url
+        var url_get_cap = `${geoserver_url}/wms?request=GetCapabilities&service=WMS&version=1.3.0`;
+        // To parse the reponse
+        var parser = new ol.format.WMSCapabilities();
+        // get catalog from geoserver
+        var cap = await fetch_getcapabilities(url_get_cap)
+        // Get map projection
+        var dst_epsg = this.map.getView().getProjection().getCode();
+
+        var result = parser.read(cap)
+        var capability = result.Capability
+        var layers_info = capability.Layer.Layer
+        for(var i = 0; i < layers_info.length; i ++){
+            var layer_name = layers_info[i].Name;
+            var src_proj = layers_info[i].BoundingBox[1].crs
+            // Get layer's extent
+            var extent =  layers_info[i].BoundingBox[1].extent;
+            // The coordinates must be reordered for Openlayers
+            extent = [extent[1], extent[0], extent[3], extent[2]]
+            var layer_base_name = layer_name.split(":")[1]
+
+            if(layer_name.includes('GeoImageNet:NRG')){
+                // The coordinates must be set to the same projection as the map
+                var extent = transform(extent, src_proj, dst_epsg)
+                var lyr = new ol.layer.Tile({
+                    title: layer_base_name,
+                    type: CUSTOM_GEOIM_IMAGE_LAYER,
+                    source: new ol.source.TileWMS({
+                        url: `${geoserver_url}/GeoImageNet/wms`,
+                        params: {'LAYERS': layer_name},
+                        ratio: 1,
+                        serverType: 'geoserver',
+                        crossOrigin: 'anonymous',
+                    }),
+                    visible: false,
+                });
+                lyr.setExtent(extent)
+                NRG_layers.push(lyr);
+            }
+
+            if(layer_name.includes('GeoImageNet:RGBc')){
+                // The coordinates must be set to the same projection as the map
+                var extent = transform(extent , crs, epsg)
+                var lyr = new ol.layer.Tile({
+                    title: layer_base_name,
+                    type: CUSTOM_GEOIM_IMAGE_LAYER,
+                    source: new ol.source.TileWMS({
+                        url: `${geoserver_url}/GeoImageNet/wms`,
+                        params: {'LAYERS': layer_name},
+                        ratio: 1,
+                        serverType: 'geoserver',
+                        crossOrigin: 'anonymous',
+                    }),
+                    visible: false,
+                });
+                RGB_layers.push(lyr);
+            }
+        }
+
+        const annotation_layers = [];
+        ANNOTATION_STATUS_AS_ARRAY.forEach(function(status) {
+            annotation_layers.unshift(store.annotations_layers[status]);
+        });
+
+        this.map.addLayer(new ol.layer.Group({
+                title: 'Annotations',
+                layers: annotation_layers
+            }));
+
+        this.map.addLayer(new ol.layer.Group({
+                title: 'RGB Images',
+                layers: RGB_layers
+            }));
+
+        this.map.addLayer(new ol.layer.Group({
+                title: 'NRG Images',
+                layers: NRG_layers
+            }));
+
+        this.map.addLayer(new ol.layer.Group({
+                title: 'Base maps',
+                layers: base_maps
+            }));
+
+        // create layer switcher, populate with base layers and feature layers
+        this.layer_switcher = new ol.control.LayerSwitcher({
+            target: 'layer-switcher',
+            open: true
+        });
+        this.map.addControl(this.layer_switcher);
+        this.layer_switcher.showPanel();
+        this.layer_switcher.onmouseover = null;
+        // select a default base map
     }
 
     static geojsonLogError(error) {
