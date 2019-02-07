@@ -48,3 +48,9 @@ export const ALLOWED_BING_MAPS = [
     {title: 'Aerial with labels', imagerySet: 'AerialWithLabels', visible: false},
     {title: 'Aerial', imagerySet: 'Aerial', visible: true},
 ];
+
+// view centered around this coordinates
+export const VIEW_CENTER = {
+     CENTRE: [-95, 57],
+     ZOOM_LEVEL:  4,
+};
