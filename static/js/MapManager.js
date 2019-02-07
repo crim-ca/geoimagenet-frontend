@@ -88,6 +88,9 @@ export class MapManager {
             view: this.view,
         });
 
+        const scale_line = new ol.control.ScaleLine();
+        this.map.addControl(scale_line);
+
         const style = getComputedStyle(document.body);
 
         ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
