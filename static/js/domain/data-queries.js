@@ -35,7 +35,7 @@ export const nested_taxonomy_classes = root_taxonomy_class_id => {
 export const flat_taxonomy_classes_counts = root_taxonomy_class_id => {
     return new Promise(async (resolve, reject) => {
         try {
-            const res = await make_http_request(`${GEOIMAGENET_API_URL}/annotations/${root_taxonomy_class_id}/counts`);
+            const res = await make_http_request(`${GEOIMAGENET_API_URL}/annotations/counts/${root_taxonomy_class_id}`);
             const json = await res.json();
             resolve(json);
         } catch (e) {
