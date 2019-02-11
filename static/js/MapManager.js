@@ -145,10 +145,6 @@ export class MapManager {
         });
         this.map.addControl(this.mouse_position);
 
-        this.drag = false;
-        document.addEventListener('mousedown', () => { this.drag = false; });
-        document.addEventListener('mousemove', () => { this.drag = true; });
-
         this.scaleLineControl = new ol.control.ScaleLine();
         this.map.addControl(this.scaleLineControl);
 
@@ -271,10 +267,6 @@ export class MapManager {
     }
 
     async receive_map_viewport_click_event(event) {
-
-        if (this.drag) {
-            return false;
-        }
 
         let features = [];
         let payload;
