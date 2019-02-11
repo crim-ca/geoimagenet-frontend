@@ -1,11 +1,47 @@
-import {make_http_request} from '../utils/http.js';
+import {make_http_request, post_json} from '../utils/http.js';
 
-export const release_annotations_request = id => {
-    return new Promise((resolve, reject) => {
-        make_http_request(`${GEOIMAGENET_API_URL}/annotations/release?taxonomy_class_id=${id}`, {method: 'POST'})
-            .then(res => resolve(res))
-            .catch(err => reject(err));
+export const release_annotations_request = async taxonomy_class_id => {
+    const payload = JSON.stringify({
+        taxonomy_class_id: taxonomy_class_id,
     });
+    try {
+        return await post_json(`${GEOIMAGENET_API_URL}/annotations/release`, payload);
+    } catch (e) {
+        return Promise.reject(e);
+    }
+};
+
+export const validate_annotations_request = async annotation_ids => {
+    const payload = JSON.stringify({
+        annotation_ids: annotation_ids,
+    });
+    try {
+        return await post_json(`${GEOIMAGENET_API_URL}/annotations/validate`, payload);
+    } catch (e) {
+        return Promise.reject(e);
+    }
+};
+
+export const reject_annotations_request = async annotation_ids => {
+    const payload = JSON.stringify({
+        annotation_ids: annotation_ids,
+    });
+    try {
+        return await post_json(`${GEOIMAGENET_API_URL}/annotations/reject`, payload);
+    } catch (e) {
+        return Promise.reject(e);
+    }
+};
+
+export const delete_annotations_request = async annotation_ids => {
+    const payload = JSON.stringify({
+        annotation_ids: annotation_ids
+    });
+    try {
+        return await post_json(`${GEOIMAGENET_API_URL}/annotations/delete`, payload);
+    } catch (e) {
+        return Promise.reject(e);
+    }
 };
 
 export const fetch_taxonomies = () => {
@@ -75,21 +111,6 @@ export const modify_geojson_features = payload => {
     });
 };
 
-export const delete_geojson_feature = payload => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            await make_http_request(`${GEOIMAGENET_API_URL}/annotations`, {
-                method: 'DELETE',
-                headers: {'Content-Type': 'application/json'},
-                body: payload,
-            });
-            resolve();
-        } catch (e) {
-            reject(e);
-        }
-    })
-};
-
 export const geoserver_capabilities = (url) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -98,7 +119,7 @@ export const geoserver_capabilities = (url) => {
             const text = await res.text();
             const capabilities = parser.read(text);
             resolve(capabilities);
-        } catch(e) {
+        } catch (e) {
             reject(e);
         }
     });

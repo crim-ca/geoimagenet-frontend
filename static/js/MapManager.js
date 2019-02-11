@@ -21,9 +21,11 @@ import {
 import {notifier} from './utils/notifications.js'
 import {
     create_geojson_feature,
-    delete_geojson_feature,
+    delete_annotations_request,
     geoserver_capabilities,
-    modify_geojson_features
+    modify_geojson_features,
+    reject_annotations_request,
+    validate_annotations_request
 } from './domain/data-queries.js';
 
 const create_vector_layer = (title, source, color, visible = true) => {
@@ -80,7 +82,7 @@ export class MapManager {
 
         this.view = new ol.View({
             center: ol.proj.fromLonLat(VIEW_CENTER.CENTRE),
-            zoom:  VIEW_CENTER.ZOOM_LEVEL
+            zoom: VIEW_CENTER.ZOOM_LEVEL
         });
 
         this.map = new ol.Map({
@@ -266,66 +268,49 @@ export class MapManager {
 
     }
 
-    async receive_map_viewport_click_event(event) {
+    aggregate_features_at_cursor(event) {
+        const features = [];
+        this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), feature => {
+            if (feature.getId() !== NONE) {
+                features.push(feature);
+            }
+        });
+        return features;
+    }
 
-        let features = [];
-        let payload;
+    async receive_map_viewport_click_event(event) {
+        const features = this.aggregate_features_at_cursor(event);
+        const feature_ids = features.map(f => f.getId());
 
         switch (store.mode) {
 
             case MODE.DELETE:
-                this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), async feature => {
-                    // TODO the feature to be deleted should be highlited at this point
-                    await notifier.confirm(`Do you really want to delete the highlighted feature?`);
-                    let payload = JSON.stringify([feature.getId()]);
-
-                    // TODO deleting annotations that are of a higher status than new should be reserved to users with higher rights
-                    try {
-                        await delete_geojson_feature(payload);
-                        // FIXME the feature is not necessarily from the new_annotations source
-                        // find the right source from which to remove it
-                        store.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(feature);
-                    } catch (error) {
-                        MapManager.geojsonLogError(error);
-                    }
+                await notifier.confirm(`Do you really want to delete the highlighted feature?`);
+                try {
+                    await delete_annotations_request(feature_ids);
+                } catch (error) {
+                    MapManager.geojsonLogError(error);
+                }
+                features.forEach(f => {
+                    store.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(f);
                 });
                 break;
 
             case MODE.VALIDATE:
-                this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), feature => {
-                    if (feature.get('status') !== ANNOTATION.STATUS.RELEASED) {
-                        notifier.warning('No released annotations were selected. ' +
-                            'Annotations must be of status "released" to be available for validation.');
-                    } else {
-                        feature.set('status', ANNOTATION.STATUS.VALIDATED);
-                        features.push(feature);
-                    }
-                });
-                payload = this.formatGeoJson.writeFeatures(features);
                 try {
-                    await modify_geojson_features(payload);
-                } catch (e) {
-                    notifier.error('We could not validate the features.');
+                    await validate_annotations_request(feature_ids);
+                } catch (error) {
+                    MapManager.geojsonLogError(error);
                 }
                 refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
                 refresh_source_by_status(ANNOTATION.STATUS.VALIDATED);
                 break;
 
             case MODE.REJECT:
-                this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), feature => {
-                    if (feature.get('status') !== ANNOTATION.STATUS.RELEASED) {
-                        notifier.warning('No released annotations were selected. ' +
-                            'Annotations must be of status "released" to be available for rejection.');
-                    } else {
-                        feature.set('status', ANNOTATION.STATUS.REJECTED);
-                        features.push(feature);
-                    }
-                });
-                payload = this.formatGeoJson.writeFeatures(features);
                 try {
-                    await modify_geojson_features(payload);
-                } catch (e) {
-                    notifier.error('We could not reject the features.');
+                    await reject_annotations_request(feature_ids);
+                } catch (error) {
+                    MapManager.geojsonLogError(error);
                 }
                 refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
                 refresh_source_by_status(ANNOTATION.STATUS.REJECTED);
@@ -560,8 +545,9 @@ export class MapManager {
 
     }
 
-    static geojsonLogError(error) {
-        notifier.error('The api rejected our request. There is likely more information in the console.');
+    static async geojsonLogError(error) {
+        const text = await error.text();
+        notifier.error(text);
     }
 
 
