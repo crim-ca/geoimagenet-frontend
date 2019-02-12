@@ -1,121 +1,254 @@
 Changelog
 =========
 
+
+0.3.0 (2019-02-12)
+------------------
+
+New
+~~~
+- Using gitchangelog. [Félix Gagnon-Grenier]
+
+Changes
+~~~~~~~
+- Change route for annotation counts to: annotations/counts. [David
+  Caron]
+
+Other
+~~~~~
+- Bind rejection context. [Félix Gagnon-Grenier]
+- Notmalizing data queries with async. [Félix Gagnon-Grenier]
+- Update api usage urls. [Félix Gagnon-Grenier]
+- Backtrack on false positive click prevention. [Félix Gagnon-Grenier]
+- Linting. [Félix Gagnon-Grenier]
+- See all data: center on canada, z=4. [Mario Beaulieu]
+- Center on canada. [Mario Beaulieu]
+- Correction rgb layer crs transform. [Mario Beaulieu]
+- Prevent click when mouse have moved. [Félix Gagnon-Grenier]
+- Try catch around geoserver access. [Félix Gagnon-Grenier]
+
+
 0.2.2 (2019-02-07)
 ------------------
 
 New
 ~~~
+- Annotation + selenium. [Félix Gagnon-Grenier]
 
-- Saving image name with annotation
-- Serve changelog as plain-text
-- Show annotation counts
-- Barebone selenium test script (not activated until docker installation is fixed)
-- Validate and Reject annotations from frontend (directly writing the status)
-- Image Markers layer in openlayers [David Caron]
-- Scale Line
+Other
+~~~~~
+- Changes for 0.2.2. [Félix Gagnon-Grenier]
+- Adding scale line. [Félix Gagnon-Grenier]
+- Cleanup: no more need for hardcoded image titles. [Félix Gagnon-
+  Grenier]
+- Linting and encapsulating requests. [Félix Gagnon-Grenier]
+- Adding the actual setExtent call on RGB layers. [Félix Gagnon-Grenier]
+- Temporary fix for clusters for overlayed NRG and RGB images. [David
+  Caron]
+- Show polygons over the images (so that the cluster numbers are
+  visible) [David Caron]
 
-Changes
-~~~~~~~
+  The images are not hidden, only overlayed by the cluster number
+- Cluster bounding boxes and display count when zoomed out. [David
+  Caron]
+- Merge branch 'release' into dev-dynamic-raster-bbox. [David Caron]
+- Display a rectangle for the bounding box of raster images. [David
+  Caron]
+- WIP, not working yet. [David Caron]
+- Correction rgb layer names. [Mario Beaulieu]
+- Remove make_layers as an independent function. [Mario Beaulieu]
+- Add back make_layers to MapManager. [Mario Beaulieu]
+- Readme correction. [Mario Beaulieu]
+- First version to improve wms speed by adding layers extent. [Mario
+  Beaulieu]
+- New Validate + Reject notes. [Félix Gagnon-Grenier]
+- Released annotation validation and rejection. [Félix Gagnon-Grenier]
+- Opening tree on load. [Félix Gagnon-Grenier]
+- Deactivating selenium until chrome driver's installation actually
+  works. [Félix Gagnon-Grenier]
+- Cleanup. [Félix Gagnon-Grenier]
+- Super hacky unclear update of the counts while keeping tree opened
+  after releasing. [Félix Gagnon-Grenier]
+- Keeping opened structure on rerenders. [Félix Gagnon-Grenier]
+- Function for xpath query. [Félix Gagnon-Grenier]
+- Toggle class element in user interaction. [Félix Gagnon-Grenier]
+- Updating count locally. [Félix Gagnon-Grenier]
+- Visible mouse coordinates. [Félix Gagnon-Grenier]
+- Some cleanup. [Félix Gagnon-Grenier]
+- Actual test file. [Félix Gagnon-Grenier]
+- Slightly working selenium test. [Félix Gagnon-Grenier]
+- Queries in domain. [Félix Gagnon-Grenier]
+- Xpath selector for parent. [Félix Gagnon-Grenier]
+- Ugly prototypal counts. [Félix Gagnon-Grenier]
+- Adding counts to taxonomy_classes. [Félix Gagnon-Grenier]
+- Putting stuff in a specific user-interactions file. [Félix Gagnon-
+  Grenier]
+- Normalize checking checkboxes. [Félix Gagnon-Grenier]
+- Rename taxonomy_class_root_id -> root_taxonomy_class_id. [David Caron]
+- Notifications. [Félix Gagnon-Grenier]
+- Close notification after 10 seconds. [Félix Gagnon-Grenier]
+- Notification for user when no class is selected in creation mode.
+  [Félix Gagnon-Grenier]
+- Error when trying to create annotation without selected taxonomy
+  class. [Félix Gagnon-Grenier]
+- Cleaning. [Félix Gagnon-Grenier]
+- Adding image name change. [Félix Gagnon-Grenier]
+- Crude saving of the first layer under the click. [Félix Gagnon-
+  Grenier]
+- Route for changelog. [Félix Gagnon-Grenier]
+- Specific error notification for 404. [Félix Gagnon-Grenier]
+- Data for bing maps. [Félix Gagnon-Grenier]
 
-- More notifications to guide user interactions
-- Image Layers now have correct extent [Mario Beaulieu]
 
 0.2.1 (2019-02-04)
 ------------------
+- 0.2.1. [Félix Gagnon-Grenier]
+- Changelog embryo. [Félix Gagnon-Grenier]
+- Minor cleaning up. [Félix Gagnon-Grenier]
+- Adding css vars for layer colors in the future. [Félix Gagnon-Grenier]
+- One filter per annotation status. [Félix Gagnon-Grenier]
+- Collections, sources and layers in the store. [Félix Gagnon-Grenier]
+- More async. [Félix Gagnon-Grenier]
+- Insulate http queries in data-queries. [Félix Gagnon-Grenier]
+- Redundant path component. [Félix Gagnon-Grenier]
+- Release annotations by id. [Félix Gagnon-Grenier]
+- Putting protocol in variables named as urls. [Félix Gagnon-Grenier]
+- Reduce docker image by 50%: 95 Mb. [David Caron]
 
-New
-~~~
-
-- Release annotations
-- Filter by annotation status in layer switcher
-- Reduce docker image size [David Caron]
-
-Changes
-~~~~~~~
-
-- Seven different colors in prevision for every annotation status
 
 0.2.0 (2019-02-01)
 ------------------
+- Update default structure with new property. [Félix Gagnon-Grenier]
+- Remove unused code after calling api directly. [Félix Gagnon-Grenier]
+- Adding dependencies locally until we fix cors concerns for dev. [Félix
+  Gagnon-Grenier]
+- Load external dependencies when cors are enabled as well. [Félix
+  Gagnon-Grenier]
+- More basemaps. [Félix Gagnon-Grenier]
+- Each image in its own layer, hidden by default. [Félix Gagnon-Grenier]
+- Constructor injection. [Félix Gagnon-Grenier]
+- Highly prototrashypical base maps, annotations filters and images
+  layer switcher. [Félix Gagnon-Grenier]
+- Removing textual mode indicator; not in wireframe. [Félix Gagnon-
+  Grenier]
+- Images nrg in layer switcher. [Félix Gagnon-Grenier]
+- Annotation statuses from api. [Félix Gagnon-Grenier]
+- Don't show annotations if no classes are selected. [Félix Gagnon-
+  Grenier]
+- Basic section switcher for taxonomy vs layers. [Félix Gagnon-Grenier]
+- Add fixme. [Félix Gagnon-Grenier]
+- Eyes checked by default. [Félix Gagnon-Grenier]
+- Array issue. /taxonomy_classes/{id} returns an object, not a list.
+  [David Caron]
+- Use make_http_request. [David Caron]
+- Get taxonomy classes from rest api. [David Caron]
+- Separate layers for released and new annotations. [Félix Gagnon-
+  Grenier]
+- Parameterizing layer creation. [Félix Gagnon-Grenier]
+- Only show unreleased annotations in yellow. [Félix Gagnon-Grenier]
+- Put release with annotations. [Félix Gagnon-Grenier]
+- Use mobx to handle selection change. [Félix Gagnon-Grenier]
+- Relative imports because modularity. [Félix Gagnon-Grenier]
+- Putting visible classes in the store. [Félix Gagnon-Grenier]
+- Passing release ids to map manager. [Félix Gagnon-Grenier]
+- PUT on /annotations using a FeatureCollection... [David Caron]
 
-New
-~~~
+  and split /annotation PUSH, PUT and DELETE functions
+- Jenkins: only rebuild the frontend. [David Caron]
+- Open at CRIM. [David Caron]
+- Load images as tiles. [David Caron]
+- Target geoserver Pleiades_RGB. [David Caron]
+- Adding release button and basic handler. [Félix Gagnon-Grenier]
+- Improving dom elements wrappers. [Félix Gagnon-Grenier]
+- Removing feature from vector source after deleting it through wfs.
+  [Félix Gagnon-Grenier]
+- Fixes for feature id and updating using PUT request. [David Caron]
+- Proper handling of non 200 requests. [Félix Gagnon-Grenier]
+- Some colors. [Félix Gagnon-Grenier]
+- Notifying user on request error. [Félix Gagnon-Grenier]
+- Adapting code to geo json. [Félix Gagnon-Grenier]
+- Add GEOIMAGENET_API_URL parameter. [David Caron]
+- Insert and update in GeoJson. [David Caron]
+- Slack to geoimagenet-dev. [Francis Charette Migneault]
+- Basic confirm dialog. [Félix Gagnon-Grenier]
+- Specific case for connection errors. [Félix Gagnon-Grenier]
+- Deleting features. [Félix Gagnon-Grenier]
+- First level is opened on loading the taxonomy. [Félix Gagnon-Grenier]
+- Color for new features layer. [Félix Gagnon-Grenier]
+- Cleanup. [Félix Gagnon-Grenier]
+- Wait for map instanciation before adding or removing interactions.
+  [Félix Gagnon-Grenier]
+- Removing interactions when in improper mode. [Félix Gagnon-Grenier]
+- Correct taxonomy class id. [Félix Gagnon-Grenier]
+- Adding features when in creation mode with taxonomy class selected.
+  [Félix Gagnon-Grenier]
+- Selecting taxonomy class. [Félix Gagnon-Grenier]
+- Update for multiple versions. [Félix Gagnon-Grenier]
+- Centralise store. [Félix Gagnon-Grenier]
+- Normalize member access. [Félix Gagnon-Grenier]
+- Correctify name. [Félix Gagnon-Grenier]
+- Adding action buttons. [Félix Gagnon-Grenier]
+- Preparation for annotation counts. [Félix Gagnon-Grenier]
+- Element creation helpers. [Félix Gagnon-Grenier]
+- Proper cql filter name. [Félix Gagnon-Grenier]
+- Absolute positionning of the map. [Félix Gagnon-Grenier]
+- Toggling all visibility. [Félix Gagnon-Grenier]
+- Aligning eyes. [Félix Gagnon-Grenier]
+- Js modules. [Félix Gagnon-Grenier]
+- Fix for updates. [David Caron]
+- Add ANNOTATION_NAMESPACE_URI. [David Caron]
+- Use /geoserver/wfs instead of /geoserver/GeoImageNet/wfs. [David
+  Caron]
+- First draft to support wfs inserts. works locally. [David Caron]
+- Use .items() [David Caron]
+- Basic debugging web server using werkzeug. [David Caron]
+- Toggleable checkboxes with eye images. [Félix Gagnon-Grenier]
+- Maybe fix the strange layout issue? [Félix Gagnon-Grenier]
+- Output in slack channel #geoimagenet. [David Caron]
+- Trigger Jenkins. [David Caron]
+- Add Jenkinsfile. [David Caron]
+- Add pytest and werkzeug (for development server) in
+  requirements_dev.txt. [David Caron]
+- Rename test.py to test_injector.py so that pytest finds it. [David
+  Caron]
+- Add gunicorn. [David Caron]
+- Cleanup requirements. [David Caron]
+- Docker: base image on alpine, use caching when re-building the image.
+  [David Caron]
+- Docker: add .dockerignore. [David Caron]
+- Taxonomies from api. [Félix Gagnon-Grenier]
+- Introducing le mobx. [Félix Gagnon-Grenier]
+- Some bubbling of errors. [Félix Gagnon-Grenier]
 
-- Hardcoded images lists
-- Annotations statuses manually synced with API
-- Show annotations by status from the layer switcher
-- put external dependencies (mobx, ol) as local scripts
-- Create, modify, delete annotations while in correct mode
-- Mode toggled by correct action icons at the top
-
-Changes
-~~~~~~~
-
-- Layer Switcher
-  - List all images by type
-  - One layer per image to allow for easier discovering of which image is being annotated
-- remove api proxy and call api directly from frontend [David Caron]
-- remove login and logout stubs until we know betetr how everything works together
-- reduce docker image size [David Caron]
 
 0.1.2 (2019-01-10)
 ------------------
+- Actual taxonomies from api. [Félix Gagnon-Grenier]
+- Taxonomy_group -> taxonomy. [Félix Gagnon-Grenier]
+- Some font. [Félix Gagnon-Grenier]
+- Adapting docker to gunicorn config. [Félix Gagnon-Grenier]
+- Some shinier. [Félix Gagnon-Grenier]
+- Easing the use of api. [Félix Gagnon-Grenier]
+- Only annotate leafs. [Félix Gagnon-Grenier]
+- Toggling taxonomy elements. [Félix Gagnon-Grenier]
+- Recursive taxonomy construction. [Félix Gagnon-Grenier]
+- Testing injector, single handler for simple rendering. [Félix Gagnon-
+  Grenier]
+- Static taxonomies for now. [Félix Gagnon-Grenier]
+- Environment variables into bundle. [Félix Gagnon-Grenier]
+- Sections rendering. [Félix Gagnon-Grenier]
+- Serving static files. [Félix Gagnon-Grenier]
+- Testing some injector mechanic. [Félix Gagnon-Grenier]
+- Barely working standalone gunicorn app. [Félix Gagnon-Grenier]
+- Launching image with gunicorn. [Félix Gagnon-Grenier]
+- Async workers. [Félix Gagnon-Grenier]
+- Leveraging gunicorn pre_request. [Félix Gagnon-Grenier]
 
-New
-~~~
-
-- Backend
-  - Standalone gunicorn app
-    - Replace Flask before_request with gunicorn pre_request: parse cookies and validate session
-    - Replace flask static with manual static file serving
-  - Basic Dependency Injection Container with tests to automate the request handler creation and running
-  - Reading environment variables to configure app
-
-Changes
-~~~~~~~
-
-- Launch the app from docker through gunicorn instead of Flask
-- Backend
-  - Serve taxonomies from api instead of hardcoded ones
-- Frontend
-  - Toggling taxonomy elements open and close
-  - Update hardcoded taxonomy to static files served from server
-  - Recursive taxonomy generation function
-  - Better fonts
-  - Replicate some API changes
-  - Only allow annotation of leafs
-
-0.1.1 (2018-11-21)
-------------------
-
-Changes
-~~~~~~~
-
-- Only activate modification of features when a taxonomy class is selected
-- Saving features and then reload the features
-- Changing text to be in French first
-- Removing login until it actually comes from Magpie
 
 0.1 (2018-11-14)
 ----------------
+- Application prototypale python d'annotation de features vers un
+  datasource Geoserver PostGIS. [Félix Gagnon-Grenier]
+- Release root. [Félix Gagnon-Grenier]
 
-New
-~~~
-- Prototypal application using a Flask dev server, jinja2 templating, openlayers with layer switcher from CDN
-- Basic pages
-  - presentation with logos and article
-  - benchmarks
-  - model download that allows the generation of a download url from a specific request
-- Basic login with stub permissions
-- Basic logged and not logged view
-- Platform behind stubbed login
-- Multi-browser safe favicons with some online favison generator
-- Basic gettext i18n translation backbone
-- Backend
-  - Session controller that generates cooies for hardcoded user list
-  - Rendering system around jinja2 with global values and integrated i18n translations
-  - HTTP abstraction layer to instulate the app from http
-- Frontend
-  - Creating features and saving them to a PostGIS geoserver backend
-  - Basic taxonomy browser from hardcoded
+
