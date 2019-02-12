@@ -271,7 +271,7 @@ export class MapManager {
     aggregate_features_at_cursor(event) {
         const features = [];
         this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), feature => {
-            if (feature.getId() !== NONE) {
+            if (feature.getId() !== undefined) {
                 features.push(feature);
             }
         });

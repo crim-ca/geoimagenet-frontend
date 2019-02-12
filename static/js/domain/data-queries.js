@@ -1,6 +1,6 @@
 import {make_http_request, post_json, put_json} from '../utils/http.js';
 
-const reject = Promise.reject;
+const reject = Promise.reject.bind(Promise);
 
 export const release_annotations_request = async taxonomy_class_id => {
     const payload = JSON.stringify({
