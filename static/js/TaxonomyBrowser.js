@@ -11,7 +11,7 @@ import {
 import {
     store,
     select_taxonomy_class,
-    set_visible_classes, toggle_taxonomy_class_tree_element
+    set_visible_classes, toggle_taxonomy_class_tree_element, set_taxonomy_classes_visibility
 } from './domain/store.js';
 import {ANNOTATION} from './domain/constants.js';
 import {
@@ -66,9 +66,13 @@ export class TaxonomyBrowser {
             "./ancestor::span[contains(concat(' ', @class, ' '), ' taxonomy_class_list_element ')]/ancestor::li[1]",
             event.target
         );
-        toggle_all_nested_checkboxes(parent_list_item, event.target.checked);
+        const checked_boxes = parent_list_item.querySelectorAll('input:checked[type=checkbox]');
+        const values = [];
+        checked_boxes.forEach(c => { values.push(c.value); });
+        set_taxonomy_classes_visibility(values);
+        // toggle_all_nested_checkboxes(parent_list_item, event.target.checked);
 
-        this.update_visible_classes_from_checked_checkboxes();
+        // this.update_visible_classes_from_checked_checkboxes();
     }
 
     check_all_checkboxes() {
@@ -97,7 +101,12 @@ export class TaxonomyBrowser {
             }
 
             const actions = span(null, 'actions');
-            actions.appendChild(stylable_checkbox(taxonomy_class.id, 'checkbox_eye', this.toggle_visible_classes_click_handler));
+            actions.appendChild(stylable_checkbox(
+                taxonomy_class.id,
+                'checkbox_eye',
+                this.toggle_visible_classes_click_handler,
+                taxonomy_class.visible
+            ));
             actions.appendChild(button(
                 span(null, 'fas', 'fa-paper-plane', 'fa-lg', 'release'),
                 () => release_annotations(taxonomy_class.id)

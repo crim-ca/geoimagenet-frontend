@@ -36,7 +36,7 @@ const find_element_by_id = (collection, target_id) => {
     // this makes finding the element some kind of side effect of the find, instead of its primary function
     const loop = (collection, target_id, result) => {
         collection.find(e => {
-            if (e.id === target_id) {
+            if (parseInt(e.id) === parseInt(target_id)) {
                 result.element = e;
                 return true;
             }
@@ -56,6 +56,13 @@ const find_element_by_id = (collection, target_id) => {
 export const toggle_taxonomy_class_tree_element = mobx.action(taxonomy_class_id => {
     let taxonomy_class = find_element_by_id(store.selected_taxonomy.elements, taxonomy_class_id);
     taxonomy_class['opened'] = !taxonomy_class['opened'];
+});
+
+export const set_taxonomy_classes_visibility = mobx.action((taxonomy_class_ids) => {
+    taxonomy_class_ids.forEach(id => {
+        let taxonomy_class = find_element_by_id(store.selected_taxonomy.elements, id);
+        taxonomy_class['visible'] = !taxonomy_class['visible'];
+    });
 });
 
 export const increment_new_annotations_count = mobx.action(taxonomy_class_id => {
@@ -91,6 +98,24 @@ export const set_selected_taxonomy = mobx.action(t => {
 });
 export const set_taxonomy_class = mobx.action(c => {
     store.selected_taxonomy.elements = c;
+
+    const flat_ancestors_and_descendants_dict = {};
+    const flatten_ancestors_and_descendants = (taxonomy_class) => {
+        if (taxonomy_class.children && taxonomy_class.children.length > 0) {
+            const id = taxonomy_class.id;
+            taxonomy_class.children.forEach(e => {
+                if (flat_ancestors_and_descendants_dict[id]) {
+                    flat_ancestors_and_descendants_dict[id].push(e.id);
+                } else {
+                    flat_ancestors_and_descendants_dict[id] = [e.id];
+                }
+                if (e.children && e.children.length > 0) {
+                    flatten_ancestors_and_descendants(e);
+                }
+            });
+        }
+    };
+    store.selected_taxonomy.elements.forEach(e => { flatten_ancestors_and_descendants(e); });
 });
 export const set_visible_classes = mobx.action((classes) => {
     store.visible_classes = classes;
