@@ -1,3 +1,20 @@
+import {autorun} from 'mobx';
+import {Group, Vector} from 'ol/layer';
+import {fromLonLat, transformExtent} from 'ol/proj';
+import {MousePosition, ScaleLine} from 'ol/control';
+import {Draw, Modify} from 'ol/interaction';
+import {View, Collection, Feature, Map} from 'ol';
+import {createStringXY} from 'ol/coordinate';
+import VectorSource from 'ol/source/Vector';
+import {bbox} from 'ol/loadingstrategy';
+import {Circle, Fill, Stroke, Style, Text} from 'ol/style';
+import {GeoJSON} from 'ol/format';
+import TileLayer from 'ol/layer/Tile';
+import {BingMaps, Cluster, OSM, TileWMS} from 'ol/source';
+import VectorLayer from 'ol/layer/Vector';
+import {LayerSwitcher} from './layer-switcher';
+
+
 import {
     MODE,
     ANNOTATION,
@@ -8,17 +25,8 @@ import {
     ALLOWED_BING_MAPS,
     CUSTOM_GEOIM_IMAGE_LAYER,
     VIEW_CENTER
-} from './domain/constants.js';
-import {
-    store,
-    set_annotation_collection,
-    set_annotation_source,
-    set_annotation_layer,
-    start_annotation,
-    end_annotation,
-    increment_new_annotations_count
-} from './domain/store.js';
-import {notifier} from './utils/notifications.js'
+} from './domain/constants';
+import {notifier} from './utils/notifications';
 import {
     create_geojson_feature,
     delete_annotations_request,
@@ -26,23 +34,24 @@ import {
     modify_geojson_features,
     reject_annotations_request,
     validate_annotations_request
-} from './domain/data-queries.js';
+} from './domain/data-queries';
+import {fromExtent} from 'ol/geom/Polygon';
 
 const create_vector_layer = (title, source, color, visible = true) => {
-    return new ol.layer.Vector({
+    return new Vector({
         title: title,
         source: source,
-        style: new ol.style.Style({
-            fill: new ol.style.Fill({
+        style: new Style({
+            fill: new Fill({
                 color: 'rgba(255, 255, 255, 0.25)',
             }),
-            stroke: new ol.style.Stroke({
+            stroke: new Stroke({
                 color: color,
                 width: 2
             }),
-            image: new ol.style.Circle({
+            image: new Circle({
                 radius: 7,
-                fill: new ol.style.Fill({
+                fill: new Fill({
                     color: color,
                 })
             })
@@ -51,14 +60,9 @@ const create_vector_layer = (title, source, color, visible = true) => {
     });
 };
 
-export const refresh_source_by_status = status => {
-    store.annotations_sources[status].clear();
-    store.annotations_sources[status].refresh(true);
-};
-
 // To transform coordinates from a project to another
 function transform(extent, src_epsg, dst_epsg) {
-    return ol.proj.transformExtent(extent, src_epsg, dst_epsg);
+    return transformExtent(extent, src_epsg, dst_epsg);
 }
 
 export class MapManager {
@@ -68,11 +72,21 @@ export class MapManager {
     changing foo = () => {}; to foo = function() {} _will_ break things in interesting and unexpected ways
      */
 
-    constructor(geoserver_url, annotation_namespace_uri, annotation_namespace, annotation_layer, map_div_id) {
+    constructor(
+        geoserver_url,
+        annotation_namespace_uri,
+        annotation_namespace,
+        annotation_layer,
+        map_div_id,
+        state_proxy,
+        store_actions
+    ) {
 
         this.geoserver_url = geoserver_url;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
+        this.state_proxy = state_proxy;
+        this.store_actions = store_actions;
 
         // bind class methods passed as event handlers to prevent the changed execution context from breaking class functionality
         this.draw_condition_callback = this.draw_condition_callback.bind(this);
@@ -80,38 +94,37 @@ export class MapManager {
         this.receive_modifyend_event = this.receive_modifyend_event.bind(this);
         this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
 
-        this.view = new ol.View({
-            center: ol.proj.fromLonLat(VIEW_CENTER.CENTRE),
+        this.view = new View({
+            center: fromLonLat(VIEW_CENTER.CENTRE),
             zoom: VIEW_CENTER.ZOOM_LEVEL
         });
 
-        this.map = new ol.Map({
+        this.map = new Map({
             target: map_div_id,
             view: this.view,
         });
 
-        const scale_line = new ol.control.ScaleLine();
-        this.map.addControl(scale_line);
+        this.map.addControl(new ScaleLine());
 
         const style = getComputedStyle(document.body);
 
         ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
 
             const color = style.getPropertyValue(`--color-${status}`);
-            set_annotation_collection(status, new ol.Collection());
-            set_annotation_source(status, this.create_vector_source(store.annotations_collections[status], status));
+            this.store_actions.set_annotation_collection(status, new Collection());
+            this.store_actions.set_annotation_source(status, this.create_vector_source(this.state_proxy.annotations_collections[status], status));
 
             const this_layer_is_visible = VISIBLE_LAYERS_BY_DEFAULT.indexOf(status) > -1;
-            const vectorLayer = create_vector_layer(status, store.annotations_sources[status], color, this_layer_is_visible);
+            const vectorLayer = create_vector_layer(status, this.state_proxy.annotations_sources[status], color, this_layer_is_visible);
 
-            set_annotation_layer(status, vectorLayer);
+            this.store_actions.set_annotation_layer(status, vectorLayer);
         });
 
-        this.modify = new ol.interaction.Modify({
-            features: store.annotations_collections[ANNOTATION.STATUS.NEW],
+        this.modify = new Modify({
+            features: this.state_proxy.annotations_collections[ANNOTATION.STATUS.NEW],
         });
-        this.draw = new ol.interaction.Draw({
-            source: store.annotations_sources[ANNOTATION.STATUS.NEW],
+        this.draw = new Draw({
+            source: this.state_proxy.annotations_sources[ANNOTATION.STATUS.NEW],
             type: 'Polygon',
             condition: this.draw_condition_callback
         });
@@ -119,18 +132,18 @@ export class MapManager {
         this.draw.on('drawend', this.receive_drawend_event);
         this.modify.on('modifyend', this.receive_modifyend_event);
 
-        store.annotations_collections[ANNOTATION.STATUS.NEW].on('add', (e) => {
+        this.state_proxy.annotations_collections[ANNOTATION.STATUS.NEW].on('add', (e) => {
             e.element.revision_ = 0;
         });
 
-        mobx.autorun(() => {
-            if (store.visible_classes.length > 0) {
-                this.cql_filter = `taxonomy_class_id IN (${store.visible_classes.join(',')})`;
+        autorun(() => {
+            if (this.state_proxy.visible_classes.length > 0) {
+                this.cql_filter = `taxonomy_class_id IN (${this.state_proxy.visible_classes.join(',')})`;
             } else {
                 this.cql_filter = '';
             }
             ANNOTATION_STATUS_AS_ARRAY.forEach(s => {
-                refresh_source_by_status(s);
+                this.refresh_source_by_status(s);
             });
         });
 
@@ -139,29 +152,26 @@ export class MapManager {
         // We set the layers and the layer switcher here
         this.make_layers();
 
-        this.mouse_position = new ol.control.MousePosition({
-            coordinateFormat: ol.coordinate.createStringXY(4),
+        this.mouse_position = new MousePosition({
+            coordinateFormat: createStringXY(4),
             projection: 'EPSG:4326',
             undefinedHTML: '&nbsp;',
             target: 'coordinates',
         });
         this.map.addControl(this.mouse_position);
 
-        this.scaleLineControl = new ol.control.ScaleLine();
-        this.map.addControl(this.scaleLineControl);
-
         this.map.getViewport().addEventListener('click', this.receive_map_viewport_click_event);
 
-        this.formatGeoJson = new ol.format.GeoJSON({
+        this.formatGeoJson = new GeoJSON({
             dataProjection: 'EPSG:3857',
             featureProjection: 'EPSG:3857',
             geometryName: 'geometry',
         });
 
-        mobx.autorun(() => {
-            switch (store.mode) {
+        autorun(() => {
+            switch (this.state_proxy.mode) {
                 case MODE.CREATION:
-                    if (store.selected_taxonomy_class_id > 0) {
+                    if (this.state_proxy.selected_taxonomy_class_id > 0) {
                         this.map.addInteraction(this.draw);
                     }
                     this.map.removeInteraction(this.modify);
@@ -176,6 +186,11 @@ export class MapManager {
             }
         });
 
+    }
+
+    refresh_source_by_status(status) {
+        this.state_proxy.annotations_sources[status].clear();
+        this.state_proxy.annotations_sources[status].refresh(true);
     }
 
     draw_condition_callback(event) {
@@ -205,7 +220,7 @@ export class MapManager {
         };
 
         if (!layers.some(at_least_one_layer_is_an_image)) {
-            if (store.current_annotation.initialized) {
+            if (this.state_proxy.current_annotation.initialized) {
                 notifier.warning('All corners of an annotation polygon must be on an image.');
                 return false;
             }
@@ -215,15 +230,15 @@ export class MapManager {
 
         const first_layer = layers[layer_index];
 
-        if (store.current_annotation.initialized) {
-            if (first_layer.get('title') === store.current_annotation.image_title) {
+        if (this.state_proxy.current_annotation.initialized) {
+            if (first_layer.get('title') === this.state_proxy.current_annotation.image_title) {
                 return true;
             }
             notifier.warning('Annotations must be made on a single image, make sure that all polygon points are on the same image.');
             return false;
         }
 
-        start_annotation(first_layer.get('title'));
+        this.store_actions.start_annotation(first_layer.get('title'));
 
         return true;
     }
@@ -232,21 +247,21 @@ export class MapManager {
 
         const feature = event.feature;
         feature.setProperties({
-            taxonomy_class_id: store.selected_taxonomy_class_id,
+            taxonomy_class_id: this.state_proxy.selected_taxonomy_class_id,
             annotator_id: 1,
-            image_name: store.current_annotation.image_title,
+            image_name: this.state_proxy.current_annotation.image_title,
         });
         const payload = this.formatGeoJson.writeFeature(feature);
 
         try {
             const new_feature_id = await create_geojson_feature(payload);
             feature.setId(`${this.annotation_layer}.${new_feature_id}`);
-            increment_new_annotations_count(store.selected_taxonomy_class_id);
+            this.store_actions.increment_new_annotations_count(this.state_proxy.selected_taxonomy_class_id);
         } catch (error) {
             MapManager.geojsonLogError(error);
         }
 
-        end_annotation();
+        this.store_actions.end_annotation();
     }
 
     async receive_modifyend_event(event) {
@@ -282,7 +297,7 @@ export class MapManager {
         const features = this.aggregate_features_at_cursor(event);
         const feature_ids = features.map(f => f.getId());
 
-        switch (store.mode) {
+        switch (this.state_proxy.mode) {
 
             case MODE.DELETE:
                 await notifier.confirm(`Do you really want to delete the highlighted feature?`);
@@ -292,7 +307,7 @@ export class MapManager {
                     MapManager.geojsonLogError(error);
                 }
                 features.forEach(f => {
-                    store.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(f);
+                    this.state_proxy.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(f);
                 });
                 break;
 
@@ -302,8 +317,8 @@ export class MapManager {
                 } catch (error) {
                     MapManager.geojsonLogError(error);
                 }
-                refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
-                refresh_source_by_status(ANNOTATION.STATUS.VALIDATED);
+                this.refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
+                this.refresh_source_by_status(ANNOTATION.STATUS.VALIDATED);
                 break;
 
             case MODE.REJECT:
@@ -312,12 +327,12 @@ export class MapManager {
                 } catch (error) {
                     MapManager.geojsonLogError(error);
                 }
-                refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
-                refresh_source_by_status(ANNOTATION.STATUS.REJECTED);
+                this.refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
+                this.refresh_source_by_status(ANNOTATION.STATUS.REJECTED);
                 break;
 
             case MODE.CREATION:
-                if (store.selected_taxonomy_class_id === -1) {
+                if (this.state_proxy.selected_taxonomy_class_id === -1) {
                     notifier.warning('You must select a taxonomy class to begin annotating content.');
                 }
                 break;
@@ -325,8 +340,8 @@ export class MapManager {
     }
 
     create_vector_source(features, status) {
-        return new ol.source.Vector({
-            format: new ol.format.GeoJSON(),
+        return new VectorSource({
+            format: new GeoJSON(),
             features: features,
             url: () => {
                 if (this.cql_filter.length > 0) {
@@ -338,27 +353,27 @@ export class MapManager {
                     `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
                     `outputFormat=application/json&srsname=EPSG:3857&cql_filter=status='${status}' AND taxonomy_class_id IN (-1)`;
             },
-            strategy: ol.loadingstrategy.bbox
+            strategy: bbox
         });
     }
 
     async make_layers() {
 
         const base_maps = [];
-        base_maps.push(new ol.layer.Tile({
+        base_maps.push(new TileLayer({
             title: 'OSM',
             type: 'base',
-            source: new ol.source.OSM(),
+            source: new OSM(),
             zIndex: Z_INDEX.BASEMAP,
             visible: false,
         }));
 
         ALLOWED_BING_MAPS.forEach(function (bing_map) {
-            base_maps.push(new ol.layer.Tile({
+            base_maps.push(new TileLayer({
                 title: bing_map.title,
                 type: 'base',
                 preload: Infinity,
-                source: new ol.source.BingMaps({
+                source: new BingMaps({
                     key: BING_API_KEY,
                     imagerySet: bing_map.imagerySet,
                 }),
@@ -371,7 +386,8 @@ export class MapManager {
         const RGB_layers = [];
 
         // Get map projection
-        const dst_epsg = this.map.getView().getProjection().getCode();
+        // const dst_epsg = this.map.getView().getProjection().getCode();
+        const dst_epsg = 'EPSG:3857';
 
         try {
             const result = await geoserver_capabilities(`${GEOSERVER_URL}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
@@ -389,10 +405,10 @@ export class MapManager {
                 if (layer_name.includes('GeoImageNet:NRG')) {
                     // The coordinates must be set to the same projection as the map
                     let extent = transform(extent_for_OL, src_proj, dst_epsg);
-                    const lyr = new ol.layer.Tile({
+                    const lyr = new TileLayer({
                         title: layer_base_name,
                         type: CUSTOM_GEOIM_IMAGE_LAYER,
-                        source: new ol.source.TileWMS({
+                        source: new TileWMS({
                             url: `${GEOSERVER_URL}/GeoImageNet/wms`,
                             params: {'LAYERS': layer_name},
                             ratio: 1,
@@ -407,10 +423,10 @@ export class MapManager {
                 if (layer_name.includes('GeoImageNet:RGB')) {
                     // The coordinates must be set to the same projection as the map
                     let extent = transform(extent_for_OL, src_proj, dst_epsg);
-                    const lyr = new ol.layer.Tile({
+                    const lyr = new TileLayer({
                         title: layer_base_name,
                         type: CUSTOM_GEOIM_IMAGE_LAYER,
-                        source: new ol.source.TileWMS({
+                        source: new TileWMS({
                             url: `${GEOSERVER_URL}/GeoImageNet/wms`,
                             params: {'LAYERS': layer_name},
                             ratio: 1,
@@ -426,23 +442,23 @@ export class MapManager {
             notifier.error('We could not interrogate Geoserver capabilities. No images will be available.');
         }
 
-        let bboxFeatures = new ol.Collection();
-        let bboxSource = new ol.source.Vector({
+        let bboxFeatures = new Collection();
+        let bboxSource = new VectorSource({
             features: bboxFeatures
         });
-        let bboxClusterSource = new ol.source.Cluster({
+        let bboxClusterSource = new Cluster({
             distance: 10,
             source: bboxSource,
             geometryFunction: feature => {
                 return feature.getGeometry().getInteriorPoint();
             }
         });
-        let zoomedInStyle = new ol.style.Style({
-            stroke: new ol.style.Stroke({
+        let zoomedInStyle = new Style({
+            stroke: new Stroke({
                 color: 'orange',
                 width: 3
             }),
-            fill: new ol.style.Fill({
+            fill: new Fill({
                 color: 'rgba(255, 165, 0, 0.3)'
             }),
             geometry: function (feature) {
@@ -451,28 +467,28 @@ export class MapManager {
             }
         });
 
-        let bboxClusterLayer = new ol.layer.Vector({
+        let bboxClusterLayer = new VectorLayer({
             source: bboxClusterSource,
             title: 'Image Markers',
             style: (feature, resolution) => {
                 let size = feature.get('features').length;
                 if (resolution < 25) {
                     // don't display anything
-                    return new ol.style.Style();
+                    return new Style();
                 } else if (resolution > 700 || size > 2) {
-                    return new ol.style.Style({
-                        image: new ol.style.Circle({
+                    return new Style({
+                        image: new Circle({
                             radius: 12,
-                            stroke: new ol.style.Stroke({
+                            stroke: new Stroke({
                                 color: '#fff'
                             }),
-                            fill: new ol.style.Fill({
+                            fill: new Fill({
                                 color: '#3399CC'
                             })
                         }),
-                        text: new ol.style.Text({
+                        text: new Text({
                             text: size.toString(),
-                            fill: new ol.style.Fill({
+                            fill: new Fill({
                                 color: '#fff'
                             }),
                             font: '12px sans-serif'
@@ -489,11 +505,11 @@ export class MapManager {
             const result_for_bbox = await geoserver_capabilities(`${GEOSERVER_URL}/GeoImageNet/wms?request=GetCapabilities`);
             result_for_bbox['Capability']['Layer']['Layer'].forEach(layer => {
                 // EX_GeographicBoundingBox is an array of [minx, miny, maxx, maxy] in EPSG:4326
-                let extent = new ol.geom.Polygon.fromExtent(layer['EX_GeographicBoundingBox']);
+                let extent = new fromExtent(layer['EX_GeographicBoundingBox']);
                 extent.transform("EPSG:4326", "EPSG:3857");
                 let maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
                 if (extent.getArea() < maxArea) {
-                    let feature = new ol.Feature({
+                    let feature = new Feature({
                         geometry: extent
                     });
                     bboxFeatures.push(feature);
@@ -505,43 +521,54 @@ export class MapManager {
 
 
         const annotation_layers = [];
-        ANNOTATION_STATUS_AS_ARRAY.forEach(function (status) {
-            annotation_layers.unshift(store.annotations_layers[status]);
+        ANNOTATION_STATUS_AS_ARRAY.forEach((status) => {
+            annotation_layers.unshift(this.state_proxy.annotations_layers[status]);
         });
 
-        this.map.addLayer(new ol.layer.Group({
+        const RGB_group = new Group({
             title: 'RGB Images',
             layers: RGB_layers,
-        }));
-
-        this.map.addLayer(new ol.layer.Group({
+        });
+        const NRG_group = new Group({
             title: 'NRG Images',
             layers: NRG_layers,
-        }));
-
-        this.map.addLayer(new ol.layer.Group({
+        });
+        const image_markers_group = new Group({
             title: 'Image Markers',
             layers: [bboxClusterLayer],
-        }));
-
-        this.map.addLayer(new ol.layer.Group({
+        });
+        const base_maps_group = new Group({
             title: 'Base maps',
             layers: base_maps,
-        }));
-
-        this.map.addLayer(new ol.layer.Group({
+        });
+        const annotations_group = new Group({
             title: 'Annotations',
             layers: annotation_layers,
-        }));
-
-        // create layer switcher, populate with base layers and feature layers
-        this.layer_switcher = new ol.control.LayerSwitcher({
-            target: 'layer-switcher',
-            open: true
         });
-        this.map.addControl(this.layer_switcher);
-        this.layer_switcher.showPanel();
-        this.layer_switcher.onmouseover = null;
+
+        this.map.addLayer(RGB_group);
+        this.map.addLayer(NRG_group);
+        this.map.addLayer(image_markers_group);
+        this.map.addLayer(base_maps_group);
+        this.map.addLayer(annotations_group);
+
+        const base_maps_object = {
+            "Base Maps": base_maps_group
+        };
+        const overlay_maps = {
+            "RGB": RGB_group,
+            "NRG": NRG_group,
+            "Image markers": image_markers_group,
+            "Annotations": annotations_group,
+        };
+
+        this.layerSwitcher = new LayerSwitcher({
+            target: 'layer-switcher',
+            open: true,
+        });
+        this.map.addControl(this.layerSwitcher);
+        this.layerSwitcher.showPanel();
+        this.layerSwitcher.onmouseover = null;
 
     }
 

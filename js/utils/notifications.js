@@ -1,4 +1,4 @@
-import {element, text_node, button} from '/js/utils/dom.js'
+const {element, text_node, button} = require('./dom');
 import {NOTIFICATION_LIFE_SPAN_MS} from '../domain/constants.js';
 
 const root = document.body;
