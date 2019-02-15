@@ -11,6 +11,11 @@ div.notification {
     cursor: pointer;
     max-width: calc(100% / 2);
 }
+div.notification.confirm {
+    top: calc((100% - var(--width-sidebar)) / 2);
+    left: calc((100% - var(--width-sidebar)) / 2);
+    transform: translateX(-50%) translateY(-50%);
+}
 div.notification.error {
     background-color: var(--color-red);
 }
