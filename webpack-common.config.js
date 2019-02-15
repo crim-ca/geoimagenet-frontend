@@ -2,7 +2,6 @@ const Path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
-    mode: 'development',
     entry: {
         app: Path.resolve(__dirname, './js/bootstrap.js')
     },

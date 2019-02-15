@@ -5,7 +5,8 @@ WORKDIR /code
 COPY requirements.txt .
 COPY package.json .
 COPY package-lock.json .
-COPY webpack.config.js .
+COPY webpack-common.config.js .
+COPY webpack-prod.config.js .
 COPY .nvmrc .
 COPY . .
 
@@ -16,7 +17,8 @@ RUN apk update && \
     apk --purge del .build-deps
 
 RUN apk add --virtual .build-deps nodejs-npm && \
-    npm install && npm run build && \
+    npm install && npm run prod && \
+    rm -rf node_modules && \
     apk --purge del .build-deps
 
 

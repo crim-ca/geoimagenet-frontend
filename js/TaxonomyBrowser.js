@@ -9,6 +9,7 @@ import {
 } from './utils/dom.js';
 import {autorun} from 'mobx';
 import {ANNOTATION} from './domain/constants.js';
+import {toggle_all_nested_checkboxes} from "./utils/dom";
 
 
 export class TaxonomyBrowser {
@@ -64,15 +65,17 @@ export class TaxonomyBrowser {
             "./ancestor::span[contains(concat(' ', @class, ' '), ' taxonomy_class_list_element ')]/ancestor::li[1]",
             event.target
         );
+        /*
         const checked_boxes = parent_list_item.querySelectorAll('input:checked[type=checkbox]');
         const values = [];
         checked_boxes.forEach(c => {
             values.push(c.value);
         });
         this.store_actions.set_taxonomy_classes_visibility(values);
-        // toggle_all_nested_checkboxes(parent_list_item, event.target.checked);
+        */
+        toggle_all_nested_checkboxes(parent_list_item, event.target.checked);
 
-        // this.update_visible_classes_from_checked_checkboxes();
+        this.update_visible_classes_from_checked_checkboxes();
     }
 
     check_all_checkboxes() {

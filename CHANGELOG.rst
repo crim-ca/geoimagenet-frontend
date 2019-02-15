@@ -12,6 +12,7 @@ New
 
 Changes
 ~~~~~~~
+- Back to normal toggling of eyes. [Félix Gagnon-Grenier]
 - Hide action icons in taxonomy browser when not needed. [Félix Gagnon-
   Grenier]
 
