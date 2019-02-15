@@ -33,10 +33,11 @@ export const button = (content, click_handler) => {
     }
     return b;
 };
-export const checkbox = (value, change_handler) => {
+export const checkbox = (value, change_handler, checked = false) => {
     const c = element('input');
     c.type = 'checkbox';
     c.value = value;
+    c.checked = checked;
     c.addEventListener('change', change_handler);
     return c;
 };
@@ -46,10 +47,10 @@ export const remove_children = elem => {
         elem.removeChild(elem.firstChild);
     }
 };
-export const stylable_checkbox = (checkbox_value, label_class, change_handler) => {
+export const stylable_checkbox = (checkbox_value, label_class, change_handler, checked = false) => {
     const label = element('label');
     label.classList.add(label_class);
-    label.appendChild(checkbox(checkbox_value, change_handler));
+    label.appendChild(checkbox(checkbox_value, change_handler, checked));
     label.appendChild(element('span'));
     return label;
 };
@@ -63,7 +64,7 @@ export const get_parent_by_tag_name = (element, target_parent_tag_name) => {
     }
     return false;
 };
-export const xpath_query = (query, root_element = null, result_mode =XPathResult.FIRST_ORDERED_NODE_TYPE) => {
+export const xpath_query = (query, root_element = null, result_mode = XPathResult.FIRST_ORDERED_NODE_TYPE) => {
     const root = root_element === null ? document : root_element;
     const result = document.evaluate(
         query,

@@ -2,6 +2,26 @@ Changelog
 =========
 
 
+(unreleased)
+------------
+
+New
+~~~
+- Testing with jest. [Félix Gagnon-Grenier]
+- Webpack bundling. [Félix Gagnon-Grenier]
+
+Changes
+~~~~~~~
+- Back to es6 exporting. [Félix Gagnon-Grenier]
+- Back to normal toggling of eyes. [Félix Gagnon-Grenier]
+- Hide action icons in taxonomy browser when not needed. [Félix Gagnon-
+  Grenier]
+
+Other
+~~~~~
+- Flat ancestors and descendants structure. [Félix Gagnon-Grenier]
+
+
 0.3.0 (2019-02-12)
 ------------------
 

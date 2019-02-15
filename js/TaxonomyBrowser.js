@@ -1,5 +1,4 @@
 import {
-    toggle_all_nested_checkboxes,
     get_by_id,
     element,
     text_node,
@@ -8,40 +7,40 @@ import {
     remove_children,
     stylable_checkbox, xpath_query
 } from './utils/dom.js';
-import {
-    store,
-    select_taxonomy_class,
-    set_visible_classes, toggle_taxonomy_class_tree_element
-} from './domain/store.js';
+import {autorun} from 'mobx';
 import {ANNOTATION} from './domain/constants.js';
-import {
-    select_taxonomy,
-    release_annotations
-} from './domain/user-interactions.js';
+import {toggle_all_nested_checkboxes} from "./utils/dom";
 
 
 export class TaxonomyBrowser {
 
-    constructor() {
+    constructor(map_manager, state_proxy, store_actions, user_interactions) {
 
         this.taxonomy_classes_root = get_by_id('taxonomy_classes');
         this.taxonomy_root = get_by_id('taxonomy');
+        this.map_manager = map_manager;
+        this.state_proxy = state_proxy;
+        this.store_actions = store_actions;
+        this.user_interactions = user_interactions;
 
         this.toggle_visible_classes_click_handler = this.toggle_visible_classes_click_handler.bind(this);
 
-        mobx.autorun(() => {
+        autorun(() => {
             remove_children(this.taxonomy_root);
-            store.taxonomy.forEach(taxonomy => {
+            this.state_proxy.taxonomy.forEach(taxonomy => {
                 const version = taxonomy['versions'][0];
                 const b = button(text_node(taxonomy['name']), async () => {
-                    await select_taxonomy(version, taxonomy['name']);
+                    await this.user_interactions.select_taxonomy(version, taxonomy['name']);
                 });
                 this.taxonomy_root.appendChild(b);
             });
         });
 
-        mobx.autorun(() => {
-            this.build_taxonomy_classes_list(store.selected_taxonomy.elements, store.annotation_counts);
+        autorun(() => {
+            this.build_taxonomy_classes_list(
+                this.state_proxy.selected_taxonomy.elements,
+                this.state_proxy.annotation_counts
+            );
         });
     }
 
@@ -58,7 +57,7 @@ export class TaxonomyBrowser {
         checkboxes.forEach(checkbox => {
             selection.push(checkbox.value);
         });
-        set_visible_classes(selection);
+        this.store_actions.set_visible_classes(selection);
     }
 
     toggle_visible_classes_click_handler(event) {
@@ -66,6 +65,14 @@ export class TaxonomyBrowser {
             "./ancestor::span[contains(concat(' ', @class, ' '), ' taxonomy_class_list_element ')]/ancestor::li[1]",
             event.target
         );
+        /*
+        const checked_boxes = parent_list_item.querySelectorAll('input:checked[type=checkbox]');
+        const values = [];
+        checked_boxes.forEach(c => {
+            values.push(c.value);
+        });
+        this.store_actions.set_taxonomy_classes_visibility(values);
+        */
         toggle_all_nested_checkboxes(parent_list_item, event.target.checked);
 
         this.update_visible_classes_from_checked_checkboxes();
@@ -97,10 +104,23 @@ export class TaxonomyBrowser {
             }
 
             const actions = span(null, 'actions');
-            actions.appendChild(stylable_checkbox(taxonomy_class.id, 'checkbox_eye', this.toggle_visible_classes_click_handler));
+            actions.appendChild(stylable_checkbox(
+                taxonomy_class.id,
+                'checkbox_eye',
+                this.toggle_visible_classes_click_handler,
+                taxonomy_class.visible
+            ));
             actions.appendChild(button(
                 span(null, 'fas', 'fa-paper-plane', 'fa-lg', 'release'),
-                () => release_annotations(taxonomy_class.id)
+                async () => {
+                    try {
+                        await this.user_interactions.release_annotations(taxonomy_class.id);
+                        this.map_manager.refresh_source_by_status(ANNOTATION.STATUS.NEW);
+                        this.map_manager.refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
+                    } catch (e) {
+                        throw e;
+                    }
+                }
             ));
 
             taxonomy_class_list_element.appendChild(text);
@@ -115,7 +135,7 @@ export class TaxonomyBrowser {
                 }
                 // inside the if block because we don't need the toggle if there are no children
                 text.addEventListener('click', () => {
-                    toggle_taxonomy_class_tree_element(taxonomy_class.id);
+                    this.store_actions.toggle_taxonomy_class_tree_element(taxonomy_class.id);
                 });
 
                 const ul = element('ul');
@@ -123,7 +143,7 @@ export class TaxonomyBrowser {
                 taxonomy_class_root_element.appendChild(ul);
             } else {
                 text.addEventListener('click', event => {
-                    select_taxonomy_class(taxonomy_class['id']);
+                    this.store_actions.select_taxonomy_class(taxonomy_class['id']);
                     this.taxonomy_classes_root.querySelectorAll('.selected').forEach(elem => {
                         elem.classList.remove('selected');
                     });

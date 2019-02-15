@@ -1,4 +1,5 @@
 import {make_http_request, post_json, put_json} from '../utils/http.js';
+import {WMSCapabilities} from 'ol/format';
 
 const reject = Promise.reject.bind(Promise);
 
@@ -92,7 +93,7 @@ export const modify_geojson_features = async payload => {
 
 export const geoserver_capabilities = async url => {
     try {
-        let parser = new ol.format.WMSCapabilities();
+        let parser = new WMSCapabilities();
         const res = await make_http_request(url);
         const text = await res.text();
         return parser.read(text);

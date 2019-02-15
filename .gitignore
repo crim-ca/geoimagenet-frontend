@@ -3,3 +3,19 @@ venv
 *__pycache__*
 *.pytest_cache
 geckodriver.log
+node_modules
+static/js
+
+coverage
+
+# production
+build
+
+# misc
+.DS_Store
+
+npm-debug.log
+yarn-error.log
+yarn.lock
+.yarnclean
+.vscode

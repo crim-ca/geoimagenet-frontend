@@ -1,32 +1,41 @@
 import {TaxonomyBrowser} from './TaxonomyBrowser.js';
 import {MapManager} from './MapManager.js';
-import {build_actions} from './Actions.js';
 import {register_section_handles} from './utils/sections.js';
 import {get_by_id} from './utils/dom.js';
 import {fetch_taxonomies} from './domain/data-queries.js';
-import {set_taxonomy} from './domain/store.js';
 import {notifier} from './utils/notifications.js';
+import {create_state_proxy, StoreActions} from './domain/store';
+import {autorun, configure} from 'mobx';
+import {button, remove_children, span} from './utils/dom';
+import {ACTIONS} from './domain/constants';
+import {UserInteractions} from "./domain/user-interactions";
 
 // this is relatively important in the sense that it constraints us to mutate the store only in actions
 // otherwise, changing the store, affecting the state each time, can be compared to an open heart hemorrhage
-mobx.configure({
+configure({
     enforceActions: 'always',
 });
 
 addEventListener('DOMContentLoaded', async () => {
 
-    new MapManager(
+    const state_proxy = create_state_proxy();
+    const store_actions = new StoreActions(state_proxy);
+    const user_interactions = new UserInteractions(store_actions);
+
+    const map_manager = new MapManager(
         GEOSERVER_URL,
         ANNOTATION_NAMESPACE_URI,
         ANNOTATION_NAMESPACE,
         ANNOTATION_LAYER,
-        'map'
+        'map',
+        state_proxy,
+        store_actions
     );
-    new TaxonomyBrowser();
+    new TaxonomyBrowser(map_manager, state_proxy, store_actions, user_interactions);
 
     try {
         const taxonomies = await fetch_taxonomies();
-        set_taxonomy(taxonomies);
+        store_actions.set_taxonomy(taxonomies);
     } catch (e) {
         switch (e.status) {
             case 404:
@@ -38,6 +47,21 @@ addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    build_actions(get_by_id('actions'));
+    const root_element = get_by_id('actions');
+    autorun(() => {
+
+        remove_children(root_element);
+        ACTIONS.forEach(action => {
+            const icon = span(null, 'fas', action.icon_class, 'fa-2x');
+            if (action.mode === state_proxy.mode) {
+                icon.classList.add('active');
+            }
+            const b = button(icon, () => {
+                store_actions.set_mode(action.mode);
+            });
+            root_element.appendChild(b);
+        });
+    });
+
     register_section_handles('section-handle');
 });
