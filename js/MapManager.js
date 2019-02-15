@@ -475,7 +475,7 @@ export class MapManager {
                 if (resolution < 25) {
                     // don't display anything
                     return new Style();
-                } else if (resolution > 700 || size > 2) {
+                } else if (resolution > 700) {
                     return new Style({
                         image: new Circle({
                             radius: 12,

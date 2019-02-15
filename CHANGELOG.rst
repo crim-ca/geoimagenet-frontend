@@ -12,6 +12,8 @@ New
 
 Changes
 ~~~~~~~
+- Show zommed in style for every image passed a certain resolution.
+  [Félix Gagnon-Grenier]
 - Back to es6 exporting. [Félix Gagnon-Grenier]
 - Back to normal toggling of eyes. [Félix Gagnon-Grenier]
 - Hide action icons in taxonomy browser when not needed. [Félix Gagnon-
