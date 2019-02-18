@@ -24,7 +24,7 @@ import {
     VISIBLE_LAYERS_BY_DEFAULT,
     ALLOWED_BING_MAPS,
     CUSTOM_GEOIM_IMAGE_LAYER,
-    VIEW_CENTER
+    VIEW_CENTER, VALID_OPENLAYERS_ANNOTATION_RESOLUTION
 } from './domain/constants';
 import {notifier} from './utils/notifications';
 import {
@@ -65,6 +65,19 @@ function transform(extent, src_epsg, dst_epsg) {
     return transformExtent(extent, src_epsg, dst_epsg);
 }
 
+const debounced = (delay, func) => {
+    let timer_id;
+    return (...args) => {
+        if (timer_id) {
+            clearTimeout(timer_id);
+        }
+        timer_id = setTimeout(() => {
+            func(...args);
+            timer_id = null;
+        }, delay);
+    };
+};
+
 export class MapManager {
 
     /*
@@ -93,6 +106,7 @@ export class MapManager {
         this.receive_drawend_event = this.receive_drawend_event.bind(this);
         this.receive_modifyend_event = this.receive_modifyend_event.bind(this);
         this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
+        this.receive_resolution_change_event = this.receive_resolution_change_event.bind(this);
 
         this.view = new View({
             center: fromLonLat(VIEW_CENTER.CENTRE),
@@ -105,6 +119,7 @@ export class MapManager {
         });
 
         this.map.addControl(new ScaleLine());
+        this.map.getView().on('change:resolution', debounced(200, this.receive_resolution_change_event));
 
         const style = getComputedStyle(document.body);
 
@@ -241,6 +256,15 @@ export class MapManager {
         this.store_actions.start_annotation(first_layer.get('title'));
 
         return true;
+    }
+
+    receive_resolution_change_event(event) {
+        const resolution = event.target.get('resolution');
+        if (resolution < VALID_OPENLAYERS_ANNOTATION_RESOLUTION) {
+            this.store_actions.activate_actions();
+        } else {
+            this.store_actions.deactivate_actions();
+        }
     }
 
     async receive_drawend_event(event) {

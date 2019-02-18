@@ -4,6 +4,7 @@ import {observable, action} from 'mobx';
 const default_store_schematics = {
 
     mode: MODE.VISUALIZE,
+    actions_activated: false,
 
     taxonomy: [],
     annotation_counts: {},
@@ -73,6 +74,16 @@ export class StoreActions {
 
         return result.element;
     };
+
+    @action
+    activate_actions() {
+        this.state_proxy.actions_activated = true;
+    }
+
+    @action
+    deactivate_actions() {
+        this.state_proxy.actions_activated = false;
+    }
 
     @action
     toggle_taxonomy_class_tree_element(taxonomy_class_id) {

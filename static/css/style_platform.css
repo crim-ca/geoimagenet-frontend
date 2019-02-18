@@ -134,6 +134,9 @@ div.actions button {
 div.actions .active {
     color: var(--color-blue);
 }
+div.actions .inactive {
+    color: var(--light-gray);
+}
 div.taxonomy {
     margin: 20px 0;
     display: flex;

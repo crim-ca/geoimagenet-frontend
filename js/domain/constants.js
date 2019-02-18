@@ -6,6 +6,8 @@ export const Z_INDEX = {
     BASEMAP: -10,
 };
 
+export const VALID_OPENLAYERS_ANNOTATION_RESOLUTION = 20;
+
 export const MODE = {
     VISUALIZE: 'VISUALIZE',
     DUPLICATE: 'DUPLICATE',
