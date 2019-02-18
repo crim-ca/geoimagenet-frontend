@@ -160,7 +160,7 @@ export class MapManager {
         });
         this.map.addControl(this.mouse_position);
 
-        this.map.getViewport().addEventListener('click', this.receive_map_viewport_click_event);
+        this.map.addEventListener('click', this.receive_map_viewport_click_event);
 
         this.formatGeoJson = new GeoJSON({
             dataProjection: 'EPSG:3857',
