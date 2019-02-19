@@ -24,7 +24,7 @@ import {
     VISIBLE_LAYERS_BY_DEFAULT,
     ALLOWED_BING_MAPS,
     CUSTOM_GEOIM_IMAGE_LAYER,
-    VIEW_CENTER
+    VIEW_CENTER, VALID_OPENLAYERS_ANNOTATION_RESOLUTION
 } from './domain/constants';
 import {notifier} from './utils/notifications';
 import {
@@ -65,6 +65,19 @@ function transform(extent, src_epsg, dst_epsg) {
     return transformExtent(extent, src_epsg, dst_epsg);
 }
 
+const debounced = (delay, func) => {
+    let timer_id;
+    return (...args) => {
+        if (timer_id) {
+            clearTimeout(timer_id);
+        }
+        timer_id = setTimeout(() => {
+            func(...args);
+            timer_id = null;
+        }, delay);
+    };
+};
+
 export class MapManager {
 
     /*
@@ -93,6 +106,7 @@ export class MapManager {
         this.receive_drawend_event = this.receive_drawend_event.bind(this);
         this.receive_modifyend_event = this.receive_modifyend_event.bind(this);
         this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
+        this.receive_resolution_change_event = this.receive_resolution_change_event.bind(this);
 
         this.view = new View({
             center: fromLonLat(VIEW_CENTER.CENTRE),
@@ -105,6 +119,7 @@ export class MapManager {
         });
 
         this.map.addControl(new ScaleLine());
+        this.map.getView().on('change:resolution', debounced(200, this.receive_resolution_change_event));
 
         const style = getComputedStyle(document.body);
 
@@ -160,7 +175,7 @@ export class MapManager {
         });
         this.map.addControl(this.mouse_position);
 
-        this.map.getViewport().addEventListener('click', this.receive_map_viewport_click_event);
+        this.map.addEventListener('click', this.receive_map_viewport_click_event);
 
         this.formatGeoJson = new GeoJSON({
             dataProjection: 'EPSG:3857',
@@ -243,6 +258,15 @@ export class MapManager {
         return true;
     }
 
+    receive_resolution_change_event(event) {
+        const resolution = event.target.get('resolution');
+        if (resolution < VALID_OPENLAYERS_ANNOTATION_RESOLUTION) {
+            this.store_actions.activate_actions();
+        } else {
+            this.store_actions.deactivate_actions();
+        }
+    }
+
     async receive_drawend_event(event) {
 
         const feature = event.feature;
@@ -285,19 +309,41 @@ export class MapManager {
 
     aggregate_features_at_cursor(event) {
         const features = [];
-        this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), feature => {
-            if (feature.getId() !== undefined) {
-                features.push(feature);
-            }
+        this.map.forEachFeatureAtPixel(event.pixel, feature => {
+            features.push(feature);
         });
         return features;
     }
 
+    get_aggregated_feature_ids(features) {
+        const feature_ids = [];
+        features.forEach(f => {
+            if (f.getId() !== undefined) {
+                feature_ids.push(f.getId());
+            }
+        });
+        return feature_ids;
+    }
+
     async receive_map_viewport_click_event(event) {
         const features = this.aggregate_features_at_cursor(event);
-        const feature_ids = features.map(f => f.getId());
+        const feature_ids = this.get_aggregated_feature_ids(features);
 
         switch (this.state_proxy.mode) {
+
+            case MODE.VISUALIZE:
+                features.forEach(f => {
+                    // cluster source features regroup all individual features in one
+                    if (f.get('features')) {
+                        const actual_features = f.get('features');
+                        console.log(actual_features);
+                        const extent = actual_features[0].get('geometry').getExtent();
+                        const x = extent[0] + (extent[2] - extent[0]) / 2;
+                        const y = extent[1] + (extent[3] - extent[1]) / 2;
+                        this.view.animate({center: [x, y]}, {resolution: VALID_OPENLAYERS_ANNOTATION_RESOLUTION - 0.0001});
+                    }
+                });
+                break;
 
             case MODE.DELETE:
                 await notifier.confirm(`Do you really want to delete the highlighted feature?`);
@@ -475,7 +521,7 @@ export class MapManager {
                 if (resolution < 25) {
                     // don't display anything
                     return new Style();
-                } else if (resolution > 700 || size > 2) {
+                } else if (resolution > 700) {
                     return new Style({
                         image: new Circle({
                             radius: 12,

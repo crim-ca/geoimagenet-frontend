@@ -47,20 +47,35 @@ addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    const root_element = get_by_id('actions');
+    const actions_root_element = get_by_id('actions');
     autorun(() => {
+        remove_children(actions_root_element);
 
-        remove_children(root_element);
-        ACTIONS.forEach(action => {
-            const icon = span(null, 'fas', action.icon_class, 'fa-2x');
-            if (action.mode === state_proxy.mode) {
-                icon.classList.add('active');
-            }
-            const b = button(icon, () => {
-                store_actions.set_mode(action.mode);
+        if (state_proxy.actions_activated) {
+            ACTIONS.forEach(a => {
+                const icon = span(null, 'fas', a.icon_class, 'fa-2x');
+                if (a.mode === state_proxy.mode) {
+                    icon.classList.add('active');
+                }
+                const b = button(icon, () => {
+                    store_actions.set_mode(a.mode);
+                });
+                actions_root_element.appendChild(b);
             });
-            root_element.appendChild(b);
-        });
+        } else {
+            ACTIONS.forEach(a => {
+                const icon = span(null, 'fas', a.icon_class, 'fa-2x');
+                if (a.mode === state_proxy.mode) {
+                    icon.classList.add('active');
+                } else {
+                    icon.classList.add('inactive');
+                }
+                const b = button(icon);
+                actions_root_element.appendChild(b);
+            });
+        }
+
+
     });
 
     register_section_handles('section-handle');
