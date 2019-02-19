@@ -309,19 +309,41 @@ export class MapManager {
 
     aggregate_features_at_cursor(event) {
         const features = [];
-        this.map.forEachFeatureAtPixel(this.map.getEventPixel(event), feature => {
-            if (feature.getId() !== undefined) {
-                features.push(feature);
-            }
+        this.map.forEachFeatureAtPixel(event.pixel, feature => {
+            features.push(feature);
         });
         return features;
     }
 
+    get_aggregated_feature_ids(features) {
+        const feature_ids = [];
+        features.forEach(f => {
+            if (f.getId() !== undefined) {
+                feature_ids.push(f.getId());
+            }
+        });
+        return feature_ids;
+    }
+
     async receive_map_viewport_click_event(event) {
         const features = this.aggregate_features_at_cursor(event);
-        const feature_ids = features.map(f => f.getId());
+        const feature_ids = this.get_aggregated_feature_ids(features);
 
         switch (this.state_proxy.mode) {
+
+            case MODE.VISUALIZE:
+                features.forEach(f => {
+                    // cluster source features regroup all individual features in one
+                    if (f.get('features')) {
+                        const actual_features = f.get('features');
+                        console.log(actual_features);
+                        const extent = actual_features[0].get('geometry').getExtent();
+                        const x = extent[0] + (extent[2] - extent[0]) / 2;
+                        const y = extent[1] + (extent[3] - extent[1]) / 2;
+                        this.view.animate({center: [x, y]}, {resolution: VALID_OPENLAYERS_ANNOTATION_RESOLUTION - 0.0001});
+                    }
+                });
+                break;
 
             case MODE.DELETE:
                 await notifier.confirm(`Do you really want to delete the highlighted feature?`);
