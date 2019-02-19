@@ -12,6 +12,7 @@ New
 
 Changes
 ~~~~~~~
+- Center dialog and listen to esc and enter keys. [Félix Gagnon-Grenier]
 - Back to es6 exporting. [Félix Gagnon-Grenier]
 - Back to normal toggling of eyes. [Félix Gagnon-Grenier]
 - Hide action icons in taxonomy browser when not needed. [Félix Gagnon-
