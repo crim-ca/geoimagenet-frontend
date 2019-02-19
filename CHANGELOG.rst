@@ -7,6 +7,9 @@ Changelog
 
 New
 ~~~
+- Zoom on first feature in image marker on click. [Félix Gagnon-Grenier]
+- Debounced activation of user actions on zoom level. [Félix Gagnon-
+  Grenier]
 - Testing with jest. [Félix Gagnon-Grenier]
 - Webpack bundling. [Félix Gagnon-Grenier]
 
@@ -18,6 +21,10 @@ Changes
 - Back to normal toggling of eyes. [Félix Gagnon-Grenier]
 - Hide action icons in taxonomy browser when not needed. [Félix Gagnon-
   Grenier]
+
+Fix
+~~~
+- GEOIM-73 listen to the proper click event. [Félix Gagnon-Grenier]
 
 Other
 ~~~~~
