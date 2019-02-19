@@ -18,6 +18,25 @@ const make_notif = (text_content, close_on_click = false) => {
     return notif;
 };
 
+const create_keyup_listener = (notif, resolve, reject) => {
+    const event_listener = (event) => {
+        const key = event.key;
+        switch (key) {
+            case 'Escape':
+                remove_notif(notif);
+                removeEventListener('keyup', event_listener);
+                reject();
+                break;
+            case 'Enter':
+                remove_notif(notif);
+                removeEventListener('keyup', event_listener);
+                resolve();
+                break;
+        }
+    };
+    addEventListener('keyup', event_listener);
+};
+
 export const notifier = {
     error: text => {
         const notif = make_notif(text, true);
@@ -29,10 +48,12 @@ export const notifier = {
             const notif = make_notif(text);
             notif.classList.add('confirm');
             const yes = button(text_node('Confirm'), () => {
+                removeEventListener('keyup', receive_keyup_event);
                 remove_notif(notif);
                 resolve();
             });
             const no = button(text_node('Cancel'), () => {
+                removeEventListener('keyup', receive_keyup_event);
                 remove_notif(notif);
                 reject();
             });
@@ -42,6 +63,7 @@ export const notifier = {
             div.appendChild(no);
             notif.appendChild(div);
             root.appendChild(notif);
+            create_keyup_listener(notif, resolve, reject);
         });
     },
     warning: text => {

@@ -28,6 +28,7 @@ Fix
 
 Other
 ~~~~~
+- Zoome on img marker click. [Félix Gagnon-Grenier]
 - Flat ancestors and descendants structure. [Félix Gagnon-Grenier]
 
 
