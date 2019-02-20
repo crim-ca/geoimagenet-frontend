@@ -16,6 +16,7 @@ New
 
 Changes
 ~~~~~~~
+- Actions in their react component. [Félix Gagnon-Grenier]
 - Center dialog and listen to esc and enter keys. [Félix Gagnon-Grenier]
 - Show zommed in style for every image passed a certain resolution.
   [Félix Gagnon-Grenier]
