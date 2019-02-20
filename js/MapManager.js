@@ -101,6 +101,8 @@ export class MapManager {
         this.state_proxy = state_proxy;
         this.store_actions = store_actions;
 
+        this.previous_mode = null;
+
         // bind class methods passed as event handlers to prevent the changed execution context from breaking class functionality
         this.draw_condition_callback = this.draw_condition_callback.bind(this);
         this.receive_drawend_event = this.receive_drawend_event.bind(this);
@@ -262,8 +264,16 @@ export class MapManager {
         const resolution = event.target.get('resolution');
         if (resolution < VALID_OPENLAYERS_ANNOTATION_RESOLUTION) {
             this.store_actions.activate_actions();
+            if (this.previous_mode !== null) {
+                this.store_actions.set_mode(this.previous_mode);
+                this.previous_mode = null;
+            }
         } else {
             this.store_actions.deactivate_actions();
+            if (this.state_proxy.mode !== MODE.VISUALIZE) {
+                this.previous_mode = this.state_proxy.mode;
+                this.store_actions.set_mode(MODE.VISUALIZE);
+            }
         }
     }
 
