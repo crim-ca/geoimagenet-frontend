@@ -7,6 +7,7 @@ Changelog
 
 New
 ~~~
+- Barebone react install. [Félix Gagnon-Grenier]
 - Zoom on first feature in image marker on click. [Félix Gagnon-Grenier]
 - Debounced activation of user actions on zoom level. [Félix Gagnon-
   Grenier]
@@ -15,6 +16,7 @@ New
 
 Changes
 ~~~~~~~
+- Center dialog and listen to esc and enter keys. [Félix Gagnon-Grenier]
 - Show zommed in style for every image passed a certain resolution.
   [Félix Gagnon-Grenier]
 - Back to es6 exporting. [Félix Gagnon-Grenier]
