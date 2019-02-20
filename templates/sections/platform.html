@@ -1,9 +1,9 @@
 {% extends 'index_platform.html' %}
 {% block head %}
-<script defer
-        src="https://use.fontawesome.com/releases/v5.6.3/js/all.js"
-        integrity="sha384-EIHISlAOj4zgYieurP0SdoiBYfGJKkgWedPHH4jCzpCXLmzVsw1ouK59MuUtP4a1"
-        crossorigin="anonymous"></script>
+<link rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+      integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+      crossorigin="anonymous">
 <script type="application/ecmascript">
     // Dropping the globals in global scope, because globals
     // Your IDE might think they are unused, but they really are in bootstrap.js!
@@ -20,19 +20,5 @@
 <link href="/css/notifications.css" rel="stylesheet">
 {% endblock %}
 {% block body %}
-<div id="map" class="map">
-    <span id="coordinates" class="coordinates"></span>
-</div>
-<div class="right paper">
-    <div id="actions" class="actions"></div>
-    <section class="taxonomy opened">
-        <button class="section-handle">{{ gettext('Taxonomies and Classes') }}</button>
-        <div id="taxonomy" class="taxonomy"></div>
-        <ul id="taxonomy_classes" class="taxonomy_classes"></ul>
-    </section>
-    <section class="layer-switcher closed">
-        <button class="section-handle">{{ gettext('Basemaps, Images and Filters') }}</button>
-        <div id="layer-switcher" class="layer-switcher-container"></div>
-    </section>
-</div>
+<div id="root-platform"></div>
 {% endblock %}
