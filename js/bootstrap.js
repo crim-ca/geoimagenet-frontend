@@ -5,9 +5,7 @@ import {get_by_id} from './utils/dom.js';
 import {fetch_taxonomies} from './domain/data-queries.js';
 import {notifier} from './utils/notifications.js';
 import {create_state_proxy, StoreActions} from './domain/store.js';
-import {autorun, configure} from 'mobx';
-import {button, remove_children, span} from './utils/dom.js';
-import {ACTIONS} from './domain/constants.js';
+import {configure} from 'mobx';
 import {UserInteractions} from './domain/user-interactions.js';
 import {Platform} from './components/Platform.jsx';
 import React from 'react';
@@ -26,10 +24,9 @@ addEventListener('DOMContentLoaded', async () => {
     const user_interactions = new UserInteractions(store_actions);
 
     ReactDOM.render(
-        <Platform state_proxy={state_proxy} store_actions={store_actions} />,
+        <Platform state_proxy={state_proxy} store_actions={store_actions}/>,
         get_by_id('root-platform')
     );
-
     const map_manager = new MapManager(
         GEOSERVER_URL,
         ANNOTATION_NAMESPACE_URI,
@@ -54,37 +51,5 @@ addEventListener('DOMContentLoaded', async () => {
                 notifier.error('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
         }
     }
-
-    const actions_root_element = get_by_id('actions');
-    autorun(() => {
-        remove_children(actions_root_element);
-
-        if (state_proxy.actions_activated) {
-            ACTIONS.forEach(a => {
-                const icon = span(null, 'fas', a.icon_class, 'fa-2x');
-                if (a.mode === state_proxy.mode) {
-                    icon.classList.add('active');
-                }
-                const b = button(icon, () => {
-                    store_actions.set_mode(a.mode);
-                });
-                actions_root_element.appendChild(b);
-            });
-        } else {
-            ACTIONS.forEach(a => {
-                const icon = span(null, 'fas', a.icon_class, 'fa-2x');
-                if (a.mode === state_proxy.mode) {
-                    icon.classList.add('active');
-                } else {
-                    icon.classList.add('inactive');
-                }
-                const b = button(icon);
-                actions_root_element.appendChild(b);
-            });
-        }
-
-
-    });
-
     register_section_handles('section-handle');
 });

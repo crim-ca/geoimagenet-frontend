@@ -1,8 +1,11 @@
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
+import {Actions} from './Actions.jsx';
+
+import {} from '../domain/store.js';
 
 @observer
-export class Platform extends Component {
+class Platform extends Component {
 
     render() {
         return (
@@ -11,7 +14,10 @@ export class Platform extends Component {
                     <span id="coordinates" className="coordinates"/>
                 </div>
                 <div className="right paper">
-                    <div id="actions" className="actions"/>
+                    <Actions
+                        actions_activated={this.props.state_proxy.actions_activated}
+                        mode={this.props.state_proxy.mode}
+                        store_actions={this.props.store_actions} />
                     <section className="taxonomy opened">
                         <button className="section-handle">Taxonomies and Classes</button>
                         <div id="taxonomy" className="taxonomy"/>
@@ -27,3 +33,4 @@ export class Platform extends Component {
     }
 }
 
+export {Platform};
