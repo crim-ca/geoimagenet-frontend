@@ -16,6 +16,7 @@ New
 
 Changes
 ~~~~~~~
+- Number of sections in css var. [Félix Gagnon-Grenier]
 - Actions in their react component. [Félix Gagnon-Grenier]
 - Center dialog and listen to esc and enter keys. [Félix Gagnon-Grenier]
 - Show zommed in style for every image passed a certain resolution.
@@ -31,6 +32,8 @@ Fix
 
 Other
 ~~~~~
+- Add annotations menu entry. [Laurent Chasserat]
+- Actions in their component. [Félix Gagnon-Grenier]
 - Zoome on img marker click. [Félix Gagnon-Grenier]
 - Flat ancestors and descendants structure. [Félix Gagnon-Grenier]
 

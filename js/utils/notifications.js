@@ -34,7 +34,7 @@ const create_keyup_listener = (notif, resolve, reject) => {
                 break;
         }
     };
-    addEventListener('keyup', event_listener);
+    return event_listener;
 };
 
 export const notifier = {
@@ -46,14 +46,16 @@ export const notifier = {
     confirm: text => {
         return new Promise((resolve, reject) => {
             const notif = make_notif(text);
+            const listener = create_keyup_listener(notif, resolve, reject);
+            addEventListener('keyup', listener);
             notif.classList.add('confirm');
             const yes = button(text_node('Confirm'), () => {
-                removeEventListener('keyup', receive_keyup_event);
+                removeEventListener('keyup', listener);
                 remove_notif(notif);
                 resolve();
             });
             const no = button(text_node('Cancel'), () => {
-                removeEventListener('keyup', receive_keyup_event);
+                removeEventListener('keyup', listener);
                 remove_notif(notif);
                 reject();
             });
@@ -63,7 +65,6 @@ export const notifier = {
             div.appendChild(no);
             notif.appendChild(div);
             root.appendChild(notif);
-            create_keyup_listener(notif, resolve, reject);
         });
     },
     warning: text => {
