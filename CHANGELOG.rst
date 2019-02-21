@@ -2,11 +2,15 @@ Changelog
 =========
 
 
-(unreleased)
-------------
+0.4.0 (2019-02-21)
+------------------
 
 New
 ~~~
+- Zoom around features when multiple image in marker. [Félix Gagnon-
+  Grenier]
+- Keep previous mode stored when getting in and out of activated actions
+  resolution. [Félix Gagnon-Grenier]
 - Barebone react install. [Félix Gagnon-Grenier]
 - Zoom on first feature in image marker on click. [Félix Gagnon-Grenier]
 - Debounced activation of user actions on zoom level. [Félix Gagnon-
@@ -16,7 +20,10 @@ New
 
 Changes
 ~~~~~~~
-- Number of sections in css var. [Félix Gagnon-Grenier]
+- Image marker layer from created images layer. [Félix Gagnon-Grenier]
+- Refactor layer switcher in an actual class. [Félix Gagnon-Grenier]
+- RGB and NRG layers toggling as group. [Félix Gagnon-Grenier]
+- Coordinates in degrees. [Félix Gagnon-Grenier]
 - Actions in their react component. [Félix Gagnon-Grenier]
 - Center dialog and listen to esc and enter keys. [Félix Gagnon-Grenier]
 - Show zommed in style for every image passed a certain resolution.
@@ -28,11 +35,11 @@ Changes
 
 Fix
 ~~~
+- Close dialog with confirm button. [Félix Gagnon-Grenier]
 - GEOIM-73 listen to the proper click event. [Félix Gagnon-Grenier]
 
 Other
 ~~~~~
-- Add annotations menu entry. [Laurent Chasserat]
 - Actions in their component. [Félix Gagnon-Grenier]
 - Zoome on img marker click. [Félix Gagnon-Grenier]
 - Flat ancestors and descendants structure. [Félix Gagnon-Grenier]
