@@ -2,58 +2,51 @@ import * as ol from 'ol';
 import {Control} from 'ol/control';
 import {unByKey} from 'ol/Observable';
 
-const factory = (ol) => {
-    /**
-     * OpenLayers v3/v4 Layer Switcher Control.
-     * See [the examples](./examples) for usage.
-     * @constructor
-     * @extends {ol.control.Control}
-     * @param {Object} opt_options Control options, extends olx.control.ControlOptions adding:
-     *                              **`tipLabel`** `String` - the button tooltip.
-     */
-    const LayerSwitcher = function (opt_options) {
+const isTouchDevice = () => {
+    try {
+        document.createEvent("TouchEvent");
+        return true;
+    } catch (e) {
+        return false;
+    }
+};
+
+class LayerSwitcher extends Control {
+
+    constructor(opt_options) {
 
         const options = opt_options || {};
+        const element = document.createElement('div');
+
+        super({
+            element: element,
+            target: options.target,
+        });
 
         this.mapListeners = [];
 
         this.hiddenClassName = 'layer-switcher';
-        if (LayerSwitcher.isTouchDevice_()) {
+        if (isTouchDevice()) {
             this.hiddenClassName += ' touch';
         }
         this.shownClassName = 'shown';
 
-        const element = document.createElement('div');
         element.className = this.hiddenClassName;
 
         this.panel = document.createElement('div');
         this.panel.className = 'panel';
         element.appendChild(this.panel);
-        LayerSwitcher.enableTouchScroll_(this.panel);
+        this.enableTouchScroll_(this.panel);
 
-        Control.call(this, {
-            element: element,
-            target: options.target
-        });
+        this.forEachRecursive = this.forEachRecursive.bind(this);
 
-    };
 
-    ol.inherits(LayerSwitcher, Control);
-
-    /**
-     * Show the layer panel.
-     */
-    LayerSwitcher.prototype.showPanel = function () {
-        if (!this.element.classList.contains(this.shownClassName)) {
-            this.element.classList.add(this.shownClassName);
-            this.renderPanel();
-        }
     };
 
     /**
      * Re-draw the layer panel to represent the current state of the layers.
      */
-    LayerSwitcher.prototype.renderPanel = function () {
+    renderPanel() {
 
         this.ensureTopVisibleBaseLayerShown_();
 
@@ -71,9 +64,9 @@ const factory = (ol) => {
      * Set the map instance the control is associated with.
      * @param {ol.Map} map The map instance.
      */
-    LayerSwitcher.prototype.setMap = function (map) {
+    setMap(map) {
         // Clean up listeners associated with the previous map
-        for (let i = 0, key; i < this.mapListeners.length; i++) {
+        for (let i = 0; i < this.mapListeners.length; i++) {
             unByKey(this.mapListeners[i]);
         }
         this.mapListeners.length = 0;
@@ -88,9 +81,9 @@ const factory = (ol) => {
      * Ensure only the top-most base layer is visible if more than one is visible.
      * @private
      */
-    LayerSwitcher.prototype.ensureTopVisibleBaseLayerShown_ = function () {
+    ensureTopVisibleBaseLayerShown_() {
         let lastVisibleBaseLyr;
-        LayerSwitcher.forEachRecursive(this.getMap(), function (l, idx, a) {
+        this.forEachRecursive(this.getMap(), function (l, idx, a) {
             if (l.get('type') === 'base' && l.getVisible()) {
                 lastVisibleBaseLyr = l;
             }
@@ -105,15 +98,16 @@ const factory = (ol) => {
      * Takes care of hiding other layers in the same exclusive group if the layer
      * is toggle to visible.
      * @private
-     * @param {ol.layer.Base} The layer whos visibility will be toggled.
+     * @param lyr {ol.layer.Base} The layer whos visibility will be toggled.
+     * @param visible bool wether to make it visible or not
      */
-    LayerSwitcher.prototype.setVisible_ = function (lyr, visible) {
+    setVisible_(lyr, visible) {
         const map = this.getMap();
         lyr.setVisible(visible);
         if (visible && lyr.get('type') === 'base') {
             // Hide all other base layers regardless of grouping
-            LayerSwitcher.forEachRecursive(map, function (l, idx, a) {
-                if (l != lyr && l.get('type') === 'base') {
+            this.forEachRecursive(map, function (l, idx, a) {
+                if (l !== lyr && l.get('type') === 'base') {
                     l.setVisible(false);
                 }
             });
@@ -123,52 +117,52 @@ const factory = (ol) => {
     /**
      * Render all layers that are children of a group.
      * @private
-     * @param {ol.layer.Base} lyr Layer to be rendered (should have a title property).
+     * @param {ol.layer.Base} layer Layer to be rendered (should have a title property).
      * @param {Number} idx Position in parent group list.
      */
-    LayerSwitcher.prototype.renderLayer_ = function (lyr, idx) {
+    renderLayer_(layer, idx) {
 
-        var this_ = this;
+        const this_ = this;
 
-        var li = document.createElement('li');
+        const li = document.createElement('li');
 
-        var lyrTitle = lyr.get('title');
-        var lyrId = LayerSwitcher.uuid();
+        const lyrTitle = layer.get('title');
+        const lyrId = this.uuid();
 
-        var label = document.createElement('label');
+        const label = document.createElement('label');
 
-        if (lyr.getLayers && !lyr.get('combine')) {
+        if (layer.getLayers && !layer.get('combine')) {
 
             li.className = 'group';
             label.innerHTML = lyrTitle;
             li.appendChild(label);
-            var ul = document.createElement('ul');
+            const ul = document.createElement('ul');
             li.appendChild(ul);
 
-            this.renderLayers_(lyr, ul);
+            this.renderLayers_(layer, ul);
 
         } else {
 
             li.className = 'layer';
-            var input = document.createElement('input');
-            if (lyr.get('type') === 'base') {
+            const input = document.createElement('input');
+            if (layer.get('type') === 'base') {
                 input.type = 'radio';
                 input.name = 'base';
             } else {
                 input.type = 'checkbox';
             }
             input.id = lyrId;
-            input.checked = lyr.get('visible');
+            input.checked = layer.get('visible');
             input.onchange = function (e) {
-                this_.setVisible_(lyr, e.target.checked);
+                this_.setVisible_(layer, e.target.checked);
             };
             li.appendChild(input);
 
             label.htmlFor = lyrId;
             label.innerHTML = lyrTitle;
 
-            var rsl = this.getMap().getView().getResolution();
-            if (rsl > lyr.getMaxResolution() || rsl < lyr.getMinResolution()) {
+            const rsl = this.getMap().getView().getResolution();
+            if (rsl > layer.getMaxResolution() || rsl < layer.getMinResolution()) {
                 label.className += ' disabled';
             }
 
@@ -183,11 +177,11 @@ const factory = (ol) => {
     /**
      * Render all layers that are children of a group.
      * @private
-     * @param {ol.layer.Group} lyr Group layer whos children will be rendered.
+     * @param {ol.Layer.Group} lyr Group layer whos children will be rendered.
      * @param {Element} elm DOM element that children will be appended to.
      */
-    LayerSwitcher.prototype.renderLayers_ = function (lyr, elm) {
-        var lyrs = lyr.getLayers().getArray().slice().reverse();
+    renderLayers_(lyr, elm) {
+        const lyrs = lyr.getLayers().getArray().slice().reverse();
         for (var i = 0, l; i < lyrs.length; i++) {
             l = lyrs[i];
             if (l.get('title')) {
@@ -203,11 +197,11 @@ const factory = (ol) => {
      * @param {Function} fn Callback which will be called for each `ol.layer.Base`
      * found under `lyr`. The signature for `fn` is the same as `ol.Collection#forEach`
      */
-    LayerSwitcher.forEachRecursive = function (lyr, fn) {
-        lyr.getLayers().forEach(function (lyr, idx, a) {
+    forEachRecursive(lyr, fn) {
+        lyr.getLayers().forEach((lyr, idx, a) => {
             fn(lyr, idx, a);
             if (lyr.getLayers) {
-                LayerSwitcher.forEachRecursive(lyr, fn);
+                this.forEachRecursive(lyr, fn);
             }
         });
     };
@@ -218,7 +212,7 @@ const factory = (ol) => {
      *
      * Adapted from http://stackoverflow.com/a/2117523/526860
      */
-    LayerSwitcher.uuid = function () {
+    uuid() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
@@ -230,9 +224,9 @@ const factory = (ol) => {
      * @desc Apply workaround to enable scrolling of overflowing content within an
      * element. Adapted from https://gist.github.com/chrismbarr/4107472
      */
-    LayerSwitcher.enableTouchScroll_ = function (elm) {
-        if (LayerSwitcher.isTouchDevice_()) {
-            var scrollStartPos = 0;
+    enableTouchScroll_ = function (elm) {
+        if (isTouchDevice()) {
+            let scrollStartPos = 0;
             elm.addEventListener("touchstart", function (event) {
                 scrollStartPos = this.scrollTop + event.touches[0].pageY;
             }, false);
@@ -241,23 +235,6 @@ const factory = (ol) => {
             }, false);
         }
     };
-
-    /**
-     * @private
-     * @desc Determine if the current browser supports touch events. Adapted from
-     * https://gist.github.com/chrismbarr/4107472
-     */
-    LayerSwitcher.isTouchDevice_ = function () {
-        try {
-            document.createEvent("TouchEvent");
-            return true;
-        } catch (e) {
-            return false;
-        }
-    };
-    return LayerSwitcher;
-};
-
-const LayerSwitcher = factory(ol);
+}
 
 export {LayerSwitcher};

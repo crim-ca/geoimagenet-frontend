@@ -16,7 +16,7 @@ import VectorLayer from 'ol/layer/Vector';
 import {fromExtent} from 'ol/geom/Polygon';
 import {boundingExtent, buffer, getCenter} from 'ol/extent';
 
-import {LayerSwitcher} from './layer-switcher.js';
+import {LayerSwitcher} from './LayerSwitcher.js';
 import {
     MODE,
     ANNOTATION,
@@ -635,8 +635,6 @@ export class MapManager {
             open: true,
         });
         this.map.addControl(this.layerSwitcher);
-        this.layerSwitcher.showPanel();
-        this.layerSwitcher.onmouseover = null;
 
     }
 
