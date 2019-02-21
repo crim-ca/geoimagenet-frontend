@@ -14,9 +14,9 @@ import TileLayer from 'ol/layer/Tile';
 import {BingMaps, Cluster, OSM, TileWMS} from 'ol/source';
 import VectorLayer from 'ol/layer/Vector';
 import {fromExtent} from 'ol/geom/Polygon';
-import {boundingExtent, buffer, getCenter} from 'ol/extent';
+import {boundingExtent, buffer, getArea, getCenter} from 'ol/extent';
 
-import {LayerSwitcher} from './layer-switcher.js';
+import {LayerSwitcher} from './LayerSwitcher.js';
 import {
     MODE,
     ANNOTATION,
@@ -37,6 +37,7 @@ import {
     reject_annotations_request,
     validate_annotations_request
 } from './domain/data-queries.js';
+import {debounced} from './utils/event_handling.js';
 
 const create_vector_layer = (title, source, color, visible = true) => {
     return new Vector({
@@ -65,19 +66,6 @@ const create_vector_layer = (title, source, color, visible = true) => {
 function transform(extent, src_epsg, dst_epsg) {
     return transformExtent(extent, src_epsg, dst_epsg);
 }
-
-const debounced = (delay, func) => {
-    let timer_id;
-    return (...args) => {
-        if (timer_id) {
-            clearTimeout(timer_id);
-        }
-        timer_id = setTimeout(() => {
-            func(...args);
-            timer_id = null;
-        }, delay);
-    };
-};
 
 export class MapManager {
 
@@ -576,23 +564,21 @@ export class MapManager {
             visible: true,
         });
 
-        try {
-            const result_for_bbox = await geoserver_capabilities(`${GEOSERVER_URL}/GeoImageNet/wms?request=GetCapabilities`);
-            result_for_bbox['Capability']['Layer']['Layer'].forEach(layer => {
-                // EX_GeographicBoundingBox is an array of [minx, miny, maxx, maxy] in EPSG:4326
-                let extent = new fromExtent(layer['EX_GeographicBoundingBox']);
-                extent.transform("EPSG:4326", "EPSG:3857");
-                let maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
-                if (extent.getArea() < maxArea) {
-                    let feature = new Feature({
-                        geometry: extent
-                    });
-                    bboxFeatures.push(feature);
-                }
-            });
-        } catch (e) {
-            notifier.error('We could no interrogate Geoserver capabilities. The image marker layer will be unavailable.');
-        }
+        // TODO there is a hard client requirement that every NRG or RGB image has their counterpart of either type
+        // as such, here I take a shortcut and only loop over one of the layers to create the image markers
+        // should that requirement ever change, some logic and autorun magic should be added to regenerate the image markers layer
+        // when we select either type of images
+        const maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
+        NRG_layers.forEach(layer => {
+            // EX_GeographicBoundingBox is an array of [minx, miny, maxx, maxy] in EPSG:4326
+            let extent = layer.get('extent');
+            if (getArea(extent) < maxArea) {
+                let feature = new Feature({
+                    geometry: fromExtent(extent)
+                });
+                bboxFeatures.push(feature);
+            }
+        });
 
 
         const annotation_layers = [];
@@ -603,10 +589,13 @@ export class MapManager {
         const RGB_group = new Group({
             title: 'RGB Images',
             layers: RGB_layers,
+            combine: true,
+            visible: false
         });
         const NRG_group = new Group({
             title: 'NRG Images',
             layers: NRG_layers,
+            combine: true,
         });
         const image_markers_group = new Group({
             title: 'Image Markers',
@@ -627,23 +616,11 @@ export class MapManager {
         this.map.addLayer(base_maps_group);
         this.map.addLayer(annotations_group);
 
-        const base_maps_object = {
-            "Base Maps": base_maps_group
-        };
-        const overlay_maps = {
-            "RGB": RGB_group,
-            "NRG": NRG_group,
-            "Image markers": image_markers_group,
-            "Annotations": annotations_group,
-        };
-
         this.layerSwitcher = new LayerSwitcher({
             target: 'layer-switcher',
             open: true,
         });
         this.map.addControl(this.layerSwitcher);
-        this.layerSwitcher.showPanel();
-        this.layerSwitcher.onmouseover = null;
 
     }
 
