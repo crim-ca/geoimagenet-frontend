@@ -5,7 +5,7 @@ import {fromLonLat, transformExtent} from 'ol/proj';
 import {MousePosition, ScaleLine} from 'ol/control';
 import {Draw, Modify} from 'ol/interaction';
 import {View, Collection, Feature, Map} from 'ol';
-import {createStringXY} from 'ol/coordinate';
+import {toStringHDMS} from 'ol/coordinate';
 import VectorSource from 'ol/source/Vector';
 import {bbox} from 'ol/loadingstrategy';
 import {Circle, Fill, Stroke, Style, Text} from 'ol/style';
@@ -171,7 +171,7 @@ export class MapManager {
         this.make_layers();
 
         this.mouse_position = new MousePosition({
-            coordinateFormat: createStringXY(4),
+            coordinateFormat: toStringHDMS,
             projection: 'EPSG:4326',
             undefinedHTML: '&nbsp;',
             target: 'coordinates',

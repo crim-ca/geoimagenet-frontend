@@ -36,7 +36,8 @@ div.map {
 div.map span.coordinates {
     display: flex;
     align-items: center;
-    width: 200px;
+    justify-content: center;
+    width: 300px;
     z-index: 100;
     padding: var(--gutter-small);
     position: absolute;
