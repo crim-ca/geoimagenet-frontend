@@ -1,4 +1,5 @@
 import {autorun} from 'mobx';
+
 import {Group, Vector} from 'ol/layer';
 import {fromLonLat, transformExtent} from 'ol/proj';
 import {MousePosition, ScaleLine} from 'ol/control';
@@ -12,9 +13,10 @@ import {GeoJSON} from 'ol/format';
 import TileLayer from 'ol/layer/Tile';
 import {BingMaps, Cluster, OSM, TileWMS} from 'ol/source';
 import VectorLayer from 'ol/layer/Vector';
-import {LayerSwitcher} from './layer-switcher';
+import {fromExtent} from 'ol/geom/Polygon';
+import {boundingExtent, buffer, getCenter} from 'ol/extent';
 
-
+import {LayerSwitcher} from './layer-switcher.js';
 import {
     MODE,
     ANNOTATION,
@@ -25,8 +27,8 @@ import {
     ALLOWED_BING_MAPS,
     CUSTOM_GEOIM_IMAGE_LAYER,
     VIEW_CENTER, VALID_OPENLAYERS_ANNOTATION_RESOLUTION
-} from './domain/constants';
-import {notifier} from './utils/notifications';
+} from './domain/constants.js';
+import {notifier} from './utils/notifications.js';
 import {
     create_geojson_feature,
     delete_annotations_request,
@@ -34,8 +36,7 @@ import {
     modify_geojson_features,
     reject_annotations_request,
     validate_annotations_request
-} from './domain/data-queries';
-import {fromExtent} from 'ol/geom/Polygon';
+} from './domain/data-queries.js';
 
 const create_vector_layer = (title, source, color, visible = true) => {
     return new Vector({
@@ -342,15 +343,33 @@ export class MapManager {
         switch (this.state_proxy.mode) {
 
             case MODE.VISUALIZE:
-                features.forEach(f => {
+                features.forEach(global_feature_layer => {
                     // cluster source features regroup all individual features in one
-                    if (f.get('features')) {
-                        const actual_features = f.get('features');
-                        console.log(actual_features);
-                        const extent = actual_features[0].get('geometry').getExtent();
-                        const x = extent[0] + (extent[2] - extent[0]) / 2;
-                        const y = extent[1] + (extent[3] - extent[1]) / 2;
-                        this.view.animate({center: [x, y]}, {resolution: VALID_OPENLAYERS_ANNOTATION_RESOLUTION - 0.0001});
+                    if (global_feature_layer.get('features')) {
+                        const actual_features = global_feature_layer.get('features');
+
+                        const coords = [];
+                        if (actual_features.length > 1) {
+                            actual_features.forEach(single_feature => {
+                                const extent = single_feature.get('geometry').getExtent();
+                                const min = [extent[0], extent[1]];
+                                const max = [extent[2], extent[3]];
+                                coords.push(min);
+                                coords.push(max);
+                            });
+                            const bounding_extent = new boundingExtent(coords);
+                            const buffered_extent = new buffer(bounding_extent, 100);
+                            this.view.fit(buffered_extent, {
+                                duration: 1000
+                            })
+                        } else {
+                            const extent = actual_features[0].get('geometry').getExtent();
+                            this.view.animate({
+                                center: getCenter(extent),
+                                resolution: VALID_OPENLAYERS_ANNOTATION_RESOLUTION - 0.0001,
+                                duration: 1000
+                            });
+                        }
                     }
                 });
                 break;
