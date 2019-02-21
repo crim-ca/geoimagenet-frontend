@@ -7,7 +7,7 @@ def status_string(code, reason) -> str:
 
 
 def plain_text_200_response(content: str) -> [str, list, str]:
-    return status_string(200, 'OK'), [('Content-Type', 'text/plain')], content
+    return status_string(200, 'OK'), [('Content-Type', 'text/plain; charset=utf-8')], content
 
 
 def json_200_response(content: str) -> [str, list, str]:
@@ -33,5 +33,5 @@ class Rst:
 
     def send_rst_as_plain_text(self) -> [str, list, str]:
         file_path = path.dirname(__file__)
-        with open(path.join(file_path, '..', '..', 'CHANGELOG.rst')) as file:
+        with open(path.join(file_path, '..', '..', 'CHANGELOG.rst'), encoding='utf-8') as file:
             return plain_text_200_response(file.read())
