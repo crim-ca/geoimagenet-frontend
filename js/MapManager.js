@@ -603,10 +603,13 @@ export class MapManager {
         const RGB_group = new Group({
             title: 'RGB Images',
             layers: RGB_layers,
+            combine: true,
+            visible: false
         });
         const NRG_group = new Group({
             title: 'NRG Images',
             layers: NRG_layers,
+            combine: true,
         });
         const image_markers_group = new Group({
             title: 'Image Markers',
@@ -626,16 +629,6 @@ export class MapManager {
         this.map.addLayer(image_markers_group);
         this.map.addLayer(base_maps_group);
         this.map.addLayer(annotations_group);
-
-        const base_maps_object = {
-            "Base Maps": base_maps_group
-        };
-        const overlay_maps = {
-            "RGB": RGB_group,
-            "NRG": NRG_group,
-            "Image markers": image_markers_group,
-            "Annotations": annotations_group,
-        };
 
         this.layerSwitcher = new LayerSwitcher({
             target: 'layer-switcher',
