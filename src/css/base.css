@@ -22,6 +22,9 @@
     box-sizing: border-box;
     font-family: 'Montserrat', sans-serif;
 }
+div.root {
+    height: 100%;
+}
 html, body {
     color: var(--gray);
     height: 100%;

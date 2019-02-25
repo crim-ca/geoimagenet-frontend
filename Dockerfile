@@ -5,8 +5,8 @@ WORKDIR /code
 COPY requirements.txt .
 COPY package.json .
 COPY package-lock.json .
-COPY webpack-common.config.js .
-COPY webpack-prod.config.js .
+COPY webpack.common.js .
+COPY webpack.prod.js .
 COPY .nvmrc .
 COPY . .
 

@@ -10,14 +10,15 @@ The goal is to decouple the business domain from the framework being used.
 Each framework should route requests to and responses from the GIN package.
 Anything under `GIN/` should technically be agnostic of any framework.
 
-
 # Installation
 
-The dependencies are stored with `pip freeze > requirements.txt`, install these with `pip install -r requirements.txt`.
+The dependencies are stored in `requirements.txt`, install these with `pip install -r requirements.txt`.
 
-Launch the flask server with `FLASK_APP=Framework/flask_server.py flask run`.
+## Development
 
-Or directly the gunicorn app with `gunicorn -c Framework/gunicorn_config.py Framework:fl_app -k eventlet`
+We can launch a minimal version locally with `gunicorn -c Framework/gunicorn_config.py Framework:fl_app -k eventlet`.
+Since we use webpack to bundle our javascript files for client consumption, we also need to run the webpack watcher: 
+`npm run build`. That will launch the webpack transpilation and "watch" the files for modification during development.
 
 ## Environment variables
 

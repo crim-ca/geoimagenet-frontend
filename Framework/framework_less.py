@@ -13,7 +13,7 @@ mimetypes = MimeTypes()
 def make_full_file_path(request_uri):
 
     current_file_path = path.dirname(__file__)
-    static_folder_path = path.join(current_file_path, '..', 'static')
+    static_folder_path = path.join(current_file_path, '..', 'dist')
     return '%s%s' % (static_folder_path, request_uri)
 
 
@@ -22,11 +22,21 @@ def request_wants_file(full_file_path):
     return path.isfile(full_file_path)
 
 
+# TODO as we get more sections, this will be a hassle to always update the equivalence
+path_equivalences = {
+    '/': '/index.html',
+    '/platform': '/platform.html',
+}
+
+
 def handler_app(environ, start_response):
 
     injector = Injector()
     request_method = environ['REQUEST_METHOD']
     request_uri = environ['PATH_INFO']
+
+    if request_uri in path_equivalences:
+        request_uri = path_equivalences[request_uri]
 
     full_file_path = make_full_file_path(request_uri)
     if request_wants_file(full_file_path):

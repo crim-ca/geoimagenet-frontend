@@ -2,8 +2,6 @@ import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import {Actions} from './Actions.jsx';
 
-import {} from '../domain/store.js';
-
 @observer
 class Platform extends Component {
 

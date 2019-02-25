@@ -133,8 +133,11 @@ div.actions {
     align-items: center;
     justify-content: space-evenly;
 }
-div.actions button {
-    padding: var(--gutter-small);
+div.actions svg {
+    margin: var(--gutter-small);
+}
+div.actions svg:not(.inactive) {
+    cursor: pointer;
 }
 div.actions .active {
     color: var(--color-blue);
