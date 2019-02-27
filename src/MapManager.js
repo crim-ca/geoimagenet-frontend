@@ -406,15 +406,17 @@ export class MapManager {
         return new VectorSource({
             format: new GeoJSON(),
             features: features,
-            url: () => {
-                if (this.cql_filter.length > 0) {
-                    return `${this.geoserver_url}/wfs?service=WFS&` +
+            url: (extent) => {
+                let baseUrl = `${this.geoserver_url}/wfs?service=WFS&` +
                         `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                        `outputFormat=application/json&srsname=EPSG:3857&cql_filter=status='${status}' AND ${this.cql_filter}`;
+                        `outputFormat=application/json&srsname=EPSG:3857&` +
+                        `cql_filter=status='${status}' AND BBOX(geometry, ${extent.join(',')})`;
+                if (this.cql_filter.length > 0) {
+                    baseUrl += ` AND ${this.cql_filter}`;
+                } else {
+                    baseUrl += ` AND taxonomy_class_id IN (-1)`;
                 }
-                return `${this.geoserver_url}/wfs?service=WFS&` +
-                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                    `outputFormat=application/json&srsname=EPSG:3857&cql_filter=status='${status}' AND taxonomy_class_id IN (-1)`;
+                return baseUrl;
             },
             strategy: bbox
         });
