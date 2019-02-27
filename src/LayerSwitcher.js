@@ -58,7 +58,7 @@ class LayerSwitcher extends Control {
         this.panel.appendChild(ul);
         this.renderLayers_(this.getMap(), ul);
 
-    };
+    }
 
     /**
      * Set the map instance the control is associated with.

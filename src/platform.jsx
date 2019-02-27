@@ -37,7 +37,10 @@ addEventListener('DOMContentLoaded', async () => {
     document.body.appendChild(div);
 
     ReactDOM.render(
-        <Platform state_proxy={state_proxy} store_actions={store_actions}/>,
+        <Platform
+            state_proxy={state_proxy}
+            store_actions={store_actions}
+            user_interactions={user_interactions} />,
         get_by_id('root')
     );
     const map_manager = new MapManager(
@@ -49,7 +52,7 @@ addEventListener('DOMContentLoaded', async () => {
         state_proxy,
         store_actions
     );
-    new TaxonomyBrowser(map_manager, state_proxy, store_actions, user_interactions);
+    //new TaxonomyBrowser(map_manager, state_proxy, store_actions, user_interactions);
 
     try {
         const taxonomies = await fetch_taxonomies();

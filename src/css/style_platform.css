@@ -5,13 +5,13 @@
 
     --total-handle-height: calc(var(--line-height) + var(--border-height) + (2 * var(--padding-height)));
 
-    --color-new: rgba(255, 247, 0, 0.9);
-    --color-pre-released: rgba(238, 97, 0, 0.9);
-    --color-released: rgba(238, 97, 0, 0.9);
-    --color-review: rgba(238, 97, 0, 0.9);
-    --color-validated: rgba(0, 170, 5, 0.9);
+    --color-new: rgba(255, 255, 255, 0.9);
+    --color-pre-released: rgba(146, 209, 139, 0.9);
+    --color-released: rgba(95, 175, 87, 0.9);
+    --color-review: rgba(26, 104, 17, 0.9);
+    --color-validated: rgba(7, 70, 0, 0.6);
     --color-rejected: var(--color-red);
-    --color-deleted: rgba(0, 170, 5, 0.9);
+    --color-deleted: rgba(0, 0, 0, 0.9);
 
     --gutter-small: 5px;
 
@@ -114,13 +114,13 @@ label.checkbox_eye [type=checkbox]:checked + span {
 span.taxonomy_class_list_element:hover .actions {
     visibility: visible;
 }
-.annotation_new {
+div.annotation_new {
     background-color: var(--color-new);
 }
-.annotation_released {
+div.annotation_released {
     background-color: var(--color-released);
 }
-.annotation_validated {
+div.annotation_validated {
     background-color: var(--color-validated);
 }
 span.icon {

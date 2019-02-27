@@ -75,23 +75,23 @@ export class StoreActions {
         return result.element;
     };
 
-    @action
+    @action.bound
     activate_actions() {
         this.state_proxy.actions_activated = true;
     }
 
-    @action
+    @action.bound
     deactivate_actions() {
         this.state_proxy.actions_activated = false;
     }
 
-    @action
+    @action.bound
     toggle_taxonomy_class_tree_element(taxonomy_class_id) {
         let taxonomy_class = this.find_element_by_id(this.state_proxy.selected_taxonomy.elements, taxonomy_class_id);
         taxonomy_class['opened'] = !taxonomy_class['opened'];
     }
 
-    @action
+    @action.bound
     set_taxonomy_classes_visibility(taxonomy_class_ids) {
         taxonomy_class_ids.forEach(id => {
             let taxonomy_class = this.find_element_by_id(this.state_proxy.selected_taxonomy.elements, id);
@@ -99,54 +99,54 @@ export class StoreActions {
         });
     }
 
-    @action
+    @action.bound
     increment_new_annotations_count(taxonomy_class_id) {
         this.state_proxy.annotation_counts[taxonomy_class_id][ANNOTATION.STATUS.NEW]++;
     }
 
-    @action
+    @action.bound
     start_annotation(image_title) {
         this.state_proxy.current_annotation.initialized = true;
         this.state_proxy.current_annotation.image_title = image_title;
     }
 
-    @action
+    @action.bound
     end_annotation() {
         this.state_proxy.current_annotation.initialized = false;
         this.state_proxy.current_annotation.image_title = '';
     }
 
-    @action
+    @action.bound
     set_annotation_counts(counts) {
         this.state_proxy.annotation_counts = Object.assign({}, this.state_proxy.annotation_counts, counts);
     }
 
-    @action
+    @action.bound
     set_annotation_collection(key, collection) {
         this.state_proxy.annotations_collections[key] = collection;
     }
 
-    @action
+    @action.bound
     set_annotation_source(key, source) {
         this.state_proxy.annotations_sources[key] = source;
     }
 
-    @action
+    @action.bound
     set_annotation_layer(key, layer) {
         this.state_proxy.annotations_layers[key] = layer;
     }
 
-    @action
+    @action.bound
     set_taxonomy(t) {
         this.state_proxy.taxonomy = t;
     }
 
-    @action
+    @action.bound
     set_selected_taxonomy(t) {
         this.state_proxy.selected_taxonomy = t;
     }
 
-    @action
+    @action.bound
     set_taxonomy_class(c) {
         this.state_proxy.selected_taxonomy.elements = c;
 
@@ -172,17 +172,17 @@ export class StoreActions {
         this.state_proxy.flat_taxonomy_classes = flat_ancestors_and_descendants_dict;
     }
 
-    @action
+    @action.bound
     set_visible_classes(classes) {
         this.state_proxy.visible_classes = classes;
     }
 
-    @action
+    @action.bound
     select_taxonomy_class(id) {
         this.state_proxy.selected_taxonomy_class_id = id;
     }
 
-    @action
+    @action.bound
     set_mode(mode) {
         if (Object.values(MODE).indexOf(mode) > -1) {
             this.state_proxy.mode = mode;

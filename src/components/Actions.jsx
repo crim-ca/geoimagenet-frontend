@@ -3,6 +3,7 @@ import {observer} from 'mobx-react';
 import {MODE} from '../domain/constants.js';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faEye, faPlusSquare, faCopy, faEdit, faTrashAlt, faQuestionCircle, faCheck, faTimes} from '@fortawesome/free-solid-svg-icons';
+import PropTypes from 'prop-types';
 
 const ACTIONS = [
     {name: 'eye', icon: faEye, mode: MODE.VISUALIZE},
@@ -17,6 +18,11 @@ const ACTIONS = [
 
 @observer
 class Actions extends Component {
+    static propTypes = {
+        store_actions: PropTypes.object.isRequired,
+        actions_activated: PropTypes.bool.isRequired,
+        mode: PropTypes.string.isRequired,
+    };
 
     make_set_mode_callback(mode) {
         return () => {

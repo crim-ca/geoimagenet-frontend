@@ -9,6 +9,10 @@ export class UserInteractions {
 
     constructor (store_actions) {
         this.store_actions = store_actions;
+
+        this.build_counts = this.build_counts.bind(this);
+        this.select_taxonomy = this.select_taxonomy.bind(this);
+        this.release_annotations = this.release_annotations.bind(this);
     }
 
     build_counts (taxonomy_class, counts) {
