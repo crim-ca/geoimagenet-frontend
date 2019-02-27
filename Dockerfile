@@ -3,24 +3,22 @@ MAINTAINER Félix Gagnon-Grenier <felix.gagnon-grenier@crim.ca>
 
 WORKDIR /code
 COPY requirements.txt .
-COPY package.json .
-COPY package-lock.json .
-COPY webpack.common.js .
-COPY webpack.prod.js .
-COPY .nvmrc .
-COPY . .
 
 RUN apk update && \
     apk add --virtual .build-deps gcc musl-dev && \
-    pip install --upgrade pip gunicorn && \
+    pip install --upgrade pip && \
     pip install -r requirements.txt --no-cache-dir && \
     apk --purge del .build-deps
 
-RUN apk add --virtual .build-deps nodejs-npm && \
-    npm install && npm run prod && \
-    rm -rf node_modules && \
-    apk --purge del .build-deps
+COPY package.json package-lock.json webpack-common.config.js webpack-prod.config.js .nvmrc ./
 
+RUN apk add nodejs-npm && \
+    npm install
+
+COPY . .
+
+RUN npm run prod && \
+    rm -rf node_modules
 
 EXPOSE 5000
 
