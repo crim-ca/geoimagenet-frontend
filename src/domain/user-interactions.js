@@ -5,28 +5,44 @@ import {
 } from './data-queries.js';
 import {notifier} from '../utils/notifications.js';
 
+/**
+ * In a web app, we need top level handlers that react to specific user intentions, and interactions.
+ * These are supposed to optionnally receive a js event and do everything needed with the app state
+ * to fulfill everything wanted by the user when they acted.
+ */
+
 export class UserInteractions {
 
+    /**
+     *
+     * The user interactions have first-hand influence upon the application state,
+     * we need the store actions as dependency
+     *
+     * @param {StoreActions} store_actions
+     */
     constructor (store_actions) {
+        /**
+         * @private
+         * @type {StoreActions}
+         */
         this.store_actions = store_actions;
 
-        this.build_counts = this.build_counts.bind(this);
         this.select_taxonomy = this.select_taxonomy.bind(this);
         this.release_annotations = this.release_annotations.bind(this);
     }
 
-    build_counts (taxonomy_class, counts) {
-        const taxonomy_class_id = taxonomy_class['id'];
-        if (counts[taxonomy_class_id]) {
-            taxonomy_class['counts'] = counts[taxonomy_class_id];
-        }
-        if (taxonomy_class['children'] && taxonomy_class['children'].length > 0) {
-            taxonomy_class['children'].forEach(t => {
-                this.store_actions.build_counts(t, counts);
-            });
-        }
-    }
-
+    /**
+     *
+     * When the user selects a taxonomy, we need to
+     *  - fetch the taxonomy
+     *  - build default values for each taxonomy class element (such as the checked, for visibility selection, or opened, for tree navigation)
+     *  - by default, we toggle the first level of the tree, so that user down not have to do it
+     *  - toggle visibility for every class in the taxonomy
+     *
+     * @param {object} version
+     * @param {string} taxonomy_name
+     * @returns {Promise<void>}
+     */
     async select_taxonomy (version, taxonomy_name) {
         this.store_actions.set_selected_taxonomy({
             id: version['taxonomy_id'],
@@ -47,6 +63,11 @@ export class UserInteractions {
         }
     }
 
+    /**
+     *
+     * @param taxonomy_class_id
+     * @returns {Promise<void>}
+     */
     async release_annotations (taxonomy_class_id) {
         await notifier.confirm('Do you really want to release all the annotations of the selected class, as well as its children?');
         try {
