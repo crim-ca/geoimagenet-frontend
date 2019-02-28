@@ -3,24 +3,47 @@ import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 import {ANNOTATION} from '../domain/constants.js';
 import Chip from '@material-ui/core/es/Chip/Chip.js';
-
-const Checkbox = observer(({value, checked}) =>
-    <label className='checkbox_eye'>
-        <input type='checkbox' value={value} checked={checked} />
-        <span />
-    </label>
-);
-const ReleaseButton = observer(({onclick}) =>
-    <button onClick={onclick}>
-        <span className='fas fa-paper-plane fa-lg release' />
-    </button>
-);
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faPaperPlane} from '@fortawesome/free-solid-svg-icons';
+import {get_by_id} from '../utils/dom.js';
 
 const styles = {
     chip: {
         marginLeft: '6px',
     }
 };
+
+@observer
+class Checkbox extends Component {
+    static propTypes = {
+        value: PropTypes.any.isRequired,
+        checked: PropTypes.bool.isRequired,
+        change_handler: PropTypes.func.isRequired,
+    };
+
+    render() {
+        return (
+            <label className='checkbox_eye'>
+                <input type='checkbox'
+                       value={this.props.value}
+                       checked={this.props.checked}
+                       onChange={this.props.change_handler} />
+                <span />
+            </label>
+        );
+    }
+}
+
+@observer
+class ReleaseButton extends Component {
+    static propTypes = {
+        onclick: PropTypes.func.isRequired,
+    };
+
+    render() {
+        return <FontAwesomeIcon onClick={this.props.onclick} icon={faPaperPlane} className='fa-lg release' />;
+    }
+}
 
 @observer
 class AnnotationsCount extends Component {
@@ -37,13 +60,55 @@ class AnnotationsCount extends Component {
     }
 }
 
+@observer
+class TaxonomyClassLabel extends Component {
+    static propTypes = {
+        onclick: PropTypes.func.isRequired,
+        label: PropTypes.string.isRequired,
+    };
+
+    render() {
+        return <span onClick={this.props.onclick}>{this.props.label}</span>;
+    }
+}
+
+@observer
+class TaxonomyClassActions extends Component {
+    static propTypes = {
+        taxonomy_class: PropTypes.object.isRequired,
+        invert_taxonomy_class_visibility: PropTypes.func.isRequired,
+        release_handler: PropTypes.func.isRequired,
+    };
+
+    make_change_handler(taxonomy_class) {
+        return () => {
+            this.props.invert_taxonomy_class_visibility(taxonomy_class);
+        };
+    }
+
+    render() {
+        return (
+            <span className='actions'>
+                <Checkbox value={this.props.taxonomy_class.id}
+                          change_handler={this.make_change_handler(this.props.taxonomy_class)}
+                          checked={this.props.taxonomy_class.visible} />
+                <ReleaseButton onclick={this.props.release_handler} />
+            </span>
+        );
+    }
+}
+
 
 @observer
 class TaxonomyClassListElement extends Component {
     static propTypes = {
         toggle_taxonomy_class_tree_element: PropTypes.func.isRequired,
+        invert_taxonomy_class_visibility: PropTypes.func.isRequired,
         elem: PropTypes.object.isRequired,
         counts: PropTypes.object.isRequired,
+        user_interactions: PropTypes.object.isRequired,
+        map_manager: PropTypes.object.isRequired,
+        store_actions: PropTypes.object.isRequired,
     };
 
     make_toggle_callback(id) {
@@ -52,13 +117,41 @@ class TaxonomyClassListElement extends Component {
         };
     }
 
+    make_release_handler(taxonomy_class) {
+        return async () => {
+            try {
+                await this.props.user_interactions.release_annotations(taxonomy_class.id);
+                this.props.map_manager.refresh_source_by_status(ANNOTATION.STATUS.NEW);
+                this.props.map_manager.refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
+            } catch (e) {
+                throw e;
+            }
+        };
+    }
+
+    make_select_taxonomy_class_for_annotation_handler(taxonomy_class) {
+        return event => {
+            this.props.store_actions.select_taxonomy_class(taxonomy_class['id']);
+            get_by_id('taxonomy').querySelectorAll('.selected').forEach(elem => {
+                elem.classList.remove('selected');
+            });
+            event.target.parentNode.classList.add('selected');
+        };
+    }
+
     render() {
         const this_taxonomy_class_counts = this.props.counts[this.props.elem.id];
+
+        const label_click_callback = this.props.elem.children && this.props.elem.children.length > 0
+            ? this.make_toggle_callback(this.props.elem.id)
+            : this.make_select_taxonomy_class_for_annotation_handler(this.props.elem);
+
         return (
             <li className={this.props.elem.opened ? null : 'collapsed'}>
                 <span className='taxonomy_class_list_element'>
                     <span>
-                        <span onClick={this.make_toggle_callback(this.props.elem.id)}>{this.props.elem.name}</span>
+                        <TaxonomyClassLabel onclick={label_click_callback}
+                                            label={this.props.elem.name} />
                         {this_taxonomy_class_counts[ANNOTATION.STATUS.NEW]
                             ? <AnnotationsCount class='annotation_new'
                                                 count={this_taxonomy_class_counts[ANNOTATION.STATUS.NEW]} />
@@ -72,10 +165,17 @@ class TaxonomyClassListElement extends Component {
                                                 count={this_taxonomy_class_counts[ANNOTATION.STATUS.VALIDATED]} />
                             : null}
                     </span>
+                    <TaxonomyClassActions taxonomy_class={this.props.elem}
+                                          release_handler={this.make_release_handler(this.props.elem)}
+                                          invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility} />
                 </span>
                 {this.props.elem.children
                     ? <TaxonomyClasses classes={this.props.elem.children}
                                        counts={this.props.counts}
+                                       map_manager={this.props.map_manager}
+                                       store_actions={this.props.store_actions}
+                                       user_interactions={this.props.user_interactions}
+                                       invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility}
                                        toggle_taxonomy_class_tree_element={this.props.toggle_taxonomy_class_tree_element} />
                     : null
                 }
@@ -88,8 +188,12 @@ class TaxonomyClassListElement extends Component {
 class TaxonomyClasses extends Component {
     static propTypes = {
         toggle_taxonomy_class_tree_element: PropTypes.func.isRequired,
+        invert_taxonomy_class_visibility: PropTypes.func.isRequired,
         classes: PropTypes.array.isRequired,
         counts: PropTypes.object.isRequired,
+        user_interactions: PropTypes.object.isRequired,
+        map_manager: PropTypes.object.isRequired,
+        store_actions: PropTypes.object.isRequired,
     };
 
     render() {
@@ -99,6 +203,10 @@ class TaxonomyClasses extends Component {
                     <TaxonomyClassListElement key={i}
                                               elem={elem}
                                               counts={this.props.counts}
+                                              map_manager={this.props.map_manager}
+                                              store_actions={this.props.store_actions}
+                                              user_interactions={this.props.user_interactions}
+                                              invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility}
                                               toggle_taxonomy_class_tree_element={this.props.toggle_taxonomy_class_tree_element} />
                 ))}
             </ul>

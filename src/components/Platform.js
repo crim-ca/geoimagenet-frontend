@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
-import {Actions} from './Actions.jsx';
+import {Actions} from './Actions.js';
 import {TaxonomyClasses, TaxonomySelector} from './TaxonomyBrowser.js';
 import PropTypes from 'prop-types';
+import {MapManager} from '../MapManager.js';
 
 @observer
 class Platform extends Component {
@@ -12,27 +13,48 @@ class Platform extends Component {
         user_interactions: PropTypes.object.isRequired,
     };
 
+    constructor(props) {
+        super(props);
+        this.map_manager = {};
+    }
+
+    componentDidMount() {
+        this.map_manager = new MapManager(
+            GEOSERVER_URL,
+            ANNOTATION_NAMESPACE_URI,
+            ANNOTATION_NAMESPACE,
+            ANNOTATION_LAYER,
+            'map',
+            this.props.state_proxy,
+            this.props.store_actions
+        );
+    }
+
     render() {
         return (
             <div className='platform'>
                 <div id="map" className="map">
-                    <span id="coordinates" className="coordinates"/>
+                    <span id="coordinates" className="coordinates" />
                 </div>
                 <div className="right paper">
                     <Actions actions_activated={this.props.state_proxy.actions_activated}
                              mode={this.props.state_proxy.mode}
                              store_actions={this.props.store_actions} />
-                    <section className="taxonomy opened">
+                    <section id='taxonomy' className="taxonomy opened">
                         <button className="section-handle">Taxonomies and Classes</button>
                         <TaxonomySelector select_taxonomy={this.props.user_interactions.select_taxonomy}
                                           taxonomy={this.props.state_proxy.taxonomy} />
                         <TaxonomyClasses counts={this.props.state_proxy.annotation_counts}
+                                         map_manager={this.map_manager}
+                                         user_interactions={this.props.user_interactions}
+                                         store_actions={this.props.store_actions}
+                                         invert_taxonomy_class_visibility={this.props.store_actions.invert_taxonomy_class_visibility}
                                          toggle_taxonomy_class_tree_element={this.props.store_actions.toggle_taxonomy_class_tree_element}
                                          classes={this.props.state_proxy.selected_taxonomy.elements} />
                     </section>
                     <section className="layer-switcher closed">
                         <button className="section-handle">Basemaps, Images and Filters</button>
-                        <div id="layer-switcher" className="layer-switcher-container"/>
+                        <div id="layer-switcher" className="layer-switcher-container" />
                     </section>
                 </div>
             </div>

@@ -6,7 +6,7 @@ import {notifier} from './utils/notifications.js';
 import {create_state_proxy, StoreActions} from './domain/store.js';
 import {configure} from 'mobx';
 import {UserInteractions} from './domain/user-interactions.js';
-import {Platform} from './components/Platform.jsx';
+import {Platform} from './components/Platform.js';
 import {element, get_by_id} from './utils/dom.js';
 
 import React from 'react';
@@ -42,15 +42,6 @@ addEventListener('DOMContentLoaded', async () => {
             store_actions={store_actions}
             user_interactions={user_interactions} />,
         get_by_id('root')
-    );
-    const map_manager = new MapManager(
-        GEOSERVER_URL,
-        ANNOTATION_NAMESPACE_URI,
-        ANNOTATION_NAMESPACE,
-        ANNOTATION_LAYER,
-        'map',
-        state_proxy,
-        store_actions
     );
     //new TaxonomyBrowser(map_manager, state_proxy, store_actions, user_interactions);
 

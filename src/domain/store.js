@@ -147,29 +147,25 @@ export class StoreActions {
     }
 
     @action.bound
-    set_taxonomy_class(c) {
-        this.state_proxy.selected_taxonomy.elements = c;
+    invert_taxonomy_class_visibility(t, visible = null) {
+        if (visible !== null) {
+            t.visible = visible;
+        } else {
+            t.visible = !t.visible;
+        }
+        if (t.children && t.children.length > 0) {
+            t.children.forEach(c => {
+                this.invert_taxonomy_class_visibility(c, t.visible);
+            });
+        }
+    }
 
-        const flat_ancestors_and_descendants_dict = {};
-        const flatten_ancestors_and_descendants = (taxonomy_class) => {
-            if (taxonomy_class.children && taxonomy_class.children.length > 0) {
-                const id = taxonomy_class.id;
-                taxonomy_class.children.forEach((e) => {
-                    if (flat_ancestors_and_descendants_dict[id]) {
-                        flat_ancestors_and_descendants_dict[id].push(e);
-                    } else {
-                        flat_ancestors_and_descendants_dict[id] = [e];
-                    }
-                    if (e.children && e.children.length > 0) {
-                        flatten_ancestors_and_descendants(e);
-                    }
-                });
-            }
-        };
-        this.state_proxy.selected_taxonomy.elements.forEach((e) => {
-            flatten_ancestors_and_descendants(e);
+    @action.bound
+    set_taxonomy_class(c) {
+        c.forEach(t => {
+            this.invert_taxonomy_class_visibility(t);
         });
-        this.state_proxy.flat_taxonomy_classes = flat_ancestors_and_descendants_dict;
+        this.state_proxy.selected_taxonomy.elements = c;
     }
 
     @action.bound

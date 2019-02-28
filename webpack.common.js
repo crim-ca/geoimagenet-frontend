@@ -5,8 +5,8 @@ const webpack = require('webpack');
 
 module.exports = {
     entry: {
-        presentation: './src/presentation.jsx',
-        platform: './src/platform.jsx',
+        presentation: './src/presentation.js',
+        platform: './src/platform.js',
     },
     output: {
         filename: '[name].bundle.js',
