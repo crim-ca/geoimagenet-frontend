@@ -1,5 +1,3 @@
-import {TaxonomyBrowser} from './TaxonomyBrowser.js';
-import {MapManager} from './MapManager.js';
 import {register_section_handles} from './utils/sections.js';
 import {fetch_taxonomies} from './domain/data-queries.js';
 import {notifier} from './utils/notifications.js';

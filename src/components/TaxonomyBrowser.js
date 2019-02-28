@@ -5,7 +5,9 @@ import {ANNOTATION} from '../domain/constants.js';
 import Chip from '@material-ui/core/es/Chip/Chip.js';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPaperPlane} from '@fortawesome/free-solid-svg-icons';
-import {get_by_id} from '../utils/dom.js';
+import {create_default_theme, get_by_id} from '../utils/dom.js';
+import {Collapse, List, ListItem} from '@material-ui/core';
+import {createMuiTheme, MuiThemeProvider} from '@material-ui/core';
 
 const styles = {
     chip: {
@@ -147,8 +149,8 @@ class TaxonomyClassListElement extends Component {
             : this.make_select_taxonomy_class_for_annotation_handler(this.props.elem);
 
         return (
-            <li className={this.props.elem.opened ? null : 'collapsed'}>
-                <span className='taxonomy_class_list_element'>
+            <List>
+                <ListItem className='taxonomy_class_list_element' classes={{root: styles.root}}>
                     <span>
                         <TaxonomyClassLabel onclick={label_click_callback}
                                             label={this.props.elem.name} />
@@ -168,18 +170,22 @@ class TaxonomyClassListElement extends Component {
                     <TaxonomyClassActions taxonomy_class={this.props.elem}
                                           release_handler={this.make_release_handler(this.props.elem)}
                                           invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility} />
-                </span>
+                </ListItem>
                 {this.props.elem.children
-                    ? <TaxonomyClasses classes={this.props.elem.children}
-                                       counts={this.props.counts}
-                                       map_manager={this.props.map_manager}
-                                       store_actions={this.props.store_actions}
-                                       user_interactions={this.props.user_interactions}
-                                       invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility}
-                                       toggle_taxonomy_class_tree_element={this.props.toggle_taxonomy_class_tree_element} />
+                    ? (
+                        <Collapse in={this.props.elem.opened}>
+                            <TaxonomyClasses classes={this.props.elem.children}
+                                             counts={this.props.counts}
+                                             map_manager={this.props.map_manager}
+                                             store_actions={this.props.store_actions}
+                                             user_interactions={this.props.user_interactions}
+                                             invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility}
+                                             toggle_taxonomy_class_tree_element={this.props.toggle_taxonomy_class_tree_element} />
+                        </Collapse>
+                    )
                     : null
                 }
-            </li>
+            </List>
         );
     }
 }

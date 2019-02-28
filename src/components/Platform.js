@@ -4,6 +4,33 @@ import {Actions} from './Actions.js';
 import {TaxonomyClasses, TaxonomySelector} from './TaxonomyBrowser.js';
 import PropTypes from 'prop-types';
 import {MapManager} from '../MapManager.js';
+import {createMuiTheme, CssBaseline, MuiThemeProvider} from '@material-ui/core';
+import {lightBlue, lightGreen} from '@material-ui/core/colors';
+
+const theme = createMuiTheme({
+    typography: {
+        useNextVariants: true,
+    },
+    overrides: {
+        MuiList: {
+            padding: {
+                paddingTop: 0,
+                paddingBottom: 0,
+            },
+        },
+        MuiListItem: {
+            root: {
+                paddingTop: '6px',
+                paddingBottom: '6px',
+                justifyContent: 'space-between',
+            },
+        },
+    },
+    palette: {
+        primary: lightGreen,
+        secondary: lightBlue,
+    }
+});
 
 @observer
 class Platform extends Component {
@@ -32,32 +59,35 @@ class Platform extends Component {
 
     render() {
         return (
-            <div className='platform'>
-                <div id="map" className="map">
-                    <span id="coordinates" className="coordinates" />
+            <MuiThemeProvider theme={theme}>
+                <CssBaseline />
+                <div className='platform'>
+                    <div id="map" className="map">
+                        <span id="coordinates" className="coordinates" />
+                    </div>
+                    <div className="right paper">
+                        <Actions actions_activated={this.props.state_proxy.actions_activated}
+                                 mode={this.props.state_proxy.mode}
+                                 store_actions={this.props.store_actions} />
+                        <section id='taxonomy' className="taxonomy opened">
+                            <button className="section-handle">Taxonomies and Classes</button>
+                            <TaxonomySelector select_taxonomy={this.props.user_interactions.select_taxonomy}
+                                              taxonomy={this.props.state_proxy.taxonomy} />
+                            <TaxonomyClasses counts={this.props.state_proxy.annotation_counts}
+                                             map_manager={this.map_manager}
+                                             user_interactions={this.props.user_interactions}
+                                             store_actions={this.props.store_actions}
+                                             invert_taxonomy_class_visibility={this.props.store_actions.invert_taxonomy_class_visibility}
+                                             toggle_taxonomy_class_tree_element={this.props.store_actions.toggle_taxonomy_class_tree_element}
+                                             classes={this.props.state_proxy.selected_taxonomy.elements} />
+                        </section>
+                        <section className="layer-switcher closed">
+                            <button className="section-handle">Basemaps, Images and Filters</button>
+                            <div id="layer-switcher" className="layer-switcher-container" />
+                        </section>
+                    </div>
                 </div>
-                <div className="right paper">
-                    <Actions actions_activated={this.props.state_proxy.actions_activated}
-                             mode={this.props.state_proxy.mode}
-                             store_actions={this.props.store_actions} />
-                    <section id='taxonomy' className="taxonomy opened">
-                        <button className="section-handle">Taxonomies and Classes</button>
-                        <TaxonomySelector select_taxonomy={this.props.user_interactions.select_taxonomy}
-                                          taxonomy={this.props.state_proxy.taxonomy} />
-                        <TaxonomyClasses counts={this.props.state_proxy.annotation_counts}
-                                         map_manager={this.map_manager}
-                                         user_interactions={this.props.user_interactions}
-                                         store_actions={this.props.store_actions}
-                                         invert_taxonomy_class_visibility={this.props.store_actions.invert_taxonomy_class_visibility}
-                                         toggle_taxonomy_class_tree_element={this.props.store_actions.toggle_taxonomy_class_tree_element}
-                                         classes={this.props.state_proxy.selected_taxonomy.elements} />
-                    </section>
-                    <section className="layer-switcher closed">
-                        <button className="section-handle">Basemaps, Images and Filters</button>
-                        <div id="layer-switcher" className="layer-switcher-container" />
-                    </section>
-                </div>
-            </div>
+            </MuiThemeProvider>
         );
     }
 }
