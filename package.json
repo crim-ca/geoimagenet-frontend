@@ -34,6 +34,7 @@
     "clean-webpack-plugin": "^0.1.19",
     "css-loader": "^1.0.0",
     "esdoc": "^1.1.0",
+    "esdoc-coverage-plugin": "^1.1.0",
     "esdoc-ecmascript-proposal-plugin": "^1.0.0",
     "esdoc-jsx-plugin": "^1.0.0",
     "esdoc-react-plugin": "^1.0.1",
@@ -52,6 +53,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
+    "@sentry/browser": "^4.6.4",
     "mobx": "^5.9.0",
     "mobx-react": "^5.4.3",
     "ol": "^5.3.0",

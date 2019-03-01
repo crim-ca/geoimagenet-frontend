@@ -10,6 +10,11 @@ import nrcan from './img/logos/nrcan.gif';
 import './css/base.css';
 import './css/style_web.css';
 
+import * as Sentry from '@sentry/browser';
+Sentry.init({
+    dsn: 'https://e7309c463efe4d85abc7693a6334e8df@sentry.crim.ca/21'
+});
+
 class Presentation extends Component {
     render() {
         return (
