@@ -10,8 +10,10 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPaperPlane} from '@fortawesome/free-solid-svg-icons';
 
 const StyledListItem = withStyles({
-    focusVisible: {
-        backgroundColor: 'inherit',
+    root: {
+        '&:focus': {
+            backgroundColor: 'inherit',
+        }
     },
 })(ListItem);
 const SpacedChip = withStyles({
