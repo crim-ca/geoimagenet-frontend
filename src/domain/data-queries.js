@@ -1,6 +1,12 @@
 import {make_http_request, post_json, put_json} from '../utils/http.js';
 import {WMSCapabilities} from 'ol/format';
 
+/**
+ * @package data
+ * Here we find all the actual requests for data from the api.
+ * @todo at some point we should put this in a class to encapsulate the dependency on global constants and http utility
+ */
+
 const reject = Promise.reject.bind(Promise);
 
 export const release_annotations_request = async taxonomy_class_id => {
@@ -56,6 +62,12 @@ export const fetch_taxonomies = async () => {
     }
 };
 
+/**
+ * Fetch the taxonomy classes in a nested data structure to represent the nested tree we can see in the UI.
+ * Depends on the global GEOIMAGENET_API_URL constant
+ * @param {int} root_taxonomy_class_id
+ * @returns {Promise<Object>}
+ */
 export const nested_taxonomy_classes = async root_taxonomy_class_id => {
     try {
         const res = await make_http_request(`${GEOIMAGENET_API_URL}/taxonomy_classes/${root_taxonomy_class_id}`);

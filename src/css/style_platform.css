@@ -154,9 +154,6 @@ div.taxonomy {
 div.taxonomy button {
     padding: 0 20px;
 }
-span.selected {
-    background-color: var(--selected-taxonomy-element-background);
-}
 button.section-handle {
     line-height: var(--line-height);
     border-top: var(--border-height) solid var(--light-gray);

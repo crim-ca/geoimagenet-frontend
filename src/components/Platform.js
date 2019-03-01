@@ -77,6 +77,7 @@ class Platform extends Component {
                                              map_manager={this.map_manager}
                                              user_interactions={this.props.user_interactions}
                                              store_actions={this.props.store_actions}
+                                             state_proxy={this.props.state_proxy}
                                              invert_taxonomy_class_visibility={this.props.store_actions.invert_taxonomy_class_visibility}
                                              toggle_taxonomy_class_tree_element={this.props.store_actions.toggle_taxonomy_class_tree_element}
                                              classes={this.props.state_proxy.selected_taxonomy.elements} />

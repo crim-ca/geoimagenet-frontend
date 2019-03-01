@@ -16,8 +16,17 @@ const ACTIONS = [
     {name: 'refuse', icon: faTimes, mode: MODE.REJECT},
 ];
 
+/**
+ * This component renders the different buttons that represent the modes in which an user can do actions upon the annotations.
+ */
+
 @observer
 class Actions extends Component {
+
+    /**
+     * @property {string} mode
+     */
+
     static propTypes = {
         store_actions: PropTypes.object.isRequired,
         actions_activated: PropTypes.bool.isRequired,
