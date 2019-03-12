@@ -8,6 +8,8 @@ import {
     ExpansionPanel,
     ExpansionPanelSummary,
     ExpansionPanelDetails,
+    withStyles,
+    Paper
 } from '@material-ui/core';
 import {ExpandMore} from '@material-ui/icons';
 import {lightBlue, lightGreen} from '@material-ui/core/colors';
@@ -40,6 +42,12 @@ const theme = createMuiTheme({
         secondary: lightBlue,
     }
 });
+
+const StyledPanelDetails = withStyles({
+    root: {
+        flexDirection: 'column'
+    },
+})(ExpansionPanelDetails);
 
 @observer
 class Platform extends Component {
@@ -90,17 +98,19 @@ class Platform extends Component {
                     <div id="map" className="map">
                         <span id="coordinates" className="coordinates" />
                     </div>
-                    <div className="right paper">
+                    <Paper className="right">
                         <Actions actions_activated={this.props.state_proxy.actions_activated}
                                  mode={this.props.state_proxy.mode}
                                  store_actions={this.props.store_actions} />
-                        <ExpansionPanel expanded={expanded === 'taxonomies'} onChange={this.handle_change('taxonomies')}>
-                            <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
+                        <ExpansionPanel expanded={expanded === 'taxonomies'}
+                                        onChange={this.handle_change('taxonomies')}>
+                            <ExpansionPanelSummary expandIcon={<ExpandMore />}>
                                 Taxonomies and Classes
                             </ExpansionPanelSummary>
-                            <ExpansionPanelDetails>
+                            <StyledPanelDetails>
                                 <TaxonomySelector select_taxonomy={this.props.user_interactions.select_taxonomy}
                                                   taxonomy={this.props.state_proxy.taxonomy} />
+
                                 <TaxonomyClasses map_manager={this.map_manager}
                                                  user_interactions={this.props.user_interactions}
                                                  store_actions={this.props.store_actions}
@@ -108,17 +118,17 @@ class Platform extends Component {
                                                  invert_taxonomy_class_visibility={this.props.store_actions.invert_taxonomy_class_visibility}
                                                  toggle_taxonomy_class_tree_element={this.props.store_actions.toggle_taxonomy_class_tree_element}
                                                  classes={classes} />
-                            </ExpansionPanelDetails>
+                            </StyledPanelDetails>
                         </ExpansionPanel>
                         <ExpansionPanel expanded={expanded === 'layers'} onChange={this.handle_change('layers')}>
-                            <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
+                            <ExpansionPanelSummary expandIcon={<ExpandMore />}>
                                 Basemaps, Images and Filters
                             </ExpansionPanelSummary>
-                            <ExpansionPanelDetails>
+                            <StyledPanelDetails>
                                 <div id="layer-switcher" className="layer-switcher-container" />
-                            </ExpansionPanelDetails>
+                            </StyledPanelDetails>
                         </ExpansionPanel>
-                    </div>
+                    </Paper>
                 </div>
             </MuiThemeProvider>
         );

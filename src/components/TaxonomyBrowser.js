@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
+import {Tabs, Tab} from '@material-ui/core';
+
 import {TaxonomyClassListElement} from './taxonomy/TaxonomyClassListElement.js';
 
 @observer
@@ -41,23 +43,24 @@ class TaxonomySelector extends Component {
         taxonomy: PropTypes.array.isRequired,
     };
 
-    make_select_taxonomy_callback(version, name) {
-        return async () => {
-            await this.props.select_taxonomy(version, name);
-        };
-    }
+    state = {
+        value: '',
+    };
+
+    handle_tab_select = async (event, value) => {
+        this.setState({value});
+        const version = value['versions'][0];
+        await this.props.select_taxonomy(version, value.name);
+    };
 
     render() {
+
+        const {value} = this.state;
+
         return (
-            <div id='taxonomy' className='taxonomy'>{
-                this.props.taxonomy.map((tax, i) => {
-                    const version = tax['versions'][0];
-                    return (
-                        <button onClick={this.make_select_taxonomy_callback(version, tax.name)}
-                                key={i}>{tax.name}</button>
-                    );
-                })}
-            </div>
+            <Tabs value={value} onChange={this.handle_tab_select}>
+                { this.props.taxonomy.map((taxonomy, i) => <Tab value={taxonomy} key={i} label={taxonomy.name} />) }
+            </Tabs>
         );
     }
 }
