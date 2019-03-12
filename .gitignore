@@ -20,4 +20,4 @@ yarn.lock
 .yarnclean
 .vscode
 
-docs
+dist/docs

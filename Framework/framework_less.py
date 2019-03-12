@@ -76,10 +76,6 @@ def handler_app(environ, start_response):
         status = '500 CONNECTION REFUSED'
         headers = [('Content-type', 'text/plain')]
         data = 'The API is down at the moment. We could not fetch the resource.'
-    except Exception:
-        status = '500 SERVER ERROR'
-        headers = [('Content-type', 'text/plain')]
-        data = 'Something happened. Not sure what.'
 
     start_response(status, headers)
     return [bytes(data, 'utf8')]

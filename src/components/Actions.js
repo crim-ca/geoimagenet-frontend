@@ -66,10 +66,3 @@ class Actions extends Component {
 }
 
 export {Actions};
-
-/*
-* <span className={
-                                    action.mode === this.props.mode
-                                        ? `fas ${action.icon_class} fa-2x active`
-                                        : `fas ${action.icon_class} fa-2x`
-                                }/>*/

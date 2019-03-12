@@ -58,6 +58,10 @@ class Platform extends Component {
     }
 
     render() {
+
+        const taxonomy_class = this.props.state_proxy.flat_taxonomy_classes[this.props.state_proxy.selected_taxonomy.root_taxonomy_class_id];
+        const classes = taxonomy_class && taxonomy_class.children ? taxonomy_class.children : [];
+
         return (
             <MuiThemeProvider theme={theme}>
                 <CssBaseline />
@@ -73,14 +77,13 @@ class Platform extends Component {
                             <button className="section-handle">Taxonomies and Classes</button>
                             <TaxonomySelector select_taxonomy={this.props.user_interactions.select_taxonomy}
                                               taxonomy={this.props.state_proxy.taxonomy} />
-                            <TaxonomyClasses counts={this.props.state_proxy.annotation_counts}
-                                             map_manager={this.map_manager}
+                            <TaxonomyClasses map_manager={this.map_manager}
                                              user_interactions={this.props.user_interactions}
                                              store_actions={this.props.store_actions}
                                              state_proxy={this.props.state_proxy}
                                              invert_taxonomy_class_visibility={this.props.store_actions.invert_taxonomy_class_visibility}
                                              toggle_taxonomy_class_tree_element={this.props.store_actions.toggle_taxonomy_class_tree_element}
-                                             classes={this.props.state_proxy.selected_taxonomy.elements} />
+                                             classes={classes} />
                         </section>
                         <section className="layer-switcher closed">
                             <button className="section-handle">Basemaps, Images and Filters</button>

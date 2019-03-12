@@ -8,9 +8,11 @@
   },
   "scripts": {
     "test": "jest",
-    "prod": "webpack --config webpack.prod.js --progress",
-    "build": "webpack --watch --progress --config webpack.dev.js",
-    "dev-server": "webpack-dev-server --open --config webpack.dev.js"
+    "prod": "webpack --config webpack.prod.js --progress && npm run esdoc",
+    "dev": "webpack --config webpack.dev.js --progress && npm run esdoc",
+    "dev:watch": "webpack --watch --progress --config webpack.dev.js && npm run esdoc",
+    "dev-server": "webpack-dev-server --open --config webpack.dev.js",
+    "esdoc": "./node_modules/.bin/esdoc"
   },
   "repository": {
     "type": "git",

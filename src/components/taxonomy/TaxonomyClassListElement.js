@@ -1,13 +1,15 @@
 import {observer} from 'mobx-react';
 import {Component} from 'react';
 import PropTypes from 'prop-types';
-import {ANNOTATION} from '../../domain/constants.js';
 import {Collapse, List, ListItem, Chip} from '@material-ui/core';
 import React from 'react';
-import {TaxonomyClasses} from '../TaxonomyBrowser.js';
 import {withStyles} from '@material-ui/core';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPaperPlane} from '@fortawesome/free-solid-svg-icons';
+
+import {TaxonomyClasses} from '../TaxonomyBrowser.js';
+import {ANNOTATION} from '../../domain/constants.js';
+import {TaxonomyClass} from '../../domain/entities.js';
 
 const StyledListItem = withStyles({
     root: {
@@ -110,17 +112,21 @@ class TaxonomyClassListElement extends Component {
     static propTypes = {
         toggle_taxonomy_class_tree_element: PropTypes.func.isRequired,
         invert_taxonomy_class_visibility: PropTypes.func.isRequired,
-        elem: PropTypes.object.isRequired,
-        counts: PropTypes.object.isRequired,
+        taxonomy_class: PropTypes.object.isRequired,
         user_interactions: PropTypes.object.isRequired,
         map_manager: PropTypes.object.isRequired,
         store_actions: PropTypes.object.isRequired,
         state_proxy: PropTypes.object.isRequired,
     };
 
-    make_toggle_callback(id) {
+    /**
+     * Create the click handler with the relevant class entity
+     * @param {TaxonomyClass} taxonomy_class
+     * @returns {Function}
+     */
+    make_toggle_callback(taxonomy_class) {
         return () => {
-            this.props.toggle_taxonomy_class_tree_element(id);
+            this.props.user_interactions.toggle_taxonomy_class(taxonomy_class);
         };
     }
 
@@ -144,42 +150,40 @@ class TaxonomyClassListElement extends Component {
     }
 
     render() {
-        const this_taxonomy_class_counts = this.props.counts[this.props.elem.id];
 
-        const label_click_callback = this.props.elem.children && this.props.elem.children.length > 0
-            ? this.make_toggle_callback(this.props.elem.id)
-            : this.make_select_taxonomy_class_for_annotation_handler(this.props.elem);
+        const label_click_callback = this.props.taxonomy_class.children && this.props.taxonomy_class.children.length > 0
+            ? this.make_toggle_callback(this.props.taxonomy_class)
+            : this.make_select_taxonomy_class_for_annotation_handler(this.props.taxonomy_class);
 
         return (
             <List>
                 <StyledListItem className='taxonomy_class_list_element'
                                 onClick={label_click_callback}
-                                selected={this.props.state_proxy.selected_taxonomy_class_id === this.props.elem.id}
+                                selected={this.props.state_proxy.selected_taxonomy_class_id === this.props.taxonomy_class.id}
                                 button>
                     <span>
-                        <TaxonomyClassLabel label={this.props.elem.name} />
-                        {this_taxonomy_class_counts[ANNOTATION.STATUS.NEW]
+                        <TaxonomyClassLabel label={this.props.taxonomy_class.name} />
+                        {this.props.taxonomy_class.counts[ANNOTATION.STATUS.NEW]
                             ? <AnnotationsCount class='annotation_new'
-                                                count={this_taxonomy_class_counts[ANNOTATION.STATUS.NEW]} />
+                                                count={this.props.taxonomy_class.counts[ANNOTATION.STATUS.NEW]} />
                             : null}
-                        {this_taxonomy_class_counts[ANNOTATION.STATUS.RELEASED]
+                        {this.props.taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]
                             ? <AnnotationsCount class='annotation_released'
-                                                count={this_taxonomy_class_counts[ANNOTATION.STATUS.RELEASED]} />
+                                                count={this.props.taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]} />
                             : null}
-                        {this_taxonomy_class_counts[ANNOTATION.STATUS.VALIDATED]
+                        {this.props.taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]
                             ? <AnnotationsCount class='annotation_validated'
-                                                count={this_taxonomy_class_counts[ANNOTATION.STATUS.VALIDATED]} />
+                                                count={this.props.taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]} />
                             : null}
                     </span>
-                    <TaxonomyClassActions taxonomy_class={this.props.elem}
-                                          release_handler={this.make_release_handler(this.props.elem)}
+                    <TaxonomyClassActions taxonomy_class={this.props.taxonomy_class}
+                                          release_handler={this.make_release_handler(this.props.taxonomy_class)}
                                           invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility} />
                 </StyledListItem>
-                {this.props.elem.children
+                {this.props.taxonomy_class.children
                     ? (
-                        <Collapse in={this.props.elem.opened}>
-                            <TaxonomyClasses classes={this.props.elem.children}
-                                             counts={this.props.counts}
+                        <Collapse in={this.props.taxonomy_class.opened}>
+                            <TaxonomyClasses classes={this.props.taxonomy_class.children}
                                              map_manager={this.props.map_manager}
                                              store_actions={this.props.store_actions}
                                              state_proxy={this.props.state_proxy}

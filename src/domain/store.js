@@ -1,5 +1,6 @@
 import {ANNOTATION, MODE} from './constants';
-import {observable, action} from 'mobx';
+import {observable, action, runInAction} from 'mobx';
+import {TaxonomyClass} from './entities.js';
 
 const default_store_schematics = {
 
@@ -7,7 +8,6 @@ const default_store_schematics = {
     actions_activated: false,
 
     taxonomy: [],
-    annotation_counts: {},
     selected_taxonomy: {
         id: 0,
         name: '',
@@ -111,12 +111,14 @@ export class StoreActions {
     }
 
     /**
+     * Invert the opened property for specific taxonomy class id
      * @param {int} taxonomy_class_id
      */
     @action.bound
     toggle_taxonomy_class_tree_element(taxonomy_class_id) {
-        let taxonomy_class = this.find_element_by_id(this.state_proxy.selected_taxonomy.elements, taxonomy_class_id);
-        taxonomy_class['opened'] = !taxonomy_class['opened'];
+        /** @type {TaxonomyClass} taxonomy_class */
+        const taxonomy_class = this.state_proxy.flat_taxonomy_classes[taxonomy_class_id];
+        taxonomy_class.opened = !taxonomy_class.opened;
     }
 
     @action.bound
@@ -125,6 +127,45 @@ export class StoreActions {
             let taxonomy_class = this.find_element_by_id(this.state_proxy.selected_taxonomy.elements, id);
             taxonomy_class['visible'] = !taxonomy_class['visible'];
         });
+    }
+
+        /**
+     * Take the raw data structure from the api and transform it into usable structures for the UI.
+     *
+     * loop over an object, build a class instance from it.
+     * assign the class instance to its index in the flat taxonomy list
+     * if we have a parent id, add the instance to the children of said parent id in the flat list
+     * iw we have children, recursive call to this function for each children
+     *
+     * @param {object} nested_taxonomy_classes_from_api
+     */
+    @action.bound
+    build_taxonomy_classes_structures(nested_taxonomy_classes_from_api) {
+
+        const assign_top_object_to_list = (object, parent_id = null) => {
+            const current_raw = object;
+
+            const current_instance = observable.object(new TaxonomyClass(
+                current_raw.id,
+                current_raw.name,
+                current_raw.taxonomy_id
+            ));
+            this.state_proxy.flat_taxonomy_classes[current_instance.id] = current_instance;
+
+            if (parent_id !== null) {
+                current_raw.parent_id = parent_id;
+                this.state_proxy.flat_taxonomy_classes[parent_id].children.push(current_instance);
+            }
+
+            if (current_raw.children && current_raw.children.length > 0) {
+                current_raw.children.forEach(c => {
+                    assign_top_object_to_list(c, current_raw.id);
+                });
+            }
+        };
+
+        assign_top_object_to_list(nested_taxonomy_classes_from_api);
+
     }
 
     @action.bound
@@ -146,7 +187,9 @@ export class StoreActions {
 
     @action.bound
     set_annotation_counts(counts) {
-        this.state_proxy.annotation_counts = Object.assign({}, this.state_proxy.annotation_counts, counts);
+        for (let class_id in counts) {
+            this.state_proxy.flat_taxonomy_classes[class_id].counts = counts[class_id];
+        }
     }
 
     @action.bound
@@ -183,16 +226,35 @@ export class StoreActions {
      */
     @action.bound
     invert_taxonomy_class_visibility(t, visible = null) {
-        if (visible !== null) {
-            t.visible = visible;
-        } else {
-            t.visible = !t.visible;
-        }
-        if (t.children && t.children.length > 0) {
-            t.children.forEach(c => {
-                this.invert_taxonomy_class_visibility(c, t.visible);
-            });
-        }
+        runInAction(() => {
+            if (visible !== null) {
+                t.visible = visible;
+            } else {
+                t.visible = !t.visible;
+            }
+            if (t.children && t.children.length > 0) {
+                t.children.forEach(c => {
+                    this.invert_taxonomy_class_visibility(c, t.visible);
+                });
+            }
+        });
+
+
+        const visible_ids = [];
+        const aggregate_selected_ids = (taxonomy_class) => {
+            if (taxonomy_class.visible === true) {
+                visible_ids.push(taxonomy_class.id);
+            }
+            if (taxonomy_class.children && taxonomy_class.children.length > 0) {
+                aggregate_selected_ids(taxonomy_class.children);
+            }
+        };
+
+        this.state_proxy.selected_taxonomy.elements.forEach(c => {
+            aggregate_selected_ids(c);
+        });
+        this.set_visible_classes(visible_ids);
+
     }
 
     /**

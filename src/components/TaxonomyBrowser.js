@@ -9,7 +9,6 @@ class TaxonomyClasses extends Component {
         toggle_taxonomy_class_tree_element: PropTypes.func.isRequired,
         invert_taxonomy_class_visibility: PropTypes.func.isRequired,
         classes: PropTypes.array.isRequired,
-        counts: PropTypes.object.isRequired,
         user_interactions: PropTypes.object.isRequired,
         map_manager: PropTypes.object.isRequired,
         store_actions: PropTypes.object.isRequired,
@@ -19,10 +18,9 @@ class TaxonomyClasses extends Component {
     render() {
         return (
             <ul>
-                {this.props.classes.map((elem, i) => (
+                {this.props.classes.map((taxonomy_class, i) => (
                     <TaxonomyClassListElement key={i}
-                                              elem={elem}
-                                              counts={this.props.counts}
+                                              taxonomy_class={taxonomy_class}
                                               map_manager={this.props.map_manager}
                                               store_actions={this.props.store_actions}
                                               state_proxy={this.props.state_proxy}
