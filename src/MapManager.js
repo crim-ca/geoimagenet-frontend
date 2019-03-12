@@ -143,8 +143,18 @@ export class MapManager {
         });
 
         autorun(() => {
-            if (this.state_proxy.visible_classes.length > 0) {
-                this.cql_filter = `taxonomy_class_id IN (${this.state_proxy.visible_classes.join(',')})`;
+
+            const visible = [];
+            Object.keys(this.state_proxy.flat_taxonomy_classes).forEach(k => {
+                /** @var {TaxonomyClass} taxonomy_class */
+                const taxonomy_class = this.state_proxy.flat_taxonomy_classes[k];
+                if (taxonomy_class.visible) {
+                    visible.push(taxonomy_class.id);
+                }
+            });
+
+            if (visible.length > 0) {
+                this.cql_filter = `taxonomy_class_id IN (${visible.join(',')})`;
             } else {
                 this.cql_filter = '';
             }
