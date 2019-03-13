@@ -16,6 +16,7 @@ import './css/style_platform.css';
 import './css/layer_switcher.css';
 import './css/notifications.css';
 import './css/open_layers.css';
+import './img/icons/favicon.ico';
 
 import * as Sentry from '@sentry/browser';
 Sentry.init({

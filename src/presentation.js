@@ -9,6 +9,7 @@ import nrcan from './img/logos/nrcan.gif';
 
 import './css/base.css';
 import './css/style_web.css';
+import './img/icons/favicon.ico';
 
 import * as Sentry from '@sentry/browser';
 Sentry.init({
