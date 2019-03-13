@@ -10,7 +10,7 @@ RUN apk update && \
     pip install -r requirements.txt --no-cache-dir && \
     apk --purge del .build-deps
 
-COPY package.json package-lock.json webpack-common.config.js webpack-prod.config.js .nvmrc ./
+COPY package.json package-lock.json webpack.common.js webpack.prod.js ./
 
 RUN apk add nodejs-npm && \
     npm install

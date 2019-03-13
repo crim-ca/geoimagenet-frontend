@@ -3,17 +3,21 @@ import gunicorn.app.base
 from os import path
 from mimetypes import MimeTypes
 from urllib.error import HTTPError
+import sentry_sdk
 
 from GIN.Server.Routing import mapper
+from GIN.Server.Exception import NotFound
 from GIN.DependencyInjection import Injector
 
 mimetypes = MimeTypes()
+
+sentry_sdk.init('https://855d6407dc424a5e95029d10600fbff5:7881d331c24c4c9187387c7845cfa0c3@sentry.crim.ca/20')
 
 
 def make_full_file_path(request_uri):
 
     current_file_path = path.dirname(__file__)
-    static_folder_path = path.join(current_file_path, '..', 'static')
+    static_folder_path = path.join(current_file_path, '..', 'dist')
     return '%s%s' % (static_folder_path, request_uri)
 
 
@@ -22,11 +26,21 @@ def request_wants_file(full_file_path):
     return path.isfile(full_file_path)
 
 
+# TODO as we get more sections, this will be a hassle to always update the equivalence
+path_equivalences = {
+    '/': '/index.html',
+    '/platform': '/platform.html',
+}
+
+
 def handler_app(environ, start_response):
 
     injector = Injector()
     request_method = environ['REQUEST_METHOD']
     request_uri = environ['PATH_INFO']
+
+    if request_uri in path_equivalences:
+        request_uri = path_equivalences[request_uri]
 
     full_file_path = make_full_file_path(request_uri)
     if request_wants_file(full_file_path):
@@ -35,16 +49,25 @@ def handler_app(environ, start_response):
             start_response('200 OK', [('Content-Type', mime_type)])
             return [file.read()]
 
-    match = mapper.match(request_uri, request_method)
-
-    for key, value in match.items():
-        injector.define_param(key, value)
-
-    handler_instance = injector.make(match['handler'])
-    handler_callable = getattr(handler_instance, match['method'])
-
     try:
+
+        match = mapper.match(request_uri, request_method)
+
+        if match is None:
+            raise NotFound
+
+        for key, value in match.items():
+            injector.define_param(key, value)
+
+        handler_instance = injector.make(match['handler'])
+        handler_callable = getattr(handler_instance, match['method'])
+
         status, headers, data = injector.execute(handler_callable)
+
+    except NotFound:
+        status = '404 NOT FOUND'
+        headers = [('Content-type', 'text/plain')]
+        data = 'This page does not exist'
     except HTTPError as err:
         status = f'{err.code} {err.reason}'
         headers = [('Content-type', 'text/plain')]
@@ -53,13 +76,9 @@ def handler_app(environ, start_response):
         status = '500 CONNECTION REFUSED'
         headers = [('Content-type', 'text/plain')]
         data = 'The API is down at the moment. We could not fetch the resource.'
-    except Exception:
-        status = '500 SERVER ERROR'
-        headers = [('Content-type', 'text/plain')]
-        data = 'Something happened. Not sure what.'
-    finally:
-        start_response(status, headers)
-        return [bytes(data, 'utf8')]
+
+    start_response(status, headers)
+    return [bytes(data, 'utf8')]
 
 
 def number_of_workers():

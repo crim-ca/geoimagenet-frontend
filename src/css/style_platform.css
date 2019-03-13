@@ -2,16 +2,17 @@
     --line-height: 20px;
     --border-height: 1px;
     --padding-height: 10px;
+    --height-actions: 64px;
 
     --total-handle-height: calc(var(--line-height) + var(--border-height) + (2 * var(--padding-height)));
 
-    --color-new: rgba(255, 247, 0, 0.9);
-    --color-pre-released: rgba(238, 97, 0, 0.9);
-    --color-released: rgba(238, 97, 0, 0.9);
-    --color-review: rgba(238, 97, 0, 0.9);
-    --color-validated: rgba(0, 170, 5, 0.9);
+    --color-new: rgba(255, 255, 255, 0.9);
+    --color-pre-released: rgba(146, 209, 139, 0.9);
+    --color-released: rgba(95, 175, 87, 0.9);
+    --color-review: rgba(26, 104, 17, 0.9);
+    --color-validated: rgba(7, 70, 0, 0.6);
     --color-rejected: var(--color-red);
-    --color-deleted: rgba(0, 170, 5, 0.9);
+    --color-deleted: rgba(0, 0, 0, 0.9);
 
     --gutter-small: 5px;
 
@@ -46,9 +47,16 @@ div.map span.coordinates {
     margin: var(--gutter-small);
     background-color: rgba(255, 255, 255, 0.8);
 }
-div.right {
+.right {
     height: 100%;
     width: var(--width-sidebar);
+}
+.right .top {
+    height: var(--height-actions);
+}
+.right .bottom {
+    height: calc(100% - var(--height-actions));
+    overflow-y: scroll;
 }
 ul {
     list-style: none;
@@ -111,16 +119,16 @@ label.checkbox_eye [type=checkbox]:checked + span {
     padding: 0 12px;
     visibility: hidden;
 }
-span.taxonomy_class_list_element:hover .actions {
+.taxonomy_class_list_element:hover .actions {
     visibility: visible;
 }
-.annotation_new {
+div.annotation_new {
     background-color: var(--color-new);
 }
-.annotation_released {
+div.annotation_released {
     background-color: var(--color-released);
 }
-.annotation_validated {
+div.annotation_validated {
     background-color: var(--color-validated);
 }
 span.icon {
@@ -129,12 +137,16 @@ span.icon {
     display: inline-block;
 }
 div.actions {
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-evenly;
 }
-div.actions button {
-    padding: var(--gutter-small);
+div.actions svg {
+    margin: var(--gutter-small);
+}
+div.actions svg:not(.inactive) {
+    cursor: pointer;
 }
 div.actions .active {
     color: var(--color-blue);
@@ -150,34 +162,4 @@ div.taxonomy {
 }
 div.taxonomy button {
     padding: 0 20px;
-}
-span.selected {
-    background-color: var(--selected-taxonomy-element-background);
-}
-button.section-handle {
-    line-height: var(--line-height);
-    border-top: var(--border-height) solid var(--light-gray);
-    width: 100%;
-    display: flex;
-    align-items: baseline;
-    justify-content: flex-start;
-    padding: var(--padding-height) 0;
-}
-section.opened {
-    height: calc(100% - (2 * var(--total-handle-height)));
-    overflow-y: auto;
-}
-section.opened button.section-handle {
-    background-color: var(--light-gray);
-}
-section.closed {
-    height: var(--total-handle-height);
-    overflow: hidden;
-}
-div.layer-switcher-container {
-    height: 800px;
-}
-div.layer-switcher-container div.layer-switcher {
-    height: inherit;
-    overflow-y: scroll;
 }
