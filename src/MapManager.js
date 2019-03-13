@@ -57,7 +57,7 @@ export class MapManager {
      * @param {String} annotation_namespace
      * @param {String} annotation_layer
      * @param {String} map_div_id
-     * @param {Object} state_proxy
+     * @param {observable} state_proxy
      * @param {StoreActions} store_actions
      */
     constructor(
@@ -82,9 +82,24 @@ export class MapManager {
          * @type {String}
          */
         this.annotation_namespace = annotation_namespace;
+        /**
+         * While for the user an annotation represents an instance of a taxonomy class on an image, for the platform
+         * it is actually a feature on an OpenLayers layer. Our features are served from a Geoserver instance,
+         * and this property should contain the layer mounted on Geoserver that contains our annotations.
+         * @private
+         * @type {String}
+         */
         this.annotation_layer = annotation_layer;
+        /**
+         * We use MobX as state manager, this is our top level mobx observable store.
+         * @private
+         * @type {observable}
+         */
         this.state_proxy = state_proxy;
-        /** @type {StoreActions} */
+        /**
+         * @private
+         * @type {StoreActions}
+         */
         this.store_actions = store_actions;
 
         this.previous_mode = null;
@@ -338,6 +353,13 @@ export class MapManager {
         }
     }
 
+    /**
+     * Launch the creation of a new annotation. This should also update the "new" annotations count of the relevant
+     * taxonomy class.
+     * @private
+     * @param event
+     * @returns {Promise<void>}
+     */
     async receive_drawend_event(event) {
 
         const feature = event.feature;

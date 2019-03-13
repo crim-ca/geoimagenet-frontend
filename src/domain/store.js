@@ -129,7 +129,7 @@ export class StoreActions {
         });
     }
 
-        /**
+    /**
      * Take the raw data structure from the api and transform it into usable structures for the UI.
      *
      * loop over an object, build a class instance from it.
@@ -153,7 +153,7 @@ export class StoreActions {
             this.state_proxy.flat_taxonomy_classes[current_instance.id] = current_instance;
 
             if (parent_id !== null) {
-                current_raw.parent_id = parent_id;
+                current_instance.parent_id = parent_id;
                 this.state_proxy.flat_taxonomy_classes[parent_id].children.push(current_instance);
             }
 
@@ -168,9 +168,31 @@ export class StoreActions {
 
     }
 
+    /**
+     * Call when it's certain the the annotation was added, this only updates the local storage for displaying purposes.
+     * Counts not being computed automaticaly from children counts (nothing really to gain there for now)
+     * we also need to update the parent's new annotations count if any.
+     * @public
+     * @param {Number} taxonomy_class_id
+     */
     @action.bound
     increment_new_annotations_count(taxonomy_class_id) {
-        this.state_proxy.annotation_counts[taxonomy_class_id][ANNOTATION.STATUS.NEW]++;
+
+        let instance = this.state_proxy.flat_taxonomy_classes[taxonomy_class_id];
+        let counts = instance['counts'];
+
+        /**
+         * Technically this could be initialized, but in the case it's not, put a 1 in there.
+         * @type {*|number}
+         */
+        counts[ANNOTATION.STATUS.NEW] = (counts[ANNOTATION.STATUS.NEW] + 1) || 1;
+
+        while (instance.parent_id !== null) {
+            instance = this.state_proxy.flat_taxonomy_classes[instance.parent_id];
+            counts = instance['counts'];
+            counts[ANNOTATION.STATUS.NEW] = (counts[ANNOTATION.STATUS.NEW] + 1) || 1;
+        }
+
     }
 
     @action.bound
