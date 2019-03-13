@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {createMuiTheme, Link, Paper, Typography, MuiThemeProvider} from '@material-ui/core';
+import PropTypes from 'prop-types';
 
 import crim from './img/logos/crim.png';
 import canarie from './img/logos/canarie.gif';
@@ -13,6 +14,10 @@ import './css/style_web.css';
 import './img/icons/favicon.ico';
 
 import * as Sentry from '@sentry/browser';
+import Login from './components/Login.js';
+import {UserInteractions} from './domain/user-interactions.js';
+import {create_state_proxy, StoreActions} from './domain/store.js';
+import {DataQueries} from './domain/data-queries.js';
 
 Sentry.init({
     dsn: 'https://e7309c463efe4d85abc7693a6334e8df@sentry.crim.ca/21'
@@ -105,18 +110,6 @@ class Presentation extends Component {
     }
 }
 
-class Login extends Component {
-    render() {
-        return (
-            <form method='post' action='/login'>
-                <label>Username<input type='text' name='user_name' /></label>
-                <label>Password<input type='password' name='password' /></label>
-                <button type='submit'>Connect</button>
-            </form>
-        );
-    }
-}
-
 class Menu extends Component {
     render() {
         return (
@@ -130,11 +123,15 @@ class Menu extends Component {
 }
 
 class Layout extends Component {
+    static propTypes = {
+        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired
+    };
+
     render() {
         return (
             <div className='layout'>
                 <Paper className='session'>
-                    <Login />
+                    <Login user_interactions={this.props.user_interactions} />
                 </Paper>
                 <Paper className='content'>
                     <Presentation />
@@ -155,8 +152,15 @@ const theme = createMuiTheme({
 });
 
 addEventListener('DOMContentLoaded', () => {
+
+    const store_actions = new StoreActions(create_state_proxy());
+    const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT);
+    const user_interactions = new UserInteractions(store_actions, data_queries);
+
     ReactDOM.render(
-        <MuiThemeProvider theme={theme}><Layout /></MuiThemeProvider>,
+        <MuiThemeProvider theme={theme}>
+            <Layout user_interactions={user_interactions} />
+        </MuiThemeProvider>,
         document.body
     );
 });

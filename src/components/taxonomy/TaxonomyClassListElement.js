@@ -9,15 +9,23 @@ import {faPaperPlane} from '@fortawesome/free-solid-svg-icons';
 
 import {TaxonomyClasses} from '../TaxonomyBrowser.js';
 import {ANNOTATION} from '../../domain/constants.js';
-import {TaxonomyClass} from '../../domain/entities.js';
 
 const StyledListItem = withStyles({
     root: {
         '&:focus': {
             backgroundColor: 'inherit',
-        }
+        },
+        paddingTop: '6px',
+        paddingBottom: '6px',
+        justifyContent: 'space-between',
     },
 })(ListItem);
+const StyledList = withStyles({
+    padding: {
+        paddingTop: 0,
+        paddingBottom: 0,
+    }
+})(List);
 const SpacedChip = withStyles({
     root: {
         marginLeft: '6px',
@@ -156,7 +164,7 @@ class TaxonomyClassListElement extends Component {
             : this.make_select_taxonomy_class_for_annotation_handler(this.props.taxonomy_class);
 
         return (
-            <List>
+            <StyledList>
                 <StyledListItem className='taxonomy_class_list_element'
                                 onClick={label_click_callback}
                                 selected={this.props.state_proxy.selected_taxonomy_class_id === this.props.taxonomy_class.id}
@@ -194,7 +202,7 @@ class TaxonomyClassListElement extends Component {
                     )
                     : null
                 }
-            </List>
+            </StyledList>
         );
     }
 }

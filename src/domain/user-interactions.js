@@ -1,5 +1,6 @@
 import {notifier} from '../utils/notifications.js';
 import {action} from 'mobx';
+import {post_json} from '../utils/http.js';
 
 /**
  * In a web app, we need top level handlers that react to specific user intentions, and interactions.
@@ -58,7 +59,7 @@ export class UserInteractions {
         try {
             // TODO eventually make both requests under a Promise.all as they are not co-dependant
 
-            const taxonomy_classes = await this.data_queries.nested_taxonomy_classes(version['root_taxonomy_class_id']);
+            const taxonomy_classes = await this.data_queries.fetch_taxonomy_classes(version['root_taxonomy_class_id']);
             // first create a flat list of all classes, removing the children
 
             this.store_actions.build_taxonomy_classes_structures(taxonomy_classes);
@@ -99,6 +100,21 @@ export class UserInteractions {
     toggle_taxonomy_class(taxonomy_class) {
         const taxonomy_class_id = taxonomy_class.id;
         this.store_actions.toggle_taxonomy_class_tree_element(taxonomy_class_id);
+    }
+
+    /**
+     * When submitting the login form, the user expects to login, or be presented with error about said login.
+     * Send the credentials to magpie, then verify content to be sure user is logged in, then notify about sucessful login.
+     * In case of error, notify of problem without leaking too much detail.
+     * @param {Object} form_data
+     * @returns {Promise<void>}
+     */
+    async login_form_submission(form_data) {
+        try {
+            await this.data_queries.login_request(form_data);
+        } catch (error) {
+            notifier.error('Login forbidden.');
+        }
     }
 
 }

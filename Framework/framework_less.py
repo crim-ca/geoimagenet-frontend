@@ -4,6 +4,7 @@ from os import path
 from mimetypes import MimeTypes
 from urllib.error import HTTPError
 import sentry_sdk
+from jinja2.exceptions import TemplateNotFound
 
 from GIN.Server.Routing import mapper
 from GIN.Server.Exception import NotFound
@@ -29,7 +30,10 @@ def request_wants_file(full_file_path):
 # TODO as we get more sections, this will be a hassle to always update the equivalence
 path_equivalences = {
     '/': '/index.html',
+    '/docs': '/docs/index.html',
+    '/docs/': '/docs/index.html',
     '/platform': '/platform.html',
+    '/datasets': '/datasets.html',
 }
 
 
@@ -64,7 +68,7 @@ def handler_app(environ, start_response):
 
         status, headers, data = injector.execute(handler_callable)
 
-    except NotFound:
+    except (NotFound, TemplateNotFound):
         status = '404 NOT FOUND'
         headers = [('Content-type', 'text/plain')]
         data = 'This page does not exist'
@@ -76,6 +80,11 @@ def handler_app(environ, start_response):
         status = '500 CONNECTION REFUSED'
         headers = [('Content-type', 'text/plain')]
         data = 'The API is down at the moment. We could not fetch the resource.'
+    except Exception as err:
+        sentry_sdk.capture_exception(err)
+        status = '500 SERVER ERROR'
+        headers = [('Content-type', 'text/plain')]
+        data = 'The server was unable to generate a response, and hopes you will pardon it.'
 
     start_response(status, headers)
     return [bytes(data, 'utf8')]

@@ -24,15 +24,7 @@
 div#root-platform {
     height: 100%;
 }
-div.platform {
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-}
 div.map {
-    height: 100%;
-    width: calc(100% - var(--width-sidebar));
-    position: relative;
 }
 div.map span.coordinates {
     display: flex;
