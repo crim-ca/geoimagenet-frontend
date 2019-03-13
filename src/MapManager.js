@@ -29,14 +29,6 @@ import {
     VIEW_CENTER, VALID_OPENLAYERS_ANNOTATION_RESOLUTION
 } from './domain/constants.js';
 import {notifier} from './utils/notifications.js';
-import {
-    create_geojson_feature,
-    delete_annotations_request,
-    geoserver_capabilities,
-    modify_geojson_features,
-    reject_annotations_request,
-    validate_annotations_request
-} from './domain/data-queries.js';
 import {debounced} from './utils/event_handling.js';
 
 /**
@@ -57,8 +49,9 @@ export class MapManager {
      * @param {String} annotation_namespace
      * @param {String} annotation_layer
      * @param {String} map_div_id
-     * @param {observable} state_proxy
+     * @param {Object} state_proxy
      * @param {StoreActions} store_actions
+     * @param {DataQueries} data_queries
      */
     constructor(
         geoserver_url,
@@ -67,7 +60,8 @@ export class MapManager {
         annotation_layer,
         map_div_id,
         state_proxy,
-        store_actions
+        store_actions,
+        data_queries
     ) {
 
         /**
@@ -93,7 +87,7 @@ export class MapManager {
         /**
          * We use MobX as state manager, this is our top level mobx observable store.
          * @private
-         * @type {observable}
+         * @type {Object}
          */
         this.state_proxy = state_proxy;
         /**
@@ -101,6 +95,11 @@ export class MapManager {
          * @type {StoreActions}
          */
         this.store_actions = store_actions;
+        /**
+         * @private
+         * @type {DataQueries}
+         */
+        this.data_queries = data_queries;
 
         this.previous_mode = null;
 
@@ -371,7 +370,7 @@ export class MapManager {
         const payload = this.formatGeoJson.writeFeature(feature);
 
         try {
-            const new_feature_id = await create_geojson_feature(payload);
+            const new_feature_id = await this.data_queries.create_geojson_feature(payload);
             feature.setId(`${this.annotation_layer}.${new_feature_id}`);
             this.store_actions.increment_new_annotations_count(this.state_proxy.selected_taxonomy_class_id);
         } catch (error) {
@@ -393,7 +392,7 @@ export class MapManager {
         const payload = this.formatGeoJson.writeFeatures(modifiedFeatures);
 
         try {
-            await modify_geojson_features(payload);
+            await this.data_queries.modify_geojson_features(payload);
         } catch (error) {
             MapManager.geojsonLogError(error);
         }
@@ -472,7 +471,7 @@ export class MapManager {
             case MODE.DELETE:
                 await notifier.confirm(`Do you really want to delete the highlighted feature?`);
                 try {
-                    await delete_annotations_request(feature_ids);
+                    await this.data_queries.delete_annotations_request(feature_ids);
                 } catch (error) {
                     MapManager.geojsonLogError(error);
                 }
@@ -483,7 +482,7 @@ export class MapManager {
 
             case MODE.VALIDATE:
                 try {
-                    await validate_annotations_request(feature_ids);
+                    await this.data_queries.validate_annotations_request(feature_ids);
                 } catch (error) {
                     MapManager.geojsonLogError(error);
                 }
@@ -493,7 +492,7 @@ export class MapManager {
 
             case MODE.REJECT:
                 try {
-                    await reject_annotations_request(feature_ids);
+                    await this.data_queries.reject_annotations_request(feature_ids);
                 } catch (error) {
                     MapManager.geojsonLogError(error);
                 }
@@ -574,7 +573,7 @@ export class MapManager {
         const dst_epsg = 'EPSG:3857';
 
         try {
-            const result = await geoserver_capabilities(`${this.geoserver_url}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
+            const result = await this.data_queries.geoserver_capabilities(`${this.geoserver_url}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
             const capability = result.Capability;
             const layers_info = capability.Layer.Layer;
             for (let i = 0; i < layers_info.length; i++) {

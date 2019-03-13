@@ -2,6 +2,7 @@
     --line-height: 20px;
     --border-height: 1px;
     --padding-height: 10px;
+    --height-actions: 64px;
 
     --total-handle-height: calc(var(--line-height) + var(--border-height) + (2 * var(--padding-height)));
 
@@ -48,8 +49,14 @@ div.map span.coordinates {
 }
 .right {
     height: 100%;
-    overflow-y: scroll;
     width: var(--width-sidebar);
+}
+.right .top {
+    height: var(--height-actions);
+}
+.right .bottom {
+    height: calc(100% - var(--height-actions));
+    overflow-y: scroll;
 }
 ul {
     list-style: none;
@@ -130,6 +137,7 @@ span.icon {
     display: inline-block;
 }
 div.actions {
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-evenly;

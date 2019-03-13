@@ -207,6 +207,10 @@ export class StoreActions {
         this.state_proxy.current_annotation.image_title = '';
     }
 
+    /**
+     *
+     * @param {Object} counts
+     */
     @action.bound
     set_annotation_counts(counts) {
         for (let class_id in counts) {

@@ -5,15 +5,16 @@
  */
 export class TaxonomyClass {
     /**
-     *
+     * We only need three params from the api to make sure we have a class that will behave correctly in the application.
+     * All others can be added after instantiation if they happen to exist.
      * @param {Number} id
      * @param {string} name
      * @param {Number} taxonomy_id
-     * @param {TaxonomyClass[]} children
-     * @param {Number|null} parent_id
-     * @param {boolean} visible The visibility of this class annotations in the viewport
-     * @param {boolean} opened Wether or not the class's children are visible in the viewport
-     * @param {Object} counts
+     * @param {Number|null} [parent_id=null]
+     * @param {TaxonomyClass[]} [children=[]]
+     * @param {boolean} [visible=false]
+     * @param {boolean} [opened=false]
+     * @param {Object} [counts={}]
      */
     constructor(id, name, taxonomy_id, parent_id = null, children = [], visible = false, opened = false, counts = {}) {
         /**
@@ -42,12 +43,12 @@ export class TaxonomyClass {
          */
         this.children = children;
         /**
-         *
+         * The visibility of this class's annotations on the OpenLayers map.
          * @type {boolean}
          */
         this.visible = visible;
         /**
-         *
+         * Wether or not the class's children classes are visible (toggled) in the taxonomy browser.
          * @type {boolean}
          */
         this.opened = opened;

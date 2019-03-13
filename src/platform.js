@@ -1,5 +1,5 @@
 import {register_section_handles} from './utils/sections.js';
-import {fetch_taxonomies} from './domain/data-queries.js';
+import {DataQueries} from './domain/data-queries.js';
 import {notifier} from './utils/notifications.js';
 import {create_state_proxy, StoreActions} from './domain/store.js';
 import {configure} from 'mobx';
@@ -33,7 +33,8 @@ addEventListener('DOMContentLoaded', async () => {
 
     const state_proxy = create_state_proxy();
     const store_actions = new StoreActions(state_proxy);
-    const user_interactions = new UserInteractions(store_actions);
+    const data_queries = new DataQueries(GEOIMAGENET_API_URL);
+    const user_interactions = new UserInteractions(store_actions, data_queries);
 
     const div = element('div');
     div.id = 'root';
@@ -44,13 +45,14 @@ addEventListener('DOMContentLoaded', async () => {
         <Platform
             state_proxy={state_proxy}
             store_actions={store_actions}
-            user_interactions={user_interactions} />,
+            user_interactions={user_interactions}
+            data_queries={data_queries} />,
         get_by_id('root')
     );
     //new TaxonomyBrowser(map_manager, state_proxy, store_actions, user_interactions);
 
     try {
-        const taxonomies = await fetch_taxonomies();
+        const taxonomies = await data_queries.fetch_taxonomies();
         store_actions.set_taxonomy(taxonomies);
     } catch (e) {
         switch (e.status) {
@@ -59,7 +61,6 @@ addEventListener('DOMContentLoaded', async () => {
                     "This will likely render the platform unusable until someone populates the taxonomies.");
                 break;
             default:
-                console.log(e);
                 notifier.error('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
         }
     }
