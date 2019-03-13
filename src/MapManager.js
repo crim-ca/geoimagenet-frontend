@@ -39,41 +39,27 @@ import {
 } from './domain/data-queries.js';
 import {debounced} from './utils/event_handling.js';
 
-const create_vector_layer = (title, source, color, visible = true) => {
-    return new Vector({
-        title: title,
-        source: source,
-        style: new Style({
-            fill: new Fill({
-                color: 'rgba(255, 255, 255, 0.25)',
-            }),
-            stroke: new Stroke({
-                color: color,
-                width: 2
-            }),
-            image: new Circle({
-                radius: 7,
-                fill: new Fill({
-                    color: color,
-                })
-            })
-        }),
-        visible: visible
-    });
-};
-
-// To transform coordinates from a project to another
-function transform(extent, src_epsg, dst_epsg) {
-    return transformExtent(extent, src_epsg, dst_epsg);
-}
-
+/**
+ * The MapManager is responsible for handling map behaviour at the boundary between the platform and OpenLayers.
+ * It should listen to specific OL events and trigger domain interactions in accordance.
+ */
 export class MapManager {
 
-    /*
-    using arrow functions to bind the scope of member methods
-    changing foo = () => {}; to foo = function() {} _will_ break things in interesting and unexpected ways
+    /**
+     using arrow functions to bind the scope of member methods
+     changing foo = () => {}; to foo = function() {} _will_ break things in interesting and unexpected ways
      */
 
+    /**
+     * @public
+     * @param {String} geoserver_url
+     * @param {String} annotation_namespace_uri
+     * @param {String} annotation_namespace
+     * @param {String} annotation_layer
+     * @param {String} map_div_id
+     * @param {Object} state_proxy
+     * @param {StoreActions} store_actions
+     */
     constructor(
         geoserver_url,
         annotation_namespace_uri,
@@ -84,10 +70,21 @@ export class MapManager {
         store_actions
     ) {
 
+        /**
+         * The deployment's Geoserver endpoint
+         * @private
+         * @type {String}
+         */
         this.geoserver_url = geoserver_url;
+        /**
+         * Geoserver classifies annotations in namespaces, we need it to construct urls.
+         * @private
+         * @type {String}
+         */
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
         this.state_proxy = state_proxy;
+        /** @type {StoreActions} */
         this.store_actions = store_actions;
 
         this.previous_mode = null;
@@ -99,11 +96,21 @@ export class MapManager {
         this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
         this.receive_resolution_change_event = this.receive_resolution_change_event.bind(this);
 
+        /**
+         * Reference to the OL View object.
+         * @private
+         * @type {View}
+         */
         this.view = new View({
             center: fromLonLat(VIEW_CENTER.CENTRE),
             zoom: VIEW_CENTER.ZOOM_LEVEL
         });
 
+        /**
+         * Reference to the OL map instance.
+         * @private
+         * @type {Map}
+         */
         this.map = new Map({
             target: map_div_id,
             view: this.view,
@@ -121,14 +128,24 @@ export class MapManager {
             this.store_actions.set_annotation_source(status, this.create_vector_source(this.state_proxy.annotations_collections[status], status));
 
             const this_layer_is_visible = VISIBLE_LAYERS_BY_DEFAULT.indexOf(status) > -1;
-            const vectorLayer = create_vector_layer(status, this.state_proxy.annotations_sources[status], color, this_layer_is_visible);
+            const vectorLayer = MapManager.create_vector_layer(status, this.state_proxy.annotations_sources[status], color, this_layer_is_visible);
 
             this.store_actions.set_annotation_layer(status, vectorLayer);
         });
 
+        /**
+         * Map interaction to modify existing annotations. To be disabled when zoomed out too far.
+         * @private
+         * @type {Modify}
+         */
         this.modify = new Modify({
             features: this.state_proxy.annotations_collections[ANNOTATION.STATUS.NEW],
         });
+        /**
+         * Map interaction to create new annotations. To be disabled when zoomed out too far.
+         * @private
+         * @type {Draw}
+         */
         this.draw = new Draw({
             source: this.state_proxy.annotations_sources[ANNOTATION.STATUS.NEW],
             type: 'Polygon',
@@ -204,19 +221,58 @@ export class MapManager {
 
     }
 
+    /**
+     * Convenience factory function to create layers.
+     * @private
+     * @param {String} title
+     * @param {VectorSource} source
+     * @param {String} color
+     * @param {boolean} visible
+     * @returns {VectorLayer}
+     */
+    static create_vector_layer(title, source, color, visible = true) {
+        return new Vector({
+            title: title,
+            source: source,
+            style: new Style({
+                fill: new Fill({
+                    color: 'rgba(255, 255, 255, 0.25)',
+                }),
+                stroke: new Stroke({
+                    color: color,
+                    width: 2
+                }),
+                image: new Circle({
+                    radius: 7,
+                    fill: new Fill({
+                        color: color,
+                    })
+                })
+            }),
+            visible: visible
+        });
+    }
+
     refresh_source_by_status(status) {
         this.state_proxy.annotations_sources[status].clear();
         this.state_proxy.annotations_sources[status].refresh(true);
     }
 
+    /**
+     * When in annotation mode, we need some kind of control over the effect of each click.
+     * This callback should check domain conditions for the click to be valid and return a boolean to that effect.
+     * Domain prevalidation of annotations should happen here.
+     * @private
+     * @param event
+     * @returns {boolean}
+     */
     draw_condition_callback(event) {
 
-        /*
-        make sure that each click is correct to create the annotation
+        /**
+         make sure that each click is correct to create the annotation
 
-        if we are the first click, only verify that we are over an image layer
-        if we are clicks afterwards, verify that we are over the same image
-
+         if we are the first click, only verify that we are over an image layer
+         if we are clicks afterwards, verify that we are over the same image
          */
 
         let layer_index = -1;
@@ -259,6 +315,12 @@ export class MapManager {
         return true;
     }
 
+    /**
+     * When changing resolution we need to activate or deactivate user annotation. That is because after a certain distance,
+     * objects are way too tiny on the screen to create a meaningful annotation.
+     * @private
+     * @param event
+     */
     receive_resolution_change_event(event) {
         const resolution = event.target.get('resolution');
         if (resolution < VALID_OPENLAYERS_ANNOTATION_RESOLUTION) {
@@ -316,6 +378,12 @@ export class MapManager {
 
     }
 
+    /**
+     * When handling clicks we sometimes need to get an aggregation of all features under the cursor.
+     * This is a convenience wrapper around OL functionnality that does this.
+     * @param event
+     * @returns {Array}
+     */
     aggregate_features_at_cursor(event) {
         const features = [];
         this.map.forEachFeatureAtPixel(event.pixel, feature => {
@@ -334,6 +402,13 @@ export class MapManager {
         return feature_ids;
     }
 
+    /**
+     * This is the general click management event handler. Depending on a lot of factors,
+     * this will dispatch the click to various handlers and actions.
+     * @private
+     * @param event
+     * @returns {Promise<void>}
+     */
     async receive_map_viewport_click_event(event) {
         const features = this.aggregate_features_at_cursor(event);
         const feature_ids = this.get_aggregated_feature_ids(features);
@@ -359,7 +434,7 @@ export class MapManager {
                             const buffered_extent = new buffer(bounding_extent, 100);
                             this.view.fit(buffered_extent, {
                                 duration: 1000
-                            })
+                            });
                         } else {
                             const extent = actual_features[0].get('geometry').getExtent();
                             this.view.animate({
@@ -412,15 +487,21 @@ export class MapManager {
         }
     }
 
+    /**
+     *
+     * @param features
+     * @param status
+     * @returns {VectorSource}
+     */
     create_vector_source(features, status) {
         return new VectorSource({
             format: new GeoJSON(),
             features: features,
             url: (extent) => {
                 let baseUrl = `${this.geoserver_url}/wfs?service=WFS&` +
-                        `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-                        `outputFormat=application/json&srsname=EPSG:3857&` +
-                        `cql_filter=status='${status}' AND BBOX(geometry, ${extent.join(',')})`;
+                    `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
+                    `outputFormat=application/json&srsname=EPSG:3857&` +
+                    `cql_filter=status='${status}' AND BBOX(geometry, ${extent.join(',')})`;
                 if (this.cql_filter.length > 0) {
                     baseUrl += ` AND ${this.cql_filter}`;
                 } else {
@@ -432,6 +513,12 @@ export class MapManager {
         });
     }
 
+    /**
+     * There are numerous layers that need be created for the platform to give correct feedback to the user.
+     * This should create all these layers and allow the layer switcher to switch through them.
+     * @todo refactor this in smaller functions
+     * @returns {Promise<void>}
+     */
     async make_layers() {
 
         const base_maps = [];
@@ -465,7 +552,7 @@ export class MapManager {
         const dst_epsg = 'EPSG:3857';
 
         try {
-            const result = await geoserver_capabilities(`${GEOSERVER_URL}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
+            const result = await geoserver_capabilities(`${this.geoserver_url}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
             const capability = result.Capability;
             const layers_info = capability.Layer.Layer;
             for (let i = 0; i < layers_info.length; i++) {
@@ -479,12 +566,12 @@ export class MapManager {
 
                 if (layer_name.includes('GeoImageNet:NRG')) {
                     // The coordinates must be set to the same projection as the map
-                    let extent = transform(extent_for_OL, src_proj, dst_epsg);
+                    let extent = transformExtent(extent_for_OL, src_proj, dst_epsg);
                     const lyr = new TileLayer({
                         title: layer_base_name,
                         type: CUSTOM_GEOIM_IMAGE_LAYER,
                         source: new TileWMS({
-                            url: `${GEOSERVER_URL}/GeoImageNet/wms`,
+                            url: `${this.geoserver_url}/GeoImageNet/wms`,
                             params: {'LAYERS': layer_name},
                             ratio: 1,
                             serverType: 'geoserver',
@@ -497,12 +584,12 @@ export class MapManager {
 
                 if (layer_name.includes('GeoImageNet:RGB')) {
                     // The coordinates must be set to the same projection as the map
-                    let extent = transform(extent_for_OL, src_proj, dst_epsg);
+                    let extent = transformExtent(extent_for_OL, src_proj, dst_epsg);
                     const lyr = new TileLayer({
                         title: layer_base_name,
                         type: CUSTOM_GEOIM_IMAGE_LAYER,
                         source: new TileWMS({
-                            url: `${GEOSERVER_URL}/GeoImageNet/wms`,
+                            url: `${this.geoserver_url}/GeoImageNet/wms`,
                             params: {'LAYERS': layer_name},
                             ratio: 1,
                             serverType: 'geoserver',
@@ -628,6 +715,12 @@ export class MapManager {
         this.map.addLayer(base_maps_group);
         this.map.addLayer(annotations_group);
 
+        /**
+         * The Layer Switcher is paramount to the map: it should allow easy access to the various displayed layers
+         * in a way that limits cluttering of the screen space.
+         * @private
+         * @type {LayerSwitcher}
+         */
         this.layerSwitcher = new LayerSwitcher({
             target: 'layer-switcher',
             open: true,
@@ -636,6 +729,11 @@ export class MapManager {
 
     }
 
+    /**
+     * @private
+     * @param error
+     * @returns {Promise<void>}
+     */
     static async geojsonLogError(error) {
         const text = await error.text();
         notifier.error(text);
