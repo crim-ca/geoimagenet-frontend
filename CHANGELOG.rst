@@ -2,6 +2,54 @@ Changelog
 =========
 
 
+0.5.0 (2019-03-20)
+------------------
+
+New
+~~~
+- Datasets page layout. [Félix Gagnon-Grenier]
+- Menu at the top of the logged in section. [Félix Gagnon-Grenier]
+- Update new annotation count on annotation creation. [Félix Gagnon-
+  Grenier]
+- Sentry in frontend code. [Félix Gagnon-Grenier]
+- Introduce sentry in python code. [Félix Gagnon-Grenier]
+- Automatic doc generation with esdoc. [Félix Gagnon-Grenier]
+- Adding MuiThemeProvider to material-ui. [Félix Gagnon-Grenier]
+
+Changes
+~~~~~~~
+- Bringing back actual favicon. [Félix Gagnon-Grenier]
+- Data queries in their own class. [Félix Gagnon-Grenier]
+- Quick favicon fix until we remake the manifest and mobile behaviour
+  thingy. [Félix Gagnon-Grenier]
+- Taxonomy selection in tabs. [Félix Gagnon-Grenier]
+- Sidebar sections in material panels. [Félix Gagnon-Grenier]
+- Both flat and nested taxonomy_class structures with observables
+  everywhere. [Félix Gagnon-Grenier]
+- Select taxonomy with material effect. [Félix Gagnon-Grenier]
+- Directly change properties on the class objects. [Félix Gagnon-
+  Grenier]
+- React component for taxonomy browser new: material-ui. [Félix Gagnon-
+  Grenier]
+- Better string formatting. [David Caron]
+- Add bounding box to limit the WFS requests to geoserver. [David Caron]
+- Docker builds faster, but image size is larger (250mb) [David Caron]
+- Multiple bundles from webpack in dist folder. [Félix Gagnon-Grenier]
+
+Fix
+~~~
+- Material-ui paper for presentation. [Félix Gagnon-Grenier]
+- Show classes based on flat taxonomy_classes visible attribute. [Félix
+  Gagnon-Grenier]
+- Remove bundle from source control. [Félix Gagnon-Grenier]
+- Don't focus element on opening list tree. [Félix Gagnon-Grenier]
+- Serve static changelog file as utf-8. [Félix Gagnon-Grenier]
+
+Other
+~~~~~
+- More MapManager doc. [Félix Gagnon-Grenier]
+
+
 0.4.0 (2019-02-21)
 ------------------
 
@@ -40,6 +88,7 @@ Fix
 
 Other
 ~~~~~
+- 0.4.0. [Félix Gagnon-Grenier]
 - Actions in their component. [Félix Gagnon-Grenier]
 - Zoome on img marker click. [Félix Gagnon-Grenier]
 - Flat ancestors and descendants structure. [Félix Gagnon-Grenier]
