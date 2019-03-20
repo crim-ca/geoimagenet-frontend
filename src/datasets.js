@@ -8,7 +8,7 @@ import {create_state_proxy, StoreActions} from './domain/store.js';
 import {UserInteractions} from './domain/user-interactions.js';
 import {element, get_by_id} from './utils/dom.js';
 import LoggedLayout from './components/LoggedLayout.js';
-import Datasets from './components/Datasets.js';
+import {Datasets} from './components/Datasets.js';
 import {theme} from './utils/react.js';
 
 import './css/base.css';
@@ -35,7 +35,7 @@ addEventListener('DOMContentLoaded', async () => {
     ReactDOM.render(
         <MuiThemeProvider theme={theme}>
             <CssBaseline />
-            <LoggedLayout><Datasets /></LoggedLayout>
+            <LoggedLayout><Datasets datasets={[]} /></LoggedLayout>
         </MuiThemeProvider>,
         get_by_id('root')
     );
