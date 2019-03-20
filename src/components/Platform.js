@@ -23,8 +23,20 @@ const StyledPanelDetails = withStyles({
     },
 })(ExpansionPanelDetails);
 
+/**
+ * The Platform is the top level component for the annotation platform. It is responsible for managing the map, hence
+ * the map manager is instantiated from here, after the component is mounted. We need to wait for the map elements to exist
+ * or there would be nothing to mount the map onto.
+ */
 @observer
 class Platform extends Component {
+    /**
+     * @type {Object}
+     * @property {Object} state_proxy
+     * @property {StoreActions} store_actions
+     * @property {UserInteractions} user_interactions
+     * @property {DataQueries} data_queries
+     */
     static propTypes = {
         state_proxy: PropTypes.object.isRequired,
         store_actions: PropTypes.instanceOf(StoreActions).isRequired,
@@ -32,12 +44,26 @@ class Platform extends Component {
         data_queries: PropTypes.instanceOf(DataQueries).isRequired
     };
 
+    /**
+     * @private
+     * @type {Object}
+     * @property {string|null} expanded Currently expanded tab identifier.
+     */
     state = {
         expanded: null,
     };
 
+    /**
+     * Instantiates the map manager as an empty object so we can pass it to the children elements that need it. Rendering will
+     * happen before componentDidMount, so we need to have a dummy value before the map manager is actually instantiated.
+     * @param {Object} props Attributes passed to the component by React.
+     */
     constructor(props) {
         super(props);
+        /**
+         * @private
+         * @type {MapManager|Object}
+         */
         this.map_manager = {};
     }
 
@@ -54,6 +80,11 @@ class Platform extends Component {
         );
     }
 
+    /**
+     * use double arrow function to actually create the callback for each panel.
+     * @param {string} panel
+     * @returns {Function}
+     */
     handle_change = panel => (event, expanded) => {
         this.setState({
             expanded: expanded ? panel : false,
@@ -63,7 +94,7 @@ class Platform extends Component {
     render() {
 
         const taxonomy_class = this.props.state_proxy.flat_taxonomy_classes[this.props.state_proxy.selected_taxonomy.root_taxonomy_class_id];
-        const classes = taxonomy_class && taxonomy_class.children ? taxonomy_class.children : [];
+        const classes = taxonomy_class ? [taxonomy_class] : [];
 
         const {expanded} = this.state;
 
