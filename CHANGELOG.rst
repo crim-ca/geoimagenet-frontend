@@ -2,6 +2,14 @@ Changelog
 =========
 
 
+0.5.1 (2019-03-20)
+------------------
+
+Fix
+~~~
+- Brought back top level hierarchy element. [Félix Gagnon-Grenier]
+
+
 0.5.0 (2019-03-20)
 ------------------
 
@@ -47,6 +55,7 @@ Fix
 
 Other
 ~~~~~
+- Changelog for 0.5.0. [Félix Gagnon-Grenier]
 - More MapManager doc. [Félix Gagnon-Grenier]
 
 
