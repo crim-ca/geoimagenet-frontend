@@ -1,5 +1,5 @@
 import {ANNOTATION, MODE} from './constants';
-import {observable, action, runInAction} from 'mobx';
+import {observable, action, runInAction, configure} from 'mobx';
 import {TaxonomyClass} from './entities.js';
 
 const default_store_schematics = {
@@ -42,6 +42,15 @@ export const create_state_proxy = (store_schematics = null) => {
     const store = create_store(store_schematics);
     return observable.object(store);
 };
+
+/**
+ * this is relatively important in the sense that it constraints us to mutate the store only in actions
+ * otherwise, changing the store, affecting the state each time, can be compared to an open heart hemorrhage
+ */
+configure({
+    enforceActions: 'always',
+});
+
 
 /**
  * The store actions are lower level action handlers, in the sense that they are not directly related to a user's actions,

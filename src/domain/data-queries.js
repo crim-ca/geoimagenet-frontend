@@ -12,13 +12,28 @@ export class DataQueries {
     /**
      * @public
      * @param {String} geoimagenet_api_url
+     * @param {String} magpie_endpoint
      */
-    constructor(geoimagenet_api_url) {
+    constructor(geoimagenet_api_url, magpie_endpoint) {
         /**
          * @private
          * @type {String}
          */
-        this.geoimagenet_api_url = geoimagenet_api_url;
+        this.geoimagenet_api_endpoint = geoimagenet_api_url;
+        /**
+         * @private
+         * @type {String}
+         */
+        this.magpie_endpoint = magpie_endpoint;
+    }
+
+    async login_request(form_data) {
+        const payload = JSON.stringify(form_data);
+        try {
+            return await post_json(`${this.magpie_endpoint}/signin`, payload);
+        } catch (e) {
+            return reject(e);
+        }
     }
 
     release_annotations_request = async taxonomy_class_id => {
@@ -26,7 +41,7 @@ export class DataQueries {
             taxonomy_class_id: taxonomy_class_id,
         });
         try {
-            return await post_json(`${this.geoimagenet_api_url}/annotations/release`, payload);
+            return await post_json(`${this.geoimagenet_api_endpoint}/annotations/release`, payload);
         } catch (e) {
             return reject(e);
         }
@@ -43,7 +58,7 @@ export class DataQueries {
             annotation_ids: annotation_ids,
         });
         try {
-            return await post_json(`${this.geoimagenet_api_url}/annotations/validate`, payload);
+            return await post_json(`${this.geoimagenet_api_endpoint}/annotations/validate`, payload);
         } catch (e) {
             return reject(e);
         }
@@ -54,7 +69,7 @@ export class DataQueries {
             annotation_ids: annotation_ids,
         });
         try {
-            return await post_json(`${this.geoimagenet_api_url}/annotations/reject`, payload);
+            return await post_json(`${this.geoimagenet_api_endpoint}/annotations/reject`, payload);
         } catch (e) {
             return reject(e);
         }
@@ -65,7 +80,7 @@ export class DataQueries {
             annotation_ids: annotation_ids
         });
         try {
-            return await post_json(`${this.geoimagenet_api_url}/annotations/delete`, payload);
+            return await post_json(`${this.geoimagenet_api_endpoint}/annotations/delete`, payload);
         } catch (e) {
             return reject(e);
         }
@@ -73,7 +88,7 @@ export class DataQueries {
 
     fetch_taxonomies = async () => {
         try {
-            const res = await make_http_request(`${this.geoimagenet_api_url}/taxonomy`);
+            const res = await make_http_request(`${this.geoimagenet_api_endpoint}/taxonomy`);
             return await res.json();
         } catch (e) {
             return reject(e);
@@ -85,9 +100,9 @@ export class DataQueries {
      * @param {int} root_taxonomy_class_id
      * @returns {Promise<Object>}
      */
-    nested_taxonomy_classes = async root_taxonomy_class_id => {
+    fetch_taxonomy_classes = async root_taxonomy_class_id => {
         try {
-            const res = await make_http_request(`${this.geoimagenet_api_url}/taxonomy_classes/${root_taxonomy_class_id}`);
+            const res = await make_http_request(`${this.geoimagenet_api_endpoint}/taxonomy_classes/${root_taxonomy_class_id}`);
             return await res.json();
         } catch (e) {
             return reject(e);
@@ -96,7 +111,7 @@ export class DataQueries {
 
     flat_taxonomy_classes_counts = async root_taxonomy_class_id => {
         try {
-            const res = await make_http_request(`${this.geoimagenet_api_url}/annotations/counts/${root_taxonomy_class_id}`);
+            const res = await make_http_request(`${this.geoimagenet_api_endpoint}/annotations/counts/${root_taxonomy_class_id}`);
             return await res.json();
         } catch (e) {
             return reject(e);
@@ -105,7 +120,7 @@ export class DataQueries {
 
     create_geojson_feature = async payload => {
         try {
-            const res = await post_json(`${this.geoimagenet_api_url}/annotations`, payload);
+            const res = await post_json(`${this.geoimagenet_api_endpoint}/annotations`, payload);
             return await res.json();
         } catch (e) {
             return reject(e);
@@ -114,7 +129,7 @@ export class DataQueries {
 
     modify_geojson_features = async payload => {
         try {
-            return await put_json(`${this.geoimagenet_api_url}/annotations`, payload);
+            return await put_json(`${this.geoimagenet_api_endpoint}/annotations`, payload);
         } catch (e) {
             return reject(e);
         }

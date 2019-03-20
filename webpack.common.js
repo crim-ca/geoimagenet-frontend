@@ -7,6 +7,7 @@ module.exports = {
     entry: {
         presentation: './src/presentation.js',
         platform: './src/platform.js',
+        datasets: './src/datasets.js',
     },
     output: {
         filename: '[name].bundle.js',
@@ -16,6 +17,7 @@ module.exports = {
         new webpack.DefinePlugin({
             GEOSERVER_URL: JSON.stringify(process.env.GEOSERVER_URL || 'https://geoimagenetdev.crim.ca/geoserver'),
             GEOIMAGENET_API_URL: JSON.stringify(process.env.GEOIMAGENET_API_URL || 'https://geoimagenetdev.crim.ca/api/v1'),
+            MAGPIE_ENDPOINT: JSON.stringify(process.env.MAGPIE_ENDPOINT || 'https://geoimagenetdev.crim.ca/magpie'),
             ANNOTATION_NAMESPACE_URI: JSON.stringify(process.env.ANNOTATION_NAMESPACE_URI || 'geoimagenet.public.crim.ca'),
             ANNOTATION_NAMESPACE: JSON.stringify(process.env.ANNOTATION_NAMESPACE || 'GeoImageNet'),
             ANNOTATION_LAYER: JSON.stringify(process.env.ANNOTATION_LAYER || 'annotation'),
@@ -28,7 +30,12 @@ module.exports = {
         new HtmlWebpackPlugin({
             title: 'Platform',
             filename: 'platform.html',
-            chunks: ['vendors~platform', 'platform'],
+            chunks: ['platform'],
+        }),
+        new HtmlWebpackPlugin({
+            title: 'Datasets',
+            filename: 'datasets.html',
+            chunks: ['datasets'],
         }),
     ],
     module: {
