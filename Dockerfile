@@ -16,11 +16,8 @@ RUN apk add nodejs-npm && \
     npm install
 
 COPY . .
-
-RUN npm run prod && \
-    rm -rf node_modules
+COPY bin/startup.sh /bin/startup.sh
 
 EXPOSE 5000
 
-# Start gunicorn
-CMD ["gunicorn", "--config", "/code/Framework/gunicorn_config.py", "Framework:fl_app", "-k", "eventlet"]
+CMD /bin/sh /bin/startup.sh
