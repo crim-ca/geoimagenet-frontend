@@ -156,7 +156,8 @@ export class StoreActions {
 
             const current_instance = observable.object(new TaxonomyClass(
                 current_raw.id,
-                current_raw.name,
+                current_raw.name_fr,
+                current_raw.name_en,
                 current_raw.taxonomy_id
             ));
             this.state_proxy.flat_taxonomy_classes[current_instance.id] = current_instance;

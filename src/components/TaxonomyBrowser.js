@@ -59,7 +59,7 @@ class TaxonomySelector extends Component {
 
         return (
             <Tabs value={value} onChange={this.handle_tab_select}>
-                { this.props.taxonomy.map((taxonomy, i) => <Tab value={taxonomy} key={i} label={taxonomy.name} />) }
+                { this.props.taxonomy.map((taxonomy, i) => <Tab value={taxonomy} key={i} label={taxonomy.name_fr} />) }
             </Tabs>
         );
     }
