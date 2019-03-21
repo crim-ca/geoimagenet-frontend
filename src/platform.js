@@ -13,7 +13,6 @@ import {element, get_by_id} from './utils/dom.js';
 import LoggedLayout from './components/LoggedLayout.js';
 
 import './css/base.css';
-import './css/style_web.css';
 import './css/style_platform.css';
 import './css/layer_switcher.css';
 import './css/notifications.css';

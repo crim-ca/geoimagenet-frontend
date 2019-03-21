@@ -12,7 +12,6 @@ import {Datasets} from './components/Datasets.js';
 import {theme} from './utils/react.js';
 
 import './css/base.css';
-import './css/style_web.css';
 import './css/notifications.css';
 import './img/icons/favicon.ico';
 

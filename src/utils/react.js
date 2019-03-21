@@ -1,4 +1,6 @@
-import {createMuiTheme} from '@material-ui/core';
+import {createMuiTheme, MuiThemeProvider} from '@material-ui/core';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * We want to give a coherent look to all themed components.
@@ -14,5 +16,19 @@ export const theme = createMuiTheme({
         widthSidebar: '500px',
         heightAppBar: '64px',
         gutterSmall: '12px',
-    }
+        maxContentWidth: '1200px',
+    },
+    colors: {
+        lightGray: 'rgba(0, 0, 0, 0.1)',
+    },
 });
+
+export const ThemedComponent = props => {
+    const {children} = props;
+    return (
+        <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
+    );
+};
+ThemedComponent.propTypes = {
+    children: PropTypes.object,
+};

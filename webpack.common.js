@@ -59,7 +59,7 @@ module.exports = {
                 ],
             },
             {
-                test: /\.(ico)$/,
+                test: /\.(ico|hack\.jpg)$/,
                 use: [
                     'file-loader?name=[name].[ext]',
                 ],
