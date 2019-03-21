@@ -2,6 +2,15 @@ Changelog
 =========
 
 
+0.6.0 (2019-03-21)
+------------------
+
+Changes
+~~~~~~~
+- Build webpack at docker runtime to fix environment variables. [Félix
+  Gagnon-Grenier]
+
+
 0.5.1 (2019-03-20)
 ------------------
 
@@ -55,7 +64,6 @@ Fix
 
 Other
 ~~~~~
-- Changelog for 0.5.0. [Félix Gagnon-Grenier]
 - More MapManager doc. [Félix Gagnon-Grenier]
 
 
