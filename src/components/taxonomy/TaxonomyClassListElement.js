@@ -170,7 +170,7 @@ class TaxonomyClassListElement extends Component {
                                 selected={this.props.state_proxy.selected_taxonomy_class_id === this.props.taxonomy_class.id}
                                 button>
                     <span>
-                        <TaxonomyClassLabel label={this.props.taxonomy_class.name} />
+                        <TaxonomyClassLabel label={this.props.taxonomy_class.name_fr} />
                         {this.props.taxonomy_class.counts[ANNOTATION.STATUS.NEW]
                             ? <AnnotationsCount class='annotation_new'
                                                 count={this.props.taxonomy_class.counts[ANNOTATION.STATUS.NEW]} />

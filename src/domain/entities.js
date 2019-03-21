@@ -5,10 +5,11 @@
  */
 export class TaxonomyClass {
     /**
-     * We only need three params from the api to make sure we have a class that will behave correctly in the application.
+     * We only need four params from the api to make sure we have a class that will behave correctly in the application.
      * All others can be added after instantiation if they happen to exist.
      * @param {Number} id
-     * @param {string} name
+     * @param {String} name_fr
+     * @param {String} name_en
      * @param {Number} taxonomy_id
      * @param {Number|null} [parent_id=null]
      * @param {TaxonomyClass[]} [children=[]]
@@ -16,7 +17,7 @@ export class TaxonomyClass {
      * @param {boolean} [opened=false]
      * @param {Object} [counts={}]
      */
-    constructor(id, name, taxonomy_id, parent_id = null, children = [], visible = false, opened = false, counts = {}) {
+    constructor(id, name_fr, name_en, taxonomy_id, parent_id = null, children = [], visible = false, opened = false, counts = {}) {
         /**
          *
          * @type {Number}
@@ -24,9 +25,14 @@ export class TaxonomyClass {
         this.id = id;
         /**
          *
-         * @type {string}
+         * @type {String}
          */
-        this.name = name;
+        this.name_fr = name_fr;
+        /**
+         *
+         * @type {String}
+         */
+        this.name_en = name_en;
         /**
          *
          * @type {Number}
@@ -65,20 +71,25 @@ export class TaxonomyClass {
  */
 export class Taxonomy {
     /**
-     *
-     * @param {string} name a unique identifier for the taxonomy
-     * @param {string} slug
+     * @param {String} name_fr
+     * @param {String} name_en
+     * @param {String} slug a unique identifier for the taxonomy
      * @param {TaxonomyVersion[]} versions
      */
-    constructor(name, slug, versions) {
+    constructor(name_fr, name_en, slug, versions) {
         /**
          *
-         * @type {string}
+         * @type {String}
          */
-        this.name = name;
+        this.name_fr = name;
         /**
          *
-         * @type {string}
+         * @type {String}
+         */
+        this.name_en = name;
+        /**
+         *
+         * @type {String}
          */
         this.slug = slug;
         /**
@@ -97,7 +108,7 @@ export class TaxonomyVersion {
      *
      * @param {Number} taxonomy_id
      * @param {Number} root_taxonomy_class_id the topmost class of this version
-     * @param {string} version
+     * @param {String} version
      */
     constructor(taxonomy_id, root_taxonomy_class_id, version) {
         /**
@@ -112,7 +123,7 @@ export class TaxonomyVersion {
         this.root_taxonomy_class_id = root_taxonomy_class_id;
         /**
          *
-         * @type {string}
+         * @type {String}
          */
         this.version = version;
     }
