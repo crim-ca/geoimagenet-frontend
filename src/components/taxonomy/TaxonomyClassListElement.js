@@ -1,7 +1,7 @@
 import {observer} from 'mobx-react';
 import {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Collapse, List, ListItem, Chip} from '@material-ui/core';
+import {Collapse, List, ListItem, Chip, Tooltip} from '@material-ui/core';
 import React from 'react';
 import {withStyles} from '@material-ui/core';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -69,12 +69,17 @@ class AnnotationsCount extends Component {
     static propTypes = {
         class: PropTypes.string.isRequired,
         count: PropTypes.number.isRequired,
+        tooltip: PropTypes.string.isRequired,
     };
 
     render() {
-        return <SpacedChip label={this.props.count}
-                           className={this.props.class}
-                           variant='outlined' />;
+        return (
+            <Tooltip title={`${this.props.count} ${this.props.tooltip}`}>
+                <SpacedChip label={this.props.count}
+                            className={this.props.class}
+                            variant='outlined' />
+            </Tooltip>
+        );
     }
 }
 
@@ -173,14 +178,17 @@ class TaxonomyClassListElement extends Component {
                         <TaxonomyClassLabel label={this.props.taxonomy_class.name_fr} />
                         {this.props.taxonomy_class.counts[ANNOTATION.STATUS.NEW]
                             ? <AnnotationsCount class='annotation_new'
+                                                tooltip={`new annotations of class ${this.props.taxonomy_class.name_fr}`}
                                                 count={this.props.taxonomy_class.counts[ANNOTATION.STATUS.NEW]} />
                             : null}
                         {this.props.taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]
                             ? <AnnotationsCount class='annotation_released'
+                                                tooltip={`released annotations of class ${this.props.taxonomy_class.name_fr}`}
                                                 count={this.props.taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]} />
                             : null}
                         {this.props.taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]
                             ? <AnnotationsCount class='annotation_validated'
+                                                tooltip={`validated annotations of class ${this.props.taxonomy_class.name_fr}`}
                                                 count={this.props.taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]} />
                             : null}
                     </span>

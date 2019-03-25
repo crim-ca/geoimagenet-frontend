@@ -2,7 +2,16 @@ import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import {ANNOTATIONS, MODE, READ, VALIDATIONS, WRITE} from '../domain/constants.js';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faEye, faPlusSquare, faCopy, faEdit, faTrashAlt, faQuestionCircle, faCheck, faTimes} from '@fortawesome/free-solid-svg-icons';
+import {
+    faEye,
+    faPlusSquare,
+    faCopy,
+    faEdit,
+    faTrashAlt,
+    faQuestionCircle,
+    faCheck,
+    faTimes
+} from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 
 const ACTIONS = [
@@ -36,14 +45,13 @@ class Actions extends Component {
 
     /**
      * Create specific callback for a mode. Each button should have its own callback such as these.
+     * @private
      * @param {MODE} mode
      * @returns {Function}
      */
-    make_set_mode_callback(mode) {
-        return () => {
-            this.props.store_actions.set_mode(mode);
-        };
-    }
+    make_set_mode_callback = mode => () => {
+        this.props.store_actions.set_mode(mode);
+    };
 
     render() {
 
@@ -55,19 +63,17 @@ class Actions extends Component {
             <div className='actions'>
                 {
                     this.props.state_proxy.actions_activated
-                    ? visible_actions.map((action, i) =>
-                        <FontAwesomeIcon
-                            key={i}
-                            icon={action.icon}
-                            className={ action.mode === this.props.state_proxy.mode ? 'fa-2x active' : 'fa-2x' }
-                            onClick={this.make_set_mode_callback(action.mode)} />
-                    )
-                    : visible_actions.map((action, i) =>
-                        <FontAwesomeIcon
-                            key={i}
-                            icon={action.icon}
-                            className={ action.mode === this.props.state_proxy.mode ? 'fa-2x active' : 'fa-2x inactive' } />
-                    )
+                        ? visible_actions.map((action, i) =>
+                            <FontAwesomeIcon
+                                key={i}
+                                icon={action.icon}
+                                className={action.mode === this.props.state_proxy.mode ? 'fa-2x active' : 'fa-2x'}
+                                onClick={this.make_set_mode_callback(action.mode)} />)
+                        : visible_actions.map((action, i) =>
+                            <FontAwesomeIcon
+                                key={i}
+                                icon={action.icon}
+                                className={action.mode === this.props.state_proxy.mode ? 'fa-2x active' : 'fa-2x inactive'} />)
                 }
             </div>
         );
