@@ -120,6 +120,10 @@ class TaxonomyClassActions extends Component {
     }
 }
 
+/**
+ * The TaxonomyClassListElement element is an entry in the taxonomy classes list, as well as any children the class might have.
+ * It should allow for toggling of visibility for its classes, as well as releasing new annotations that are currently pending for that class.
+ */
 @observer
 class TaxonomyClassListElement extends Component {
     static propTypes = {
@@ -134,80 +138,88 @@ class TaxonomyClassListElement extends Component {
 
     /**
      * Create the click handler with the relevant class entity
+     * @private
      * @param {TaxonomyClass} taxonomy_class
-     * @returns {Function}
+     * @returns {Function<>}
      */
-    make_toggle_callback(taxonomy_class) {
-        return () => {
-            this.props.user_interactions.toggle_taxonomy_class(taxonomy_class);
-        };
-    }
+    make_toggle_callback = taxonomy_class => () => {
+        this.props.user_interactions.toggle_taxonomy_class(taxonomy_class);
+    };
 
-    make_release_handler(taxonomy_class) {
-        return async (event) => {
-            try {
-                event.stopPropagation();
-                await this.props.user_interactions.release_annotations(taxonomy_class.id);
-                this.props.map_manager.refresh_source_by_status(ANNOTATION.STATUS.NEW);
-                this.props.map_manager.refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
-            } catch (e) {
-                throw e;
-            }
-        };
-    }
+    /**
+     *
+     * @private
+     * @param {TaxonomyClass} taxonomy_class
+     * @returns {Function<Event>}
+     */
+    make_release_handler = taxonomy_class => async event => {
+        try {
+            event.stopPropagation();
+            await this.props.user_interactions.release_annotations(taxonomy_class.id);
+            this.props.map_manager.refresh_source_by_status(ANNOTATION.STATUS.NEW);
+            this.props.map_manager.refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
+        } catch (e) {
+            throw e;
+        }
+    };
 
-    make_select_taxonomy_class_for_annotation_handler(taxonomy_class) {
-        return () => {
-            this.props.store_actions.select_taxonomy_class(taxonomy_class['id']);
-        };
-    }
+    /**
+     * @private
+     * @param {TaxonomyClass} taxonomy_class
+     * @returns {Function<>}
+     */
+    make_select_taxonomy_class_for_annotation_handler = taxonomy_class => () => {
+        this.props.store_actions.select_taxonomy_class(taxonomy_class.id);
+    };
 
     render() {
 
-        const label_click_callback = this.props.taxonomy_class.children && this.props.taxonomy_class.children.length > 0
-            ? this.make_toggle_callback(this.props.taxonomy_class)
-            : this.make_select_taxonomy_class_for_annotation_handler(this.props.taxonomy_class);
+        const {taxonomy_class} = this.props;
+        const {children} = taxonomy_class;
+
+        const label_click_callback = children && children.length > 0
+            ? this.make_toggle_callback(taxonomy_class)
+            : this.make_select_taxonomy_class_for_annotation_handler(taxonomy_class);
 
         return (
             <StyledList>
                 <StyledListItem className='taxonomy_class_list_element'
                                 onClick={label_click_callback}
-                                selected={this.props.state_proxy.selected_taxonomy_class_id === this.props.taxonomy_class.id}
+                                selected={this.props.state_proxy.selected_taxonomy_class_id === taxonomy_class.id}
                                 button>
                     <span>
-                        <TaxonomyClassLabel label={this.props.taxonomy_class.name_fr} />
-                        {this.props.taxonomy_class.counts[ANNOTATION.STATUS.NEW]
+                        <TaxonomyClassLabel label={taxonomy_class.name_fr} />
+                        {taxonomy_class.counts[ANNOTATION.STATUS.NEW]
                             ? <AnnotationsCount class='annotation_new'
-                                                tooltip={`new annotations of class ${this.props.taxonomy_class.name_fr}`}
-                                                count={this.props.taxonomy_class.counts[ANNOTATION.STATUS.NEW]} />
+                                                tooltip={`new annotations of class ${taxonomy_class.name_fr}`}
+                                                count={taxonomy_class.counts[ANNOTATION.STATUS.NEW]} />
                             : null}
-                        {this.props.taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]
+                        {taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]
                             ? <AnnotationsCount class='annotation_released'
-                                                tooltip={`released annotations of class ${this.props.taxonomy_class.name_fr}`}
-                                                count={this.props.taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]} />
+                                                tooltip={`released annotations of class ${taxonomy_class.name_fr}`}
+                                                count={taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]} />
                             : null}
-                        {this.props.taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]
+                        {taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]
                             ? <AnnotationsCount class='annotation_validated'
-                                                tooltip={`validated annotations of class ${this.props.taxonomy_class.name_fr}`}
-                                                count={this.props.taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]} />
+                                                tooltip={`validated annotations of class ${taxonomy_class.name_fr}`}
+                                                count={taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]} />
                             : null}
                     </span>
-                    <TaxonomyClassActions taxonomy_class={this.props.taxonomy_class}
-                                          release_handler={this.make_release_handler(this.props.taxonomy_class)}
+                    <TaxonomyClassActions taxonomy_class={taxonomy_class}
+                                          release_handler={this.make_release_handler(taxonomy_class)}
                                           invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility} />
                 </StyledListItem>
-                {this.props.taxonomy_class.children
+                {children
                     ? (
-                        <Collapse in={this.props.taxonomy_class.opened}>
-                            <TaxonomyClasses classes={this.props.taxonomy_class.children}
+                        <Collapse in={taxonomy_class.opened}>
+                            <TaxonomyClasses classes={children}
                                              map_manager={this.props.map_manager}
                                              store_actions={this.props.store_actions}
                                              state_proxy={this.props.state_proxy}
                                              user_interactions={this.props.user_interactions}
                                              invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility}
                                              toggle_taxonomy_class_tree_element={this.props.toggle_taxonomy_class_tree_element} />
-                        </Collapse>
-                    )
+                        </Collapse>)
                     : null
                 }
             </StyledList>
