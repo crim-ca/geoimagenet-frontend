@@ -65,6 +65,7 @@ class Platform extends Component {
          * @type {MapManager|Object}
          */
         this.map_manager = {};
+        this.props.user_interactions.refresh_user_resources_permissions();
     }
 
     componentDidMount() {
@@ -126,8 +127,7 @@ class Platform extends Component {
                 </div>
                 <Paper style={style.sidebar} className='right'>
                     <div className='top'>
-                        <Actions actions_activated={this.props.state_proxy.actions_activated}
-                                 mode={this.props.state_proxy.mode}
+                        <Actions state_proxy={this.props.state_proxy}
                                  store_actions={this.props.store_actions} />
                     </div>
                     <div className='bottom'>

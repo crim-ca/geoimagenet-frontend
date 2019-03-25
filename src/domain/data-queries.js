@@ -36,6 +36,21 @@ export class DataQueries {
         }
     }
 
+    /**
+     * Fetches the permissions for the logged user and specified service name. We hardcode the inherit=true parameter because so far
+     * there is no case where we don't want all of the permissions.
+     * @param {String} service_name
+     * @returns {Promise<String>}
+     */
+    current_user_permissions = async (service_name) => {
+        try {
+            const res = await make_http_request(`${this.magpie_endpoint}/users/current/services/${service_name}/resources?inherit=true`);
+            return await res.json();
+        } catch (e) {
+            return reject(e);
+        }
+    };
+
     release_annotations_request = async taxonomy_class_id => {
         const payload = JSON.stringify({
             taxonomy_class_id: taxonomy_class_id,

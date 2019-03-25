@@ -1,6 +1,7 @@
 import {notifier} from '../utils/notifications.js';
 import {action} from 'mobx';
-import {post_json} from '../utils/http.js';
+import {InvalidPermissions, ResourcePermissionRepository} from './entities.js';
+import {AccessControlList} from './access-control-list.js';
 
 /**
  * In a web app, we need top level handlers that react to specific user intentions, and interactions.
@@ -72,6 +73,25 @@ export class UserInteractions {
             notifier.error('We were unable to fetch the taxonomy classes.');
         }
     }
+
+    /**
+     * Should be called anytime there is a change to the user's session, either login or logout.
+     * @todo at some point unhardcode the frontend parameter here, maybe get it from environment variable
+     * @returns {Promise<void>}
+     */
+    refresh_user_resources_permissions = async () => {
+        const json_response = await this.data_queries.current_user_permissions('frontend');
+
+        if (!json_response.service && !json_response.service.resources) {
+            notifier.error('The permissions structure returned from Magpie does not seem properly formed: ' +
+                'there is no resource attribute on it.');
+            throw new InvalidPermissions();
+        }
+        const resources = json_response.service.resources;
+        const resource_permission_repository = new ResourcePermissionRepository(resources);
+        const acl = new AccessControlList(resource_permission_repository);
+        this.store_actions.set_acl(acl);
+    };
 
     /**
      * - Release annotations for the selected class

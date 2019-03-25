@@ -96,3 +96,34 @@ export const VIEW_CENTER = {
     CENTRE: [-95, 57],
     ZOOM_LEVEL: 4,
 };
+
+/**
+ * Magpie permission name for get access
+ * @type {string}
+ */
+export const READ = 'read';
+
+/**
+ * Magpie permission name for put, post, editing access
+ * @type {string}
+ */
+export const WRITE = 'write';
+
+
+/**
+ * Magpie resource for datasets sections and interactions
+ * @type {string}
+ */
+export const DATASETS = 'datasets';
+
+/**
+ * Magpie resource for annotations sections and interactions
+ * @type {string}
+ */
+export const ANNOTATIONS = 'annotations';
+
+/**
+ * Magpie resource for annotaion validation sections and interactions
+ * @type {string}
+ */
+export const VALIDATIONS = 'validations';

@@ -1,11 +1,14 @@
 import {ANNOTATION, MODE} from './constants';
 import {observable, action, runInAction, configure} from 'mobx';
-import {TaxonomyClass} from './entities.js';
+import {TaxonomyClass, ResourcePermissionRepository} from './entities.js';
+import {AccessControlList} from './access-control-list.js';
 
 const default_store_schematics = {
 
     mode: MODE.VISUALIZE,
     actions_activated: false,
+
+    acl: new AccessControlList(new ResourcePermissionRepository()),
 
     taxonomy: [],
     selected_taxonomy: {
@@ -291,6 +294,14 @@ export class StoreActions {
         });
         this.set_visible_classes(visible_ids);
 
+    }
+
+    /**
+     * @param {AccessControlList} acl
+     */
+    @action.bound
+    set_acl(acl) {
+        this.state_proxy.acl = acl;
     }
 
     /**
