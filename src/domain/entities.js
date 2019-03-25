@@ -128,3 +128,87 @@ export class TaxonomyVersion {
         this.version = version;
     }
 }
+
+/**
+ * Group permissions for a given magpie resource.
+ */
+export class ResourcePermissionRepository {
+
+    /**
+     * @type {Object<Number, Permission>}
+     */
+    permissions = {};
+
+    /**
+     * @param {Object} resources Expects the value of the resources property of the /users/current/services/{service}/resources Magpie route.
+     */
+    constructor(resources) {
+        if (Object.getOwnPropertyNames(resources).length > 0) {
+            Object.getOwnPropertyNames(resources).forEach(resource_id => {
+                const resource = resources[resource_id];
+                this.permissions[resource.resource_name] = (new Permission(resource));
+            });
+        }
+    }
+}
+
+
+/**
+ * Frontend equivalent of a Magpie resource permission structure. It expects to be fed with a single children value of the "resources" property of the
+ * /users/current/services/{service}/resources Magpie route.
+ * @todo test this: fetch default magpie permissions and make sure everything is correctly built and accessed
+ */
+export class Permission {
+
+    /**
+     * @type {Permission[]}
+     */
+    children = [];
+
+    constructor(resource) {
+
+        /**
+         * @type {Number}
+         */
+        this.resource_id = resource.resource_id;
+        /**
+         * @type {String}
+         */
+        this.resource_name = resource.resource_name;
+        /**
+         * @type {String}
+         */
+        this.resource_display_name = resource.resource_display_name;
+        /**
+         * @type {String[]}
+         */
+        this.permission_names = resource.permission_names;
+        /**
+         * @type {Number}
+         */
+        this.parent_id = resource.parent_id;
+        /**
+         * @type {Number}
+         */
+        this.root_service_id = resource.root_service_id;
+
+        if (Object.getOwnPropertyNames(resource.children).length > 0) {
+            Object.getOwnPropertyNames(resource.children).forEach(children => {
+                this.children.push(new Permission(
+                    children.resource_id,
+                    children.resource_name,
+                    children.resource_display_name,
+                    children.permission_names,
+                    children.parent_id,
+                    children.root_service_id,
+                    children.children,
+                    children.resource_type
+                ));
+            });
+        }
+        /**
+         * @type {String}
+         */
+        this.resource_type = resource.resource_type;
+    }
+}
