@@ -120,6 +120,17 @@ class TaxonomyClassActions extends Component {
     }
 }
 
+const StyledLabelAndCountSpan = withStyles({
+    root: {
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'row',
+    }
+})(props => {
+    const {classes, children} = props;
+    return <span className={classes.root}>{children}</span>;
+});
+
 /**
  * The TaxonomyClassListElement element is an entry in the taxonomy classes list, as well as any children the class might have.
  * It should allow for toggling of visibility for its classes, as well as releasing new annotations that are currently pending for that class.
@@ -187,7 +198,7 @@ class TaxonomyClassListElement extends Component {
                                 onClick={label_click_callback}
                                 selected={this.props.state_proxy.selected_taxonomy_class_id === taxonomy_class.id}
                                 button>
-                    <span>
+                    <StyledLabelAndCountSpan>
                         <TaxonomyClassLabel label={taxonomy_class.name_fr} />
                         {taxonomy_class.counts[ANNOTATION.STATUS.NEW]
                             ? <AnnotationsCount class='annotation_new'
@@ -204,7 +215,7 @@ class TaxonomyClassListElement extends Component {
                                                 tooltip={`validated annotations of class ${taxonomy_class.name_fr}`}
                                                 count={taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]} />
                             : null}
-                    </span>
+                    </StyledLabelAndCountSpan>
                     <TaxonomyClassActions taxonomy_class={taxonomy_class}
                                           release_handler={this.make_release_handler(taxonomy_class)}
                                           invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility} />
