@@ -1,7 +1,6 @@
 import {notifier} from '../utils/notifications.js';
 import {action} from 'mobx';
-import {post_json} from '../utils/http.js';
-import {ResourcePermissionRepository} from './entities.js';
+import {InvalidPermissions, ResourcePermissionRepository} from './entities.js';
 import {AccessControlList} from './access-control-list.js';
 
 /**
@@ -82,6 +81,12 @@ export class UserInteractions {
      */
     refresh_user_resources_permissions = async () => {
         const json_response = await this.data_queries.current_user_permissions('frontend');
+
+        if (!json_response.service && !json_response.service.resources) {
+            notifier.error('The permissions structure returned from Magpie does not seem properly formed: ' +
+                'there is no resource attribute on it.');
+            throw new InvalidPermissions();
+        }
         const resources = json_response.service.resources;
         const resource_permission_repository = new ResourcePermissionRepository(resources);
         const acl = new AccessControlList(resource_permission_repository);

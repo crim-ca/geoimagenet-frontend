@@ -8,7 +8,7 @@ const default_store_schematics = {
     mode: MODE.VISUALIZE,
     actions_activated: false,
 
-    acl: new AccessControlList(new ResourcePermissionRepository({})),
+    acl: new AccessControlList(new ResourcePermissionRepository()),
 
     taxonomy: [],
     selected_taxonomy: {

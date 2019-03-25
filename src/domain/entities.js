@@ -129,6 +129,12 @@ export class TaxonomyVersion {
     }
 }
 
+export class InvalidPermissions extends Error {
+}
+
+export class ProbablyInvalidPermissions extends Error {
+}
+
 /**
  * Group permissions for a given magpie resource.
  */
@@ -140,14 +146,20 @@ export class ResourcePermissionRepository {
     permissions = {};
 
     /**
-     * @param {Object} resources Expects the value of the resources property of the /users/current/services/{service}/resources Magpie route.
+     * @param {Object} [resources=null] Expects the value of the resources property of the /users/current/services/{service}/resources Magpie route.
      */
-    constructor(resources) {
-        if (Object.getOwnPropertyNames(resources).length > 0) {
+    constructor(resources = null) {
+        if (resources !== null) {
+            if (Object.getOwnPropertyNames(resources).length === 0) {
+                throw new ProbablyInvalidPermissions('No permissions are defined in the resources for the frontend service. ' +
+                    'While this is possibly intended, it most probably means that there is a misconfiguration for your user. ' +
+                    'You will be unable to properly use the platform.');
+            }
             Object.getOwnPropertyNames(resources).forEach(resource_id => {
                 const resource = resources[resource_id];
                 this.permissions[resource.resource_name] = (new Permission(resource));
             });
+
         }
     }
 }
@@ -156,7 +168,7 @@ export class ResourcePermissionRepository {
 /**
  * Frontend equivalent of a Magpie resource permission structure. It expects to be fed with a single children value of the "resources" property of the
  * /users/current/services/{service}/resources Magpie route.
- * @todo test this: fetch default magpie permissions and make sure everything is correctly built and accessed
+ * @todo more tests: fetch live magpie permissions and make sure everything is correctly built and accessed
  */
 export class Permission {
 
@@ -192,18 +204,10 @@ export class Permission {
          */
         this.root_service_id = resource.root_service_id;
 
-        if (Object.getOwnPropertyNames(resource.children).length > 0) {
-            Object.getOwnPropertyNames(resource.children).forEach(children => {
-                this.children.push(new Permission(
-                    children.resource_id,
-                    children.resource_name,
-                    children.resource_display_name,
-                    children.permission_names,
-                    children.parent_id,
-                    children.root_service_id,
-                    children.children,
-                    children.resource_type
-                ));
+        if (resource.children && Object.getOwnPropertyNames(resource.children).length > 0) {
+            Object.getOwnPropertyNames(resource.children).forEach(children_id => {
+                const children = resource.children[children_id];
+                this.children.push(new Permission(children));
             });
         }
         /**
