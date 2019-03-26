@@ -132,6 +132,7 @@ export class UserInteractions {
     async login_form_submission(form_data) {
         try {
             await this.data_queries.login_request(form_data);
+            window.location.href = '/platform';
         } catch (error) {
             notifier.error('Login forbidden.');
         }
