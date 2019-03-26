@@ -15,7 +15,6 @@ const LogosContainer = withStyles(theme => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: values.gutterSmall,
             '& img': {
                 padding: `0 0 0 ${values.gutterSmall}`
             }

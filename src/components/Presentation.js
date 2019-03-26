@@ -1,17 +1,13 @@
-import {Component} from 'react';
-import {Link, Typography, Paper, withStyles} from '@material-ui/core';
-import React from 'react';
+import React, {Component} from 'react';
+import {withStyles, Link, Typography, Paper} from '@material-ui/core';
 
-const PresentationPaper = withStyles(theme => ({
-    root: {
-        padding: theme.values.gutterSmall,
-    }
-}))(Paper);
+import {Logos} from './Logos.js';
+import {Login} from './Login.js';
 
-export class Presentation extends Component {
+class Presentation extends Component {
     render() {
         return (
-            <PresentationPaper>
+            <Paper>
                 <Typography paragraph>GeoImageNet sera élaborée par les équipes des professeurs
                     Yacine Bouroubi et Samuel Foucher et
                     constituera une
@@ -75,7 +71,50 @@ export class Presentation extends Component {
                         Tiré d'un article de La Tribune
                     </Link>
                 </Typography>
-            </PresentationPaper>
+            </Paper>
         );
     }
 }
+
+
+export const PresentationContainer = withStyles(theme => {
+    const {values} = theme;
+    return {
+        container: {
+            height: '100%',
+            padding: values.gutterSmall,
+            display: 'grid',
+            gridGap: values.gutterSmall,
+            gridTemplateColumns: `1fr 200px 800px 200px 1fr`,
+            gridTemplateRows: `min-content minmax(min-content, 1fr) min-content 200px`,
+            background: 'url(/background.hack.jpg) no-repeat center center fixed',
+            backgroundSize: 'cover',
+        },
+        logos: {
+            gridColumn: '2/5',
+            gridRow: '1/2',
+        },
+        presentation: {
+            gridColumn: '3/4',
+            gridRow: '3/4',
+        },
+        acceder: {
+            gridColumn: '3/4',
+            gridRow: '2/3',
+            display: 'flex',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+        },
+    };
+})(props => {
+    const {classes, user_interactions} = props;
+    return (
+        <div className={classes.container}>
+            <div className={classes.logos}><Logos /></div>
+            <div className={classes.acceder}>
+                <Paper><Login user_interactions={user_interactions} /></Paper>
+            </div>
+            <div className={classes.presentation}><Presentation /></div>
+        </div>
+    );
+});

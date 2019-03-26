@@ -9,7 +9,6 @@ import {notifier} from './utils/notifications.js';
 import {create_state_proxy, StoreActions} from './domain/store.js';
 import {UserInteractions} from './domain/user-interactions.js';
 import {Platform} from './components/Platform.js';
-import {element, get_by_id} from './utils/dom.js';
 import LoggedLayout from './components/LoggedLayout.js';
 
 import './css/base.css';
@@ -32,8 +31,7 @@ addEventListener('DOMContentLoaded', async () => {
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT);
     const user_interactions = new UserInteractions(store_actions, data_queries);
 
-    const div = element('div');
-    div.id = 'root';
+    const div = document.createElement('div');
     div.classList.add('root');
     document.body.appendChild(div);
 
@@ -48,7 +46,7 @@ addEventListener('DOMContentLoaded', async () => {
                     data_queries={data_queries} />
             </LoggedLayout>
         </MuiThemeProvider>,
-        get_by_id('root')
+        div
     );
     //new TaxonomyBrowser(map_manager, state_proxy, store_actions, user_interactions);
 
