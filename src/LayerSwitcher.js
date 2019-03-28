@@ -1,16 +1,27 @@
-import * as ol from 'ol';
 import {Control} from 'ol/control';
 import {unByKey} from 'ol/Observable';
 
-const isTouchDevice = () => {
+/**
+ * Somewhat dirty hack to know if the device supports touch events, but probably reliable. Might leak the touch event, but
+ * it will probably be gc'd.
+ * @returns {boolean}
+ */
+function isTouchDevice() {
     try {
         document.createEvent("TouchEvent");
         return true;
     } catch (e) {
         return false;
     }
-};
+}
 
+/**
+ * Taken from https://github.com/walkermatt/ol-layerswitcher and modified as we don't need some of the things it initially does,
+ * such as the OL control behaviour, hidden aspect, and to be able to actually integrate it to the platform.
+ * @todo we need to transform this (somehow) into a React component that would still exhibit an OL Contol behaviour.
+ *
+ * Possibly by creating another "LayerSwitcher" component that would manage this class internally.
+ */
 class LayerSwitcher extends Control {
 
     constructor(opt_options) {
@@ -25,13 +36,12 @@ class LayerSwitcher extends Control {
 
         this.mapListeners = [];
 
-        this.hiddenClassName = 'layer-switcher';
+        this.class_name = 'layer-switcher';
         if (isTouchDevice()) {
-            this.hiddenClassName += ' touch';
+            this.class_name += ' touch';
         }
-        this.shownClassName = 'shown';
 
-        element.className = this.hiddenClassName;
+        element.className = this.class_name;
 
         this.panel = document.createElement('div');
         this.panel.className = 'panel';
@@ -41,7 +51,7 @@ class LayerSwitcher extends Control {
         this.forEachRecursive = this.forEachRecursive.bind(this);
 
 
-    };
+    }
 
     /**
      * Re-draw the layer panel to represent the current state of the layers.
@@ -75,7 +85,7 @@ class LayerSwitcher extends Control {
         if (map) {
             this.renderPanel();
         }
-    };
+    }
 
     /**
      * Ensure only the top-most base layer is visible if more than one is visible.
@@ -91,28 +101,28 @@ class LayerSwitcher extends Control {
         if (lastVisibleBaseLyr) {
             this.setVisible_(lastVisibleBaseLyr, true);
         }
-    };
+    }
 
     /**
      * Toggle the visible state of a layer.
      * Takes care of hiding other layers in the same exclusive group if the layer
      * is toggle to visible.
      * @private
-     * @param lyr {ol.layer.Base} The layer whos visibility will be toggled.
+     * @param {ol.Layer.Base} layer The layer whos visibility will be toggled.
      * @param visible bool wether to make it visible or not
      */
-    setVisible_(lyr, visible) {
+    setVisible_(layer, visible) {
         const map = this.getMap();
-        lyr.setVisible(visible);
-        if (visible && lyr.get('type') === 'base') {
+        layer.setVisible(visible);
+        if (visible && layer.get('type') === 'base') {
             // Hide all other base layers regardless of grouping
-            this.forEachRecursive(map, function (l, idx, a) {
-                if (l !== lyr && l.get('type') === 'base') {
-                    l.setVisible(false);
+            this.forEachRecursive(map, function (base_layer, idx, a) {
+                if (base_layer !== layer && base_layer.get('type') === 'base') {
+                    base_layer.setVisible(false);
                 }
             });
         }
-    };
+    }
 
     /**
      * Render all layers that are children of a group.
@@ -172,7 +182,7 @@ class LayerSwitcher extends Control {
 
         return li;
 
-    };
+    }
 
     /**
      * Render all layers that are children of a group.
@@ -188,7 +198,7 @@ class LayerSwitcher extends Control {
                 elm.appendChild(this.renderLayer_(l, i));
             }
         }
-    };
+    }
 
     /**
      * **Static** Call the supplied function for each layer in the passed layer group
@@ -204,7 +214,7 @@ class LayerSwitcher extends Control {
                 this.forEachRecursive(lyr, fn);
             }
         });
-    };
+    }
 
     /**
      * Generate a UUID
@@ -214,7 +224,8 @@ class LayerSwitcher extends Control {
      */
     uuid() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            const r = Math.random() * 16 | 0;
+            const v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
     }

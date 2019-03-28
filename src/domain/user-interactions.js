@@ -60,14 +60,12 @@ export class UserInteractions {
         try {
             // TODO eventually make both requests under a Promise.all as they are not co-dependant
 
-            const taxonomy_classes = await this.data_queries.fetch_taxonomy_classes(version['root_taxonomy_class_id']);
-            // first create a flat list of all classes, removing the children
-
-            this.store_actions.build_taxonomy_classes_structures(taxonomy_classes);
-
+            const root_taxonomy_class = await this.data_queries.fetch_taxonomy_classes(version['root_taxonomy_class_id']);
             const counts = await this.data_queries.flat_taxonomy_classes_counts(version['root_taxonomy_class_id']);
+
+            this.store_actions.build_taxonomy_classes_structures(root_taxonomy_class);
             this.store_actions.set_annotation_counts(counts);
-            this.store_actions.set_taxonomy_class([taxonomy_classes]);
+
             this.store_actions.toggle_taxonomy_class_tree_element(version['root_taxonomy_class_id']);
         } catch (e) {
             notifier.error('We were unable to fetch the taxonomy classes.');

@@ -137,8 +137,8 @@ class Platform extends Component {
                                 Taxonomies and Classes
                             </ExpansionPanelSummary>
                             <StyledPanelDetails>
-                                <TaxonomySelector select_taxonomy={this.props.user_interactions.select_taxonomy}
-                                                  taxonomy={this.props.state_proxy.taxonomy} />
+                                <TaxonomySelector user_interactions={this.props.user_interactions}
+                                                  state_proxy={this.props.state_proxy} />
 
                                 <TaxonomyClasses map_manager={this.map_manager}
                                                  user_interactions={this.props.user_interactions}

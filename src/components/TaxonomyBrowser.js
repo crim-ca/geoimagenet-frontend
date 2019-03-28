@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import {Tabs, Tab} from '@material-ui/core';
 
 import {TaxonomyClassListElement} from './taxonomy/TaxonomyClassListElement.js';
+import {UserInteractions} from '../domain/user-interactions.js';
 
 @observer
 class TaxonomyClasses extends Component {
@@ -39,8 +40,8 @@ class TaxonomyClasses extends Component {
 @observer
 class TaxonomySelector extends Component {
     static propTypes = {
-        select_taxonomy: PropTypes.func.isRequired,
-        taxonomy: PropTypes.array.isRequired,
+        state_proxy: PropTypes.object.isRequired,
+        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
     };
 
     state = {
@@ -48,18 +49,22 @@ class TaxonomySelector extends Component {
     };
 
     handle_tab_select = async (event, value) => {
+
+        const {select_taxonomy} = this.props.user_interactions;
+
         this.setState({value});
         const version = value['versions'][0];
-        await this.props.select_taxonomy(version, value.name);
+        await select_taxonomy(version, value.name);
     };
 
     render() {
 
         const {value} = this.state;
+        const {taxonomies} = this.props.state_proxy;
 
         return (
             <Tabs value={value} onChange={this.handle_tab_select}>
-                { this.props.taxonomy.map((taxonomy, i) => <Tab value={taxonomy} key={i} label={taxonomy.name_fr} />) }
+                { taxonomies.map((taxonomy, i) => <Tab value={taxonomy} key={i} label={taxonomy.name_en || taxonomy.name_fr} />) }
             </Tabs>
         );
     }
