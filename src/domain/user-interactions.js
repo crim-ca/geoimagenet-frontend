@@ -1,6 +1,6 @@
 import {notifier} from '../utils/notifications.js';
 import {action} from 'mobx';
-import {InvalidPermissions, ResourcePermissionRepository} from './entities.js';
+import {InvalidPermissions, ResourcePermissionRepository, User} from './entities.js';
 import {AccessControlList} from './access-control-list.js';
 
 /**
@@ -87,10 +87,21 @@ export class UserInteractions {
                 'there is no resource attribute on it.');
             throw new InvalidPermissions();
         }
-        const resources = json_response.service.resources;
+        const {service} = json_response;
+        const {resources} = service;
         const resource_permission_repository = new ResourcePermissionRepository(resources);
         const acl = new AccessControlList(resource_permission_repository);
         this.store_actions.set_acl(acl);
+
+        /**
+         *
+         * @type {Object}
+         */
+        const magpie_session_json = await this.data_queries.current_user_session();
+        const {user} = magpie_session_json;
+        const user_instance = new User(user.user_name, user.email, user.group_names);
+        this.store_actions.set_session_user(user_instance);
+
     };
 
     /**

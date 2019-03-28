@@ -216,3 +216,29 @@ export class Permission {
         this.resource_type = resource.resource_type;
     }
 }
+
+/**
+ * User entity.
+ */
+export class User {
+    /**
+     *
+     * @param {String} user_name
+     * @param {String} email
+     * @param {String[]} group_names
+     */
+    constructor(user_name, email, group_names) {
+        /**
+         * @type {String}
+         */
+        this.user_name = user_name;
+        /**
+         * @type {String}
+         */
+        this.email = email;
+        /**
+         * @type {String[]}
+         */
+        this.group_names = group_names;
+    }
+}

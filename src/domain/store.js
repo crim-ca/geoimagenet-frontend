@@ -28,6 +28,8 @@ const default_store_schematics = {
     annotations_sources: {},
     annotations_layers: {},
 
+    logged_user: null,
+
     current_annotation: {
         initialized: false,
         image_title: ''
@@ -120,6 +122,14 @@ export class StoreActions {
     @action.bound
     deactivate_actions() {
         this.state_proxy.actions_activated = false;
+    }
+
+    /**
+     * @param {User} user
+     */
+    @action.bound
+    set_session_user(user) {
+        this.state_proxy.logged_user = user;
     }
 
     /**

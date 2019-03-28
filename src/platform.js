@@ -9,7 +9,7 @@ import {notifier} from './utils/notifications.js';
 import {create_state_proxy, StoreActions} from './domain/store.js';
 import {UserInteractions} from './domain/user-interactions.js';
 import {Platform} from './components/Platform.js';
-import LoggedLayout from './components/LoggedLayout.js';
+import {LoggedLayout} from './components/LoggedLayout.js';
 
 import './css/base.css';
 import './css/style_platform.css';
@@ -38,7 +38,7 @@ addEventListener('DOMContentLoaded', async () => {
     ReactDOM.render(
         <MuiThemeProvider theme={theme}>
             <CssBaseline />
-            <LoggedLayout>
+            <LoggedLayout state_proxy={state_proxy}>
                 <Platform
                     state_proxy={state_proxy}
                     store_actions={store_actions}

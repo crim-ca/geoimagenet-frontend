@@ -4,13 +4,19 @@ import {withStyles} from '@material-ui/core';
 
 import {Menu} from './Menu.js';
 
-const styles = theme => ({
-    grid: {
-        height: '100%',
-        display: 'grid',
-        gridTemplateColumns: `1fr`,
-        gridTemplateRows: `${theme.values.heightAppBar} calc(100% - ${theme.values.heightAppBar})`
-    },
+const LayoutGrid = withStyles(theme => {
+    const {values} = theme;
+    return {
+        grid: {
+            height: '100%',
+            display: 'grid',
+            gridTemplateColumns: `1fr`,
+            gridTemplateRows: `${values.heightAppBar} calc(100% - ${values.heightAppBar})`
+        },
+    };
+})(props => {
+    const {classes, children} = props;
+    return <div className={classes.grid}>{children}</div>;
 });
 
 /**
@@ -21,22 +27,22 @@ const styles = theme => ({
 class LoggedLayout extends Component {
 
     static propTypes = {
-        classes: PropTypes.object,
+        state_proxy: PropTypes.object.isRequired,
         children: PropTypes.any,
     };
 
     render() {
-        const {classes, children} = this.props;
+        const {children, state_proxy} = this.props;
         /**
          * Wrapping both menu and children in divs so that the grid is respected whatever the other structures are.
          */
         return (
-            <div className={classes.grid}>
-                <div><Menu /></div>
+            <LayoutGrid>
+                <div><Menu state_proxy={state_proxy} /></div>
                 <div>{children}</div>
-            </div>
+            </LayoutGrid>
         );
     }
 }
 
-export default withStyles(styles)(LoggedLayout);
+export {LoggedLayout};

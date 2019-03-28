@@ -7,7 +7,7 @@ import {DataQueries} from './domain/data-queries.js';
 import {create_state_proxy, StoreActions} from './domain/store.js';
 import {UserInteractions} from './domain/user-interactions.js';
 import {element, get_by_id} from './utils/dom.js';
-import LoggedLayout from './components/LoggedLayout.js';
+import {LoggedLayout} from './components/LoggedLayout.js';
 import {Datasets} from './components/Datasets.js';
 import {theme} from './utils/react.js';
 
@@ -34,8 +34,10 @@ addEventListener('DOMContentLoaded', async () => {
     ReactDOM.render(
         <MuiThemeProvider theme={theme}>
             <CssBaseline />
-            <LoggedLayout><Datasets datasets={[]} /></LoggedLayout>
+            <LoggedLayout state_proxy={state_proxy}><Datasets datasets={[]} /></LoggedLayout>
         </MuiThemeProvider>,
         get_by_id('root')
     );
+
+    await user_interactions.refresh_user_resources_permissions();
 });
