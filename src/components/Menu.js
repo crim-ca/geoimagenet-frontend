@@ -1,20 +1,33 @@
 import React, {Component} from 'react';
 import {Link, withStyles} from '@material-ui/core';
+import PropTypes from 'prop-types';
 
-const MenuLink = withStyles(theme => ({
-    root: {
-        padding: `0 ${theme.values.gutterSmall}`,
-    }
-}))(Link);
+import {SessionHandle} from './SessionHandle.js';
 
-const MenuContainerDiv = withStyles({
-    container: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-    }
+const MenuLink = withStyles(theme => {
+    const {values} = theme;
+    return {
+        root: {
+            padding: `0 ${values.gutterSmall}`,
+        }
+    };
+})(Link);
+
+const MenuContainerDiv = withStyles(theme => {
+    const {values} = theme;
+    return {
+        container: {
+            padding: `0 ${values.gutterSmall}`,
+            height: '100%',
+            display: 'grid',
+            gridTemplateColumns: '1fr repeat(4, auto) 1fr',
+            justifyItems: 'right',
+            alignItems: 'center',
+            '& > :nth-child(1)': {
+                gridColumnStart: 2,
+            }
+        }
+    };
 })((props) => {
     const {classes, children} = props;
     return <div className={classes.container}>{children}</div>;
@@ -24,7 +37,7 @@ const MenuContainerDiv = withStyles({
 /**
  * A menu centering items using Links from material. Should be placed at the top of each logged pages.
  */
-export class Menu extends Component {
+class Menu extends Component {
 
     /**
      * Defines the different menus that can be shown when logged in
@@ -43,6 +56,7 @@ export class Menu extends Component {
 
     render() {
         const current_url = window.location.pathname;
+        const {state_proxy} = this.props;
         return (
             <MenuContainerDiv>
                 {Menu.menus.map((menu, i) => <MenuLink href={menu.href}
@@ -50,7 +64,14 @@ export class Menu extends Component {
                                                        underline={menu.href === current_url ? 'always' : 'hover'}
                                                        color={menu.href === current_url ? 'textPrimary' : 'textSecondary'}>{menu.title}</MenuLink>
                 )}
+                <SessionHandle state_proxy={state_proxy} />
             </MenuContainerDiv>
         );
     }
 }
+
+Menu.propTypes = {
+    state_proxy: PropTypes.object.isRequired
+};
+
+export {Menu};

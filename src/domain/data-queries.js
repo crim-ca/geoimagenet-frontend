@@ -37,6 +37,20 @@ export class DataQueries {
     }
 
     /**
+     * Returns information for the user associated with current cookies. We rely on the cookies being automatically associated
+     * to requests here. This is fairly usual behaviour.
+     * @returns {Promise<Object>}
+     */
+    current_user_session = async () => {
+        try {
+            const res = await make_http_request(`${this.magpie_endpoint}/users/current`);
+            return await res.json();
+        } catch (e) {
+            return reject(e);
+        }
+    };
+
+    /**
      * Fetches the permissions for the logged user and specified service name. We hardcode the inherit=true parameter because so far
      * there is no case where we don't want all of the permissions.
      * @param {String} service_name

@@ -26,10 +26,15 @@ export const theme = createMuiTheme({
     overrides: {
         MuiPaper: {
             root: {
-                padding: GUTTER_SMALL
+                padding: GUTTER_SMALL,
             }
-        }
-    }
+        },
+        MuiLink: {
+            root: {
+                color: 'inherit',
+            }
+        },
+    },
 });
 
 export const ThemedComponent = props => {
