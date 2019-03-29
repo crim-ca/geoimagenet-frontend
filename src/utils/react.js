@@ -20,6 +20,10 @@ export const theme = createMuiTheme({
         gutterSmall: GUTTER_SMALL,
         maxContentWidth: '1200px',
     },
+    zIndex: {
+        basemap: -10,
+        over_map: 10,
+    },
     colors: {
         lightGray: 'rgba(0, 0, 0, 0.1)',
     },

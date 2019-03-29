@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core';
 
 import {Menu} from './Menu.js';
+import {AnnotationStatusFilter} from './AnnotationStatusFilter.js';
 
 const LayoutGrid = withStyles(theme => {
     const {values} = theme;
@@ -10,13 +11,55 @@ const LayoutGrid = withStyles(theme => {
         grid: {
             height: '100%',
             display: 'grid',
-            gridTemplateColumns: `1fr`,
-            gridTemplateRows: `${values.heightAppBar} calc(100% - ${values.heightAppBar})`
+            gridTemplateColumns: `1fr min-content ${values.widthSidebar}`,
+            gridTemplateRows: `${values.heightAppBar} 40px calc(100% - ${values.heightAppBar} - 40px)`
         },
     };
 })(props => {
     const {classes, children} = props;
     return <div className={classes.grid}>{children}</div>;
+});
+
+const Bottom = withStyles(theme => {
+    const {values} = theme;
+    return {
+        root: {
+            gridRow: '2/4',
+            gridColumn: '1/4',
+        }
+    };
+})(props => {
+    const {classes, children} = props;
+    return <div className={classes.root}>{children}</div>;
+});
+const Top = withStyles(theme => {
+    const {values} = theme;
+    return {
+        root: {
+            gridRow: '1/2',
+            gridColumn: '1/4',
+        }
+    };
+})(props => {
+    const {classes, children} = props;
+    return <div className={classes.root}>{children}</div>;
+});
+const ActiveFiltersBox = withStyles(theme => {
+    const {zIndex, values} = theme;
+    return {
+        root: {
+            zIndex: zIndex.over_map,
+            marginRight: values.gutterSmall,
+            gridRow: '3/4',
+            gridColumn: '2/3',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+        }
+    };
+})(props => {
+    const {classes, children} = props;
+    return <div className={classes.root}>{children}</div>;
 });
 
 /**
@@ -38,8 +81,9 @@ class LoggedLayout extends Component {
          */
         return (
             <LayoutGrid>
-                <div><Menu state_proxy={state_proxy} /></div>
-                <div>{children}</div>
+                <Top><Menu state_proxy={state_proxy} /></Top>
+                <ActiveFiltersBox><AnnotationStatusFilter state_proxy={state_proxy} /></ActiveFiltersBox>
+                <Bottom>{children}</Bottom>
             </LayoutGrid>
         );
     }

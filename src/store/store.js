@@ -49,36 +49,12 @@ export class StoreActions {
     }
 
     /**
-     * We work around the return value of array.find, that is, the value associated to the first callback that returns true.
-     * It would work perfectly on a flat array, but on a nested one, returning true from the inner loop
-     * makes the outer loop element be returned from the find.
-     * Hence, when we find the element, we assign it to result and return true to exit the loop.
-     * This makes finding the element some kind of side effect of the find, instead of its primary function.
-     *
-     * @param {array} collection
-     * @param {int} target_id
-     * @returns {object}
+     * When user adds an annotation status to the visibility pool, we need to update the store.
+     * @param {String} annotation_status
      */
-    find_element_by_id(collection, target_id) {
+    @action.bound
+    toggle_annotation_status_visibility(annotation_status) {
 
-
-        const loop = (collection, target_id, result) => {
-            collection.find((e) => {
-                if (parseInt(e.id) === parseInt(target_id)) {
-                    result.element = e;
-                    return true;
-                }
-                if (e.children) {
-                    return loop(e.children, target_id, result);
-                }
-                return false;
-            });
-        };
-
-        let result = {};
-        loop(collection, target_id, result);
-
-        return result.element;
     }
 
     /**
@@ -114,14 +90,6 @@ export class StoreActions {
         /** @type {TaxonomyClass} taxonomy_class */
         const taxonomy_class = this.state_proxy.flat_taxonomy_classes[taxonomy_class_id];
         taxonomy_class.opened = !taxonomy_class.opened;
-    }
-
-    @action.bound
-    set_taxonomy_classes_visibility(taxonomy_class_ids) {
-        taxonomy_class_ids.forEach(id => {
-            let taxonomy_class = this.find_element_by_id(this.state_proxy.selected_taxonomy.elements, id);
-            taxonomy_class['visible'] = !taxonomy_class['visible'];
-        });
     }
 
     /**

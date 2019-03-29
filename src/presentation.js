@@ -10,7 +10,7 @@ import * as Sentry from '@sentry/browser';
 import {ThemedComponent} from './utils/react.js';
 import {PresentationContainer} from './components/Presentation.js';
 import {UserInteractions} from './domain/user-interactions.js';
-import {create_state_proxy, StoreActions} from './domain/store.js';
+import {create_state_proxy, StoreActions} from './store/store.js';
 import {DataQueries} from './domain/data-queries.js';
 
 Sentry.init({

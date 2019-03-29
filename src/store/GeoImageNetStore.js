@@ -1,4 +1,4 @@
-import {MODE} from '../domain/constants.js';
+import {MODE, VISIBLE_LAYERS_BY_DEFAULT} from '../domain/constants.js';
 import {AccessControlList} from '../domain/access-control-list.js';
 import {ResourcePermissionRepository} from '../domain/entities.js';
 
@@ -9,6 +9,13 @@ import {ResourcePermissionRepository} from '../domain/entities.js';
  * through the observer construct (the @observer) decorator present on react components.
  */
 export class GeoImageNetStore {
+
+    /**
+     * The visible annotations types should federate every part of the platform that manages annotations, from the counts
+     * in the classes hierarchies to the visible annotations on the map, and every future annotations interactions.
+     * @type {String[]}
+     */
+    visible_annotations_types = VISIBLE_LAYERS_BY_DEFAULT;
 
     /**
      * When loading the platform, we by default put the user in a state of visualization.
