@@ -1,51 +1,24 @@
-import {ANNOTATION, MODE} from './constants';
 import {observable, action, runInAction, configure} from 'mobx';
-import {TaxonomyClass, ResourcePermissionRepository} from './entities.js';
-import {AccessControlList} from './access-control-list.js';
 
-const default_store_schematics = {
+import {ANNOTATION, MODE} from '../domain/constants.js';
+import {TaxonomyClass} from '../domain/entities.js';
+import {GeoImageNetStore} from './GeoImageNetStore.js';
 
-    mode: MODE.VISUALIZE,
-    actions_activated: false,
-
-    acl: new AccessControlList(new ResourcePermissionRepository()),
-
-    taxonomy: [],
-    selected_taxonomy: {
-        id: 0,
-        name: '',
-        version: 0,
-        elements: [],
-        root_taxonomy_class_id: 0,
-    },
-
-    flat_taxonomy_classes: {},
-
-    selected_taxonomy_class_id: -1,
-    visible_classes: [],
-
-    annotations_collections: {},
-    annotations_sources: {},
-    annotations_layers: {},
-
-    logged_user: null,
-
-    current_annotation: {
-        initialized: false,
-        image_title: ''
-    },
-
-};
-const create_store = (store_schematics = null) => {
-    if (store_schematics === null) {
-        return default_store_schematics;
-    }
-    return store_schematics;
-};
+/**
+ * We want to be able to either create a state proxy without parameters, for usage in the real time application,
+ * or pass a custom GeoImageNetStore to the observable, when testing.
+ * @param {GeoImageNetStore} [store_schematics=null]
+ * @returns {GeoImageNetStore}
+ */
 
 export const create_state_proxy = (store_schematics = null) => {
-    const store = create_store(store_schematics);
-    return observable.object(store);
+
+    if (store_schematics === null) {
+        return observable.object(new GeoImageNetStore());
+    }
+
+    return observable.object(store_schematics);
+
 };
 
 /**
@@ -66,11 +39,11 @@ export class StoreActions {
 
     /**
      * We use MobX as our state manager, hence our store is the primary dependency of our store actions.
-     * @param {Observable} state_proxy
+     * @param {GeoImageNetStore} state_proxy
      */
     constructor(state_proxy) {
         /**
-         * @type {Observable}
+         * @type {GeoImageNetStore}
          */
         this.state_proxy = state_proxy;
     }
@@ -258,7 +231,7 @@ export class StoreActions {
 
     @action.bound
     set_taxonomy(t) {
-        this.state_proxy.taxonomy = t;
+        this.state_proxy.taxonomies = t;
     }
 
     @action.bound
@@ -315,18 +288,6 @@ export class StoreActions {
     }
 
     /**
-     * Sets (overwriting if needed) the selected taxonomy classes, then sets visibility to true for everyone
-     * @param {array} c
-     */
-    @action.bound
-    set_taxonomy_class(c) {
-        c.forEach(t => {
-            this.invert_taxonomy_class_visibility(t, true);
-        });
-        this.state_proxy.selected_taxonomy.elements = c;
-    }
-
-    /**
      * @todo maybe directly watch on the visible attribute of the nested classes
      * The cql filter runs on watching an array of ids, updating visible annotations when it changes.
      * This should be called with the new array of visible ids whenever it changes.
@@ -350,7 +311,7 @@ export class StoreActions {
 
     /**
      * Simply sets the current platform mode. Observed by other parts of the application.
-     * @param {MODE} mode
+     * @param {String} mode
      */
     @action.bound
     set_mode(mode) {
