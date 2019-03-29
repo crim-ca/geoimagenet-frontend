@@ -4,10 +4,19 @@ import {withStyles, Link, Typography, Paper} from '@material-ui/core';
 import {Logos} from './Logos.js';
 import {Login} from './Login.js';
 
+const PaddedPaper = withStyles(theme => {
+    const {values} = theme;
+    return {
+        root: {
+            padding: values.gutterSmall,
+        }
+    };
+})(Paper);
+
 class Presentation extends Component {
     render() {
         return (
-            <Paper>
+            <PaddedPaper>
                 <Typography paragraph>GeoImageNet sera élaborée par les équipes des professeurs
                     Yacine Bouroubi et Samuel Foucher et
                     constituera une
@@ -71,7 +80,7 @@ class Presentation extends Component {
                         Tiré d'un article de La Tribune
                     </Link>
                 </Typography>
-            </Paper>
+            </PaddedPaper>
         );
     }
 }
@@ -112,7 +121,7 @@ export const PresentationContainer = withStyles(theme => {
         <div className={classes.container}>
             <div className={classes.logos}><Logos /></div>
             <div className={classes.acceder}>
-                <Paper><Login user_interactions={user_interactions} /></Paper>
+                <PaddedPaper><Login user_interactions={user_interactions} /></PaddedPaper>
             </div>
             <div className={classes.presentation}><Presentation /></div>
         </div>

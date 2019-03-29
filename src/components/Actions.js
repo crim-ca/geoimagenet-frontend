@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
+import {withStyles} from '@material-ui/core'
+
 import {ANNOTATIONS, MODE, READ, VALIDATIONS, WRITE} from '../domain/constants.js';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {
@@ -24,6 +26,18 @@ const ACTIONS = [
     {name: 'validate', icon: faCheck, mode: MODE.VALIDATE, permission_name: WRITE, resource: VALIDATIONS},
     {name: 'refuse', icon: faTimes, mode: MODE.REJECT, permission_name: WRITE, resource: VALIDATIONS},
 ];
+
+const ActionsContainer = withStyles(theme => {
+    const {values} = theme;
+    return {
+        root: {
+            height: values.heightActionsBar
+        }
+    };
+})(props => {
+    const {classes, children} = props;
+    return <div className={`${classes.root} actions`}>{children}</div>;
+});
 
 /**
  * This component renders the different buttons that represent the modes in which an user can do actions upon the annotations.
@@ -60,7 +74,7 @@ class Actions extends Component {
         });
 
         return (
-            <div className='actions'>
+            <ActionsContainer>
                 {
                     this.props.state_proxy.actions_activated
                         ? visible_actions.map((action, i) =>
@@ -75,7 +89,7 @@ class Actions extends Component {
                                 icon={action.icon}
                                 className={action.mode === this.props.state_proxy.mode ? 'fa-2x active' : 'fa-2x inactive'} />)
                 }
-            </div>
+            </ActionsContainer>
         );
     }
 

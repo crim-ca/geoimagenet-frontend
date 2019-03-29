@@ -24,15 +24,22 @@ function isTouchDevice() {
  */
 class LayerSwitcher extends Control {
 
-    constructor(opt_options) {
+    constructor(opt_options, toggle_layer_callback) {
 
         const options = opt_options || {};
+        const {target} = options;
         const element = document.createElement('div');
-
         super({
             element: element,
-            target: options.target,
+            target: target,
         });
+
+        /**
+         * When the layer switcher is used to toggle a layer, we need to tell it to the outside world.
+         * @private
+         * @type {Function}
+         */
+        this.toggle_layer_callback = toggle_layer_callback;
 
         this.mapListeners = [];
 
@@ -54,7 +61,8 @@ class LayerSwitcher extends Control {
     }
 
     /**
-     * Re-draw the layer panel to represent the current state of the layers.
+     * Populate the layer panel with the current state of the layers.
+     * this would be the render method?
      */
     renderPanel() {
 
@@ -141,6 +149,10 @@ class LayerSwitcher extends Control {
 
         const label = document.createElement('label');
 
+        /**
+         * hacky hack to make GeoImageNet images be grouped? combine is a custom attribute added on the high resolution images
+         * rendered on the map.
+         */
         if (layer.getLayers && !layer.get('combine')) {
 
             li.className = 'group';
@@ -163,8 +175,9 @@ class LayerSwitcher extends Control {
             }
             input.id = lyrId;
             input.checked = layer.get('visible');
-            input.onchange = function (e) {
+            input.onchange = (e) => {
                 this_.setVisible_(layer, e.target.checked);
+                this.toggle_layer_callback(layer.get('title'));
             };
             li.appendChild(input);
 

@@ -50,11 +50,13 @@ export class StoreActions {
 
     /**
      * When user adds an annotation status to the visibility pool, we need to update the store.
-     * @param {String} annotation_status
+     * @param {String} annotation_status_text
      */
     @action.bound
-    toggle_annotation_status_visibility(annotation_status) {
-
+    toggle_annotation_status_visibility(annotation_status_text) {
+        const annotation_status_instance = this.state_proxy.annotation_status_list[annotation_status_text];
+        annotation_status_instance.activated = !annotation_status_instance.activated;
+        this.set_annotation_layer_visibility(annotation_status_text, annotation_status_instance.activated);
     }
 
     /**
@@ -192,9 +194,25 @@ export class StoreActions {
         this.state_proxy.annotations_sources[key] = source;
     }
 
+    /**
+     *
+     * @param {String} key
+     * @param {VectorLayer} layer
+     */
     @action.bound
     set_annotation_layer(key, layer) {
         this.state_proxy.annotations_layers[key] = layer;
+    }
+
+    /**
+     * we have the annotation layers stored. When changing the visibility of a layer somehow, we should call this to set
+     * the appropriate visibility on the layer.
+     * @param {String} key
+     * @param {Boolean} visible
+     */
+    @action.bound
+    set_annotation_layer_visibility(key, visible) {
+        this.state_proxy.annotations_layers[key].setVisible(visible);
     }
 
     @action.bound

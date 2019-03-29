@@ -11,6 +11,7 @@ const LogosContainer = withStyles(theme => {
     const {values} = theme;
     return {
         root: {
+            padding: values.gutterSmall,
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',

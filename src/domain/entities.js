@@ -66,6 +66,10 @@ export class TaxonomyClass {
     }
 }
 
+export class AnnotationCounts {
+
+}
+
 /**
  * A taxonomy is an ensemble of TaxonomyClass that represents a specific field or subset of a field.
  */
@@ -241,4 +245,39 @@ export class User {
          */
         this.group_names = group_names;
     }
+}
+
+/**
+ * While an annotation status is only a string and represents a status (yes), we need the actual state of that status across the platform.
+ * This will in turn influence wether or not we see the counts, annotations, and actions (?) related to these annotation statuses.
+ */
+export class AnnotationStatus {
+    /**
+     * The status text, as seen from the api.
+     * @type {String}
+     */
+    text;
+    /**
+     * A human readable more beautiful text for the anotation status.
+     * @type {String}
+     */
+    title;
+    /**
+     * Wether this annotation status should be active all across the platfrom.
+     * @type {Boolean}
+     */
+    activated;
+
+    /**
+     *
+     * @param {String} text
+     * @param {Boolean} [activated=false]
+     * @param {String} [title='']
+     */
+    constructor(text, activated=false, title = '') {
+        this.text = text;
+        this.activated = activated;
+        this.title = title;
+    }
+
 }
