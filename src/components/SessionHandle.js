@@ -9,6 +9,7 @@ const SessionHandlePaper = withStyles(theme => {
     const {values} = theme;
     return {
         root: {
+            padding: values.gutterSmall,
             display: 'grid',
             gridTemplateColumns: 'max-content min-content min-content',
             gridGap: values.gutterSmall,

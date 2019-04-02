@@ -2,10 +2,10 @@ import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 import {
+    withStyles,
     ExpansionPanel,
     ExpansionPanelSummary,
     ExpansionPanelDetails,
-    withStyles,
     Paper
 } from '@material-ui/core';
 import {ExpandMore} from '@material-ui/icons';
@@ -16,12 +16,93 @@ import {MapManager} from '../MapManager.js';
 import {DataQueries} from '../domain/data-queries.js';
 import {UserInteractions} from '../domain/user-interactions.js';
 import {StoreActions} from '../store/store.js';
+import {LayerSwitcher} from '../LayerSwitcher.js';
+import {AnnotationStatusFilter} from './AnnotationStatusFilter.js';
 
 const StyledPanelDetails = withStyles({
     root: {
         flexDirection: 'column'
     },
 })(ExpansionPanelDetails);
+
+const PlatformContainer = withStyles(theme => {
+    const {values} = theme;
+    return {
+        root: {
+            display: 'grid',
+            height: '100%',
+            gridTemplateColumns: `1fr min-content ${values.widthSidebar}`,
+            gridTemplateRows: '64px calc(100% - 64px)'
+        }
+    };
+})(props => {
+    const {classes, children} = props;
+    return <div className={classes.root}>{children}</div>;
+});
+const MapContainer = withStyles(theme => {
+    const {values} = theme;
+    return {
+        root: {
+            gridRow: '1/3',
+            gridColumn: '1/3',
+        }
+    };
+})(props => {
+    const {classes} = props;
+    return <div id='map' className={classes.root} />;
+});
+const Coordinates = withStyles(theme => {
+    const {values, zIndex} = theme;
+    return {
+        root: {
+            gridRow: '1/2',
+            gridColumn: '2/3',
+            zIndex: zIndex.over_map,
+            padding: values.gutterSmall,
+            margin: values.gutterSmall,
+            width: '300px',
+        }
+    };
+})(Paper);
+const ActiveFiltersBox = withStyles(theme => {
+    const {values} = theme;
+    return {
+        root: {
+            marginRight: values.gutterSmall,
+            gridRow: '2/3',
+            gridColumn: '2/3',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+        }
+    };
+})(props => {
+    const {classes, children} = props;
+    return <div className={classes.root}>{children}</div>;
+});
+
+const Sidebar = withStyles(theme => {
+    const {values} = theme;
+    return {
+        root: {
+            gridRow: '1/3',
+            gridColumn: '3/4',
+        }
+    };
+})(Paper);
+
+const SidebarBottom = withStyles(theme => {
+    const {values} = theme;
+    return {
+        root: {
+            height: `calc(100% - ${values.heightActionsBar})`,
+            overflowY: 'scroll',
+        }
+    };
+})(props => {
+    const {classes, children} = props;
+    return <div className={classes.root}>{children}</div>;
+});
 
 /**
  * The Platform is the top level component for the annotation platform. It is responsible for managing the map, hence
@@ -65,10 +146,25 @@ class Platform extends Component {
          * @type {MapManager|Object}
          */
         this.map_manager = {};
+
         this.props.user_interactions.refresh_user_resources_permissions();
     }
 
+    /**
+     * Since we need DOM elements to exist to create Open Layers maps, we hook onto React's componentDidMount lifecycle
+     * callback and create the map manager only when the dom is correctly created.
+     */
     componentDidMount() {
+        /**
+         * The Layer Switcher is paramount to the map: it should allow easy access and toggling to the various displayed layers.
+         * @private
+         * @type {LayerSwitcher}
+         */
+        this.layer_switcher = new LayerSwitcher(
+            {target: 'layer-switcher'},
+            this.props.store_actions.toggle_annotation_status_visibility
+        );
+
         this.map_manager = new MapManager(
             GEOSERVER_URL,
             ANNOTATION_NAMESPACE_URI,
@@ -77,7 +173,8 @@ class Platform extends Component {
             'map',
             this.props.state_proxy,
             this.props.store_actions,
-            this.props.data_queries
+            this.props.data_queries,
+            this.layer_switcher
         );
     }
 
@@ -96,41 +193,19 @@ class Platform extends Component {
 
         const taxonomy_class = this.props.state_proxy.flat_taxonomy_classes[this.props.state_proxy.selected_taxonomy.root_taxonomy_class_id];
         const classes = taxonomy_class ? [taxonomy_class] : [];
-
         const {expanded} = this.state;
 
-        const values = {
-            widthSidebar: '500px',
-            heightAppBar: '64px',
-        };
-
-        const style = {
-            platform: {
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'row',
-            },
-            map: {
-                height: '100%',
-                width: `calc(100% - ${values.widthSidebar})`,
-                position: 'relative',
-            },
-            sidebar: {
-                width: values.widthSidebar,
-            },
-        };
-
         return (
-            <div style={style.platform}>
-                <div style={style.map} id='map' className='map'>
-                    <span id='coordinates' className='coordinates' />
-                </div>
-                <Paper style={style.sidebar} className='right'>
-                    <div className='top'>
-                        <Actions state_proxy={this.props.state_proxy}
-                                 store_actions={this.props.store_actions} />
-                    </div>
-                    <div className='bottom'>
+            <PlatformContainer>
+                <MapContainer />
+                <Coordinates id='coordinates' />
+                <ActiveFiltersBox>
+                    <AnnotationStatusFilter store_actions={this.props.store_actions} state_proxy={this.props.state_proxy} />
+                </ActiveFiltersBox>
+                <Sidebar>
+                    <Actions state_proxy={this.props.state_proxy}
+                             store_actions={this.props.store_actions} />
+                    <SidebarBottom>
                         <ExpansionPanel expanded={expanded === 'taxonomies'}
                                         onChange={this.handle_change('taxonomies')}>
                             <ExpansionPanelSummary expandIcon={<ExpandMore />}>
@@ -158,10 +233,9 @@ class Platform extends Component {
                                 <div id='layer-switcher' className='layer-switcher-container' />
                             </StyledPanelDetails>
                         </ExpansionPanel>
-
-                    </div>
-                </Paper>
-            </div>
+                    </SidebarBottom>
+                </Sidebar>
+            </PlatformContainer>
         );
     }
 }

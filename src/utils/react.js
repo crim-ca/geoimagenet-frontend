@@ -17,6 +17,7 @@ export const theme = createMuiTheme({
     values: {
         widthSidebar: '500px',
         heightAppBar: '64px',
+        heightActionsBar: '64px',
         gutterSmall: GUTTER_SMALL,
         maxContentWidth: '1200px',
     },
@@ -26,13 +27,15 @@ export const theme = createMuiTheme({
     },
     colors: {
         lightGray: 'rgba(0, 0, 0, 0.1)',
+        new: 'rgba(0, 0, 0, 0.1)',
+        pre_released: 'rgba(146, 209, 139, 0.9)',
+        released: 'rgba(95, 175, 87, 0.9)',
+        review: 'rgba(26, 104, 17, 0.9)',
+        validated: 'rgba(7, 70, 0, 0.6)',
+        rejected: 'rgb(121, 16, 8)',
+        deleted: 'rgba(0, 0, 0, 0.9)',
     },
     overrides: {
-        MuiPaper: {
-            root: {
-                padding: GUTTER_SMALL,
-            }
-        },
         MuiLink: {
             root: {
                 color: 'inherit',

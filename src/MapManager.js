@@ -23,7 +23,6 @@ import {
     BING_API_KEY,
     Z_INDEX,
     ANNOTATION_STATUS_AS_ARRAY,
-    VISIBLE_LAYERS_BY_DEFAULT,
     ALLOWED_BING_MAPS,
     CUSTOM_GEOIM_IMAGE_LAYER,
     VIEW_CENTER, VALID_OPENLAYERS_ANNOTATION_RESOLUTION
@@ -52,6 +51,7 @@ export class MapManager {
      * @param {Object} state_proxy
      * @param {StoreActions} store_actions
      * @param {DataQueries} data_queries
+     * @param {LayerSwitcher} layer_switcher
      */
     constructor(
         geoserver_url,
@@ -61,7 +61,8 @@ export class MapManager {
         map_div_id,
         state_proxy,
         store_actions,
-        data_queries
+        data_queries,
+        layer_switcher
     ) {
 
         /**
@@ -101,6 +102,11 @@ export class MapManager {
          */
         this.data_queries = data_queries;
 
+        /**
+         * @type {LayerSwitcher}
+         */
+        this.layer_switcher = layer_switcher;
+
         this.previous_mode = null;
 
         // bind class methods passed as event handlers to prevent the changed execution context from breaking class functionality
@@ -135,16 +141,18 @@ export class MapManager {
 
         const style = getComputedStyle(document.body);
 
-        ANNOTATION_STATUS_AS_ARRAY.forEach(status => {
+        const {annotation_status_list, annotations_collections, annotations_sources} = this.state_proxy;
 
-            const color = style.getPropertyValue(`--color-${status}`);
-            this.store_actions.set_annotation_collection(status, new Collection());
-            this.store_actions.set_annotation_source(status, this.create_vector_source(this.state_proxy.annotations_collections[status], status));
+        Object.keys(annotation_status_list).forEach(key => {
+            const {activated} = annotation_status_list[key];
 
-            const this_layer_is_visible = VISIBLE_LAYERS_BY_DEFAULT.indexOf(status) > -1;
-            const vectorLayer = MapManager.create_vector_layer(status, this.state_proxy.annotations_sources[status], color, this_layer_is_visible);
+            const color = style.getPropertyValue(`--color-${key}`);
+            this.store_actions.set_annotation_collection(key, new Collection());
+            this.store_actions.set_annotation_source(key, this.create_vector_source(annotations_collections[key], key));
 
-            this.store_actions.set_annotation_layer(status, vectorLayer);
+            const vectorLayer = MapManager.create_vector_layer(key, annotations_sources[key], color, activated);
+
+            this.store_actions.set_annotation_layer(key, vectorLayer);
         });
 
         /**
@@ -174,6 +182,7 @@ export class MapManager {
         });
 
         autorun(() => {
+            const {annotation_status_list} = this.state_proxy;
 
             const visible = [];
             Object.keys(this.state_proxy.flat_taxonomy_classes).forEach(k => {
@@ -189,7 +198,14 @@ export class MapManager {
             } else {
                 this.cql_filter = '';
             }
-            ANNOTATION_STATUS_AS_ARRAY.forEach(s => {
+            const status_list = [];
+            Object.keys(annotation_status_list).forEach(k => {
+                const status = annotation_status_list[k];
+                if (status.activated) {
+                    status_list.push(status.text);
+                }
+            });
+            status_list.forEach(s => {
                 this.refresh_source_by_status(s);
             });
         });
@@ -736,17 +752,7 @@ export class MapManager {
         this.map.addLayer(base_maps_group);
         this.map.addLayer(annotations_group);
 
-        /**
-         * The Layer Switcher is paramount to the map: it should allow easy access to the various displayed layers
-         * in a way that limits cluttering of the screen space.
-         * @private
-         * @type {LayerSwitcher}
-         */
-        this.layerSwitcher = new LayerSwitcher({
-            target: 'layer-switcher',
-            open: true,
-        });
-        this.map.addControl(this.layerSwitcher);
+        this.map.addControl(this.layer_switcher);
 
     }
 

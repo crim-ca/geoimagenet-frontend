@@ -3,6 +3,8 @@
  * @todo this was copied from other CRIM projects, at some point we need to actually have something that is not subject to stop working randomly.
  * @type {string}
  */
+import {AnnotationStatus} from './entities.js';
+
 export const BING_API_KEY = 'AtXX65CBBfZXBxm6oMyf_5idMAMI7W6a5GuZ5acVcrYi6lCQayiiBz7_aMHB7JR7';
 
 export const CUSTOM_GEOIM_IMAGE_LAYER = 'custom_geiom_image_layer';
@@ -66,19 +68,6 @@ export const ANNOTATION_STATUS_AS_ARRAY = [
     'validated',
     'rejected',
     'deleted',
-];
-
-/**
- * There are multiple annotations, that are grouped by OL layers. Since seeing every annotation ever created would be
- * overwhelming, we by default only show those that are most probably of interest to the user.
- * @todo maybe set that dynamically based on the role of the logged user?
- * @type {string[]}
- */
-export const VISIBLE_LAYERS_BY_DEFAULT = [
-    ANNOTATION.STATUS.NEW,
-    ANNOTATION.STATUS.RELEASED,
-    ANNOTATION.STATUS.REVIEW,
-    ANNOTATION.STATUS.VALIDATED,
 ];
 
 export const ALLOWED_BING_MAPS = [

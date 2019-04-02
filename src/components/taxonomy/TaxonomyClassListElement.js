@@ -15,8 +15,7 @@ const StyledListItem = withStyles({
         '&:focus': {
             backgroundColor: 'inherit',
         },
-        paddingTop: '6px',
-        paddingBottom: '6px',
+        padding: '4px',
         justifyContent: 'space-between',
     },
 })(ListItem);

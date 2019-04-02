@@ -24,32 +24,6 @@
 div#root-platform {
     height: 100%;
 }
-div.map {
-}
-div.map span.coordinates {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 300px;
-    z-index: 100;
-    padding: var(--gutter-small);
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: var(--gutter-small);
-    background-color: rgba(255, 255, 255, 0.8);
-}
-.right {
-    height: 100%;
-    width: var(--width-sidebar);
-}
-.right .top {
-    height: var(--height-actions);
-}
-.right .bottom {
-    height: calc(100% - var(--height-actions));
-    overflow-y: scroll;
-}
 ul {
     list-style: none;
     padding-left: 20px;
@@ -128,22 +102,22 @@ span.icon {
     width: 30px;
     display: inline-block;
 }
-div.actions {
+.actions {
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-evenly;
 }
-div.actions svg {
-    margin: var(--gutter-small);
+.actions svg {
+    margin-left: var(--gutter-small);
 }
-div.actions svg:not(.inactive) {
+.actions svg:not(.inactive) {
     cursor: pointer;
 }
-div.actions .active {
+.actions .active {
     color: var(--color-blue);
 }
-div.actions .inactive {
+.actions .inactive {
     color: var(--light-gray);
 }
 div.taxonomy {
