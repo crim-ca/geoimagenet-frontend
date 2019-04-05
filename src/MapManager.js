@@ -135,6 +135,8 @@ export class MapManager {
         this.map = new Map({
             target: map_div_id,
             view: this.view,
+            loadTilesWhileAnimating: true,
+            loadTilesWhileInteracting: true
         });
 
         this.map.addControl(new ScaleLine());
