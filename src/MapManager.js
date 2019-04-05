@@ -588,7 +588,8 @@ export class MapManager {
         // Get map projection
         // const dst_epsg = this.map.getView().getProjection().getCode();
         const dst_epsg = 'EPSG:3857';
-        let size = getWidth(getProjection(dst_epsg).getExtent()) / 256;
+        let projectionExtent = getProjection(dst_epsg).getExtent();
+        let size = getWidth(projectionExtent) / 256;
         let n_tile_levels = 20;
         let resolutions = new Array(n_tile_levels);
         for (let z = 0; z < n_tile_levels; ++z) {
