@@ -1,7 +1,7 @@
 import {autorun} from 'mobx';
 
 import {Group, Vector} from 'ol/layer';
-import {fromLonLat, transformExtent} from 'ol/proj';
+import {fromLonLat, transformExtent, get as getProjection} from 'ol/proj';
 import {MousePosition, ScaleLine} from 'ol/control';
 import {Draw, Modify} from 'ol/interaction';
 import {View, Collection, Feature, Map} from 'ol';
@@ -12,9 +12,10 @@ import {Circle, Fill, Stroke, Style, Text} from 'ol/style';
 import {GeoJSON} from 'ol/format';
 import TileLayer from 'ol/layer/Tile';
 import {BingMaps, Cluster, OSM, TileWMS} from 'ol/source';
+import TileGrid from 'ol/tilegrid/TileGrid';
 import VectorLayer from 'ol/layer/Vector';
 import {fromExtent} from 'ol/geom/Polygon';
-import {boundingExtent, buffer, getArea, getCenter} from 'ol/extent';
+import {boundingExtent, buffer, getArea, getWidth, getTopLeft, getCenter} from 'ol/extent';
 
 import {LayerSwitcher} from './LayerSwitcher.js';
 import {
@@ -587,59 +588,61 @@ export class MapManager {
         // Get map projection
         // const dst_epsg = this.map.getView().getProjection().getCode();
         const dst_epsg = 'EPSG:3857';
+        let size = getWidth(getProjection(dst_epsg).getExtent()) / 256;
+        let n_tile_levels = 20;
+        let resolutions = new Array(n_tile_levels);
+        for (let z = 0; z < n_tile_levels; ++z) {
+            // generate resolutions
+            resolutions[z] = size / Math.pow(2, z);
+        }
+
+        const images_layers = ['GeoImageNet:NRG', 'GeoImageNet:RGB'];
 
         try {
+
             const result = await this.data_queries.geoserver_capabilities(`${this.geoserver_url}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
             const capability = result.Capability;
             const layers_info = capability.Layer.Layer;
             for (let i = 0; i < layers_info.length; i++) {
                 const layer_name = layers_info[i].Name;
-                const src_proj = layers_info[i].BoundingBox[1].crs;
-                // Get layer's extent
-                let extent = layers_info[i].BoundingBox[1].extent;
-                // The coordinates must be reordered for Openlayers
-                const extent_for_OL = [extent[1], extent[0], extent[3], extent[2]];
-                const layer_base_name = layer_name.split(":")[1];
+                if (images_layers.some(i => layer_name.includes(i))) {
 
-                if (layer_name.includes('GeoImageNet:NRG')) {
+                    const src_proj = layers_info[i].BoundingBox[1].crs;
+                    // Get layer's extent
+                    let extent = layers_info[i].BoundingBox[1].extent;
+                    // The coordinates must be reordered for Openlayers
+                    const extent_for_OL = [extent[1], extent[0], extent[3], extent[2]];
+                    const layer_base_name = layer_name.split(":")[1];
+
                     // The coordinates must be set to the same projection as the map
-                    let extent = transformExtent(extent_for_OL, src_proj, dst_epsg);
+                    extent = transformExtent(extent_for_OL, src_proj, dst_epsg);
                     const lyr = new TileLayer({
                         title: layer_base_name,
                         type: CUSTOM_GEOIM_IMAGE_LAYER,
                         source: new TileWMS({
                             url: `${this.geoserver_url}/GeoImageNet/wms`,
-                            params: {'LAYERS': layer_name},
+                            params: {'LAYERS': layer_name, 'TILED': true, 'FORMAT': 'image/png8'},
                             ratio: 1,
+                            tileGrid: new TileGrid({
+                                origin: getTopLeft(projectionExtent),
+                                resolutions: resolutions
+                            }),
                             serverType: 'geoserver',
                             crossOrigin: 'anonymous',
                         }),
                         extent: extent,
                     });
-                    NRG_layers.push(lyr);
-                }
-
-                if (layer_name.includes('GeoImageNet:RGB')) {
-                    // The coordinates must be set to the same projection as the map
-                    let extent = transformExtent(extent_for_OL, src_proj, dst_epsg);
-                    const lyr = new TileLayer({
-                        title: layer_base_name,
-                        type: CUSTOM_GEOIM_IMAGE_LAYER,
-                        source: new TileWMS({
-                            url: `${this.geoserver_url}/GeoImageNet/wms`,
-                            params: {'LAYERS': layer_name},
-                            ratio: 1,
-                            serverType: 'geoserver',
-                            crossOrigin: 'anonymous',
-                        }),
-                        extent: extent,
-                    });
-                    RGB_layers.push(lyr);
+                    if (layer_name.includes('NRG')) {
+                        NRG_layers.push(lyr);
+                    } else if (layer_name.includes('RGB')) {
+                        RGB_layers.push(lyr);
+                    }
                 }
             }
         } catch (e) {
             notifier.error('We could not interrogate Geoserver capabilities. No images will be available.');
         }
+
 
         let bboxFeatures = new Collection();
         let bboxSource = new VectorSource({
