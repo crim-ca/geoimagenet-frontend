@@ -5,10 +5,13 @@ from mimetypes import MimeTypes
 from urllib.error import HTTPError
 import sentry_sdk
 from jinja2.exceptions import TemplateNotFound
+from http.cookies import SimpleCookie
+from os import environ as actual_environment
 
 from GIN.Server.Routing import mapper
 from GIN.Server.Exception import NotFound
 from GIN.DependencyInjection import Injector
+import requests
 
 mimetypes = MimeTypes()
 
@@ -16,15 +19,22 @@ sentry_sdk.init('https://855d6407dc424a5e95029d10600fbff5:7881d331c24c4c9187387c
 
 
 def make_full_file_path(request_uri):
-
     current_file_path = path.dirname(__file__)
     static_folder_path = path.join(current_file_path, '..', 'dist')
     return '%s%s' % (static_folder_path, request_uri)
 
 
 def request_wants_file(full_file_path):
-
     return path.isfile(full_file_path)
+
+
+def parse_cookies(cookies_string):
+    cookie = SimpleCookie()
+    cookie.load(cookies_string)
+    cookies = {}
+    for key, morsel in cookie.items():
+        cookies[key] = morsel.value
+    return cookies
 
 
 # TODO as we get more sections, this will be a hassle to always update the equivalence
@@ -36,12 +46,41 @@ path_equivalences = {
     '/datasets': '/datasets.html',
 }
 
+public_resources = [
+    '/',
+    '/login',
+    '/presentation.bundle.js',
+]
+
+
+def resource_is_private(resource):
+    if resource in public_resources:
+        return False
+    if resource.startswith('/img'):
+        return False
+    return True
+
+
+injector = Injector()
+
 
 def handler_app(environ, start_response):
-
-    injector = Injector()
+    """
+    top level request handler for the GeoImageNet platform backend.
+    anything but the resources necessary for the home to be correctly displayed should be protected behind the login.
+    """
     request_method = environ['REQUEST_METHOD']
     request_uri = environ['PATH_INFO']
+
+    if resource_is_private(request_uri):
+        cookies = parse_cookies(environ['HTTP_COOKIE'])
+        magpie_endpoint = actual_environment.get('MAGPIE_ENDPOINT') or 'https://geoimagenetdev.crim.ca/magpie'
+        url = f'{magpie_endpoint}/session'
+        r = requests.get(url, cookies=cookies)
+        body = r.json()
+        if body['authenticated'] is False:
+            start_response('401 UNAUTHORIZED', [('location', '/')])
+            return [bytes('', 'utf8')]
 
     if request_uri in path_equivalences:
         request_uri = path_equivalences[request_uri]
