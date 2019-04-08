@@ -46,6 +46,7 @@ def handler_app(environ, start_response):
     if request_uri in path_equivalences:
         request_uri = path_equivalences[request_uri]
 
+    # TODO glaring security hole here? could serve virtually any file on the server? fix to only serve from dist anyway
     full_file_path = make_full_file_path(request_uri)
     if request_wants_file(full_file_path):
         mime_type = mimetypes.guess_type(full_file_path)[0]
@@ -114,8 +115,4 @@ class StandaloneApplication(gunicorn.app.base.BaseApplication):
 if __name__ == '__main__':
     from werkzeug.serving import run_simple
 
-    context = (
-        "/projects/local-cert-generator/server.pem",
-        "/projects/local-cert-generator/server.pem"
-    )
-    run_simple('0.0.0.0', 5000, handler_app, use_reloader=True)#, ssl_context=context)
+    run_simple('0.0.0.0', 5000, handler_app, use_reloader=True)#, ssl_context='adhoc')
