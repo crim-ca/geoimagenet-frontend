@@ -69,6 +69,7 @@ ignore_regexps = [
     r'^Merge remote-tracking branch',
     r'^Merge pull request',
     r'[Cc]hangelog for',
+    r'^\d\.\d\.\d$',
 ]
 
 

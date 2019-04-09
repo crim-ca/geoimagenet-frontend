@@ -2,6 +2,37 @@ Changelog
 =========
 
 
+0.7.0 (2019-04-09)
+------------------
+
+New
+~~~
+- Switching layers from the map. [Félix Gagnon-Grenier]
+- Basic session handle. [Félix Gagnon-Grenier]
+- Login form on presentation screen. [Félix Gagnon-Grenier]
+- Test for basic magpie permission structure. [Félix Gagnon-Grenier]
+- Tooltip on annotation count hover. [Félix Gagnon-Grenier]
+- Filter actions from permissions in magpie. [Félix Gagnon-Grenier]
+- Multiple languages in data structures. [Félix Gagnon-Grenier]
+
+Changes
+~~~~~~~
+- Load tiles while moving the map. [David Caron]
+- Missing variable. [David Caron]
+- Align tile requests to the cached tiles. [David Caron]
+- Shinier presentation page. [Félix Gagnon-Grenier]
+
+Fix
+~~~
+- Display counts at the end of the line. [Félix Gagnon-Grenier]
+
+Other
+~~~~~
+- Some linting and test fixing. [Félix Gagnon-Grenier]
+- Some documentation and tidy up. [Félix Gagnon-Grenier]
+- Documenting constants. [Félix Gagnon-Grenier]
+
+
 0.6.0 (2019-03-21)
 ------------------
 
@@ -105,7 +136,6 @@ Fix
 
 Other
 ~~~~~
-- 0.4.0. [Félix Gagnon-Grenier]
 - Actions in their component. [Félix Gagnon-Grenier]
 - Zoome on img marker click. [Félix Gagnon-Grenier]
 - Flat ancestors and descendants structure. [Félix Gagnon-Grenier]
@@ -211,7 +241,6 @@ Other
 
 0.2.1 (2019-02-04)
 ------------------
-- 0.2.1. [Félix Gagnon-Grenier]
 - Changelog embryo. [Félix Gagnon-Grenier]
 - Minor cleaning up. [Félix Gagnon-Grenier]
 - Adding css vars for layer colors in the future. [Félix Gagnon-Grenier]
