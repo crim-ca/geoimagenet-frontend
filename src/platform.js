@@ -24,44 +24,91 @@ Sentry.init({
     dsn: 'https://e7309c463efe4d85abc7693a6334e8df@sentry.crim.ca/21'
 });
 
-addEventListener('DOMContentLoaded', async () => {
+/**
+ * When initiating the platform, we need to
+ * - set up the OL Map
+ * - get information from Geoserver for the layers (images, annotations, image markers)
+ * - get information from magpie as for the login status
+ * - get information from the api (taxonomies, taxonomy classes)
+ *
+ * For that, we instantiate the various services that will be used, then inject them into the actual classes that do it.
+ */
+export class PlatformLoader {
 
-    const state_proxy = create_state_proxy();
-    const store_actions = new StoreActions(state_proxy);
-    const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT);
-    const user_interactions = new UserInteractions(store_actions, data_queries);
-
-    const div = document.createElement('div');
-    div.classList.add('root');
-    document.body.appendChild(div);
-
-    ReactDOM.render(
-        <MuiThemeProvider theme={theme}>
-            <CssBaseline />
-            <LoggedLayout state_proxy={state_proxy}>
-                <Platform
-                    state_proxy={state_proxy}
-                    store_actions={store_actions}
-                    user_interactions={user_interactions}
-                    data_queries={data_queries} />
-            </LoggedLayout>
-        </MuiThemeProvider>,
-        div
-    );
-    //new TaxonomyBrowser(map_manager, state_proxy, store_actions, user_interactions);
-
-    try {
-        const taxonomies = await data_queries.fetch_taxonomies();
-        store_actions.set_taxonomy(taxonomies);
-    } catch (e) {
-        switch (e.status) {
-            case 404:
-                notifier.warning('There doesn\'t seem to be any taxonomy available in the API (we received a 404 not-found status). ' +
-                    'This will likely render the platform unusable until someone populates the taxonomies.');
-                break;
-            default:
-                notifier.error('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
-        }
+    /**
+     * @param {String} geoimagenet_api_endpoint geoimagenet api deployed endpoint to use in this instance of the platform
+     * @param {String} magpie_endpoint magpie installation to use in this instance of the platform
+     */
+    constructor(geoimagenet_api_endpoint, magpie_endpoint) {
+        /**
+         * @private
+         * @type {GeoImageNetStore}
+         */
+        this.state_proxy = create_state_proxy();
+        /**
+         * @private
+         * @type {StoreActions}
+         */
+        this.store_actions = new StoreActions(this.state_proxy);
+        /**
+         * @private
+         * @type {DataQueries}
+         */
+        this.data_queries = new DataQueries(geoimagenet_api_endpoint, magpie_endpoint);
+        /**
+         * @private
+         * @type {UserInteractions}
+         */
+        this.user_interactions = new UserInteractions(this.store_actions, this.data_queries);
     }
-    register_section_handles('section-handle');
+
+    /**
+     * Render the react components on the page passing the services to each as needed.
+     * Fetch the basic information for the page to show something meaningful.
+     * @returns {Promise<void>}
+     */
+    async init() {
+
+        const div = document.createElement('div');
+        div.classList.add('root');
+        document.body.appendChild(div);
+
+        ReactDOM.render(
+            <MuiThemeProvider theme={theme}>
+                <CssBaseline />
+                <LoggedLayout state_proxy={this.state_proxy}>
+                    <Platform
+                        state_proxy={this.state_proxy}
+                        store_actions={this.store_actions}
+                        user_interactions={this.user_interactions}
+                        data_queries={this.data_queries} />
+                </LoggedLayout>
+            </MuiThemeProvider>,
+            div
+        );
+
+        try {
+            const taxonomies = await this.data_queries.fetch_taxonomies();
+            this.store_actions.set_taxonomy(taxonomies);
+        } catch (e) {
+            switch (e.status) {
+                case 404:
+                    notifier.warning('There doesn\'t seem to be any taxonomy available in the API (we received a 404 not-found status). ' +
+                        'This will likely render the platform unusable until someone populates the taxonomies.');
+                    break;
+                default:
+                    notifier.error('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
+            }
+        }
+        register_section_handles('section-handle');
+    }
+}
+
+addEventListener('DOMContentLoaded', async () => {
+    const platform_loader = new PlatformLoader(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT);
+    try {
+        await platform_loader.init();
+    } catch (e) {
+        Sentry.captureException(e);
+    }
 });

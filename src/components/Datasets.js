@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {withStyles, Paper, Select, MenuItem, Divider, TextField, Button} from '@material-ui/core';
+import {withStyles, Paper, Divider, TextField, Button} from '@material-ui/core';
 import {observer} from 'mobx-react';
+
+import DatasetsList from './datasets/DatasetsList.js';
 
 const DatasetLayout = withStyles({
     grid: {
@@ -32,17 +34,13 @@ const DatasetsPaper = withStyles(theme => ({
 class Datasets extends Component {
 
     static propTypes = {
-        datasets: PropTypes.array.isRequired
+        state_proxy: PropTypes.object.isRequired
     };
 
     state = {
         selected_dataset: null,
         applicant_email: '',
         applicant_name: '',
-    };
-
-    handle_select_change = event => {
-        this.setState({[event.target.name]: event.target.value});
     };
 
     handle_field_change = name => event => {
@@ -53,11 +51,7 @@ class Datasets extends Component {
         return (
             <DatasetLayout>
                 <DatasetsPaper>
-                    <Select value={this.state.selected_dataset}
-                            onChange={this.handle_select_change}>
-                        {this.props.datasets.map((dataset, i) => <MenuItem key={i}
-                                                                           value={dataset}>{dataset.title}</MenuItem>)}
-                    </Select>
+                    <DatasetsList state_proxy={this.props.state_proxy} />
                     <Divider />
                     <TextField label='Email Address'
                                value={this.state.applicant_email}
