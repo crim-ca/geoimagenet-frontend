@@ -624,7 +624,7 @@ export class MapManager {
                         title: layers_info[i].Title,
                         type: CUSTOM_GEOIM_IMAGE_LAYER,
                         source: new TileWMS({
-                            url: `${this.geoserver_url}/GeoImageNet/wms`,
+                            url: `${this.geoserver_url}/wms`,
                             params: {'LAYERS': layer_name, 'TILED': true, 'FORMAT': 'image/png'},
                             ratio: 1,
                             projection: 'EPSG:3857',
@@ -637,15 +637,9 @@ export class MapManager {
                         }),
                         extent: extent,
                     });
-                    // todo: change for this when keywords are implemented
-                    // if (layers_info[i].KeywordList.some( k => k.includes('NRG'))) {
-                    //     NRG_layers.push(lyr);
-                    // } else if (layers_info[i].KeywordList.some( k => k.includes('RGB'))) {
-                    //     RGB_layers.push(lyr);
-                    // }
-                    if (layer_name.includes('NRG')) {
+                    if (layers_info[i].KeywordList.some( k => k.includes('NRG'))) {
                         NRG_layers.push(lyr);
-                    } else if (layer_name.includes('RGB')) {
+                    } else if (layers_info[i].KeywordList.some( k => k.includes('RGB'))) {
                         RGB_layers.push(lyr);
                     }
                 }
