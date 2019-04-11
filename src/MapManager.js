@@ -718,10 +718,11 @@ export class MapManager {
         // as such, here I take a shortcut and only loop over one of the layers to create the image markers
         // should that requirement ever change, some logic and autorun magic should be added to regenerate the image markers layer
         // when we select either type of images
-        const maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
+        const maxArea = 10 ** 13; // if the extent is to large (most likely the world), don't display it
         NRG_layers.forEach(layer => {
             let extent = layer.get('extent');
-            if (getArea(extent) < maxArea) {
+            let area = getArea(extent);
+            if (area < maxArea) {
                 let feature = new Feature({
                     geometry: fromExtent(extent)
                 });
