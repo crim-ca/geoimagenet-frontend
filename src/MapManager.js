@@ -599,7 +599,7 @@ export class MapManager {
             resolutions[z] = size / Math.pow(2, z);
         }
 
-        const images_layers = ['GeoImageNet:NRG', 'GeoImageNet:RGB'];
+        const images_layers = ['PLEIADES_NRG', 'PLEIADES_RGB'];
 
         try {
 
@@ -610,22 +610,24 @@ export class MapManager {
                 const layer_name = layers_info[i].Name;
                 if (images_layers.some(i => layer_name.includes(i))) {
 
-                    const src_proj = layers_info[i].BoundingBox[1].crs;
                     // Get layer's extent
-                    let extent = layers_info[i].BoundingBox[1].extent;
-                    // The coordinates must be reordered for Openlayers
-                    const extent_for_OL = [extent[1], extent[0], extent[3], extent[2]];
-                    const layer_base_name = layer_name.split(":")[1];
+                    let extent = projectionExtent;
+                    layers_info[i].BoundingBox.forEach(bbox => {
+                        if (bbox.crs === 'EPSG:3857') {
+                            // extent is given as [minx, miny, maxx, maxy] by wms service
+                            // which is the same as OpenLayer requires
+                            extent = bbox.extent;
+                        }
+                    });
 
-                    // The coordinates must be set to the same projection as the map
-                    extent = transformExtent(extent_for_OL, src_proj, dst_epsg);
                     const lyr = new TileLayer({
-                        title: layer_base_name,
+                        title: layers_info[i].Title,
                         type: CUSTOM_GEOIM_IMAGE_LAYER,
                         source: new TileWMS({
                             url: `${this.geoserver_url}/GeoImageNet/wms`,
-                            params: {'LAYERS': layer_name, 'TILED': true, 'FORMAT': 'image/png8'},
+                            params: {'LAYERS': layer_name, 'TILED': true, 'FORMAT': 'image/png'},
                             ratio: 1,
+                            projection: 'EPSG:3857',
                             tileGrid: new TileGrid({
                                 origin: getTopLeft(projectionExtent),
                                 resolutions: resolutions
@@ -635,6 +637,12 @@ export class MapManager {
                         }),
                         extent: extent,
                     });
+                    // todo: change for this when keywords are implemented
+                    // if (layers_info[i].KeywordList.some( k => k.includes('NRG'))) {
+                    //     NRG_layers.push(lyr);
+                    // } else if (layers_info[i].KeywordList.some( k => k.includes('RGB'))) {
+                    //     RGB_layers.push(lyr);
+                    // }
                     if (layer_name.includes('NRG')) {
                         NRG_layers.push(lyr);
                     } else if (layer_name.includes('RGB')) {
@@ -712,7 +720,6 @@ export class MapManager {
         // when we select either type of images
         const maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
         NRG_layers.forEach(layer => {
-            // EX_GeographicBoundingBox is an array of [minx, miny, maxx, maxy] in EPSG:4326
             let extent = layer.get('extent');
             if (getArea(extent) < maxArea) {
                 let feature = new Feature({
