@@ -637,11 +637,21 @@ export class MapManager {
                         }),
                         extent: extent,
                     });
-                    if (layers_info[i].KeywordList.some( k => k.includes('NRG'))) {
-                        NRG_layers.push(lyr);
-                    } else if (layers_info[i].KeywordList.some( k => k.includes('RGB'))) {
-                        RGB_layers.push(lyr);
-                    }
+
+                    // classify layers based on their keywords
+                    let reg_date = /^\d{8}$/;
+                    layers_info[i].KeywordList.forEach( keyword => {
+                        if (keyword === 'NRG') {
+                            NRG_layers.push(lyr);
+                        } else if (keyword === 'RGB') {
+                            RGB_layers.push(lyr);
+                        } else if (reg_date.test(keyword)) {
+                            // The date should be in the YYYYMMDD format
+                            // So newer images will be on top
+                            lyr.setZIndex(parseInt(keyword));
+                        }
+                    });
+
                 }
             }
         } catch (e) {
