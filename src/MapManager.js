@@ -598,21 +598,15 @@ export class MapManager {
             // generate resolutions
             resolutions[z] = size / Math.pow(2, z);
         }
-
-        const images_layers = ['PLEIADES_NRG', 'PLEIADES_RGB'];
-
         try {
-
             const result = await this.data_queries.geoserver_capabilities(`${this.geoserver_url}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
             const capability = result.Capability;
-            const layers_info = capability.Layer.Layer;
-            for (let i = 0; i < layers_info.length; i++) {
-                const layer_name = layers_info[i].Name;
-                if (images_layers.some(i => layer_name.includes(i))) {
+            capability.Layer.Layer.forEach( layer => {
+                if (layer.KeywordList.some(keyword => keyword === "GEOIMAGENET")) {
 
                     // Get layer's extent
                     let extent = projectionExtent;
-                    layers_info[i].BoundingBox.forEach(bbox => {
+                    layer.BoundingBox.forEach(bbox => {
                         if (bbox.crs === 'EPSG:3857') {
                             // extent is given as [minx, miny, maxx, maxy] by wms service
                             // which is the same as OpenLayer requires
@@ -621,11 +615,11 @@ export class MapManager {
                     });
 
                     const lyr = new TileLayer({
-                        title: layers_info[i].Title,
+                        title: layer.Title,
                         type: CUSTOM_GEOIM_IMAGE_LAYER,
                         source: new TileWMS({
                             url: `${this.geoserver_url}/wms`,
-                            params: {'LAYERS': layer_name, 'TILED': true, 'FORMAT': 'image/png'},
+                            params: {'LAYERS': layer.Name, 'TILED': true, 'FORMAT': 'image/png'},
                             ratio: 1,
                             projection: 'EPSG:3857',
                             tileGrid: new TileGrid({
@@ -638,9 +632,9 @@ export class MapManager {
                         extent: extent,
                     });
 
-                    // classify layers based on their keywords
+                    // classify and sort layer based on its keywords
                     let reg_date = /^\d{8}$/;
-                    layers_info[i].KeywordList.forEach( keyword => {
+                    layer.KeywordList.forEach( keyword => {
                         if (keyword === 'NRG') {
                             NRG_layers.push(lyr);
                         } else if (keyword === 'RGB') {
@@ -653,7 +647,7 @@ export class MapManager {
                     });
 
                 }
-            }
+            });
         } catch (e) {
             notifier.error('We could not interrogate Geoserver capabilities. No images will be available.');
         }
