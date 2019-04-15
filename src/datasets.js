@@ -14,8 +14,6 @@ import {theme} from './utils/react.js';
 import './css/base.css';
 import './css/notifications.css';
 import './img/icons/favicon.ico';
-import {AccessControlList} from './domain/access-control-list.js';
-import {ResourcePermissionRepository} from './domain/entities.js';
 
 Sentry.init({
     dsn: 'https://e7309c463efe4d85abc7693a6334e8df@sentry.crim.ca/21'
@@ -27,6 +25,8 @@ addEventListener('DOMContentLoaded', async () => {
     const store_actions = new StoreActions(state_proxy);
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT);
     const user_interactions = new UserInteractions(store_actions, data_queries);
+
+    await user_interactions.fetch_taxonomies();
 
     const div = element('div');
     div.id = 'root';

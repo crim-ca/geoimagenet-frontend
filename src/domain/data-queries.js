@@ -37,6 +37,24 @@ export class DataQueries {
     }
 
     /**
+     * Launches the dataset creation task through the geoimagenet api, that will in turn call the machine learning api.
+     * @param {String} dataset_name
+     * @param {Number} taxonomy_id
+     * @returns {Promise<*|Promise<never>|*>}
+     */
+    launch_dataset_creation = async (dataset_name, taxonomy_id) => {
+        const payload = JSON.stringify({
+            name: dataset_name,
+            taxonomy_id: taxonomy_id,
+        });
+        try {
+            return await post_json(`${this.geoimagenet_api_endpoint}/batches`, payload);
+        } catch (e) {
+            return reject(e);
+        }
+    };
+
+    /**
      * Returns information for the user associated with current cookies. We rely on the cookies being automatically associated
      * to requests here. This is fairly usual behaviour.
      * @returns {Promise<Object>}

@@ -35,6 +35,22 @@ export class UserInteractions {
         this.release_annotations = this.release_annotations.bind(this);
     }
 
+    fetch_taxonomies = async () => {
+        try {
+            const taxonomies = await this.data_queries.fetch_taxonomies();
+            this.store_actions.set_taxonomy(taxonomies);
+        } catch (e) {
+            switch (e.status) {
+                case 404:
+                    notifier.warning('There doesn\'t seem to be any taxonomy available in the API (we received a 404 not-found status). ' +
+                        'This will likely render the platform unusable until someone populates the taxonomies.');
+                    break;
+                default:
+                    notifier.error('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
+            }
+        }
+    };
+
 
     /**
      *

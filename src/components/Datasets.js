@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {withStyles, Paper, Divider, Button} from '@material-ui/core';
+import {withStyles, Paper, Divider, Button, Select, MenuItem} from '@material-ui/core';
 import {observer} from 'mobx-react';
 
 import DatasetsList from './datasets/DatasetsList.js';
@@ -35,8 +35,28 @@ const DatasetsPaper = withStyles(theme => ({
     }
 }))(Paper);
 
+const DownloadContainer = withStyles(theme => {
+    const {values} = theme;
+    return {
+        root: {
+            display: 'flex',
+            flexDirection: 'row',
+            '& > *': {
+                width: '50%',
+            }
+        }
+    };
+})(props => {
+    const {classes, children} = props;
+    return <div className={classes.root}>{children}</div>;
+});
+
 @observer
 class Datasets extends Component {
+
+    state = {
+        selected_taxonomy: null,
+    };
 
     /**
      *
@@ -49,9 +69,15 @@ class Datasets extends Component {
         store_actions: PropTypes.instanceOf(StoreActions).isRequired,
     };
 
+    change_taxonomy_selection = (event) => {
+        this.setState({
+            selected_taxonomy: event.target.value
+        });
+    };
+
     render() {
         const {selected_dataset} = this.props.state_proxy.datasets;
-        const {acl} = this.props.state_proxy;
+        const {acl, taxonomies} = this.props.state_proxy;
         return (
             <DatasetLayout>
                 <DatasetsPaper>
@@ -65,9 +91,20 @@ class Datasets extends Component {
                             ? (
                                 <React.Fragment>
                                     <Divider />
-                                    <Button onClick={() => {
-                                        notifier.warning('This is not yet implemented, come back later!');
-                                    }}>Create Patches</Button>
+                                    <DownloadContainer>
+                                        <Select onChange={this.change_taxonomy_selection}
+                                                value={this.state.selected_taxonomy}>
+                                            {
+                                                taxonomies.map((taxonomy, i) => (
+                                                    <MenuItem value={taxonomy}
+                                                              key={i}>{taxonomy.name_en || taxonomy.name_fr}</MenuItem>
+                                                ))
+                                            }
+                                        </Select>
+                                        <Button onClick={() => {
+                                            notifier.warning('This is not yet implemented, come back later!');
+                                        }} variant='contained' color='primary'>Create Patches</Button>
+                                    </DownloadContainer>
                                 </React.Fragment>
                             )
                             : null
