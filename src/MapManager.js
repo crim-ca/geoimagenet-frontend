@@ -615,7 +615,7 @@ export class MapManager {
                     });
 
                     const lyr = new TileLayer({
-                        title: layer.Title,
+                        title: layer.Name,
                         type: CUSTOM_GEOIM_IMAGE_LAYER,
                         source: new TileWMS({
                             url: `${this.geoserver_url}/wms`,
