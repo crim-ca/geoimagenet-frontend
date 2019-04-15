@@ -5,6 +5,7 @@ import {observer} from 'mobx-react';
 
 import DatasetsList from './datasets/DatasetsList.js';
 import {Dataset} from '../domain/entities.js';
+import {StoreActions} from '../store';
 
 const DatasetLayout = withStyles({
     grid: {
@@ -35,7 +36,8 @@ const DatasetsPaper = withStyles(theme => ({
 class Datasets extends Component {
 
     static propTypes = {
-        state_proxy: PropTypes.object.isRequired
+        state_proxy: PropTypes.object.isRequired,
+        store_actions: PropTypes.instanceOf(StoreActions).isRequired,
     };
 
     render() {
@@ -43,7 +45,7 @@ class Datasets extends Component {
         return (
             <DatasetLayout>
                 <DatasetsPaper>
-                    <DatasetsList state_proxy={this.props.state_proxy} />
+                    <DatasetsList state_proxy={this.props.state_proxy} store_actions={this.props.store_actions} />
                     <Divider />
                     <Button disabled={!(selected_dataset instanceof Dataset)} variant='contained' color='primary'>Download</Button>
                 </DatasetsPaper>

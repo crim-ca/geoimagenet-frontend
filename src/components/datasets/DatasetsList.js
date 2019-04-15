@@ -11,6 +11,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
 import {Tooltip} from '@material-ui/core';
+import {StoreActions} from '../../store';
 
 function desc(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -90,7 +91,6 @@ class EnhancedTableHead extends React.Component {
 }
 
 
-
 const EnhancedTableToolbar = withStyles(theme => {
     const {values} = theme;
     return {
@@ -115,6 +115,13 @@ const styles = () => ({
 });
 
 class EnhancedTable extends React.Component {
+
+    static propTypes = {
+        classes: PropTypes.object.isRequired,
+        state_proxy: PropTypes.object.isRequired,
+        store_actions: PropTypes.instanceOf(StoreActions).isRequired,
+    };
+
     state = {
         order: SORT.DESCENDING,
         orderBy: 'created',
@@ -145,25 +152,8 @@ class EnhancedTable extends React.Component {
         this.setState({selected: []});
     };
 
-    handleClick = (event, id) => {
-        const {selected} = this.state;
-        const selectedIndex = selected.indexOf(id);
-        let newSelected = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, id);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
-        }
-
-        this.setState({selected: newSelected});
+    create_select_dataset_handler = dataset => () => {
+        this.props.store_actions.select_dataset(dataset);
     };
 
     handleChangePage = (event, page) => {
@@ -174,11 +164,9 @@ class EnhancedTable extends React.Component {
         this.setState({rowsPerPage: event.target.value});
     };
 
-    isSelected = id => this.state.selected.indexOf(id) !== -1;
-
     render() {
         const {classes} = this.props;
-        const {items} = this.props.state_proxy.datasets;
+        const {items, selected_dataset} = this.props.state_proxy.datasets;
         const {order, orderBy, selected, rowsPerPage, page} = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, items.length - page * rowsPerPage);
 
@@ -199,11 +187,11 @@ class EnhancedTable extends React.Component {
                             {stableSort(items, getSorting(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map(dataset => {
-                                    const isSelected = this.isSelected(dataset.id);
+                                    const isSelected = dataset === selected_dataset;
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={event => this.handleClick(event, dataset.id)}
+                                            onClick={this.create_select_dataset_handler(dataset)}
                                             role='checkbox'
                                             aria-checked={isSelected}
                                             tabIndex={-1}
@@ -248,10 +236,5 @@ class EnhancedTable extends React.Component {
         );
     }
 }
-
-EnhancedTable.propTypes = {
-    classes: PropTypes.object.isRequired,
-    state_proxy: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(EnhancedTable);
