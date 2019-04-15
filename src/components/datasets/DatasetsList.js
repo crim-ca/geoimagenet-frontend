@@ -178,9 +178,9 @@ class EnhancedTable extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {datasets} = this.props.state_proxy;
+        const {items} = this.props.state_proxy.datasets;
         const {order, orderBy, selected, rowsPerPage, page} = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, datasets.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, items.length - page * rowsPerPage);
 
         return (
             <React.Fragment>
@@ -193,10 +193,10 @@ class EnhancedTable extends React.Component {
                             orderBy={orderBy}
                             onSelectAllClick={this.handleSelectAllClick}
                             onRequestSort={this.handleRequestSort}
-                            rowCount={datasets.length}
+                            rowCount={items.length}
                         />
                         <TableBody>
-                            {stableSort(datasets, getSorting(order, orderBy))
+                            {stableSort(items, getSorting(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map(dataset => {
                                     const isSelected = this.isSelected(dataset.id);
@@ -232,7 +232,7 @@ class EnhancedTable extends React.Component {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component='div'
-                    count={datasets.length}
+                    count={items.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     backIconButtonProps={{

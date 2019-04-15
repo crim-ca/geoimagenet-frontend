@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {withStyles, Paper, Divider, TextField, Button} from '@material-ui/core';
+import {withStyles, Paper, Divider, Button} from '@material-ui/core';
 import {observer} from 'mobx-react';
 
 import DatasetsList from './datasets/DatasetsList.js';
+import {Dataset} from '../domain/entities.js';
 
 const DatasetLayout = withStyles({
     grid: {
@@ -37,29 +38,14 @@ class Datasets extends Component {
         state_proxy: PropTypes.object.isRequired
     };
 
-    state = {
-        selected_dataset: null,
-        applicant_email: '',
-        applicant_name: '',
-    };
-
-    handle_field_change = name => event => {
-        this.setState({[name]: event.target.value});
-    };
-
     render() {
+        const {selected_dataset} = this.props.state_proxy.datasets;
         return (
             <DatasetLayout>
                 <DatasetsPaper>
                     <DatasetsList state_proxy={this.props.state_proxy} />
                     <Divider />
-                    <TextField label='Email Address'
-                               value={this.state.applicant_email}
-                               onChange={this.handle_field_change('applicant_email')} />
-                    <TextField label='Name'
-                               value={this.state.applicant_name}
-                               onChange={this.handle_field_change('applicant_name')} />
-                    <Button variant='contained' color='primary'>Download</Button>
+                    <Button disabled={!(selected_dataset instanceof Dataset)} variant='contained' color='primary'>Download</Button>
                 </DatasetsPaper>
             </DatasetLayout>
         );
