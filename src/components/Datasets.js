@@ -6,6 +6,9 @@ import {observer} from 'mobx-react';
 import DatasetsList from './datasets/DatasetsList.js';
 import {Dataset} from '../domain/entities.js';
 import {StoreActions} from '../store';
+import {DATASETS, WRITE} from '../domain/constants.js';
+
+import {notifier} from '../utils';
 
 const DatasetLayout = withStyles({
     grid: {
@@ -35,6 +38,12 @@ const DatasetsPaper = withStyles(theme => ({
 @observer
 class Datasets extends Component {
 
+    /**
+     *
+     * @type {Object}
+     * @property {Object} state_proxy
+     * @property {StoreActions} store_actions
+     */
     static propTypes = {
         state_proxy: PropTypes.object.isRequired,
         store_actions: PropTypes.instanceOf(StoreActions).isRequired,
@@ -42,12 +51,27 @@ class Datasets extends Component {
 
     render() {
         const {selected_dataset} = this.props.state_proxy.datasets;
+        const {acl} = this.props.state_proxy;
         return (
             <DatasetLayout>
                 <DatasetsPaper>
                     <DatasetsList state_proxy={this.props.state_proxy} store_actions={this.props.store_actions} />
                     <Divider />
-                    <Button disabled={!(selected_dataset instanceof Dataset)} variant='contained' color='primary'>Download</Button>
+                    <Button disabled={!(selected_dataset instanceof Dataset)}
+                            variant='contained'
+                            color='primary'>Download</Button>
+                    {
+                        acl.can(WRITE, DATASETS)
+                            ? (
+                                <React.Fragment>
+                                    <Divider />
+                                    <Button onClick={() => {
+                                        notifier.warning('This is not yet implemented, come back later!');
+                                    }}>Create Patches</Button>
+                                </React.Fragment>
+                            )
+                            : null
+                    }
                 </DatasetsPaper>
             </DatasetLayout>
         );
