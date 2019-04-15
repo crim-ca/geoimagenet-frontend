@@ -261,9 +261,10 @@ export class MapManager {
      * @param {VectorSource} source
      * @param {String} color
      * @param {boolean} visible
+     * @param {int} zIndex: The default is 99999999 because other layers are ordered by date (20190202)
      * @returns {VectorLayer}
      */
-    static create_vector_layer(title, source, color, visible = true) {
+    static create_vector_layer(title, source, color, visible = true, zIndex = 99999999) {
         return new Vector({
             title: title,
             source: source,
@@ -282,7 +283,8 @@ export class MapManager {
                     })
                 })
             }),
-            visible: visible
+            visible: visible,
+            zIndex: zIndex
         });
     }
 
