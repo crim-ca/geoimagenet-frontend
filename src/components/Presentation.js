@@ -96,7 +96,7 @@ export const PresentationContainer = withStyles(theme => {
             gridGap: values.gutterSmall,
             gridTemplateColumns: `1fr 200px 800px 200px 1fr`,
             gridTemplateRows: `min-content minmax(min-content, 1fr) min-content 200px`,
-            background: 'url(/background.hack.jpg) no-repeat center center fixed',
+            background: 'url(/img/background.hack.jpg) no-repeat center center fixed',
             backgroundSize: 'cover',
         },
         logos: {
