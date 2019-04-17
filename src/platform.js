@@ -76,7 +76,7 @@ export class PlatformLoader {
         ReactDOM.render(
             <MuiThemeProvider theme={theme}>
                 <CssBaseline />
-                <LoggedLayout state_proxy={this.state_proxy}>
+                <LoggedLayout state_proxy={this.state_proxy} user_interactions={this.user_interactions}>
                     <Platform
                         state_proxy={this.state_proxy}
                         store_actions={this.store_actions}

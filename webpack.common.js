@@ -55,11 +55,17 @@ module.exports = {
             {
                 test: /\.(png|svg|jpg|gif)$/,
                 use: [
-                    'file-loader',
+                    'file-loader?name=img/[hash].[ext]',
                 ],
             },
             {
-                test: /\.(ico|hack\.jpg)$/,
+                test: /\.(hack\.jpg)$/,
+                use: [
+                    'file-loader?name=img/[name].[ext]',
+                ],
+            },
+            {
+                test: /\.ico$/,
                 use: [
                     'file-loader?name=[name].[ext]',
                 ],

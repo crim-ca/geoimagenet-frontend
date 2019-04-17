@@ -36,11 +36,12 @@ addEventListener('DOMContentLoaded', async () => {
     ReactDOM.render(
         <MuiThemeProvider theme={theme}>
             <CssBaseline />
-            <LoggedLayout state_proxy={state_proxy}>
+            <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}>
                 <Datasets
                     state_proxy={state_proxy}
                     user_interactions={user_interactions}
-                    store_actions={store_actions} /></LoggedLayout>
+                    store_actions={store_actions} />
+            </LoggedLayout>
         </MuiThemeProvider>,
         get_by_id('root')
     );

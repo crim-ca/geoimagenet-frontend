@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {observer} from 'mobx-react';
-import {withStyles, Paper, CircularProgress, Typography, Link} from '@material-ui/core';
+import {withStyles, Paper, CircularProgress, Typography} from '@material-ui/core';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faUserCog, faSignOutAlt} from '@fortawesome/free-solid-svg-icons';
+import {UserInteractions} from '../domain';
 
 const SessionHandlePaper = withStyles(theme => {
     const {values} = theme;
@@ -27,6 +28,18 @@ const PresentationText = withStyles(theme => {
     };
 })(Typography);
 
+const ClickableSpan = withStyles(theme => {
+    const {values} = theme;
+    return {
+        root: {
+            cursor: 'pointer'
+        }
+    };
+})(props => {
+    const {classes, children} = props;
+    return <span className={classes.root}>{children}</span>;
+});
+
 /**
  * We want to have an indication of who the user is authenticated as. This will eventually feature a way to change settings,
  * such as language, maybe default filters. There should be a logout button, redirecting to the home page, and a way
@@ -34,6 +47,11 @@ const PresentationText = withStyles(theme => {
  */
 @observer
 class SessionHandle extends Component {
+
+    static propTypes = {
+        state_proxy: PropTypes.object.isRequired,
+        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
+    };
 
     render() {
         /**
@@ -49,14 +67,12 @@ class SessionHandle extends Component {
             <SessionHandlePaper>
                 <PresentationText>Hello {logged_user.user_name}.</PresentationText>
                 <FontAwesomeIcon icon={faUserCog} className='fa-2x' />
-                <Link href='/'><FontAwesomeIcon icon={faSignOutAlt} className='fa-2x' /></Link>
+                <ClickableSpan>
+                    <FontAwesomeIcon onClick={this.props.user_interactions.logout} icon={faSignOutAlt} className='fa-2x' />
+                </ClickableSpan>
             </SessionHandlePaper>
         );
     }
 }
-
-SessionHandle.propTypes = {
-    state_proxy: PropTypes.object.isRequired
-};
 
 export {SessionHandle};

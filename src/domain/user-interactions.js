@@ -35,6 +35,15 @@ export class UserInteractions {
         this.release_annotations = this.release_annotations.bind(this);
     }
 
+    logout = async () => {
+        try {
+            await this.data_queries.logout_request();
+            window.location = '/';
+        } catch (e) {
+            return Promise.reject(e);
+        }
+    };
+
     fetch_taxonomies = async () => {
         try {
             const taxonomies = await this.data_queries.fetch_taxonomies();
