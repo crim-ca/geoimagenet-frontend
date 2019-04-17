@@ -59,13 +59,13 @@ class LoggedLayout extends Component {
     };
 
     render() {
-        const {children, state_proxy} = this.props;
+        const {children, state_proxy, user_interactions} = this.props;
         /**
          * Wrapping both menu and children in divs so that the grid is respected whatever the other structures are.
          */
         return (
             <LayoutGrid>
-                <Top><Menu state_proxy={state_proxy} user_interactions={this.props.user_interactions} /></Top>
+                <Top><Menu state_proxy={state_proxy} user_interactions={user_interactions} /></Top>
                 <Bottom>{children}</Bottom>
             </LayoutGrid>
         );

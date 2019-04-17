@@ -62,7 +62,7 @@ class Menu extends Component {
 
     render() {
         const current_url = window.location.pathname;
-        const {state_proxy} = this.props;
+        const {state_proxy, user_interactions} = this.props;
         return (
             <MenuContainerDiv>
                 {Menu.menus.map((menu, i) => <MenuLink href={menu.href}
@@ -70,7 +70,7 @@ class Menu extends Component {
                                                        underline={menu.href === current_url ? 'always' : 'hover'}
                                                        color={menu.href === current_url ? 'textPrimary' : 'textSecondary'}>{menu.title}</MenuLink>
                 )}
-                <SessionHandle state_proxy={state_proxy} user_interactions={this.props.user_interactions} />
+                <SessionHandle state_proxy={state_proxy} user_interactions={user_interactions} />
             </MenuContainerDiv>
         );
     }
