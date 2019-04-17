@@ -1,8 +1,6 @@
 import {make_http_request, post_json, put_json} from '../utils/http.js';
 import {WMSCapabilities} from 'ol/format';
 
-const reject = Promise.reject.bind(Promise);
-
 /**
  * Here we find all the actual requests for data from the api.
  * @todo refactor http utilities as their class to inject them here.
@@ -31,13 +29,9 @@ export class DataQueries {
         return make_http_request(`${this.magpie_endpoint}/signout`);
     }
 
-    async login_request(form_data) {
+    login_request(form_data) {
         const payload = JSON.stringify(form_data);
-        try {
-            return await post_json(`${this.magpie_endpoint}/signin`, payload);
-        } catch (e) {
-            return reject(e);
-        }
+        return post_json(`${this.magpie_endpoint}/signin`, payload);
     }
 
     /**
@@ -46,12 +40,8 @@ export class DataQueries {
      * @returns {Promise<Object>}
      */
     current_user_session = async () => {
-        try {
-            const res = await make_http_request(`${this.magpie_endpoint}/users/current`);
-            return await res.json();
-        } catch (e) {
-            return reject(e);
-        }
+        const res = await make_http_request(`${this.magpie_endpoint}/users/current`);
+        return res.json();
     };
 
     /**
@@ -61,23 +51,15 @@ export class DataQueries {
      * @returns {Promise<String>}
      */
     current_user_permissions = async (service_name) => {
-        try {
-            const res = await make_http_request(`${this.magpie_endpoint}/users/current/services/${service_name}/resources?inherit=true`);
-            return await res.json();
-        } catch (e) {
-            return reject(e);
-        }
+        const res = await make_http_request(`${this.magpie_endpoint}/users/current/services/${service_name}/resources?inherit=true`);
+        return res.json();
     };
 
-    release_annotations_request = async taxonomy_class_id => {
+    release_annotations_request = taxonomy_class_id => {
         const payload = JSON.stringify({
             taxonomy_class_id: taxonomy_class_id,
         });
-        try {
-            return await post_json(`${this.geoimagenet_api_endpoint}/annotations/release`, payload);
-        } catch (e) {
-            return reject(e);
-        }
+        return post_json(`${this.geoimagenet_api_endpoint}/annotations/release`, payload);
     };
 
     /**
@@ -86,46 +68,30 @@ export class DataQueries {
      * @param {Number[]} annotation_ids
      * @returns {Promise<*>}
      */
-    validate_annotations_request = async annotation_ids => {
+    validate_annotations_request = annotation_ids => {
         const payload = JSON.stringify({
             annotation_ids: annotation_ids,
         });
-        try {
-            return await post_json(`${this.geoimagenet_api_endpoint}/annotations/validate`, payload);
-        } catch (e) {
-            return reject(e);
-        }
+        return post_json(`${this.geoimagenet_api_endpoint}/annotations/validate`, payload);
     };
 
-    reject_annotations_request = async annotation_ids => {
+    reject_annotations_request = annotation_ids => {
         const payload = JSON.stringify({
             annotation_ids: annotation_ids,
         });
-        try {
-            return await post_json(`${this.geoimagenet_api_endpoint}/annotations/reject`, payload);
-        } catch (e) {
-            return reject(e);
-        }
+        return post_json(`${this.geoimagenet_api_endpoint}/annotations/reject`, payload);
     };
 
-    delete_annotations_request = async annotation_ids => {
+    delete_annotations_request = annotation_ids => {
         const payload = JSON.stringify({
             annotation_ids: annotation_ids
         });
-        try {
-            return await post_json(`${this.geoimagenet_api_endpoint}/annotations/delete`, payload);
-        } catch (e) {
-            return reject(e);
-        }
+        return post_json(`${this.geoimagenet_api_endpoint}/annotations/delete`, payload);
     };
 
     fetch_taxonomies = async () => {
-        try {
-            const res = await make_http_request(`${this.geoimagenet_api_endpoint}/taxonomy`);
-            return await res.json();
-        } catch (e) {
-            return reject(e);
-        }
+        const res = await make_http_request(`${this.geoimagenet_api_endpoint}/taxonomy`);
+        return res.json();
     };
 
     /**
@@ -134,49 +100,29 @@ export class DataQueries {
      * @returns {Promise<Object>}
      */
     fetch_taxonomy_classes = async root_taxonomy_class_id => {
-        try {
-            const res = await make_http_request(`${this.geoimagenet_api_endpoint}/taxonomy_classes/${root_taxonomy_class_id}`);
-            return await res.json();
-        } catch (e) {
-            return reject(e);
-        }
+        const res = await make_http_request(`${this.geoimagenet_api_endpoint}/taxonomy_classes/${root_taxonomy_class_id}`);
+        return res.json();
     };
 
     flat_taxonomy_classes_counts = async root_taxonomy_class_id => {
-        try {
-            const res = await make_http_request(`${this.geoimagenet_api_endpoint}/annotations/counts/${root_taxonomy_class_id}`);
-            return await res.json();
-        } catch (e) {
-            return reject(e);
-        }
+        const res = await make_http_request(`${this.geoimagenet_api_endpoint}/annotations/counts/${root_taxonomy_class_id}`);
+        return res.json();
     };
 
     create_geojson_feature = async payload => {
-        try {
-            const res = await post_json(`${this.geoimagenet_api_endpoint}/annotations`, payload);
-            return await res.json();
-        } catch (e) {
-            return reject(e);
-        }
+        const res = await post_json(`${this.geoimagenet_api_endpoint}/annotations`, payload);
+        return res.json();
     };
 
     modify_geojson_features = async payload => {
-        try {
-            return await put_json(`${this.geoimagenet_api_endpoint}/annotations`, payload);
-        } catch (e) {
-            return reject(e);
-        }
+        return put_json(`${this.geoimagenet_api_endpoint}/annotations`, payload);
     };
 
     geoserver_capabilities = async url => {
-        try {
-            let parser = new WMSCapabilities();
-            const res = await make_http_request(url);
-            const text = await res.text();
-            return parser.read(text);
-        } catch (e) {
-            return reject(e);
-        }
+        let parser = new WMSCapabilities();
+        const res = await make_http_request(url);
+        const text = await res.text();
+        return parser.read(text);
     };
 
 }
