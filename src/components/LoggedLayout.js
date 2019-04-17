@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core';
 
 import {Menu} from './Menu.js';
+import {UserInteractions} from '../domain';
 
 const LayoutGrid = withStyles(theme => {
     const {values} = theme;
@@ -53,17 +54,18 @@ class LoggedLayout extends Component {
 
     static propTypes = {
         state_proxy: PropTypes.object.isRequired,
+        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
         children: PropTypes.any,
     };
 
     render() {
-        const {children, state_proxy} = this.props;
+        const {children, state_proxy, user_interactions} = this.props;
         /**
          * Wrapping both menu and children in divs so that the grid is respected whatever the other structures are.
          */
         return (
             <LayoutGrid>
-                <Top><Menu state_proxy={state_proxy} /></Top>
+                <Top><Menu state_proxy={state_proxy} user_interactions={user_interactions} /></Top>
                 <Bottom>{children}</Bottom>
             </LayoutGrid>
         );
