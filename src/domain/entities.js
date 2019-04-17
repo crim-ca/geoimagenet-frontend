@@ -66,6 +66,38 @@ export class TaxonomyClass {
     }
 }
 
+export class Dataset {
+    /**
+     *
+     * @param {Number} id
+     * @param {String} created
+     * @param {Number} classes
+     * @param {Number} annotations
+     */
+    constructor(id, created, classes, annotations) {
+        /**
+         *
+         * @type {Number}
+         */
+        this.id = id;
+        /**
+         *
+         * @type {String}
+         */
+        this.created = created;
+        /**
+         *
+         * @type {Number}
+         */
+        this.classes = classes;
+        /**
+         *
+         * @type {Number}
+         */
+        this.annotations = annotations;
+    }
+}
+
 export class AnnotationCounts {
 
 }

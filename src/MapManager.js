@@ -1,7 +1,7 @@
 import {autorun} from 'mobx';
 
 import {Group, Vector} from 'ol/layer';
-import {fromLonLat, transformExtent} from 'ol/proj';
+import {fromLonLat, transformExtent, get as getProjection} from 'ol/proj';
 import {MousePosition, ScaleLine} from 'ol/control';
 import {Draw, Modify} from 'ol/interaction';
 import {View, Collection, Feature, Map} from 'ol';
@@ -12,9 +12,10 @@ import {Circle, Fill, Stroke, Style, Text} from 'ol/style';
 import {GeoJSON} from 'ol/format';
 import TileLayer from 'ol/layer/Tile';
 import {BingMaps, Cluster, OSM, TileWMS} from 'ol/source';
+import TileGrid from 'ol/tilegrid/TileGrid';
 import VectorLayer from 'ol/layer/Vector';
 import {fromExtent} from 'ol/geom/Polygon';
-import {boundingExtent, buffer, getArea, getCenter} from 'ol/extent';
+import {boundingExtent, buffer, getArea, getWidth, getTopLeft, getCenter} from 'ol/extent';
 
 import {LayerSwitcher} from './LayerSwitcher.js';
 import {
@@ -134,6 +135,8 @@ export class MapManager {
         this.map = new Map({
             target: map_div_id,
             view: this.view,
+            loadTilesWhileAnimating: true,
+            loadTilesWhileInteracting: true
         });
 
         this.map.addControl(new ScaleLine());
@@ -258,9 +261,10 @@ export class MapManager {
      * @param {VectorSource} source
      * @param {String} color
      * @param {boolean} visible
+     * @param {int} zIndex: The default is 99999999 because other layers are ordered by date (20190202)
      * @returns {VectorLayer}
      */
-    static create_vector_layer(title, source, color, visible = true) {
+    static create_vector_layer(title, source, color, visible = true, zIndex = 99999999) {
         return new Vector({
             title: title,
             source: source,
@@ -279,7 +283,8 @@ export class MapManager {
                     })
                 })
             }),
-            visible: visible
+            visible: visible,
+            zIndex: zIndex
         });
     }
 
@@ -587,59 +592,68 @@ export class MapManager {
         // Get map projection
         // const dst_epsg = this.map.getView().getProjection().getCode();
         const dst_epsg = 'EPSG:3857';
-
+        let projectionExtent = getProjection(dst_epsg).getExtent();
+        let size = getWidth(projectionExtent) / 256;
+        let n_tile_levels = 20;
+        let resolutions = new Array(n_tile_levels);
+        for (let z = 0; z < n_tile_levels; ++z) {
+            // generate resolutions
+            resolutions[z] = size / Math.pow(2, z);
+        }
         try {
             const result = await this.data_queries.geoserver_capabilities(`${this.geoserver_url}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
             const capability = result.Capability;
-            const layers_info = capability.Layer.Layer;
-            for (let i = 0; i < layers_info.length; i++) {
-                const layer_name = layers_info[i].Name;
-                const src_proj = layers_info[i].BoundingBox[1].crs;
-                // Get layer's extent
-                let extent = layers_info[i].BoundingBox[1].extent;
-                // The coordinates must be reordered for Openlayers
-                const extent_for_OL = [extent[1], extent[0], extent[3], extent[2]];
-                const layer_base_name = layer_name.split(":")[1];
+            capability.Layer.Layer.forEach( layer => {
+                if (layer.KeywordList.some(keyword => keyword === "GEOIMAGENET")) {
 
-                if (layer_name.includes('GeoImageNet:NRG')) {
-                    // The coordinates must be set to the same projection as the map
-                    let extent = transformExtent(extent_for_OL, src_proj, dst_epsg);
+                    // Get layer's extent
+                    let extent = projectionExtent;
+                    layer.BoundingBox.forEach(bbox => {
+                        if (bbox.crs === 'EPSG:3857') {
+                            // extent is given as [minx, miny, maxx, maxy] by wms service
+                            // which is the same as OpenLayer requires
+                            extent = bbox.extent;
+                        }
+                    });
+
                     const lyr = new TileLayer({
-                        title: layer_base_name,
+                        title: layer.Name,
                         type: CUSTOM_GEOIM_IMAGE_LAYER,
                         source: new TileWMS({
-                            url: `${this.geoserver_url}/GeoImageNet/wms`,
-                            params: {'LAYERS': layer_name},
+                            url: `${this.geoserver_url}/wms`,
+                            params: {'LAYERS': layer.Name, 'TILED': true, 'FORMAT': 'image/png'},
                             ratio: 1,
+                            projection: 'EPSG:3857',
+                            tileGrid: new TileGrid({
+                                origin: getTopLeft(projectionExtent),
+                                resolutions: resolutions
+                            }),
                             serverType: 'geoserver',
                             crossOrigin: 'anonymous',
                         }),
                         extent: extent,
                     });
-                    NRG_layers.push(lyr);
-                }
 
-                if (layer_name.includes('GeoImageNet:RGB')) {
-                    // The coordinates must be set to the same projection as the map
-                    let extent = transformExtent(extent_for_OL, src_proj, dst_epsg);
-                    const lyr = new TileLayer({
-                        title: layer_base_name,
-                        type: CUSTOM_GEOIM_IMAGE_LAYER,
-                        source: new TileWMS({
-                            url: `${this.geoserver_url}/GeoImageNet/wms`,
-                            params: {'LAYERS': layer_name},
-                            ratio: 1,
-                            serverType: 'geoserver',
-                            crossOrigin: 'anonymous',
-                        }),
-                        extent: extent,
+                    // classify and sort layer based on its keywords
+                    let reg_date = /^\d{8}$/;
+                    layer.KeywordList.forEach( keyword => {
+                        if (keyword === 'NRG') {
+                            NRG_layers.push(lyr);
+                        } else if (keyword === 'RGB') {
+                            RGB_layers.push(lyr);
+                        } else if (reg_date.test(keyword)) {
+                            // The date should be in the YYYYMMDD format
+                            // So newer images will be on top
+                            lyr.setZIndex(parseInt(keyword));
+                        }
                     });
-                    RGB_layers.push(lyr);
+
                 }
-            }
+            });
         } catch (e) {
             notifier.error('We could not interrogate Geoserver capabilities. No images will be available.');
         }
+
 
         let bboxFeatures = new Collection();
         let bboxSource = new VectorSource({
@@ -704,11 +718,11 @@ export class MapManager {
         // as such, here I take a shortcut and only loop over one of the layers to create the image markers
         // should that requirement ever change, some logic and autorun magic should be added to regenerate the image markers layer
         // when we select either type of images
-        const maxArea = 10000000000; // if the extent is to large (most likely the world), don't display it
+        const maxArea = 10 ** 13; // if the extent is to large (most likely the world), don't display it
         NRG_layers.forEach(layer => {
-            // EX_GeographicBoundingBox is an array of [minx, miny, maxx, maxy] in EPSG:4326
             let extent = layer.get('extent');
-            if (getArea(extent) < maxArea) {
+            let area = getArea(extent);
+            if (area < maxArea) {
                 let feature = new Feature({
                     geometry: fromExtent(extent)
                 });
