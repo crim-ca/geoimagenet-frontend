@@ -34,6 +34,21 @@ export class DataQueries {
         return post_json(`${this.magpie_endpoint}/signin`, payload);
     }
 
+
+    /**
+     * Launches the dataset creation task through the geoimagenet api, that will in turn call the machine learning api.
+     * @param {String} dataset_name
+     * @param {Number} taxonomy_id
+     * @returns {Promise<*|*|undefined>}
+     */
+    launch_dataset_creation = (dataset_name, taxonomy_id) => {
+        const payload = JSON.stringify({
+            name: dataset_name,
+            taxonomy_id: taxonomy_id,
+        });
+        return post_json(`${this.geoimagenet_api_endpoint}/batches`, payload);
+    };
+
     /**
      * Returns information for the user associated with current cookies. We rely on the cookies being automatically associated
      * to requests here. This is fairly usual behaviour.

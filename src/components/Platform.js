@@ -15,7 +15,7 @@ import {TaxonomyClasses, TaxonomySelector} from './TaxonomyBrowser.js';
 import {MapManager} from '../MapManager.js';
 import {DataQueries} from '../domain/data-queries.js';
 import {UserInteractions} from '../domain/user-interactions.js';
-import {StoreActions} from '../store/store.js';
+import {StoreActions} from '../store';
 import {LayerSwitcher} from '../LayerSwitcher.js';
 import {AnnotationStatusFilter} from './AnnotationStatusFilter.js';
 

@@ -10,30 +10,22 @@ export const make_http_request = async (url, options) => {
     }
 };
 
-export const post_json = async (url, payload) => {
-    try {
-        return await make_http_request(url, {
-            method: 'POST',
-            body: payload,
-            headers: {
-                'content-type': 'application/json',
-            },
-        });
-    } catch (e) {
-        return Promise.reject(e);
-    }
+export const post_json = (url, payload) => {
+    return make_http_request(url, {
+        method: 'POST',
+        body: payload,
+        headers: {
+            'content-type': 'application/json',
+        },
+    });
 };
 
 export const put_json = async (url, payload) => {
-    try {
-        return await make_http_request(url, {
-            method: 'PUT',
-            body: payload,
-            headers: {
-                'content-type': 'application/json',
-            },
-        });
-    } catch (e) {
-        return Promise.reject(e);
-    }
+    return make_http_request(url, {
+        method: 'PUT',
+        body: payload,
+        headers: {
+            'content-type': 'application/json',
+        },
+    });
 };

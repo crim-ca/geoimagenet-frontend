@@ -26,10 +26,19 @@ export class GeoImageNetStore {
         [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.DELETED)),
     };
 
-    datasets = [
-        new Dataset(1, '2019-04-10', 305, 15000),
-        new Dataset(2, '2019-04-11', 305, 25000),
-    ];
+    /**
+     *
+     * @type {Object}
+     * @property {Dataset[]} items Datasets returned from the ML api
+     * @property {Dataset} selected_dataset from the datasets section screen, contains the currently selected dataset
+     */
+    datasets = {
+        items: [
+            new Dataset(1, '2019-04-10', 305, 15000),
+            new Dataset(2, '2019-04-11', 305, 25000),
+        ],
+        selected_dataset: null,
+    };
 
     /**
      * When loading the platform, we by default put the user in a state of visualization.

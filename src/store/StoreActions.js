@@ -1,34 +1,6 @@
-import {observable, action, runInAction, configure} from 'mobx';
-
-import {ANNOTATION, MODE} from '../domain/constants.js';
 import {TaxonomyClass} from '../domain/entities.js';
-import {GeoImageNetStore} from './GeoImageNetStore.js';
-
-/**
- * We want to be able to either create a state proxy without parameters, for usage in the real time application,
- * or pass a custom GeoImageNetStore to the observable, when testing.
- * @param {GeoImageNetStore} [store_schematics=null]
- * @returns {GeoImageNetStore}
- */
-
-export const create_state_proxy = (store_schematics = null) => {
-
-    if (store_schematics === null) {
-        return observable.object(new GeoImageNetStore());
-    }
-
-    return observable.object(store_schematics);
-
-};
-
-/**
- * this is relatively important in the sense that it constraints us to mutate the store only in actions
- * otherwise, changing the store, affecting the state each time, can be compared to an open heart hemorrhage
- */
-configure({
-    enforceActions: 'always',
-});
-
+import {ANNOTATION, MODE} from '../domain/constants.js';
+import {observable, action, runInAction} from 'mobx';
 
 /**
  * The store actions are lower level action handlers, in the sense that they are not directly related to a user's actions,
@@ -46,6 +18,19 @@ export class StoreActions {
          * @type {GeoImageNetStore}
          */
         this.state_proxy = state_proxy;
+    }
+
+    /**
+     *
+     * @param {Dataset} dataset
+     */
+    @action.bound
+    select_dataset(dataset) {
+        if (this.state_proxy.datasets.selected_dataset === dataset) {
+            this.state_proxy.datasets.selected_dataset = null;
+        } else {
+            this.state_proxy.datasets.selected_dataset = dataset;
+        }
     }
 
     /**
@@ -110,6 +95,11 @@ export class StoreActions {
         const assign_top_object_to_list = (object, parent_id = null) => {
             const current_raw = object;
 
+            /**
+             * Not quite completely sure why and how the observable.object is needed here.
+             * I think it's because mobx does not observe too deeply nested object's properties.
+             * @type {TaxonomyClass & IObservableObject}
+             */
             const current_instance = observable.object(new TaxonomyClass(
                 current_raw.id,
                 current_raw.name_fr,

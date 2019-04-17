@@ -1,9 +1,15 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {withStyles, Paper, Divider, TextField, Button} from '@material-ui/core';
+import {withStyles, Paper, Divider, Button, Select, MenuItem} from '@material-ui/core';
 import {observer} from 'mobx-react';
 
 import DatasetsList from './datasets/DatasetsList.js';
+import {Dataset} from '../domain/entities.js';
+import {StoreActions} from '../store';
+import {DATASETS, WRITE} from '../domain/constants.js';
+
+import {notifier} from '../utils';
+import {UserInteractions} from '../domain/user-interactions.js';
 
 const DatasetLayout = withStyles({
     grid: {
@@ -30,36 +36,85 @@ const DatasetsPaper = withStyles(theme => ({
     }
 }))(Paper);
 
+const DownloadContainer = withStyles(theme => {
+    const {values} = theme;
+    return {
+        root: {
+            display: 'flex',
+            flexDirection: 'row',
+            '& > *': {
+                width: '50%',
+            }
+        }
+    };
+})(props => {
+    const {classes, children} = props;
+    return <div className={classes.root}>{children}</div>;
+});
+
 @observer
 class Datasets extends Component {
 
-    static propTypes = {
-        state_proxy: PropTypes.object.isRequired
-    };
-
     state = {
-        selected_dataset: null,
-        applicant_email: '',
-        applicant_name: '',
+        selected_taxonomy: null,
     };
 
-    handle_field_change = name => event => {
-        this.setState({[name]: event.target.value});
+    /**
+     *
+     * @type {Object}
+     * @property {Object} state_proxy
+     * @property {StoreActions} store_actions
+     */
+    static propTypes = {
+        state_proxy: PropTypes.object.isRequired,
+        store_actions: PropTypes.instanceOf(StoreActions).isRequired,
+        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
+    };
+
+    change_taxonomy_selection = (event) => {
+        this.setState({
+            selected_taxonomy: event.target.value
+        });
+    };
+
+    launch_dataset_creation = async () => {
+        const {selected_taxonomy} = this.state;
+        const taxonomy_id = selected_taxonomy['versions'][0]['taxonomy_id'];
+        await this.props.user_interactions.dataset_creation(taxonomy_id);
     };
 
     render() {
+        const {selected_dataset} = this.props.state_proxy.datasets;
+        const {acl, taxonomies} = this.props.state_proxy;
         return (
             <DatasetLayout>
                 <DatasetsPaper>
-                    <DatasetsList state_proxy={this.props.state_proxy} />
+                    <DatasetsList state_proxy={this.props.state_proxy} store_actions={this.props.store_actions} />
                     <Divider />
-                    <TextField label='Email Address'
-                               value={this.state.applicant_email}
-                               onChange={this.handle_field_change('applicant_email')} />
-                    <TextField label='Name'
-                               value={this.state.applicant_name}
-                               onChange={this.handle_field_change('applicant_name')} />
-                    <Button variant='contained' color='primary'>Download</Button>
+                    <Button disabled={!(selected_dataset instanceof Dataset)}
+                            variant='contained'
+                            color='primary'>Download</Button>
+                    {
+                        acl.can(WRITE, DATASETS)
+                            ? (
+                                <React.Fragment>
+                                    <Divider />
+                                    <DownloadContainer>
+                                        <Select onChange={this.change_taxonomy_selection}
+                                                value={this.state.selected_taxonomy}>
+                                            {
+                                                taxonomies.map((taxonomy, i) => (
+                                                    <MenuItem value={taxonomy}
+                                                              key={i}>{taxonomy.name_en || taxonomy.name_fr}</MenuItem>
+                                                ))
+                                            }
+                                        </Select>
+                                        <Button onClick={this.launch_dataset_creation} variant='contained' color='primary'>Create Patches</Button>
+                                    </DownloadContainer>
+                                </React.Fragment>
+                            )
+                            : null
+                    }
                 </DatasetsPaper>
             </DatasetLayout>
         );

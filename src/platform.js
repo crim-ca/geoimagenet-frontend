@@ -6,7 +6,7 @@ import {CssBaseline, MuiThemeProvider} from '@material-ui/core';
 import {register_section_handles} from './utils/sections.js';
 import {DataQueries} from './domain/data-queries.js';
 import {notifier} from './utils/notifications.js';
-import {create_state_proxy, StoreActions} from './store/store.js';
+import {create_state_proxy, StoreActions} from './store';
 import {UserInteractions} from './domain/user-interactions.js';
 import {Platform} from './components/Platform.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
@@ -87,19 +87,7 @@ export class PlatformLoader {
             div
         );
 
-        try {
-            const taxonomies = await this.data_queries.fetch_taxonomies();
-            this.store_actions.set_taxonomy(taxonomies);
-        } catch (e) {
-            switch (e.status) {
-                case 404:
-                    notifier.warning('There doesn\'t seem to be any taxonomy available in the API (we received a 404 not-found status). ' +
-                        'This will likely render the platform unusable until someone populates the taxonomies.');
-                    break;
-                default:
-                    notifier.error('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
-            }
-        }
+        await this.user_interactions.fetch_taxonomies();
         register_section_handles('section-handle');
     }
 }

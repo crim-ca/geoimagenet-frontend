@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/browser';
 import {CssBaseline, MuiThemeProvider} from '@material-ui/core';
 
 import {DataQueries} from './domain/data-queries.js';
-import {create_state_proxy, StoreActions} from './store/store.js';
+import {create_state_proxy, StoreActions} from './store';
 import {UserInteractions} from './domain/user-interactions.js';
 import {element, get_by_id} from './utils/dom.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
@@ -26,6 +26,8 @@ addEventListener('DOMContentLoaded', async () => {
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT);
     const user_interactions = new UserInteractions(store_actions, data_queries);
 
+    await user_interactions.fetch_taxonomies();
+
     const div = element('div');
     div.id = 'root';
     div.classList.add('root');
@@ -34,7 +36,12 @@ addEventListener('DOMContentLoaded', async () => {
     ReactDOM.render(
         <MuiThemeProvider theme={theme}>
             <CssBaseline />
-            <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}><Datasets datasets={[]} /></LoggedLayout>
+            <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}>
+                <Datasets
+                    state_proxy={state_proxy}
+                    user_interactions={user_interactions}
+                    store_actions={store_actions} />
+            </LoggedLayout>
         </MuiThemeProvider>,
         get_by_id('root')
     );
