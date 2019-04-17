@@ -53,10 +53,8 @@ public_resources = [
 ]
 
 
-def resource_is_private(resource):
-    if resource in public_resources:
-        return False
-    if resource.startswith('/img'):
+def resource_is_private(r):
+    if r in public_resources or r.endswith('.jpg') or r.endswith('.png') or r.endswith('.gif') or r.endswith('.ico'):
         return False
     return True
 
@@ -76,11 +74,11 @@ def handler_app(environ, start_response):
         cookies = parse_cookies(environ['HTTP_COOKIE'])
         magpie_endpoint = actual_environment.get('MAGPIE_ENDPOINT') or 'https://geoimagenetdev.crim.ca/magpie'
         url = f'{magpie_endpoint}/session'
-        r = requests.get(url, cookies=cookies)
+        r = requests.get(url, cookies=cookies, verify=False)
         body = r.json()
         if body['authenticated'] is False:
-            start_response('401 UNAUTHORIZED', [('location', '/')])
-            return [bytes('', 'utf8')]
+            start_response('303 SEE OTHER', [('location', '/')])
+            return [bytes('SEE OTHER', 'utf8')]
 
     if request_uri in path_equivalences:
         request_uri = path_equivalences[request_uri]
