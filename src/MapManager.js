@@ -1,7 +1,7 @@
 import {autorun} from 'mobx';
 
 import {Group, Vector} from 'ol/layer';
-import {fromLonLat, transformExtent, get as getProjection} from 'ol/proj';
+import {fromLonLat, get as getProjection} from 'ol/proj';
 import {MousePosition, ScaleLine} from 'ol/control';
 import {Draw, Modify} from 'ol/interaction';
 import {View, Collection, Feature, Map} from 'ol';
@@ -17,7 +17,6 @@ import VectorLayer from 'ol/layer/Vector';
 import {fromExtent} from 'ol/geom/Polygon';
 import {boundingExtent, buffer, getArea, getWidth, getTopLeft, getCenter} from 'ol/extent';
 
-import {LayerSwitcher} from './LayerSwitcher.js';
 import {
     MODE,
     ANNOTATION,
@@ -153,7 +152,7 @@ export class MapManager {
             this.store_actions.set_annotation_collection(key, new Collection());
             this.store_actions.set_annotation_source(key, this.create_vector_source(annotations_collections[key], key));
 
-            const vectorLayer = MapManager.create_vector_layer(key, annotations_sources[key], color, activated);
+            const vectorLayer = this.create_vector_layer(key, annotations_sources[key], color, activated);
 
             this.store_actions.set_annotation_layer(key, vectorLayer);
         });
@@ -261,14 +260,17 @@ export class MapManager {
      * @param {VectorSource} source
      * @param {String} color
      * @param {boolean} visible
-     * @param {int} zIndex: The default is 99999999 because other layers are ordered by date (20190202)
+     * @param {Number} zIndex The default is 99999999 because image layers are ordered by their observation date (20190202)
      * @returns {VectorLayer}
+     *
+     * @todo maybe at some point rethink the ordering of the layers but so far it's not problematic
      */
-    static create_vector_layer(title, source, color, visible = true, zIndex = 99999999) {
-        return new Vector({
-            title: title,
-            source: source,
-            style: new Style({
+    create_vector_layer(title, source, color, visible = true, zIndex = 99999999) {
+
+        const style_function = (feature, resolution) => {
+            const taxonomy_class = this.state_proxy.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
+            const label = taxonomy_class.name_en || taxonomy_class.name_fr;
+            return new Style({
                 fill: new Fill({
                     color: 'rgba(255, 255, 255, 0.25)',
                 }),
@@ -281,13 +283,30 @@ export class MapManager {
                     fill: new Fill({
                         color: color,
                     })
-                })
-            }),
+                }),
+                text: new Text({
+                    font: '16px Calibri, sans-serif',
+                    fill: new Fill({color: '#000'}),
+                    stroke: new Stroke({color: '#FFF', width: 2}),
+                    text: resolution > 100 ? '' : label,
+                    overflow: true,
+                }),
+            });
+        };
+
+        return new Vector({
+            title: title,
+            source: source,
+            style: style_function,
             visible: visible,
             zIndex: zIndex
         });
     }
 
+    /**
+     * Some actions need to redraw the annotations on the viewport. This method clears then refreshes the features on the specified layer.
+     * @param {String} status
+     */
     refresh_source_by_status(status) {
         this.state_proxy.annotations_sources[status].clear();
         this.state_proxy.annotations_sources[status].refresh(true);
@@ -603,8 +622,8 @@ export class MapManager {
         try {
             const result = await this.data_queries.geoserver_capabilities(`${this.geoserver_url}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
             const capability = result.Capability;
-            capability.Layer.Layer.forEach( layer => {
-                if (layer.KeywordList.some(keyword => keyword === "GEOIMAGENET")) {
+            capability.Layer.Layer.forEach(layer => {
+                if (layer.KeywordList.some(keyword => keyword === 'GEOIMAGENET')) {
 
                     // Get layer's extent
                     let extent = projectionExtent;
@@ -636,7 +655,7 @@ export class MapManager {
 
                     // classify and sort layer based on its keywords
                     let reg_date = /^\d{8}$/;
-                    layer.KeywordList.forEach( keyword => {
+                    layer.KeywordList.forEach(keyword => {
                         if (keyword === 'NRG') {
                             NRG_layers.push(lyr);
                         } else if (keyword === 'RGB') {
