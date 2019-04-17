@@ -3,6 +3,7 @@ import {Link, withStyles} from '@material-ui/core';
 import PropTypes from 'prop-types';
 
 import {SessionHandle} from './SessionHandle.js';
+import {UserInteractions} from '../domain';
 
 const MenuLink = withStyles(theme => {
     const {values} = theme;
@@ -39,6 +40,11 @@ const MenuContainerDiv = withStyles(theme => {
  */
 class Menu extends Component {
 
+    static propTypes = {
+        state_proxy: PropTypes.object.isRequired,
+        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
+    };
+
     /**
      * Defines the different menus that can be shown when logged in
      * @todo bring back model and help when we have an idea what to put in there
@@ -64,14 +70,10 @@ class Menu extends Component {
                                                        underline={menu.href === current_url ? 'always' : 'hover'}
                                                        color={menu.href === current_url ? 'textPrimary' : 'textSecondary'}>{menu.title}</MenuLink>
                 )}
-                <SessionHandle state_proxy={state_proxy} />
+                <SessionHandle state_proxy={state_proxy} user_interactions={this.props.user_interactions} />
             </MenuContainerDiv>
         );
     }
 }
-
-Menu.propTypes = {
-    state_proxy: PropTypes.object.isRequired
-};
 
 export {Menu};

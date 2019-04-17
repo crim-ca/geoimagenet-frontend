@@ -71,7 +71,11 @@ def handler_app(environ, start_response):
     request_uri = environ['PATH_INFO']
 
     if resource_is_private(request_uri):
-        cookies = parse_cookies(environ['HTTP_COOKIE'])
+        if 'HTTP_COOKIE' in environ:
+            cookie_string = environ['HTTP_COOKIE']
+        else:
+            cookie_string = ''
+        cookies = parse_cookies(cookie_string)
         magpie_endpoint = actual_environment.get('MAGPIE_ENDPOINT') or 'https://geoimagenetdev.crim.ca/magpie'
         url = f'{magpie_endpoint}/session'
         r = requests.get(url, cookies=cookies, verify=False)

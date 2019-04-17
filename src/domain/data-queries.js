@@ -27,6 +27,10 @@ export class DataQueries {
         this.magpie_endpoint = magpie_endpoint;
     }
 
+    logout_request() {
+        return make_http_request(`${this.magpie_endpoint}/signout`);
+    }
+
     async login_request(form_data) {
         const payload = JSON.stringify(form_data);
         try {

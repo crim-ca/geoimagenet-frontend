@@ -38,7 +38,7 @@ addEventListener('DOMContentLoaded', async () => {
     ReactDOM.render(
         <MuiThemeProvider theme={theme}>
             <CssBaseline />
-            <LoggedLayout state_proxy={state_proxy}>
+            <LoggedLayout user_interactions={user_interactions} state_proxy={state_proxy}>
                 <Platform
                     state_proxy={state_proxy}
                     store_actions={store_actions}
