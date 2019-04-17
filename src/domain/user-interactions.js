@@ -51,6 +51,16 @@ export class UserInteractions {
         }
     };
 
+    dataset_creation = async taxonomy_id => {
+        try {
+            const res = await this.data_queries.launch_dataset_creation('somename', taxonomy_id);
+            debugger;
+        } catch (e) {
+            debugger;
+            return Promise.reject(e);
+        }
+    };
+
 
     /**
      *

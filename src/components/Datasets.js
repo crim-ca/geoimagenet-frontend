@@ -9,6 +9,7 @@ import {StoreActions} from '../store';
 import {DATASETS, WRITE} from '../domain/constants.js';
 
 import {notifier} from '../utils';
+import {UserInteractions} from '../domain/user-interactions.js';
 
 const DatasetLayout = withStyles({
     grid: {
@@ -67,12 +68,19 @@ class Datasets extends Component {
     static propTypes = {
         state_proxy: PropTypes.object.isRequired,
         store_actions: PropTypes.instanceOf(StoreActions).isRequired,
+        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
     };
 
     change_taxonomy_selection = (event) => {
         this.setState({
             selected_taxonomy: event.target.value
         });
+    };
+
+    launch_dataset_creation = async () => {
+        const {selected_taxonomy} = this.state;
+        const taxonomy_id = selected_taxonomy['versions'][0]['taxonomy_id'];
+        await this.props.user_interactions.dataset_creation(taxonomy_id);
     };
 
     render() {
@@ -101,9 +109,7 @@ class Datasets extends Component {
                                                 ))
                                             }
                                         </Select>
-                                        <Button onClick={() => {
-                                            notifier.warning('This is not yet implemented, come back later!');
-                                        }} variant='contained' color='primary'>Create Patches</Button>
+                                        <Button onClick={this.launch_dataset_creation} variant='contained' color='primary'>Create Patches</Button>
                                     </DownloadContainer>
                                 </React.Fragment>
                             )
