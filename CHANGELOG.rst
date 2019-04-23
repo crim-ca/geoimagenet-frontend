@@ -2,6 +2,60 @@ Changelog
 =========
 
 
+0.8.0 (2019-04-23)
+------------------
+
+New
+~~~
+- Showing feature label from text style. [Félix Gagnon-Grenier]
+- Private resources are not served for unauthenticated requests. [Félix
+  Gagnon-Grenier]
+
+Changes
+~~~~~~~
+- Toggle labels on and off. [Félix Gagnon-Grenier]
+- Fix zIndex for annotations, after sorting images by date. [David
+  Caron]
+- Fix layer name. [David Caron]
+- Load any layer containing the keyword 'GEOIMAGENET' don't ... [David
+  Caron]
+
+  filter based on a pre-configured list of workspaces
+- Order layers based on date. [David Caron]
+- Classify layers based on their keywords (RGB and NRG) [David Caron]
+- Fix area size for EPSG:3857. [David Caron]
+- Load tiles in their original projection: 3857. [David Caron]
+- Fetching taxonomies in user interactions. [Félix Gagnon-Grenier]
+- StoreActions in its own file. [Félix Gagnon-Grenier]
+
+Fix
+~~~
+- Unwrapping promises. [Félix Gagnon-Grenier]
+- Favicon should be on top public folder. [Félix Gagnon-Grenier]
+- Actual correct background img path. [Félix Gagnon-Grenier]
+- Remove superfluous promise wrapping to use native promises. [Félix
+  Gagnon-Grenier]
+- Actual logout when logout. [Félix Gagnon-Grenier]
+- Serve images as public resources. [Félix Gagnon-Grenier]
+- Notifications colors in all bundles. [Félix Gagnon-Grenier]
+
+Other
+~~~~~
+- Some tidy. [Félix Gagnon-Grenier]
+- Temp: working towards launching dataset creation. [Félix Gagnon-
+  Grenier]
+- Dev: putting the selected dataset in the global store. [Félix Gagnon-
+  Grenier]
+
+
+0.7.1 (2019-04-09)
+------------------
+
+Changes
+~~~~~~~
+- Datasets as table. [Félix Gagnon-Grenier]
+
+
 0.7.0 (2019-04-09)
 ------------------
 
