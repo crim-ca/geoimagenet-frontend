@@ -234,6 +234,23 @@ export class MapManager {
         });
 
         autorun(() => {
+            const {show_labels, annotation_status_list} = this.state_proxy;
+            /**
+             * This clunky switch is used so that MobX registers the access to the show_labels property.
+             * We could directly refresh the layers without regard to the actual value in show_labels, the style function picks it up.
+             */
+            switch (show_labels) {
+                default:
+                    Object.keys(annotation_status_list).forEach(k => {
+                        const annotation_status = annotation_status_list[k];
+                        if (annotation_status.activated) {
+                            this.refresh_source_by_status(annotation_status.text);
+                        }
+                    });
+            }
+        });
+
+        autorun(() => {
             switch (this.state_proxy.mode) {
                 case MODE.CREATION:
                     if (this.state_proxy.selected_taxonomy_class_id > 0) {
@@ -268,6 +285,7 @@ export class MapManager {
     create_vector_layer(title, source, color, visible = true, zIndex = 99999999) {
 
         const style_function = (feature, resolution) => {
+            const {show_labels} = this.state_proxy;
             const taxonomy_class = this.state_proxy.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
             const label = taxonomy_class.name_en || taxonomy_class.name_fr;
             return new Style({
@@ -288,7 +306,7 @@ export class MapManager {
                     font: '16px Calibri, sans-serif',
                     fill: new Fill({color: '#000'}),
                     stroke: new Stroke({color: '#FFF', width: 2}),
-                    text: resolution > 100 ? '' : label,
+                    text: show_labels ? (resolution > 100 ? '' : label) : '',
                     overflow: true,
                 }),
             });

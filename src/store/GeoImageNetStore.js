@@ -10,6 +10,11 @@ import {observable} from 'mobx';
  * through the observer construct (the @observer) decorator present on react components.
  */
 export class GeoImageNetStore {
+    /**
+     * Labels can be overwhelming when there are too much objects on the screen, this property should allow user to show them or not.
+     * @type {boolean}
+     */
+    show_labels = true;
 
     /**
      * The visible annotations types should federate every part of the platform that manages annotations, from the counts
