@@ -20,6 +20,11 @@ export class StoreActions {
         this.state_proxy = state_proxy;
     }
 
+    @action.bound
+    toggle_show_labels() {
+        this.state_proxy.show_labels = !this.state_proxy.show_labels;
+    }
+
     /**
      *
      * @param {Dataset} dataset
