@@ -135,7 +135,8 @@ export class MapManager {
             target: map_div_id,
             view: this.view,
             loadTilesWhileAnimating: true,
-            loadTilesWhileInteracting: true
+            loadTilesWhileInteracting: true,
+            pixelRatio: 1,
         });
 
         this.map.addControl(new ScaleLine());
@@ -663,7 +664,8 @@ export class MapManager {
                             projection: 'EPSG:3857',
                             tileGrid: new TileGrid({
                                 origin: getTopLeft(projectionExtent),
-                                resolutions: resolutions
+                                resolutions: resolutions,
+                                tileSize: [256, 256],
                             }),
                             serverType: 'geoserver',
                             crossOrigin: 'anonymous',
