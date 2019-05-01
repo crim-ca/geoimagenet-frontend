@@ -38,8 +38,9 @@ export class PlatformLoader {
     /**
      * @param {String} geoimagenet_api_endpoint geoimagenet api deployed endpoint to use in this instance of the platform
      * @param {String} magpie_endpoint magpie installation to use in this instance of the platform
+     * @param {String} ml_endpoint machine learning endpoint
      */
-    constructor(geoimagenet_api_endpoint, magpie_endpoint) {
+    constructor(geoimagenet_api_endpoint, magpie_endpoint, ml_endpoint) {
         /**
          * @private
          * @type {GeoImageNetStore}
@@ -54,7 +55,7 @@ export class PlatformLoader {
          * @private
          * @type {DataQueries}
          */
-        this.data_queries = new DataQueries(geoimagenet_api_endpoint, magpie_endpoint);
+        this.data_queries = new DataQueries(geoimagenet_api_endpoint, magpie_endpoint, ml_endpoint);
         /**
          * @private
          * @type {UserInteractions}
@@ -93,7 +94,7 @@ export class PlatformLoader {
 }
 
 addEventListener('DOMContentLoaded', async () => {
-    const platform_loader = new PlatformLoader(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT);
+    const platform_loader = new PlatformLoader(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
     try {
         await platform_loader.init();
     } catch (e) {

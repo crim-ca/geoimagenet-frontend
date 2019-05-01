@@ -1,6 +1,6 @@
 import {notifier} from '../utils/notifications.js';
 import {action} from 'mobx';
-import {InvalidPermissions, ResourcePermissionRepository, User} from './entities.js';
+import {InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionRepository, User} from './entities.js';
 import {AccessControlList} from './access-control-list.js';
 
 /**
@@ -113,6 +113,16 @@ export class UserInteractions {
      * @returns {Promise<void>}
      */
     refresh_user_resources_permissions = async () => {
+        /**
+         *
+         * @type {Object}
+         */
+        const magpie_session_json = await this.data_queries.current_user_session();
+        const {user} = magpie_session_json;
+        const user_instance = new User(user.user_name, user.email, user.group_names);
+        this.store_actions.set_session_user(user_instance);
+
+
         const json_response = await this.data_queries.current_user_permissions('frontend');
 
         if (!json_response.service && !json_response.service.resources) {
@@ -122,18 +132,20 @@ export class UserInteractions {
         }
         const {service} = json_response;
         const {resources} = service;
-        const resource_permission_repository = new ResourcePermissionRepository(resources);
+        let resource_permission_repository;
+        try {
+            resource_permission_repository = new ResourcePermissionRepository(resources);
+        } catch (e) {
+            if (e instanceof ProbablyInvalidPermissions) {
+                notifier.warning('It seems that permissions for your user are either incorrectly set, ' +
+                    'or undefined. This is probably not something you can solve on your own, please contact ' +
+                    'your administrator if this prevents you from using the platform.');
+                return;
+            }
+            throw e;
+        }
         const acl = new AccessControlList(resource_permission_repository);
         this.store_actions.set_acl(acl);
-
-        /**
-         *
-         * @type {Object}
-         */
-        const magpie_session_json = await this.data_queries.current_user_session();
-        const {user} = magpie_session_json;
-        const user_instance = new User(user.user_name, user.email, user.group_names);
-        this.store_actions.set_session_user(user_instance);
 
     };
 

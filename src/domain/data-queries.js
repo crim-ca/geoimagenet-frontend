@@ -11,8 +11,9 @@ export class DataQueries {
      * @public
      * @param {String} geoimagenet_api_url
      * @param {String} magpie_endpoint
+     * @param {String} ml_endpoint
      */
-    constructor(geoimagenet_api_url, magpie_endpoint) {
+    constructor(geoimagenet_api_url, magpie_endpoint, ml_endpoint) {
         /**
          * @private
          * @type {String}
@@ -23,6 +24,11 @@ export class DataQueries {
          * @type {String}
          */
         this.magpie_endpoint = magpie_endpoint;
+        /**
+         * @private
+         * @type {String}
+         */
+        this.ml_endpoint = ml_endpoint;
     }
 
     logout_request() {
@@ -33,7 +39,6 @@ export class DataQueries {
         const payload = JSON.stringify(form_data);
         return post_json(`${this.magpie_endpoint}/signin`, payload);
     }
-
 
     /**
      * Launches the dataset creation task through the geoimagenet api, that will in turn call the machine learning api.

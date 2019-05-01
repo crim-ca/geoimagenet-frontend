@@ -16,5 +16,10 @@
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:jest/recommended"
-  ]
+  ],
+  "globals": {
+    "GEOIMAGENET_API_URL": false,
+    "MAGPIE_ENDPOINT": false,
+    "ML_ENDPOINT": false
+  }
 }
