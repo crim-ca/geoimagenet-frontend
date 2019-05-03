@@ -2,14 +2,26 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {withStyles, Paper, Divider, Button, Select, MenuItem} from '@material-ui/core';
 import {observer} from 'mobx-react';
+import {Query} from 'react-apollo';
+import gql from 'graphql-tag';
 
 import DatasetsList from './datasets/DatasetsList.js';
-import {Dataset} from '../domain/entities.js';
 import {StoreActions} from '../store';
 import {DATASETS, WRITE} from '../domain/constants.js';
 
-import {notifier} from '../utils';
 import {UserInteractions} from '../domain/user-interactions.js';
+
+const GET_DATASETS = gql`
+    query GetDatasets {
+        datasets {
+            id
+            name
+            classes_count
+            annotations_count
+            created
+        }
+    }
+`;
 
 const DatasetLayout = withStyles({
     grid: {
@@ -36,17 +48,14 @@ const DatasetsPaper = withStyles(theme => ({
     }
 }))(Paper);
 
-const DownloadContainer = withStyles(theme => {
-    const {values} = theme;
-    return {
-        root: {
-            display: 'flex',
-            flexDirection: 'row',
-            '& > *': {
-                width: '50%',
-            }
+const DownloadContainer = withStyles({
+    root: {
+        display: 'flex',
+        flexDirection: 'row',
+        '& > *': {
+            width: '50%',
         }
-    };
+    }
 })(props => {
     const {classes, children} = props;
     return <div className={classes.root}>{children}</div>;
@@ -84,16 +93,25 @@ class Datasets extends Component {
     };
 
     render() {
-        const {selected_dataset} = this.props.state_proxy.datasets;
         const {acl, taxonomies} = this.props.state_proxy;
         return (
             <DatasetLayout>
                 <DatasetsPaper>
-                    <DatasetsList state_proxy={this.props.state_proxy} store_actions={this.props.store_actions} />
-                    <Divider />
-                    <Button disabled={!(selected_dataset instanceof Dataset)}
-                            variant='contained'
-                            color='primary'>Download</Button>
+                    <Query query={GET_DATASETS}>
+                        {({data, loading, error}) => {
+                            if (loading) {
+                                return <p>loading</p>;
+                            }
+                            if (error) {
+                                return <p>{error.message}</p>;
+                            }
+                            return (
+                                <DatasetsList datasets={data.datasets}
+                                              state_proxy={this.props.state_proxy}
+                                              store_actions={this.props.store_actions} />
+                            );
+                        }}
+                    </Query>
                     {
                         acl.can(WRITE, DATASETS)
                             ? (
@@ -109,7 +127,8 @@ class Datasets extends Component {
                                                 ))
                                             }
                                         </Select>
-                                        <Button onClick={this.launch_dataset_creation} variant='contained' color='primary'>Create Patches</Button>
+                                        <Button onClick={this.launch_dataset_creation} variant='contained' color='primary'>Create
+                                            Patches</Button>
                                     </DownloadContainer>
                                 </React.Fragment>
                             )

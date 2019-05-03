@@ -26,19 +26,6 @@ export class StoreActions {
     }
 
     /**
-     *
-     * @param {Dataset} dataset
-     */
-    @action.bound
-    select_dataset(dataset) {
-        if (this.state_proxy.datasets.selected_dataset === dataset) {
-            this.state_proxy.datasets.selected_dataset = null;
-        } else {
-            this.state_proxy.datasets.selected_dataset = dataset;
-        }
-    }
-
-    /**
      * When user adds an annotation status to the visibility pool, we need to update the store.
      * @param {String} annotation_status_text
      */

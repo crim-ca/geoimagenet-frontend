@@ -17,6 +17,7 @@ module.exports = {
         new webpack.DefinePlugin({
             GEOSERVER_URL: JSON.stringify(process.env.GEOSERVER_URL || 'https://geoimagenetdev.crim.ca/geoserver'),
             GEOIMAGENET_API_URL: JSON.stringify(process.env.GEOIMAGENET_API_URL || 'https://geoimagenetdev.crim.ca/api/v1'),
+            GRAPHQL_ENDPOINT: JSON.stringify(process.env.GRAPHQL_ENDPOINT || 'https://geoimagenetdev.crim.ca/graphql'),
             MAGPIE_ENDPOINT: JSON.stringify(process.env.MAGPIE_ENDPOINT || 'https://geoimagenetdev.crim.ca/magpie'),
             ML_ENDPOINT: JSON.stringify(process.env.ML_ENDPOINT || 'https://geoimagenetdev.crim.ca/ml'),
             ANNOTATION_NAMESPACE_URI: JSON.stringify(process.env.ANNOTATION_NAMESPACE_URI || 'geoimagenet.public.crim.ca'),

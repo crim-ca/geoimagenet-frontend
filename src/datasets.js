@@ -11,6 +11,20 @@ import {LoggedLayout} from './components/LoggedLayout.js';
 import {Datasets} from './components/Datasets.js';
 import {theme} from './utils/react.js';
 
+import {ApolloClient} from 'apollo-client';
+import {ApolloProvider} from 'react-apollo';
+import {InMemoryCache} from 'apollo-cache-inmemory';
+import {HttpLink} from 'apollo-link-http';
+
+const cache = new InMemoryCache();
+const link = new HttpLink({
+    uri: GRAPHQL_ENDPOINT,
+});
+const client = new ApolloClient({
+    cache,
+    link
+});
+
 import './css/base.css';
 import './css/notifications.css';
 import './img/icons/favicon.ico';
@@ -34,12 +48,15 @@ addEventListener('DOMContentLoaded', async () => {
     ReactDOM.render(
         <MuiThemeProvider theme={theme}>
             <CssBaseline />
-            <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}>
-                <Datasets
-                    state_proxy={state_proxy}
-                    user_interactions={user_interactions}
-                    store_actions={store_actions} />
-            </LoggedLayout>
+            <ApolloProvider client={client}>
+                <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}>
+                    <Datasets
+                        state_proxy={state_proxy}
+                        user_interactions={user_interactions}
+                        store_actions={store_actions} />
+                </LoggedLayout>
+            </ApolloProvider>
+
         </MuiThemeProvider>,
         get_by_id('root')
     );

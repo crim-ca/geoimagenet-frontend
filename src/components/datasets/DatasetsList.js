@@ -1,16 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Typography from '@material-ui/core/Typography';
-import Checkbox from '@material-ui/core/Checkbox';
-import {Tooltip} from '@material-ui/core';
+import {
+    Link,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TablePagination,
+    TableRow,
+    TableSortLabel,
+    Typography,
+    Tooltip,
+    withStyles
+} from '@material-ui/core';
 import {StoreActions} from '../../store';
 
 function desc(a, b, orderBy) {
@@ -38,7 +40,7 @@ function getSorting(order, orderBy) {
 }
 
 const columns = [
-    {id: 'id', numeric: true, disablePadding: false, label: 'Id'},
+    {id: 'name', numeric: true, disablePadding: false, label: 'Name'},
     {id: 'created', numeric: false, disablePadding: true, label: 'Created'},
     {id: 'classes', numeric: true, disablePadding: false, label: 'Classes'},
     {id: 'annotations', numeric: true, disablePadding: false, label: 'Annotations'},
@@ -91,15 +93,12 @@ class EnhancedTableHead extends React.Component {
 }
 
 
-const EnhancedTableToolbar = withStyles(theme => {
-    const {values} = theme;
-    return {
-        title: {
-            textAlign: 'center',
-        },
-    };
+const EnhancedTableToolbar = withStyles({
+    title: {
+        textAlign: 'center',
+    },
 })(props => {
-    const {classes, children} = props;
+    const {classes} = props;
     return <Typography className={classes.title} variant='h6' id='tableTitle'>Available datasets</Typography>;
 });
 
@@ -120,6 +119,7 @@ class EnhancedTable extends React.Component {
         classes: PropTypes.object.isRequired,
         state_proxy: PropTypes.object.isRequired,
         store_actions: PropTypes.instanceOf(StoreActions).isRequired,
+        datasets: PropTypes.array,
     };
 
     state = {
@@ -141,21 +141,6 @@ class EnhancedTable extends React.Component {
         this.setState({order, orderBy});
     };
 
-    handleSelectAllClick = event => {
-
-        if (event.target.checked) {
-            const {datasets} = this.props.state_proxy;
-            this.setState(() => ({selected: datasets.map(n => n.id)}));
-            return;
-        }
-
-        this.setState({selected: []});
-    };
-
-    create_select_dataset_handler = dataset => () => {
-        this.props.store_actions.select_dataset(dataset);
-    };
-
     handleChangePage = (event, page) => {
         this.setState({page});
     };
@@ -166,9 +151,9 @@ class EnhancedTable extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {items, selected_dataset} = this.props.state_proxy.datasets;
+        const {datasets} = this.props;
         const {order, orderBy, selected, rowsPerPage, page} = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, items.length - page * rowsPerPage);
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, datasets.length - page * rowsPerPage);
 
         return (
             <React.Fragment>
@@ -179,33 +164,30 @@ class EnhancedTable extends React.Component {
                             numSelected={selected.length}
                             order={order}
                             orderBy={orderBy}
-                            onSelectAllClick={this.handleSelectAllClick}
                             onRequestSort={this.handleRequestSort}
-                            rowCount={items.length}
+                            rowCount={datasets.length}
                         />
                         <TableBody>
-                            {stableSort(items, getSorting(order, orderBy))
+                            {stableSort(datasets, getSorting(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map(dataset => {
-                                    const isSelected = dataset === selected_dataset;
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={this.create_select_dataset_handler(dataset)}
                                             role='checkbox'
-                                            aria-checked={isSelected}
                                             tabIndex={-1}
-                                            key={dataset.id}
-                                            selected={isSelected}>
+                                            key={dataset.id}>
                                             <TableCell padding='checkbox'>
-                                                <Checkbox checked={isSelected} />
+                                                <Link
+                                                    href={`${ML_ENDPOINT}/datasets/${dataset.id}/download`}
+                                                    target='_blank'>Download</Link>
                                             </TableCell>
-                                            <TableCell align='right'>{dataset.id}</TableCell>
+                                            <TableCell align='right'>{dataset.name}</TableCell>
                                             <TableCell component='th' scope='row' padding='none'>
                                                 {dataset.created}
                                             </TableCell>
-                                            <TableCell align='right'>{dataset.classes}</TableCell>
-                                            <TableCell align='right'>{dataset.annotations}</TableCell>
+                                            <TableCell align='right'>{dataset.classes_count}</TableCell>
+                                            <TableCell align='right'>{dataset.annotations_count}</TableCell>
                                         </TableRow>
                                     );
                                 })}
@@ -220,7 +202,7 @@ class EnhancedTable extends React.Component {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component='div'
-                    count={items.length}
+                    count={datasets.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     backIconButtonProps={{
