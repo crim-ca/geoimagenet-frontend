@@ -25,7 +25,7 @@ addEventListener('DOMContentLoaded', () => {
 
     const state_proxy = create_state_proxy();
     const store_actions = new StoreActions(state_proxy);
-    const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT);
+    const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
     const user_interactions = new UserInteractions(store_actions, data_queries);
 
     ReactDOM.render(
