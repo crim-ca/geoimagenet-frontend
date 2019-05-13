@@ -121,9 +121,17 @@ export class UserInteractions {
         const {user} = magpie_session_json;
         const user_instance = new User(user.user_name, user.email, user.group_names);
         this.store_actions.set_session_user(user_instance);
-
-
-        const json_response = await this.data_queries.current_user_permissions('frontend');
+        let json_response;
+        try {
+            json_response = await this.data_queries.current_user_permissions('frontend');
+        } catch (e) {
+            if (e.status === 404) {
+                notifier.error('Permissions for the frontend service do not seem to be properly configured. ' +
+                    'That will probably prevent you from using the platform, please contact your administrator.');
+                return;
+            }
+            throw e;
+        }
 
         if (!json_response.service && !json_response.service.resources) {
             notifier.error('The permissions structure returned from Magpie does not seem properly formed: ' +
