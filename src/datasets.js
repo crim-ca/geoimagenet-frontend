@@ -16,9 +16,18 @@ import {ApolloProvider} from 'react-apollo';
 import {InMemoryCache} from 'apollo-cache-inmemory';
 import {HttpLink} from 'apollo-link-http';
 
-const cache = new InMemoryCache();
+/**
+ * removing the typename from the responses because it breaks automatic displaying of results, taken from https://github.com/apollographql/apollo-client/issues/1913#issuecomment-374869527
+ * Not quite sure what the typename part itself does, comments suggest it affects caching, I deem the risks of not caching responses
+ * in the most efficient way to be sufficiently low in this prototype context to not really bother with this.
+ * @type {InMemoryCache}
+ */
+const cache = new InMemoryCache({
+    addTypename: false
+});
 const link = new HttpLink({
     uri: GRAPHQL_ENDPOINT,
+    credentials: 'same-origin',
 });
 const client = new ApolloClient({
     cache,

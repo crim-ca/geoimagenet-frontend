@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {withStyles, Paper, Divider, Button, Select, MenuItem} from '@material-ui/core';
+import {withStyles, Paper, Divider, Button} from '@material-ui/core';
 import {observer} from 'mobx-react';
-import {Query} from 'react-apollo';
+import {Query, Mutation} from 'react-apollo';
 import gql from 'graphql-tag';
 
 import DatasetsList from './datasets/DatasetsList.js';
@@ -10,15 +10,36 @@ import {StoreActions} from '../store';
 import {DATASETS, WRITE} from '../domain/constants.js';
 
 import {UserInteractions} from '../domain/user-interactions.js';
+import Table from "./Table";
 
 const GET_DATASETS = gql`
-    query GetDatasets {
+    query datasets {
         datasets {
             id
             name
             classes_count
             annotations_count
             created
+        }
+    }
+`;
+const GET_JOBS = gql`
+    query jobs {
+        jobs(process_id: "batch-creation") {
+            id
+            status
+            status_message
+        }
+    }
+`;
+const LAUNCH_BATCH = gql`
+    mutation batch {
+        start_batch {
+            success
+            job {
+                status
+                status_message
+            }
         }
     }
 `;
@@ -48,25 +69,8 @@ const DatasetsPaper = withStyles(theme => ({
     }
 }))(Paper);
 
-const DownloadContainer = withStyles({
-    root: {
-        display: 'flex',
-        flexDirection: 'row',
-        '& > *': {
-            width: '50%',
-        }
-    }
-})(props => {
-    const {classes, children} = props;
-    return <div className={classes.root}>{children}</div>;
-});
-
 @observer
 class Datasets extends Component {
-
-    state = {
-        selected_taxonomy: null,
-    };
 
     /**
      *
@@ -80,20 +84,8 @@ class Datasets extends Component {
         user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
     };
 
-    change_taxonomy_selection = (event) => {
-        this.setState({
-            selected_taxonomy: event.target.value
-        });
-    };
-
-    launch_dataset_creation = async () => {
-        const {selected_taxonomy} = this.state;
-        const taxonomy_id = selected_taxonomy['versions'][0]['taxonomy_id'];
-        await this.props.user_interactions.dataset_creation(taxonomy_id);
-    };
-
     render() {
-        const {acl, taxonomies} = this.props.state_proxy;
+        const {acl} = this.props.state_proxy;
         return (
             <DatasetLayout>
                 <DatasetsPaper>
@@ -108,31 +100,40 @@ class Datasets extends Component {
                             return (
                                 <DatasetsList datasets={data.datasets}
                                               state_proxy={this.props.state_proxy}
-                                              store_actions={this.props.store_actions} />
+                                              store_actions={this.props.store_actions}/>
                             );
                         }}
                     </Query>
-                    {
-                        acl.can(WRITE, DATASETS)
-                            ? (
-                                <React.Fragment>
-                                    <Divider />
-                                    <DownloadContainer>
-                                        <Select onChange={this.change_taxonomy_selection}
-                                                value={this.state.selected_taxonomy}>
-                                            {
-                                                taxonomies.map((taxonomy, i) => (
-                                                    <MenuItem value={taxonomy}
-                                                              key={i}>{taxonomy.name_en || taxonomy.name_fr}</MenuItem>
-                                                ))
-                                            }
-                                        </Select>
-                                        <Button onClick={this.launch_dataset_creation} variant='contained' color='primary'>Create
-                                            Patches</Button>
-                                    </DownloadContainer>
-                                </React.Fragment>
-                            )
-                            : null
+                    {acl.can(WRITE, DATASETS)
+                        ? (
+                            <React.Fragment>
+                                <Divider/>
+                                <Mutation mutation={LAUNCH_BATCH}>
+                                    {(launchCreation) => (
+                                        <Button onClick={launchCreation}
+                                                variant='contained'
+                                                color='primary'>
+                                            Create Patches
+                                        </Button>
+                                    )}
+                                </Mutation>
+                                <Divider/>
+                                <Query query={GET_JOBS}>
+                                    {({data, loading, error}) => {
+                                        if (loading) {
+                                            return <p>loading</p>;
+                                        }
+                                        if (error) {
+                                            return <p>{error.message}</p>;
+                                        }
+                                        return (
+                                            <Table data={data.jobs} />
+                                        );
+                                    }}
+                                </Query>
+                            </React.Fragment>
+                        )
+                        : null
                     }
                 </DatasetsPaper>
             </DatasetLayout>

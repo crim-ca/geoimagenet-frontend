@@ -2,3 +2,4 @@ pytest
 werkzeug
 selenium
 gitchangelog
+pyopenssl
