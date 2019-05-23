@@ -133,14 +133,16 @@ class EnhancedTable extends React.Component {
         const {order, orderBy, rowsPerPage, page} = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
         const columns = [];
-        Object.keys(data[0]).forEach(key => {
-            columns.push({
-                id: key,
-                label: key,
-                numeric: !Number.isNaN(data[0][key]),
-                disablePadding: false
+        if (data.length > 0) {
+            Object.keys(data[0]).forEach(key => {
+                columns.push({
+                    id: key,
+                    label: key,
+                    numeric: !Number.isNaN(data[0][key]),
+                    disablePadding: false
+                });
             });
-        });
+        }
         return (
             <React.Fragment>
                 <div className={classes.tableWrapper}>

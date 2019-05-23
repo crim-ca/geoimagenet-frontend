@@ -8,6 +8,7 @@ module.exports = {
         presentation: './src/presentation.js',
         platform: './src/platform.js',
         datasets: './src/datasets.js',
+        models: './src/models.js',
     },
     output: {
         filename: '[name].bundle.js',
@@ -38,6 +39,11 @@ module.exports = {
             title: 'Datasets',
             filename: 'datasets.html',
             chunks: ['datasets'],
+        }),
+        new HtmlWebpackPlugin({
+            title: 'Models',
+            filename: 'models.html',
+            chunks: ['models'],
         }),
     ],
     module: {

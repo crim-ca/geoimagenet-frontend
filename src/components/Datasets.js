@@ -14,7 +14,7 @@ import Table from "./Table";
 
 const GET_DATASETS = gql`
     query datasets {
-        datasets {
+        datasets(status: finished) {
             id
             name
             classes_count
@@ -29,6 +29,7 @@ const GET_JOBS = gql`
             id
             status
             status_message
+            progress
         }
     }
 `;
@@ -97,6 +98,9 @@ class Datasets extends Component {
                             if (error) {
                                 return <p>{error.message}</p>;
                             }
+                            if (data.datasets.length === 0) {
+                                return <p>no datasets yet</p>;
+                            }
                             return (
                                 <DatasetsList datasets={data.datasets}
                                               state_proxy={this.props.state_proxy}
@@ -107,7 +111,6 @@ class Datasets extends Component {
                     {acl.can(WRITE, DATASETS)
                         ? (
                             <React.Fragment>
-                                <Divider/>
                                 <Mutation mutation={LAUNCH_BATCH}>
                                     {(launchCreation) => (
                                         <Button onClick={launchCreation}
@@ -117,7 +120,6 @@ class Datasets extends Component {
                                         </Button>
                                     )}
                                 </Mutation>
-                                <Divider/>
                                 <Query query={GET_JOBS}>
                                     {({data, loading, error}) => {
                                         if (loading) {
@@ -125,6 +127,9 @@ class Datasets extends Component {
                                         }
                                         if (error) {
                                             return <p>{error.message}</p>;
+                                        }
+                                        if (data.jobs.length === 0) {
+                                            return <p>no jobs yet</p>;
                                         }
                                         return (
                                             <Table data={data.jobs} />

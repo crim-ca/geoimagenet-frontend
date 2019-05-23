@@ -41,6 +41,11 @@ export const theme = createMuiTheme({
                 color: 'inherit',
             }
         },
+        MuiPaper: {
+            root: {
+                padding: GUTTER_SMALL,
+            }
+        }
     },
 });
 
