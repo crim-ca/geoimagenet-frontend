@@ -1,6 +1,6 @@
 import {ANNOTATION, MODE} from '../domain/constants.js';
 import {AccessControlList} from '../domain/access-control-list.js';
-import {AnnotationStatus, Dataset, ResourcePermissionRepository} from '../domain/entities.js';
+import {AnnotationStatus, ResourcePermissionRepository} from '../domain/entities.js';
 import {observable} from 'mobx';
 
 /**
@@ -29,20 +29,6 @@ export class GeoImageNetStore {
         [ANNOTATION.STATUS.VALIDATED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.VALIDATED, true)),
         [ANNOTATION.STATUS.REJECTED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.REJECTED)),
         [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.DELETED)),
-    };
-
-    /**
-     *
-     * @type {Object}
-     * @property {Dataset[]} items Datasets returned from the ML api
-     * @property {Dataset} selected_dataset from the datasets section screen, contains the currently selected dataset
-     */
-    datasets = {
-        items: [
-            new Dataset(1, '2019-04-10', 305, 15000),
-            new Dataset(2, '2019-04-11', 305, 25000),
-        ],
-        selected_dataset: null,
     };
 
     /**

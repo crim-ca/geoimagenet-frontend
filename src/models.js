@@ -8,7 +8,7 @@ import {create_state_proxy, StoreActions} from './store';
 import {UserInteractions} from './domain/user-interactions.js';
 import {element, get_by_id} from './utils/dom.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
-import {Datasets} from './components/Datasets.js';
+import {Models} from './components/Models';
 import {theme} from './utils/react.js';
 
 import {client} from './utils/apollo';
@@ -39,10 +39,7 @@ addEventListener('DOMContentLoaded', async () => {
             <CssBaseline />
             <ApolloProvider client={client}>
                 <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}>
-                    <Datasets
-                        state_proxy={state_proxy}
-                        user_interactions={user_interactions}
-                        store_actions={store_actions} />
+                    <Models />
                 </LoggedLayout>
             </ApolloProvider>
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-    Link,
     Table,
     TableBody,
     TableCell,
@@ -9,11 +8,9 @@ import {
     TablePagination,
     TableRow,
     TableSortLabel,
-    Typography,
     Tooltip,
     withStyles
 } from '@material-ui/core';
-import {StoreActions} from '../../store';
 
 function desc(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -39,18 +36,12 @@ function getSorting(order, orderBy) {
     return order === SORT.DESCENDING ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
-const columns = [
-    {id: 'name', numeric: true, disablePadding: false, label: 'Name'},
-    {id: 'created', numeric: false, disablePadding: true, label: 'Created'},
-    {id: 'classes', numeric: true, disablePadding: false, label: 'Classes'},
-    {id: 'annotations', numeric: true, disablePadding: false, label: 'Annotations'},
-];
-
 class EnhancedTableHead extends React.Component {
     static propTypes = {
         onRequestSort: PropTypes.func.isRequired,
         order: PropTypes.string.isRequired,
         orderBy: PropTypes.string.isRequired,
+        columns: PropTypes.array.isRequired,
     };
 
     createSortHandler = property => event => {
@@ -58,12 +49,11 @@ class EnhancedTableHead extends React.Component {
     };
 
     render() {
-        const {order, orderBy} = this.props;
+        const {order, orderBy, columns} = this.props;
 
         return (
             <TableHead>
                 <TableRow>
-                    <TableCell padding='checkbox' />
                     {columns.map(
                         column => (
                             <TableCell
@@ -92,16 +82,6 @@ class EnhancedTableHead extends React.Component {
     }
 }
 
-
-const EnhancedTableToolbar = withStyles({
-    title: {
-        textAlign: 'center',
-    },
-})(props => {
-    const {classes} = props;
-    return <Typography className={classes.title} variant='h6' id='tableTitle'>Available datasets</Typography>;
-});
-
 const SORT = {
     ASCENDING: 'asc',
     DESCENDING: 'desc',
@@ -117,7 +97,7 @@ class EnhancedTable extends React.Component {
 
     static propTypes = {
         classes: PropTypes.object.isRequired,
-        datasets: PropTypes.array,
+        data: PropTypes.array,
     };
 
     state = {
@@ -149,43 +129,39 @@ class EnhancedTable extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {datasets} = this.props;
-        const {order, orderBy, selected, rowsPerPage, page} = this.state;
-        const emptyRows = rowsPerPage - Math.min(rowsPerPage, datasets.length - page * rowsPerPage);
-
+        const {data} = this.props;
+        const {order, orderBy, rowsPerPage, page} = this.state;
+        const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+        const columns = [];
+        if (data.length > 0) {
+            Object.keys(data[0]).forEach(key => {
+                columns.push({
+                    id: key,
+                    label: key,
+                    numeric: !Number.isNaN(data[0][key]),
+                    disablePadding: false
+                });
+            });
+        }
         return (
             <React.Fragment>
-                <EnhancedTableToolbar numSelected={selected.length} />
                 <div className={classes.tableWrapper}>
                     <Table aria-labelledby='tableTitle'>
                         <EnhancedTableHead
-                            numSelected={selected.length}
                             order={order}
                             orderBy={orderBy}
                             onRequestSort={this.handleRequestSort}
-                            rowCount={datasets.length}
+                            columns={columns}
                         />
                         <TableBody>
-                            {stableSort(datasets, getSorting(order, orderBy))
+                            {stableSort(data, getSorting(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map(dataset => {
+                                .map((row, row_index) => {
                                     return (
-                                        <TableRow
-                                            hover
-                                            role='checkbox'
-                                            tabIndex={-1}
-                                            key={dataset.id}>
-                                            <TableCell padding='checkbox'>
-                                                <Link
-                                                    href={`${ML_ENDPOINT}/datasets/${dataset.id}/download`}
-                                                    target='_blank'>Download</Link>
-                                            </TableCell>
-                                            <TableCell align='right'>{dataset.name}</TableCell>
-                                            <TableCell component='th' scope='row' padding='none'>
-                                                {dataset.created}
-                                            </TableCell>
-                                            <TableCell align='right'>{dataset.classes_count}</TableCell>
-                                            <TableCell align='right'>{dataset.annotations_count}</TableCell>
+                                        <TableRow key={row_index}>
+                                            {Object.keys(row).map((key, key_index) => (
+                                                <TableCell key={key_index}>{row[key]}</TableCell>
+                                            ))}
                                         </TableRow>
                                     );
                                 })}
@@ -200,7 +176,7 @@ class EnhancedTable extends React.Component {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component='div'
-                    count={datasets.length}
+                    count={data.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     backIconButtonProps={{

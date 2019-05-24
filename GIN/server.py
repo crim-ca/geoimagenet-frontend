@@ -44,6 +44,7 @@ path_equivalences = {
     '/docs/': '/docs/index.html',
     '/platform': '/platform.html',
     '/datasets': '/datasets.html',
+    '/models': '/models.html',
 }
 
 public_resources = [
