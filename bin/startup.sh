@@ -2,4 +2,4 @@
 
 export NODE_ENV=production
 npm run prod
-gunicorn --config /code/Framework/gunicorn_config.py Framework:fl_app -k eventlet
+gunicorn --config /code/GIN/gunicorn_config.py GIN:app -k eventlet
