@@ -1,8 +1,9 @@
 import React from 'react';
-import {withStyles, Paper, Divider, TextField, Button} from '@material-ui/core';
+import {withStyles, Divider, TextField, Button} from '@material-ui/core';
 import {Mutation, Query} from "react-apollo";
-import Table from './Table';
+import MaterialTable from 'material-table';
 import gql from 'graphql-tag';
+import {tableIcons} from '../utils/react';
 
 const MODELS = gql`
     query models {
@@ -33,7 +34,7 @@ const Grid = withStyles({
         gridColumn: '2/3',
     }
 })(({classes, children}) => (
-    <div className={classes.root}><Paper className={classes.content}>{children}</Paper></div>
+    <div className={classes.root}><div className={classes.content}>{children}</div></div>
 ));
 
 export const Models = () => {
@@ -92,7 +93,23 @@ export const Models = () => {
                         return <p>No models have been uploaded yet.</p>;
                     }
                     return (
-                        <Table data={data.models}/>
+                        <div>
+                            <MaterialTable
+                                actions={[
+                                    {icon: 'save', tooltip: 'Launch Tests', onclick: (event, rowData) => {
+                                        console.log(event, rowData);
+                                        }}
+                                ]}
+                                title='Models'
+                                icons={tableIcons}
+                                columns={[
+                                    {title: 'Name', field: 'name'},
+                                    {title: 'Path', field: 'path'},
+                                    {title: 'Created', field: 'created'},
+                                ]}
+                                data={data.models}
+                            />
+                        </div>
                     );
                 }}
             </Query>
