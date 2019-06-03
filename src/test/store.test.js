@@ -1,5 +1,5 @@
 const {MODE} = require('../domain/constants');
-const {create_state_proxy, StoreActions} = require('../domain/store');
+const {create_state_proxy, StoreActions} = require('../store');
 const {action} = require('mobx');
 
 const state_proxy = create_state_proxy();
