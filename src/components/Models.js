@@ -1,14 +1,17 @@
 import React, {Component} from 'react';
 import {withStyles, Divider, TextField, Button, Typography, CircularProgress} from '@material-ui/core';
+import PlayArrow from '@material-ui/icons/PlayArrow';
 import {Mutation, Query} from "react-apollo";
 import MaterialTable from 'material-table';
 import gql from 'graphql-tag';
 import {tableIcons} from '../utils/react';
 import {notifier} from '../utils';
+import {client} from '../utils/apollo';
 
 const MODELS = gql`
     query models {
         models {
+            id
             name
             path
             created
@@ -27,6 +30,17 @@ const UPLOAD_MODEL = gql`
     }
 `;
 
+const LAUNCH_MODEL_TEST_JOB = gql`
+    mutation launch_test_job($model_id: ID!) {
+        launch_test(model_id: $model_id) {
+            success
+            message
+            job {
+                status_location
+            }
+        }
+    }
+`;
 const Grid = withStyles({
     root: {
         display: 'grid',
@@ -92,6 +106,22 @@ export class Models extends Component {
         }
     };
 
+    launch_job_handler = async (event, rowData) => {
+        console.log(rowData);
+        const result = await client.mutate({
+            mutation: LAUNCH_MODEL_TEST_JOB,
+            variables: {
+                model_id: rowData.id
+            }
+        });
+        const {data: {launch_test: {success, job, message}}} = result;
+        if (!success) {
+            notifier.error(message);
+            return;
+        }
+        console.log(job);
+    };
+
     render() {
         return (
             <Grid>
@@ -137,9 +167,9 @@ export class Models extends Component {
                                 <MaterialTable
                                     actions={[
                                         {
-                                            icon: 'save', tooltip: 'Launch Tests', onClick: (event, rowData) => {
-                                                console.log(event, rowData);
-                                            }
+                                            icon: PlayArrow,
+                                            tooltip: 'Launch Tests',
+                                            onClick: this.launch_job_handler
                                         }
                                     ]}
                                     title='Models'
