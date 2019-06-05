@@ -7,6 +7,7 @@ import gql from 'graphql-tag';
 import {tableIcons} from '../utils/react';
 import {notifier} from '../utils';
 import {client} from '../utils/apollo';
+import {features} from '../../features';
 
 const MODELS = gql`
     query models {
@@ -38,6 +39,14 @@ const LAUNCH_MODEL_TEST_JOB = gql`
             job {
                 status_location
             }
+        }
+    }
+`;
+const MODEL_TESTER_JOBS = gql`
+    subscription model_tester_jobs {
+        jobs(process_id: "model_tester") {
+            id
+            status
         }
     }
 `;
@@ -78,14 +87,21 @@ export class Models extends Component {
             file: null,
             validity: false,
         };
+        if (features.subscriptions) {
+            this.subscribe_jobs();
+        } else {
+            this.query_jobs();
+        }
     }
 
     handle_change = name => event => {
         this.setState({...this.state, [name]: event.target.value});
     };
+
     handle_file_change = ({target: {validity, files: [file]}}) => {
         this.setState({...this.state, file, validity});
     };
+
     upload_change_handler = callback => () => {
         const {file, validity, model_name} = this.state;
         if (validity.valid) {
@@ -94,6 +110,7 @@ export class Models extends Component {
             });
         }
     };
+
     upload_is_valid = () => {
         return this.state.model_name.length > 0 && this.state.validity.valid;
     };
@@ -106,20 +123,40 @@ export class Models extends Component {
         }
     };
 
+    subscribe_jobs = async () => {
+        const observable = client.subscribe({
+            query: MODEL_TESTER_JOBS,
+        });
+        console.log(observable);
+        observable.subscribe(data => console.log(data));
+    };
+
+    query_jobs = () => {
+        const result = client.query({
+            query: gql`
+                query fetch_jobs {
+                    jobs(process_id: "model-tester") {
+                        id
+                        status
+                        status_location
+                        user
+                    }
+                }
+            `,
+        });
+        const {data} = result;
+        console.log(data);
+    };
+
     launch_job_handler = async (event, rowData) => {
-        console.log(rowData);
         const result = await client.mutate({
             mutation: LAUNCH_MODEL_TEST_JOB,
             variables: {
                 model_id: rowData.id
             }
         });
-        const {data: {launch_test: {success, job, message}}} = result;
-        if (!success) {
-            notifier.error(message);
-            return;
-        }
-        console.log(job);
+        const {data: {launch_test: {message}}} = result;
+        notifier.error(message);
     };
 
     render() {
