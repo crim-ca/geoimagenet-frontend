@@ -1,14 +1,18 @@
 import React, {Component} from 'react';
 import {withStyles, Divider, TextField, Button, Typography, CircularProgress} from '@material-ui/core';
+import PlayArrow from '@material-ui/icons/PlayArrow';
 import {Mutation, Query} from "react-apollo";
 import MaterialTable from 'material-table';
 import gql from 'graphql-tag';
 import {tableIcons} from '../utils/react';
 import {notifier} from '../utils';
+import {client} from '../utils/apollo';
+import {features} from '../../features';
 
 const MODELS = gql`
     query models {
         models {
+            id
             name
             path
             created
@@ -26,7 +30,14 @@ const UPLOAD_MODEL = gql`
         }
     }
 `;
-
+const MODEL_TESTER_JOBS = gql`
+    subscription model_tester_jobs {
+        jobs(process_id: "model_tester") {
+            id
+            status
+        }
+    }
+`;
 const Grid = withStyles({
     root: {
         display: 'grid',
@@ -57,21 +68,30 @@ const UploadForm = withStyles(theme => ({
 
 export class Models extends Component {
 
+    state = {
+        model_name: new Date().toISOString(),
+        file: null,
+        validity: false,
+        benchmarks_jobs: []
+    };
+
     constructor(props) {
         super(props);
-        this.state = {
-            model_name: new Date().toISOString(),
-            file: null,
-            validity: false,
-        };
+        if (features.subscriptions) {
+            this.subscribe_jobs();
+        } else {
+            this.query_jobs();
+        }
     }
 
     handle_change = name => event => {
         this.setState({...this.state, [name]: event.target.value});
     };
+
     handle_file_change = ({target: {validity, files: [file]}}) => {
         this.setState({...this.state, file, validity});
     };
+
     upload_change_handler = callback => () => {
         const {file, validity, model_name} = this.state;
         if (validity.valid) {
@@ -80,6 +100,7 @@ export class Models extends Component {
             });
         }
     };
+
     upload_is_valid = () => {
         return this.state.model_name.length > 0 && this.state.validity.valid;
     };
@@ -90,6 +111,57 @@ export class Models extends Component {
         } else {
             notifier.error(`There was a problem during upload: ${data.upload_model.message}.`);
         }
+    };
+
+    subscribe_jobs = async () => {
+        const observable = client.subscribe({
+            query: MODEL_TESTER_JOBS,
+        });
+        observable.subscribe(data => console.log(data));
+    };
+
+    query_jobs = async () => {
+        const result = await client.query({
+            query: gql`
+                query fetch_jobs {
+                    jobs(process_id: "model-tester") {
+                        id
+                        status
+                        status_location
+                        user
+                    }
+                }
+            `,
+            fetchPolicy: 'no-cache'
+        });
+        const {data} = result;
+        this.setState({benchmarks_jobs: data.jobs});
+    };
+
+    launch_job_handler = async (event, rowData) => {
+        const result = await client.mutate({
+            mutation: gql`
+                mutation launch_test_job($model_id: ID!) {
+                    launch_test(model_id: $model_id) {
+                        success
+                        message
+                        job {
+                            status_location
+                        }
+                    }
+                }
+            `,
+            variables: {
+                model_id: rowData.id
+            }
+        });
+        const {data: {launch_test: {message, success}}} = result;
+        if (success) {
+            notifier.ok(message);
+        } else {
+            notifier.error(message);
+        }
+        await this.query_jobs();
     };
 
     render() {
@@ -137,9 +209,9 @@ export class Models extends Component {
                                 <MaterialTable
                                     actions={[
                                         {
-                                            icon: 'save', tooltip: 'Launch Tests', onClick: (event, rowData) => {
-                                                console.log(event, rowData);
-                                            }
+                                            icon: PlayArrow,
+                                            tooltip: 'Launch Tests',
+                                            onClick: this.launch_job_handler
                                         }
                                     ]}
                                     title='Models'
@@ -155,6 +227,16 @@ export class Models extends Component {
                         );
                     }}
                 </Query>
+                <MaterialTable
+                    title='Benchmarks jobs'
+                    icons={tableIcons}
+                    columns={[
+                        {title: 'id', field: 'id'},
+                        {title: 'id', field: 'id'},
+                        {title: 'id', field: 'id'},
+                    ]}
+                    data={this.state.benchmarks_jobs}
+                />
             </Grid>
         );
     }
