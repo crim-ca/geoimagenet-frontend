@@ -21,3 +21,6 @@ yarn.lock
 .vscode
 
 dist/*
+
+.graphqlconfig
+schema.graphql

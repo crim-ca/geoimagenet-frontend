@@ -30,18 +30,6 @@ const UPLOAD_MODEL = gql`
         }
     }
 `;
-
-const LAUNCH_MODEL_TEST_JOB = gql`
-    mutation launch_test_job($model_id: ID!) {
-        launch_test(model_id: $model_id) {
-            success
-            message
-            job {
-                status_location
-            }
-        }
-    }
-`;
 const MODEL_TESTER_JOBS = gql`
     subscription model_tester_jobs {
         jobs(process_id: "model_tester") {
@@ -80,13 +68,15 @@ const UploadForm = withStyles(theme => ({
 
 export class Models extends Component {
 
+    state = {
+        model_name: new Date().toISOString(),
+        file: null,
+        validity: false,
+        benchmarks_jobs: []
+    };
+
     constructor(props) {
         super(props);
-        this.state = {
-            model_name: new Date().toISOString(),
-            file: null,
-            validity: false,
-        };
         if (features.subscriptions) {
             this.subscribe_jobs();
         } else {
@@ -127,12 +117,11 @@ export class Models extends Component {
         const observable = client.subscribe({
             query: MODEL_TESTER_JOBS,
         });
-        console.log(observable);
         observable.subscribe(data => console.log(data));
     };
 
-    query_jobs = () => {
-        const result = client.query({
+    query_jobs = async () => {
+        const result = await client.query({
             query: gql`
                 query fetch_jobs {
                     jobs(process_id: "model-tester") {
@@ -143,20 +132,36 @@ export class Models extends Component {
                     }
                 }
             `,
+            fetchPolicy: 'no-cache'
         });
         const {data} = result;
-        console.log(data);
+        this.setState({benchmarks_jobs: data.jobs});
     };
 
     launch_job_handler = async (event, rowData) => {
         const result = await client.mutate({
-            mutation: LAUNCH_MODEL_TEST_JOB,
+            mutation: gql`
+                mutation launch_test_job($model_id: ID!) {
+                    launch_test(model_id: $model_id) {
+                        success
+                        message
+                        job {
+                            status_location
+                        }
+                    }
+                }
+            `,
             variables: {
                 model_id: rowData.id
             }
         });
-        const {data: {launch_test: {message}}} = result;
-        notifier.error(message);
+        const {data: {launch_test: {message, success}}} = result;
+        if (success) {
+            notifier.ok(message);
+        } else {
+            notifier.error(message);
+        }
+        await this.query_jobs();
     };
 
     render() {
@@ -222,6 +227,16 @@ export class Models extends Component {
                         );
                     }}
                 </Query>
+                <MaterialTable
+                    title='Benchmarks jobs'
+                    icons={tableIcons}
+                    columns={[
+                        {title: 'id', field: 'id'},
+                        {title: 'id', field: 'id'},
+                        {title: 'id', field: 'id'},
+                    ]}
+                    data={this.state.benchmarks_jobs}
+                />
             </Grid>
         );
     }
