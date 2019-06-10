@@ -121,43 +121,57 @@ export class Models extends Component {
     };
 
     query_jobs = async () => {
-        const result = await client.query({
-            query: gql`
-                query fetch_jobs {
-                    jobs(process_id: "model-tester") {
-                        id
-                        status
-                        status_location
-                        user
+        let result;
+        try {
+            result = await client.query({
+                query: gql`
+                    query fetch_jobs {
+                        jobs(process_id: "model-tester") {
+                            id
+                            status
+                            progress
+                            status_location
+                        }
                     }
-                }
-            `,
-            fetchPolicy: 'no-cache'
-        });
+                `,
+                fetchPolicy: 'no-cache'
+            });
+        } catch (e) {
+            notifier.error('We were unable to fetch the model testing jobs.');
+            throw e;
+        }
         const {data} = result;
         this.setState({benchmarks_jobs: data.jobs});
     };
 
+
     launch_job_handler = async (event, rowData) => {
-        const result = await client.mutate({
-            mutation: gql`
-                mutation launch_test_job($model_id: ID!) {
-                    launch_test(model_id: $model_id) {
-                        success
-                        message
-                        job {
-                            status_location
+        let result;
+        try {
+            result = await client.mutate({
+                mutation: gql`
+                    mutation launch_test_job($model_id: ID!) {
+                        launch_test(model_id: $model_id) {
+                            success
+                            message
+                            job {
+                                status_location
+                            }
                         }
                     }
+                `,
+                variables: {
+                    model_id: rowData.id
                 }
-            `,
-            variables: {
-                model_id: rowData.id
-            }
-        });
+            });
+        } catch (e) {
+            notifier.error('We were unable to launch the model testing job.');
+            throw e;
+        }
         const {data: {launch_test: {message, success}}} = result;
         if (success) {
-            notifier.ok(message);
+            notifier.ok('Model testing was launched.');
+            await this.query_jobs();
         } else {
             notifier.error(message);
         }
@@ -231,9 +245,10 @@ export class Models extends Component {
                     title='Benchmarks jobs'
                     icons={tableIcons}
                     columns={[
-                        {title: 'id', field: 'id'},
-                        {title: 'id', field: 'id'},
-                        {title: 'id', field: 'id'},
+                        {title: 'ID', field: 'id'},
+                        {title: 'Status', field: 'status'},
+                        {title: 'Message', field: 'status_location'},
+                        {title: 'Progress', field: 'progress'},
                     ]}
                     data={this.state.benchmarks_jobs}
                 />
