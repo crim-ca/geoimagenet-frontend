@@ -58,12 +58,8 @@ export class Benchmarks extends Component {
             result = await client.query({
                 query: gql`
                     query fetch_jobs {
-                        jobs(process_id: "model-tester") {
+                        public_benchmarks {
                             id
-                            status
-                            progress
-                            status_location
-                            visibility
                         }
                     }
                 `,
@@ -74,7 +70,7 @@ export class Benchmarks extends Component {
             throw e;
         }
         const {data} = result;
-        this.setState({benchmarks_jobs: data.jobs});
+        this.setState({benchmarks_jobs: data.public_benchmarks});
     };
 
     render() {
