@@ -21,6 +21,7 @@
     "GEOIMAGENET_API_URL": false,
     "GRAPHQL_ENDPOINT": false,
     "MAGPIE_ENDPOINT": false,
-    "ML_ENDPOINT": false
+    "ML_ENDPOINT": false,
+    "THELPER_MODEL_UPLOAD_INSTRUCTIONS": false
   }
 }

@@ -25,6 +25,7 @@ module.exports = {
             ANNOTATION_NAMESPACE_URI: JSON.stringify(process.env.ANNOTATION_NAMESPACE_URI || 'geoimagenet.public.crim.ca'),
             ANNOTATION_NAMESPACE: JSON.stringify(process.env.ANNOTATION_NAMESPACE || 'GeoImageNet'),
             ANNOTATION_LAYER: JSON.stringify(process.env.ANNOTATION_LAYER || 'annotation'),
+            THELPER_MODEL_UPLOAD_INSTRUCTIONS: JSON.stringify(process.env.THELPER_MODEL_UPLOAD_INSTRUCTIONS || 'https://thelper.readthedocs.io/en/latest/user-guide.html#export-model'),
         }),
         new CleanWebpackPlugin(['dist/*']),
         new HtmlWebpackPlugin({
