@@ -2,6 +2,52 @@ Changelog
 =========
 
 
+1.0.0 (2019-06-11)
+------------------
+
+New
+~~~
+- Allow enter to launch login. [Félix Gagnon-Grenier]
+- Upload file to graphql. [Félix Gagnon-Grenier]
+- Datasets table from graphql endpoint. [Félix Gagnon-Grenier]
+
+Fix
+~~~
+- Allow session handle not to break when permissions are not defined for
+  the user. [Félix Gagnon-Grenier]
+
+Other
+~~~~~
+- Actions to publish and unpublish benchmarks. [Félix Gagnon-Grenier]
+- Better error wrapping around model testing jobs. [Félix Gagnon-
+  Grenier]
+- Showing model testing jobs and reloading after launch. [Félix Gagnon-
+  Grenier]
+- Feature flagged jobs subscriptions. [Félix Gagnon-Grenier]
+- Basic mutate function from apollo client. [Félix Gagnon-Grenier]
+- Fix jest testing. [Félix Gagnon-Grenier]
+- Poor folks progress icon during model upload. [Félix Gagnon-Grenier]
+- Using material-table. [Félix Gagnon-Grenier]
+- Saving model with custom name. [Félix Gagnon-Grenier]
+- Selenium is not the future of UI testing. [Félix Gagnon-Grenier]
+- Installing the tests dependencies in test stage. [Félix Gagnon-
+  Grenier]
+- Dev vs tests requirements for easier jenkins test stage. [Félix
+  Gagnon-Grenier]
+- Package-lock from clean install. [Félix Gagnon-Grenier]
+- Centralizing server code. [Félix Gagnon-Grenier]
+- Jobs table for admin user. [Félix Gagnon-Grenier]
+
+
+0.8.2 (2019-04-25)
+------------------
+
+Fix
+~~~
+- The pixelRatio must be explicitely set so ctrl-+ does not break tile
+  sizes. [Félix Gagnon-Grenier]
+
+
 0.8.0 (2019-04-23)
 ------------------
 
