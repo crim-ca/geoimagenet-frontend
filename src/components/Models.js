@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {withStyles, Divider, TextField, Button, Typography, CircularProgress} from '@material-ui/core';
+import {withStyles, Divider, TextField, Button, Typography, CircularProgress, Link} from '@material-ui/core';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Publish from '@material-ui/icons/Publish';
 import Lock from '@material-ui/icons/Lock';
@@ -228,6 +228,11 @@ export class Models extends Component {
                             <Button
                                 onClick={this.upload_change_handler(upload_file)}
                                 disabled={!this.upload_is_valid()}>Upload</Button>
+                            <Link
+                                target='_blank'
+                                href={THELPER_MODEL_UPLOAD_INSTRUCTIONS}>
+                                Click here for instructions on how to prepare your model for upload.
+                            </Link>
                             {loading && (
                                 <React.Fragment>
                                     <Typography variant='body1' display='inline'>Uploading...</Typography>
