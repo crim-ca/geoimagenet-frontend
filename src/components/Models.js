@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {withStyles, Divider, TextField, Button, Typography, CircularProgress} from '@material-ui/core';
 import PlayArrow from '@material-ui/icons/PlayArrow';
+import Publish from '@material-ui/icons/Publish';
+import Block from '@material-ui/icons/Block';
 import {Mutation, Query} from "react-apollo";
 import MaterialTable from 'material-table';
 import gql from 'graphql-tag';
@@ -131,6 +133,7 @@ export class Models extends Component {
                             status
                             progress
                             status_location
+                            visibility
                         }
                     }
                 `,
@@ -176,6 +179,36 @@ export class Models extends Component {
             notifier.error(message);
         }
         await this.query_jobs();
+    };
+
+    benchmark_visibility_handler = (job_id, visibility) => async () => {
+        let result;
+        try {
+            result = await client.mutate({
+                mutation: gql`
+                    mutation change_visibility($job_id: ID!, $visibility: Visibility!) {
+                        benchmark_visibility(job_id: $job_id, visibility: $visibility) {
+                            success
+                            message
+                        }
+                    }
+                `,
+                variables: {
+                    job_id: job_id,
+                    visibility: visibility,
+                }
+            });
+        } catch (e) {
+            notifier.error('There was a problem with the visibility change request.');
+            throw e;
+        }
+        const {data: {benchmark_visibility: {success, message}}} = result;
+        if (success) {
+            notifier.ok('Benchmark visibility updated.');
+            await this.query_jobs();
+        } else {
+            notifier.error(message);
+        }
     };
 
     render() {
@@ -244,8 +277,23 @@ export class Models extends Component {
                 <MaterialTable
                     title='Benchmarks jobs'
                     icons={tableIcons}
+                    actions={[
+                        rowData => ({
+                            icon: Publish,
+                            tooltip: 'publish',
+                            onClick: this.benchmark_visibility_handler(rowData.id, 'public'),
+                            disabled: rowData.visibility === 'public',
+                        }),
+                        rowData => ({
+                            icon: Block,
+                            tooltip: 'unpublish',
+                            onClick: this.benchmark_visibility_handler(rowData.id, 'private'),
+                            disabled: rowData.visibility === 'private',
+                        }),
+                    ]}
                     columns={[
                         {title: 'ID', field: 'id'},
+                        {title: 'Visibility', field: 'visibility'},
                         {title: 'Status', field: 'status'},
                         {title: 'Message', field: 'status_location'},
                         {title: 'Progress', field: 'progress'},
