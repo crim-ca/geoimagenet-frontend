@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {withStyles, Divider, TextField, Button, Typography, CircularProgress} from '@material-ui/core';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Publish from '@material-ui/icons/Publish';
-import Block from '@material-ui/icons/Block';
+import Lock from '@material-ui/icons/Lock';
 import {Mutation, Query} from "react-apollo";
 import MaterialTable from 'material-table';
 import gql from 'graphql-tag';
@@ -285,7 +285,7 @@ export class Models extends Component {
                             disabled: rowData.visibility === 'public',
                         }),
                         rowData => ({
-                            icon: Block,
+                            icon: Lock,
                             tooltip: 'unpublish',
                             onClick: this.benchmark_visibility_handler(rowData.id, 'private'),
                             disabled: rowData.visibility === 'private',

@@ -9,6 +9,7 @@ module.exports = {
         platform: './src/platform.js',
         datasets: './src/datasets.js',
         models: './src/models.js',
+        benchmarks: './src/benchmarks.js',
     },
     output: {
         filename: '[name].bundle.js',
@@ -44,6 +45,11 @@ module.exports = {
             title: 'Models',
             filename: 'models.html',
             chunks: ['models'],
+        }),
+        new HtmlWebpackPlugin({
+            title: 'Benchmarks',
+            filename: 'benchmarks.html',
+            chunks: ['benchmarks'],
         }),
     ],
     module: {

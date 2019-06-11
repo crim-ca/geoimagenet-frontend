@@ -21,7 +21,7 @@ const MenuContainerDiv = withStyles(theme => {
             padding: `0 ${values.gutterSmall}`,
             height: '100%',
             display: 'grid',
-            gridTemplateColumns: '1fr repeat(5, auto) 1fr',
+            gridTemplateColumns: '1fr repeat(6, auto) 1fr',
             justifyItems: 'right',
             alignItems: 'center',
             '& > :nth-child(1)': {
@@ -56,6 +56,7 @@ class Menu extends Component {
         {title: 'Platform', href: '/platform'},
         {title: 'Dataset', href: '/datasets'},
         {title: 'Model', href: '/models'},
+        {title: 'Benchmarks', href: '/benchmarks'},
         //{title: 'Help', href: '/help'},
         {title: 'Contact', href: 'mailto:(contact@geoimagenet.crim.ca)'},
     ];
