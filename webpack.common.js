@@ -42,7 +42,7 @@ module.exports = {
             chunks: ['datasets'],
         }),
         new HtmlWebpackPlugin({
-            title: 'Benchmarks',
+            title: 'Models',
             filename: 'models.html',
             chunks: ['models'],
         }),
