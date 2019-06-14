@@ -41,7 +41,6 @@ addEventListener('DOMContentLoaded', async () => {
                 <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}>
                     <Datasets
                         state_proxy={state_proxy}
-                        user_interactions={user_interactions}
                         store_actions={store_actions} />
                 </LoggedLayout>
             </ApolloProvider>
