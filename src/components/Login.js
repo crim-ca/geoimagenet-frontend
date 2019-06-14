@@ -1,6 +1,7 @@
 import {Component} from 'react';
 import React from 'react';
 import PropTypes from 'prop-types';
+import {withTranslation} from '../utils';
 
 import {TextField, Button, withStyles} from '@material-ui/core';
 import {UserInteractions} from '../domain/user-interactions.js';
@@ -27,9 +28,10 @@ const AccessButton = withStyles(theme => {
 /**
  * A regular login component that should notify user of login progress and redirect to the platform on sucess.
  */
-export class Login extends Component {
+class LoginComponent extends Component {
     static propTypes = {
         user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
+        t: PropTypes.func
     };
 
     /**
@@ -124,13 +126,14 @@ export class Login extends Component {
     };
 
     render() {
+        const {t} = this.props;
         return (
             <LoginContainer>
-                <TextField label='Username'
+                <TextField label={t('Username')}
                            id='user_name'
                            onChange={this.handle_change('user_name')}
                            value={this.state.user_name}/>
-                <TextField label='Password'
+                <TextField label={t('Password')}
                            id='password'
                            type='password'
                            onChange={this.handle_change('password')}
@@ -143,3 +146,6 @@ export class Login extends Component {
         );
     }
 }
+
+const Login = withTranslation()(LoginComponent);
+export {Login};

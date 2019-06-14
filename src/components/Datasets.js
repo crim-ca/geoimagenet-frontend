@@ -1,16 +1,17 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {withStyles, Paper, Divider, Button} from '@material-ui/core';
+import {withStyles, Paper, Button} from '@material-ui/core';
 import {observer} from 'mobx-react';
-import {Query, Mutation} from 'react-apollo';
+import {Query} from 'react-apollo';
 import gql from 'graphql-tag';
+import {client} from '../utils/apollo';
 
 import DatasetsList from './datasets/DatasetsList.js';
 import {StoreActions} from '../store';
 import {DATASETS, WRITE} from '../domain/constants.js';
 
-import {UserInteractions} from '../domain/user-interactions.js';
 import Table from "./Table";
+import {notifier} from "../utils";
 
 const GET_DATASETS = gql`
     query datasets {
@@ -23,27 +24,6 @@ const GET_DATASETS = gql`
         }
     }
 `;
-const GET_JOBS = gql`
-    query jobs {
-        jobs(process_id: "batch-creation") {
-            id
-            status
-            status_message
-            progress
-        }
-    }
-`;
-const LAUNCH_BATCH = gql`
-    mutation batch {
-        start_batch {
-            success
-            job {
-                status
-                status_message
-            }
-        }
-    }
-`;
 
 const DatasetLayout = withStyles({
     grid: {
@@ -53,17 +33,16 @@ const DatasetLayout = withStyles({
     children: {
         gridColumn: '2/3',
     }
-})(props => {
-    const {classes, children} = props;
+})(({classes, children}) => {
     return <div className={classes.grid}>
         <div className={classes.children}>{children}</div>
     </div>;
 });
 
-const DatasetsPaper = withStyles(theme => ({
+const DatasetsPaper = withStyles(({values}) => ({
     root: {
-        padding: theme.values.gutterSmall,
-        gridGap: theme.values.gutterSmall,
+        padding: values.gutterSmall,
+        gridGap: values.gutterSmall,
         display: 'grid',
         gridTemplateRows: 'max-content',
 
@@ -72,6 +51,10 @@ const DatasetsPaper = withStyles(theme => ({
 
 @observer
 class Datasets extends Component {
+
+    state = {
+        dataset_creation_jobs: []
+    };
 
     /**
      *
@@ -82,7 +65,60 @@ class Datasets extends Component {
     static propTypes = {
         state_proxy: PropTypes.object.isRequired,
         store_actions: PropTypes.instanceOf(StoreActions).isRequired,
-        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
+    };
+
+    constructor(props) {
+        super(props);
+        this.fetch_dataset_creation_jobs();
+    }
+
+    launch_dataset_creation = async () => {
+        let result;
+        try {
+            result = await client.mutate({
+                mutation: gql`
+                    mutation batch {
+                        launch_dataset_creation_job {
+                            success
+                            message
+                        }
+                    }
+                `,
+
+            });
+        } catch (e) {
+            notifier.error('We were unable to start the dataset creation job.');
+            throw e;
+        }
+        const {data: {launch_dataset_creation_job: {success, message}}} = result;
+        if (!success) {
+            notifier.error(message);
+            return;
+        }
+        await this.fetch_dataset_creation_jobs();
+    };
+
+    fetch_dataset_creation_jobs = async () => {
+        let result;
+        try {
+            result = await client.query({
+                query: gql`
+                    query jobs {
+                        jobs(process_id: "batch-creation") {
+                            id
+                            status
+                            status_message
+                            progress
+                        }
+                    }
+                `
+            });
+        } catch (e) {
+            notifier.error('There was an error while fetching the dataset creation jobs.');
+            throw e;
+        }
+        const {data: {jobs}} = result;
+        this.setState({dataset_creation_jobs: jobs});
     };
 
     render() {
@@ -111,31 +147,12 @@ class Datasets extends Component {
                     {acl.can(WRITE, DATASETS)
                         ? (
                             <React.Fragment>
-                                <Mutation mutation={LAUNCH_BATCH}>
-                                    {(launchCreation) => (
-                                        <Button onClick={launchCreation}
-                                                variant='contained'
-                                                color='primary'>
-                                            Create Patches
-                                        </Button>
-                                    )}
-                                </Mutation>
-                                <Query query={GET_JOBS}>
-                                    {({data, loading, error}) => {
-                                        if (loading) {
-                                            return <p>loading</p>;
-                                        }
-                                        if (error) {
-                                            return <p>{error.message}</p>;
-                                        }
-                                        if (data.jobs.length === 0) {
-                                            return <p>no jobs yet</p>;
-                                        }
-                                        return (
-                                            <Table data={data.jobs} />
-                                        );
-                                    }}
-                                </Query>
+                                <Button onClick={this.launch_dataset_creation}
+                                        variant='contained'
+                                        color='primary'>
+                                    Create Patches
+                                </Button>
+                                <Table data={this.state.dataset_creation_jobs}/>
                             </React.Fragment>
                         )
                         : null

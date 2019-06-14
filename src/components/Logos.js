@@ -1,5 +1,6 @@
-import React, {Component} from 'react';
-import {withStyles, Paper, Typography} from '@material-ui/core';
+import React from 'react';
+import {withStyles, Paper, Typography, Select, MenuItem} from '@material-ui/core';
+import {useTranslation} from '../utils';
 
 import crim from '../img/logos/crim.png';
 import canarie from '../img/logos/canarie.gif';
@@ -28,17 +29,30 @@ const GeoImageNetHeader = withStyles({
     }
 })(Typography);
 
-export class Logos extends Component {
-    render() {
-        return (
-            <LogosContainer>
-                    <GeoImageNetHeader variant='h3'>GeoImageNet</GeoImageNetHeader>
-                    <img alt='Logo CRIM' src={crim} />
-                    <img alt='Logo Canarie' src={canarie} />
-                    <img alt='Logo UdeS' src={UdeS} />
-                    <img alt='Logo Effigis' src={effigis} />
-                    <img alt='Logo NRCAN' src={nrcan} />
-                </LogosContainer>
-        );
-    }
+function ChangeLanguage() {
+    const {t, i18n} = useTranslation();
+    const change_language = event => {
+        const language = event.target.value;
+        i18n.changeLanguage(language);
+    };
+    return(
+        <Select value={i18n.language} onChange={change_language}>
+            <MenuItem value='fr'>{t('Français')}</MenuItem>
+            <MenuItem value='en'>{t('Anglais')}</MenuItem>
+        </Select>
+    );
+}
+
+export function Logos() {
+    return (
+        <LogosContainer>
+            <GeoImageNetHeader variant='h3'>GeoImageNet</GeoImageNetHeader>
+            <img alt='Logo CRIM' src={crim}/>
+            <img alt='Logo Canarie' src={canarie}/>
+            <img alt='Logo UdeS' src={UdeS}/>
+            <img alt='Logo Effigis' src={effigis}/>
+            <img alt='Logo NRCAN' src={nrcan}/>
+            <ChangeLanguage/>
+        </LogosContainer>
+    );
 }
