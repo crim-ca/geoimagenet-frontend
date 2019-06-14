@@ -1,6 +1,9 @@
 const resources = {
     en: {
         translation: {
+            'Français': 'French',
+            'Anglais': 'English',
+            "Tiré d'un article de La Tribune": "From an article in La Tribune."
         }
     },
     fr: {
@@ -32,11 +35,9 @@ const resources = {
                     'développements réalisés et à y contribuer.',
                 'par-7': 'Fondé en 1993, CANARIE est une société sans but lucratif principalement financée par le ' +
                     'gouvernement du Canada.',
-                'link': {
-                    'text': 'Tiré d\'un article de La Tribune',
-                    'href': 'https://www.latribune.ca/affaires/des-images-satellites-a-tres-haute-resolution-a-ludes-39c600cd8c87c862a133db22b75462c5',
-                }
-            }
+            },
+            'Username': "Nom d'usager",
+            'Password': 'Mot de passe',
         }
     }
 };

@@ -30,8 +30,8 @@ function Presentation() {
             <Typography paragraph>
                 <Link target='_blank'
                       rel='noopener noreferrer'
-                      href={t('intro.link.href')}>
-                    {t('intro.link.text')}
+                      href={t('https://www.latribune.ca/affaires/des-images-satellites-a-tres-haute-resolution-a-ludes-39c600cd8c87c862a133db22b75462c5')}>
+                    {t("Tiré d'un article de La Tribune")}
                 </Link>
             </Typography>
         </PaddedPaper>
