@@ -1,3 +1,7 @@
+import i18n from 'i18next';
+import LanguageDetector from "i18next-browser-languagedetector";
+import {initReactI18next} from "react-i18next";
+
 const resources = {
     en: {
         translation: {
@@ -42,4 +46,23 @@ const resources = {
     }
 };
 
-export {resources};
+i18n.use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+        debug: false,
+        interpolation: {
+            escapeValue: false,
+        },
+        resources: resources,
+        detection: {
+            order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+            lookupQuerystring: 'lng',
+            lookupCookie: 'i18next',
+            lookupLocalStorage: 'i18nextLng',
+            lookupFromPathIndex: 0,
+            lookupFromSubdomainIndex: 0,
+            caches: ['localStorage', 'cookie'],
+        }
+    });
+
+export {i18n};
