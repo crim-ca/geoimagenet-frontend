@@ -129,11 +129,11 @@ class LoginComponent extends Component {
         const {t} = this.props;
         return (
             <LoginContainer>
-                <TextField label={t('Username')}
+                <TextField label={t('util:username')}
                            id='user_name'
                            onChange={this.handle_change('user_name')}
                            value={this.state.user_name}/>
-                <TextField label={t('Password')}
+                <TextField label={t('util:password')}
                            id='password'
                            type='password'
                            onChange={this.handle_change('password')}

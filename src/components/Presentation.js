@@ -19,13 +19,13 @@ function Presentation() {
 
     return (
         <PaddedPaper>
-            <Typography paragraph>{t('intro.par-1')}</Typography>
-            <Typography paragraph>{t('intro.par-2')}</Typography>
-            <Typography paragraph>{t('intro.par-3')}</Typography>
-            <Typography paragraph>{t('intro.par-4')}</Typography>
-            <Typography paragraph>{t('intro.par-5')}</Typography>
-            <Typography paragraph>{t('intro.par-6')}</Typography>
-            <Typography paragraph>{t('intro.par-7')}</Typography>
+            <Typography paragraph>{t('par-1')}</Typography>
+            <Typography paragraph>{t('par-2')}</Typography>
+            <Typography paragraph>{t('par-3')}</Typography>
+            <Typography paragraph>{t('par-4')}</Typography>
+            <Typography paragraph>{t('par-5')}</Typography>
+            <Typography paragraph>{t('par-6')}</Typography>
+            <Typography paragraph>{t('par-7')}</Typography>
 
             <Typography paragraph>
                 <Link target='_blank'

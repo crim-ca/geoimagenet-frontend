@@ -37,8 +37,8 @@ function ChangeLanguage() {
     };
     return(
         <Select value={i18n.language} onChange={change_language}>
-            <MenuItem value='fr'>{t('Français')}</MenuItem>
-            <MenuItem value='en'>{t('Anglais')}</MenuItem>
+            <MenuItem value='fr'>{t('util:french')}</MenuItem>
+            <MenuItem value='en'>{t('util:english')}</MenuItem>
         </Select>
     );
 }
