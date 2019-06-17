@@ -2,6 +2,32 @@ Changelog
 =========
 
 
+1.1.0 (2019-06-17)
+------------------
+
+New
+~~~
+- Linking to external model upload preparation page. [Félix Gagnon-
+  Grenier]
+- Benchmarks page. [Félix Gagnon-Grenier]
+
+Other
+~~~~~
+- Fallback on french, keep key if that's not defined. [Félix Gagnon-
+  Grenier]
+- Adding some default configuration for language detection. [Félix
+  Gagnon-Grenier]
+- Adding basic select field to change language. [Félix Gagnon-Grenier]
+- Presentation in resource file. [Félix Gagnon-Grenier]
+- Presentation component in react hook for easier use of i18n. [Félix
+  Gagnon-Grenier]
+- Dataset creation and job fetching in client functions instead of query
+  and mutation components. [Félix Gagnon-Grenier]
+- Catching 404 for the frontend service. [Félix Gagnon-Grenier]
+- Corrected title typo. [Félix Gagnon-Grenier]
+- Filtering only public benchmarks. [Félix Gagnon-Grenier]
+
+
 1.0.0 (2019-06-11)
 ------------------
 

@@ -1,8 +1,7 @@
 {
   "name": "frontend",
-  "version": "0.8.2",
+  "version": "1.1.0",
   "description": "Frontend annotation platform for GeoImageNet",
-  "main": "static/bootstrap.js",
   "directories": {
     "test": "test"
   },
