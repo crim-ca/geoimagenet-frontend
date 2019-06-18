@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core';
+import PropTypes from 'prop-types';
 import MaterialTable from 'material-table';
 import gql from 'graphql-tag';
 import {tableIcons} from '../utils/react';
-import {client} from '../utils/apollo';
 import {features} from '../../features';
 import {NotificationManager} from 'react-notifications';
 
@@ -36,6 +36,10 @@ export class Benchmarks extends Component {
         benchmarks_jobs: []
     };
 
+    static propTypes = {
+        client: PropTypes.object.isRequired
+    };
+
     constructor(props) {
         super(props);
         if (features.subscriptions) {
@@ -46,6 +50,7 @@ export class Benchmarks extends Component {
     }
 
     subscribe_jobs = async () => {
+        const {client} = this.props;
         const observable = client.subscribe({
             query: MODEL_TESTER_JOBS,
         });
@@ -53,6 +58,7 @@ export class Benchmarks extends Component {
     };
 
     query_jobs = async () => {
+        const {client} = this.props;
         let result;
         try {
             result = await client.query({

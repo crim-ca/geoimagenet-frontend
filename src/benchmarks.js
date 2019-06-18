@@ -11,7 +11,7 @@ import {LoggedLayout} from './components/LoggedLayout.js';
 import {Benchmarks} from './components/Benchmarks';
 import {theme} from './utils/react.js';
 
-import {client} from './utils/apollo';
+import {create_client} from './utils/apollo';
 import {ApolloProvider} from 'react-apollo';
 
 import './css/base.css';
@@ -28,6 +28,7 @@ addEventListener('DOMContentLoaded', async () => {
     const store_actions = new StoreActions(state_proxy);
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
     const user_interactions = new UserInteractions(store_actions, data_queries);
+    const apollo_client = create_client(GRAPHQL_ENDPOINT);
 
     const div = element('div');
     div.id = 'root';
@@ -37,9 +38,9 @@ addEventListener('DOMContentLoaded', async () => {
     ReactDOM.render(
         <MuiThemeProvider theme={theme}>
             <CssBaseline />
-            <ApolloProvider client={client}>
+            <ApolloProvider client={apollo_client}>
                 <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}>
-                    <Benchmarks />
+                    <Benchmarks client={apollo_client} />
                 </LoggedLayout>
             </ApolloProvider>
 

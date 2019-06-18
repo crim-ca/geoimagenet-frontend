@@ -1,5 +1,5 @@
-import {Permission, ResourcePermissionRepository} from '../domain/entities.js';
-import {AccessControlList} from '../domain/access-control-list.js';
+const {Permission, ResourcePermissionRepository} = require('../domain/entities.js');
+const {AccessControlList} = require('../domain/access-control-list.js');
 
 test('Creates Permission from hardcoded data structure.', () => {
     const data_structure = {

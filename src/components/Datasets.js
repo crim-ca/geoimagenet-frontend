@@ -4,15 +4,14 @@ import {withStyles, Paper, Button} from '@material-ui/core';
 import {observer} from 'mobx-react';
 import {Query} from 'react-apollo';
 import gql from 'graphql-tag';
-import {client} from '../utils/apollo';
 
 import DatasetsList from './datasets/DatasetsList.js';
 import {StoreActions} from '../store';
 import {DATASETS, WRITE} from '../domain/constants.js';
 
 import Table from "./Table";
-import {notifier} from "../utils";
 import {NotificationManager} from 'react-notifications';
+import ApolloClient from "apollo-client";
 
 const GET_DATASETS = gql`
     query datasets {
@@ -66,6 +65,7 @@ class Datasets extends Component {
     static propTypes = {
         state_proxy: PropTypes.object.isRequired,
         store_actions: PropTypes.instanceOf(StoreActions).isRequired,
+        client: PropTypes.instanceOf(ApolloClient).isRequired,
     };
 
     constructor(props) {
@@ -74,6 +74,7 @@ class Datasets extends Component {
     }
 
     launch_dataset_creation = async () => {
+        const {client} = this.props;
         let result;
         try {
             result = await client.mutate({
@@ -100,6 +101,7 @@ class Datasets extends Component {
     };
 
     fetch_dataset_creation_jobs = async () => {
+        const {client} = this.props;
         let result;
         try {
             result = await client.query({
