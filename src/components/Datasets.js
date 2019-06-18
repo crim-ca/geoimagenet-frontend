@@ -12,6 +12,7 @@ import {DATASETS, WRITE} from '../domain/constants.js';
 
 import Table from "./Table";
 import {notifier} from "../utils";
+import {NotificationManager} from 'react-notifications';
 
 const GET_DATASETS = gql`
     query datasets {
@@ -87,12 +88,12 @@ class Datasets extends Component {
 
             });
         } catch (e) {
-            notifier.error('We were unable to start the dataset creation job.');
+            NotificationManager.error('We were unable to start the dataset creation job.');
             throw e;
         }
         const {data: {launch_dataset_creation_job: {success, message}}} = result;
         if (!success) {
-            notifier.error(message);
+            NotificationManager.error(message);
             return;
         }
         await this.fetch_dataset_creation_jobs();
@@ -114,7 +115,7 @@ class Datasets extends Component {
                 `
             });
         } catch (e) {
-            notifier.error('There was an error while fetching the dataset creation jobs.');
+            NotificationManager.error('There was an error while fetching the dataset creation jobs.');
             throw e;
         }
         const {data: {jobs}} = result;

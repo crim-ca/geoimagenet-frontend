@@ -3,9 +3,9 @@ import {withStyles} from '@material-ui/core';
 import MaterialTable from 'material-table';
 import gql from 'graphql-tag';
 import {tableIcons} from '../utils/react';
-import {notifier} from '../utils';
 import {client} from '../utils/apollo';
 import {features} from '../../features';
+import {NotificationManager} from 'react-notifications';
 
 const MODEL_TESTER_JOBS = gql`
     subscription model_tester_jobs {
@@ -66,7 +66,7 @@ export class Benchmarks extends Component {
                 fetchPolicy: 'no-cache'
             });
         } catch (e) {
-            notifier.error('We were unable to fetch the model testing jobs.');
+            NotificationManager.error('We were unable to fetch the model testing jobs.');
             throw e;
         }
         const {data} = result;

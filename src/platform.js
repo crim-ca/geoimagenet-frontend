@@ -5,7 +5,6 @@ import {CssBaseline, MuiThemeProvider} from '@material-ui/core';
 
 import {register_section_handles} from './utils/sections.js';
 import {DataQueries} from './domain/data-queries.js';
-import {notifier} from './utils/notifications.js';
 import {create_state_proxy, StoreActions} from './store';
 import {UserInteractions} from './domain/user-interactions.js';
 import {Platform} from './components/Platform.js';

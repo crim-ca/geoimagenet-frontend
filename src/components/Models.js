@@ -7,9 +7,9 @@ import {Mutation, Query} from "react-apollo";
 import MaterialTable from 'material-table';
 import gql from 'graphql-tag';
 import {tableIcons} from '../utils/react';
-import {notifier} from '../utils';
 import {client} from '../utils/apollo';
 import {features} from '../../features';
+import {NotificationManager} from 'react-notifications';
 
 const MODELS = gql`
     query models {
@@ -111,7 +111,7 @@ export class Models extends Component {
         if (data.upload_model.success) {
             await this.refetch();
         } else {
-            notifier.error(`There was a problem during upload: ${data.upload_model.message}.`);
+            NotificationManager.error(`There was a problem during upload: ${data.upload_model.message}.`);
         }
     };
 
@@ -140,7 +140,7 @@ export class Models extends Component {
                 fetchPolicy: 'no-cache'
             });
         } catch (e) {
-            notifier.error('We were unable to fetch the model testing jobs.');
+            NotificationManager.error('We were unable to fetch the model testing jobs.');
             throw e;
         }
         const {data} = result;
@@ -168,15 +168,15 @@ export class Models extends Component {
                 }
             });
         } catch (e) {
-            notifier.error('We were unable to launch the model testing job.');
+            NotificationManager.error('We were unable to launch the model testing job.');
             throw e;
         }
         const {data: {launch_test: {message, success}}} = result;
         if (success) {
-            notifier.ok('Model testing was launched.');
+            NotificationManager.success('Model testing was launched.');
             await this.query_jobs();
         } else {
-            notifier.error(message);
+            NotificationManager.error(message);
         }
         await this.query_jobs();
     };
@@ -199,15 +199,15 @@ export class Models extends Component {
                 }
             });
         } catch (e) {
-            notifier.error('There was a problem with the visibility change request.');
+            NotificationManager.error('There was a problem with the visibility change request.');
             throw e;
         }
         const {data: {benchmark_visibility: {success, message}}} = result;
         if (success) {
-            notifier.ok('Benchmark visibility updated.');
+            NotificationManager.success('Benchmark visibility updated.');
             await this.query_jobs();
         } else {
-            notifier.error(message);
+            NotificationManager.error(message);
         }
     };
 
@@ -239,7 +239,7 @@ export class Models extends Component {
                                     <CircularProgress/>
                                 </React.Fragment>
                             )}
-                            {error && notifier.error(`there was an error: ${error.message}. please try again later.`)}
+                            {error && NotificationManager.error(`there was an error: ${error.message}. please try again later.`)}
                         </UploadForm>
                     )}
                 </Mutation>

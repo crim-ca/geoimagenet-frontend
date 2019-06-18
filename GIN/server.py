@@ -56,7 +56,7 @@ public_resources = [
 
 
 def resource_is_private(r):
-    if r in public_resources or r.endswith('.jpg') or r.endswith('.png') or r.endswith('.gif') or r.endswith('.ico'):
+    if r in public_resources or r.endswith('.jpg') or r.endswith('.png') or r.endswith('.gif') or r.endswith('.ico') or r.endswith('.woff') or r.endswith('.ttf'):
         return False
     return True
 

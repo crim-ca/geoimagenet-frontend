@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import {NotificationContainer} from 'react-notifications';
+
 import './css/base.css';
 import './css/notifications.css';
 import './img/icons/favicon.ico';
@@ -31,6 +33,7 @@ addEventListener('DOMContentLoaded', () => {
     ReactDOM.render(
         <ThemedComponent>
             <PresentationContainer user_interactions={user_interactions} />
+            <NotificationContainer/>
         </ThemedComponent>,
         div
     );
