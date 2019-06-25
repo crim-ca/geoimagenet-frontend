@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
-import {withStyles} from '@material-ui/core'
+import {withStyles} from '@material-ui/core';
+import {features} from '../../features';
 
 import {ANNOTATIONS, MODE, READ, VALIDATIONS, WRITE} from '../domain/constants.js';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -22,10 +23,12 @@ const ACTIONS = [
     {name: 'duplicate', icon: faCopy, mode: MODE.DUPLICATE, permission_name: WRITE, resource: ANNOTATIONS},
     {name: 'modify', icon: faEdit, mode: MODE.MODIFY, permission_name: WRITE, resource: ANNOTATIONS},
     {name: 'delete', icon: faTrashAlt, mode: MODE.DELETE, permission_name: WRITE, resource: ANNOTATIONS},
-    {name: 'ask_expertise', icon: faQuestionCircle, mode: MODE.ASK_EXPERTISE, permission_name: WRITE, resource: ANNOTATIONS},
-    {name: 'validate', icon: faCheck, mode: MODE.VALIDATE, permission_name: WRITE, resource: VALIDATIONS},
-    {name: 'refuse', icon: faTimes, mode: MODE.REJECT, permission_name: WRITE, resource: VALIDATIONS},
 ];
+if (features.expertise !== false) {
+    ACTIONS.push({name: 'ask_expertise', icon: faQuestionCircle, mode: MODE.ASK_EXPERTISE, permission_name: WRITE, resource: ANNOTATIONS});
+}
+ACTIONS.push({name: 'validate', icon: faCheck, mode: MODE.VALIDATE, permission_name: WRITE, resource: VALIDATIONS});
+ACTIONS.push({name: 'refuse', icon: faTimes, mode: MODE.REJECT, permission_name: WRITE, resource: VALIDATIONS});
 
 const ActionsContainer = withStyles(theme => {
     const {values} = theme;

@@ -1,5 +1,6 @@
 const features = {
-    subscriptions: false
+    subscriptions: false,
+    expertise: false,
 };
 
 module.exports = {features};
