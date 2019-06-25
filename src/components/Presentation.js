@@ -5,6 +5,7 @@ import {useTranslation} from '../utils';
 import {Logos} from './Logos.js';
 import {Login} from './Login.js';
 
+
 const PaddedPaper = withStyles(theme => {
     const {values} = theme;
     return {
@@ -14,6 +15,11 @@ const PaddedPaper = withStyles(theme => {
     };
 })(Paper);
 
+const LessOpaquePaper = withStyles({
+    root: {
+        opacity: '0.7',
+    }
+})(Paper);
 function Presentation() {
     const {t} = useTranslation();
 
@@ -39,44 +45,74 @@ function Presentation() {
 }
 
 
-export const PresentationContainer = withStyles(theme => {
-    const {values} = theme;
-    return {
-        container: {
-            height: '100%',
-            padding: values.gutterSmall,
-            display: 'grid',
-            gridGap: values.gutterSmall,
-            gridTemplateColumns: `1fr 200px 800px 200px 1fr`,
-            gridTemplateRows: `min-content minmax(min-content, 1fr) min-content 200px`,
-            background: 'url(/img/background.hack.jpg) no-repeat center center fixed',
-            backgroundSize: 'cover',
-        },
-        logos: {
-            gridColumn: '2/5',
-            gridRow: '1/2',
-        },
-        presentation: {
-            gridColumn: '3/4',
-            gridRow: '3/4',
-        },
-        acceder: {
-            gridColumn: '3/4',
-            gridRow: '2/3',
-            display: 'flex',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-        },
-    };
-})(props => {
-    const {classes, user_interactions} = props;
+export const PresentationContainer = withStyles(({values}) => ({
+    container: {
+        height: '100%',
+        padding: values.gutterSmall,
+        display: 'grid',
+        gridGap: values.gutterSmall,
+        gridTemplateColumns: '1fr min-content min-content 200px min-content 1fr',
+        gridTemplateRows: 'min-content min-content 1fr min-content 100px min-content min-content 2fr min-content',
+        background: 'url(/img/background.hack.jpg) no-repeat center center fixed',
+        backgroundSize: 'cover',
+    },
+    mission: {
+        gridColumn: '2/3',
+        gridRow: '4/5',
+    },
+    logos: {
+        gridColumn: '2/6',
+        gridRow: '9/10',
+    },
+    publications: {
+        gridColumn: '3/5',
+        gridRow: '6/7',
+    },
+    benchmarks: {
+        gridColumn: '5/6',
+        gridRow: '6/8',
+    },
+    collaborators: {
+        gridColumn: '2/5',
+        gridRow: '7/8',
+    },
+    team: {
+        gridColumn: '2/3',
+        gridRow: '5/7',
+    },
+    taxonomy: {
+        gridColumn: '4/6',
+        gridRow: '4/6',
+    },
+    platform: {
+        gridColumn: '3/4',
+        gridRow: '4/6',
+    },
+    acceder: {
+        gridColumn: '3/4',
+        gridRow: '2/3',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+    },
+}))(({classes, user_interactions}) => {
+
+    const {t} = useTranslation();
+
     return (
         <div className={classes.container}>
             <div className={classes.logos}><Logos/></div>
             <div className={classes.acceder}>
                 <PaddedPaper><Login user_interactions={user_interactions}/></PaddedPaper>
             </div>
-            <div className={classes.presentation}><Presentation/></div>
+            <LessOpaquePaper className={classes.benchmarks}>{t('intro:benchmarks')}</LessOpaquePaper>
+            <LessOpaquePaper className={classes.mission}>{t('intro:mission')}</LessOpaquePaper>
+            <LessOpaquePaper className={classes.team}>{t('intro:team')}</LessOpaquePaper>
+            <LessOpaquePaper className={classes.platform}>{t('intro:platform')}</LessOpaquePaper>
+            <LessOpaquePaper className={classes.publications}>{t('intro:publications')}</LessOpaquePaper>
+            <LessOpaquePaper className={classes.collaborators}>{t('intro:collaborators')}</LessOpaquePaper>
+            <LessOpaquePaper className={classes.taxonomy}>{t('intro:taxonomy')}</LessOpaquePaper>
         </div>
     );
+
 });
