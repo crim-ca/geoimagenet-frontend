@@ -2,6 +2,7 @@ import {notifier} from '../utils/notifications.js';
 import {action} from 'mobx';
 import {InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionRepository, User} from './entities.js';
 import {AccessControlList} from './access-control-list.js';
+import {NotificationManager} from 'react-notifications';
 
 /**
  * In a web app, we need top level handlers that react to specific user intentions, and interactions.
@@ -51,25 +52,14 @@ export class UserInteractions {
         } catch (e) {
             switch (e.status) {
                 case 404:
-                    notifier.warning('There doesn\'t seem to be any taxonomy available in the API (we received a 404 not-found status). ' +
+                    NotificationManager.warning('There doesn\'t seem to be any taxonomy available in the API (we received a 404 not-found status). ' +
                         'This will likely render the platform unusable until someone populates the taxonomies.');
                     break;
                 default:
-                    notifier.error('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
+                    NotificationManager.error('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
             }
         }
     };
-
-    dataset_creation = async taxonomy_id => {
-        try {
-            const res = await this.data_queries.launch_dataset_creation('somename', taxonomy_id);
-            debugger;
-        } catch (e) {
-            debugger;
-            return Promise.reject(e);
-        }
-    };
-
 
     /**
      *
@@ -103,7 +93,7 @@ export class UserInteractions {
 
             this.store_actions.toggle_taxonomy_class_tree_element(version['root_taxonomy_class_id']);
         } catch (e) {
-            notifier.error('We were unable to fetch the taxonomy classes.');
+            NotificationManager.error('We were unable to fetch the taxonomy classes.');
         }
     }
 
@@ -126,7 +116,7 @@ export class UserInteractions {
             json_response = await this.data_queries.current_user_permissions('frontend');
         } catch (e) {
             if (e.status === 404) {
-                notifier.error('Permissions for the frontend service do not seem to be properly configured. ' +
+                NotificationManager.error('Permissions for the frontend service do not seem to be properly configured. ' +
                     'That will probably prevent you from using the platform, please contact your administrator.');
                 return;
             }
@@ -134,7 +124,7 @@ export class UserInteractions {
         }
 
         if (!json_response.service && !json_response.service.resources) {
-            notifier.error('The permissions structure returned from Magpie does not seem properly formed: ' +
+            NotificationManager.error('The permissions structure returned from Magpie does not seem properly formed: ' +
                 'there is no resource attribute on it.');
             throw new InvalidPermissions();
         }
@@ -145,7 +135,7 @@ export class UserInteractions {
             resource_permission_repository = new ResourcePermissionRepository(resources);
         } catch (e) {
             if (e instanceof ProbablyInvalidPermissions) {
-                notifier.warning('It seems that permissions for your user are either incorrectly set, ' +
+                NotificationManager.warning('It seems that permissions for your user are either incorrectly set, ' +
                     'or undefined. This is probably not something you can solve on your own, please contact ' +
                     'your administrator if this prevents you from using the platform.');
                 return;
@@ -170,9 +160,9 @@ export class UserInteractions {
             await this.data_queries.release_annotations_request(taxonomy_class_id);
             const counts = await this.data_queries.flat_taxonomy_classes_counts(taxonomy_class_id);
             this.store_actions.set_annotation_counts(counts);
-            notifier.ok('Annotations were released.');
+            NotificationManager.success('Annotations were released.');
         } catch (error) {
-            notifier.error('We were unable to release the annotations.');
+            NotificationManager.error('We were unable to release the annotations.');
         }
     }
 
@@ -198,7 +188,7 @@ export class UserInteractions {
             await this.data_queries.login_request(form_data);
             window.location.href = '/platform';
         } catch (error) {
-            notifier.error('Login forbidden.');
+            NotificationManager.error('Login forbidden.');
         }
     }
 

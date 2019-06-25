@@ -53,10 +53,11 @@ public_resources = [
     '/login',
     '/presentation.bundle.js',
 ]
+public_extension_types = ('.jpg', '.png', '.gif', '.ico', '.woff', '.ttf')
 
 
 def resource_is_private(r):
-    if r in public_resources or r.endswith('.jpg') or r.endswith('.png') or r.endswith('.gif') or r.endswith('.ico'):
+    if r in public_resources or r.endswith(public_extension_types):
         return False
     return True
 

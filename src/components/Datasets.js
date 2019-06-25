@@ -4,14 +4,14 @@ import {withStyles, Paper, Button} from '@material-ui/core';
 import {observer} from 'mobx-react';
 import {Query} from 'react-apollo';
 import gql from 'graphql-tag';
-import {client} from '../utils/apollo';
 
 import DatasetsList from './datasets/DatasetsList.js';
 import {StoreActions} from '../store';
 import {DATASETS, WRITE} from '../domain/constants.js';
 
 import Table from "./Table";
-import {notifier} from "../utils";
+import {NotificationManager} from 'react-notifications';
+import ApolloClient from "apollo-client";
 
 const GET_DATASETS = gql`
     query datasets {
@@ -65,6 +65,7 @@ class Datasets extends Component {
     static propTypes = {
         state_proxy: PropTypes.object.isRequired,
         store_actions: PropTypes.instanceOf(StoreActions).isRequired,
+        client: PropTypes.instanceOf(ApolloClient).isRequired,
     };
 
     constructor(props) {
@@ -73,6 +74,7 @@ class Datasets extends Component {
     }
 
     launch_dataset_creation = async () => {
+        const {client} = this.props;
         let result;
         try {
             result = await client.mutate({
@@ -87,18 +89,19 @@ class Datasets extends Component {
 
             });
         } catch (e) {
-            notifier.error('We were unable to start the dataset creation job.');
+            NotificationManager.error('We were unable to start the dataset creation job.');
             throw e;
         }
         const {data: {launch_dataset_creation_job: {success, message}}} = result;
         if (!success) {
-            notifier.error(message);
+            NotificationManager.error(message);
             return;
         }
         await this.fetch_dataset_creation_jobs();
     };
 
     fetch_dataset_creation_jobs = async () => {
+        const {client} = this.props;
         let result;
         try {
             result = await client.query({
@@ -114,7 +117,7 @@ class Datasets extends Component {
                 `
             });
         } catch (e) {
-            notifier.error('There was an error while fetching the dataset creation jobs.');
+            NotificationManager.error('There was an error while fetching the dataset creation jobs.');
             throw e;
         }
         const {data: {jobs}} = result;
