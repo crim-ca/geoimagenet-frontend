@@ -40,7 +40,7 @@ addEventListener('DOMContentLoaded', async () => {
             <CssBaseline />
             <ApolloProvider client={apollo_client}>
                 <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}>
-                    <Models />
+                    <Models client={apollo_client} model_upload_instructions_url={THELPER_MODEL_UPLOAD_INSTRUCTIONS} />
                 </LoggedLayout>
             </ApolloProvider>
 

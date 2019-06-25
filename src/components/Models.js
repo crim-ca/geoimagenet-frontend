@@ -3,11 +3,12 @@ import {withStyles, Divider, TextField, Button, Typography, CircularProgress, Li
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Publish from '@material-ui/icons/Publish';
 import Lock from '@material-ui/icons/Lock';
-import {Mutation, Query} from "react-apollo";
+import {Mutation, Query} from 'react-apollo';
+import ApolloClient from 'apollo-client';
 import MaterialTable from 'material-table';
+import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import {tableIcons} from '../utils/react';
-import {client} from '../utils/apollo';
 import {features} from '../../features';
 import {NotificationManager} from 'react-notifications';
 
@@ -70,6 +71,11 @@ const UploadForm = withStyles(theme => ({
 
 export class Models extends Component {
 
+    static propTypes = {
+        client: PropTypes.instanceOf(ApolloClient).isRequired,
+        model_upload_instructions_url: PropTypes.string.isRequired,
+    };
+
     state = {
         model_name: new Date().toISOString(),
         file: null,
@@ -116,6 +122,7 @@ export class Models extends Component {
     };
 
     subscribe_jobs = async () => {
+        const {client} = this.props;
         const observable = client.subscribe({
             query: MODEL_TESTER_JOBS,
         });
@@ -123,6 +130,7 @@ export class Models extends Component {
     };
 
     query_jobs = async () => {
+        const {client} = this.props;
         let result;
         try {
             result = await client.query({
@@ -149,6 +157,7 @@ export class Models extends Component {
 
 
     launch_job_handler = async (event, rowData) => {
+        const {client} = this.props;
         let result;
         try {
             result = await client.mutate({
@@ -182,6 +191,7 @@ export class Models extends Component {
     };
 
     benchmark_visibility_handler = (job_id, visibility) => async () => {
+        const {client} = this.props;
         let result;
         try {
             result = await client.mutate({
@@ -230,7 +240,7 @@ export class Models extends Component {
                                 disabled={!this.upload_is_valid()}>Upload</Button>
                             <Link
                                 target='_blank'
-                                href={THELPER_MODEL_UPLOAD_INSTRUCTIONS}>
+                                href={this.props.model_upload_instructions_url}>
                                 Click here for instructions on how to prepare your model for upload.
                             </Link>
                             {loading && (
