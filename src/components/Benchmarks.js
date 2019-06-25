@@ -65,7 +65,23 @@ export class Benchmarks extends Component {
                 query: gql`
                     query fetch_jobs {
                         public_benchmarks {
-                            id
+                            owner
+                            model {
+                                id
+                                created
+                            }
+                            result {
+                                metrics {
+                                    top_1_accuracy
+                                    top_5_accuracy
+                                }
+                            }
+                            dataset {
+                                id
+                            }
+                            job {
+                                finished
+                            }
                         }
                     }
                 `,
@@ -86,8 +102,13 @@ export class Benchmarks extends Component {
                     title='Public Benchmarks'
                     icons={tableIcons}
                     columns={[
-                        {title: 'ID', field: 'id'},
-                        {title: 'Result', field: 'result'},
+                        {title: 'Owner', field: 'owner'},
+                        {title: 'Model', field: 'model.id'},
+                        {title: 'Dataset', field: 'dataset.id'},
+                        {title: 'Model upload', field: 'model.created'},
+                        {title: 'Test completed', field: 'job.finished'},
+                        {title: 'Top 1 accuracy', field: 'result.metrics.top_1_accuracy'},
+                        {title: 'Top 5 accuracy', field: 'result.metrics.top_5_accuracy'},
                     ]}
                     data={this.state.benchmarks_jobs}
                 />
