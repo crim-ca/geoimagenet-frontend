@@ -7,6 +7,7 @@ import {faTimes} from '@fortawesome/free-solid-svg-icons';
 
 import {Logos} from './Logos.js';
 import {Login} from './Login.js';
+import {Benchmarks} from './Benchmarks';
 
 
 const PaddedPaper = withStyles(theme => {
@@ -166,7 +167,7 @@ export const PresentationContainer = withStyles(({values}) => ({
         justifyContent: 'space-around',
         alignItems: 'center',
     },
-}))(({classes, user_interactions}) => {
+}))(({classes, user_interactions, client}) => {
 
     const {t} = useTranslation();
 
@@ -177,7 +178,12 @@ export const PresentationContainer = withStyles(({values}) => ({
                 <PaddedPaper><Login user_interactions={user_interactions}/></PaddedPaper>
             </div>
             <div className={classes.benchmarks}>
-                <LessOpaquePaper title={t('title:benchmarks')} content={t('intro:benchmarks')}/>
+                <LessOpaquePaper title={t('title:benchmarks')} content={
+                    <React.Fragment>
+                        <Typography variant='body1' style={{marginBottom: '12px'}}>{t('intro:benchmarks')}</Typography>
+                        <Benchmarks client={client} />
+                    </React.Fragment>
+                }/>
             </div>
             <div className={classes.mission}>
                 <LessOpaquePaper title={t('title:mission')} content={t('intro:mission')}/>
