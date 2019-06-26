@@ -1,9 +1,14 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {withStyles, Link, Typography, Paper} from '@material-ui/core';
 import {useTranslation} from '../utils';
 
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faTimes} from '@fortawesome/free-solid-svg-icons';
+
 import {Logos} from './Logos.js';
 import {Login} from './Login.js';
+import {Benchmarks} from './Benchmarks';
+
 
 const PaddedPaper = withStyles(theme => {
     const {values} = theme;
@@ -13,6 +18,79 @@ const PaddedPaper = withStyles(theme => {
         }
     };
 })(Paper);
+
+const Panel = withStyles(({values, colors}) => ({
+    opened: {
+        display: 'grid',
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        gridTemplateColumns: '1fr minmax(min-content, 56em) 1fr',
+        gridTemplateRows: '1fr min-content 2fr',
+    },
+    panel: {
+        color: colors.barelyWhite,
+        backgroundColor: 'black',
+        padding: values.gutterMedium,
+        zIndex: '100',
+        opacity: '1',
+        gridColumn: '2/3',
+        gridRow: '2/3',
+        border: `2px solid ${colors.barelyWhite}`,
+    },
+    header: {
+        display: 'flex',
+        flexDirection: 'row',
+        marginBottom: values.gutterSmall,
+        alignItems: 'baseline',
+        justifyContent: 'space-between',
+    }
+}))(({classes, children, callback, title}) => {
+    return (
+        <div className={classes.opened}>
+            <Paper className={classes.panel}>
+                <div className={classes.header}>
+                    <Typography variant='h3'>{title}</Typography>
+                    <FontAwesomeIcon
+                        style={{cursor: 'pointer', marginLeft: '12px'}}
+                        icon={faTimes}
+                        className='fa-2x'
+                        onClick={callback}/>
+                </div>
+                {children}
+            </Paper>
+        </div>
+    );
+});
+
+const LessOpaquePaper = withStyles(({values}) =>({
+    root: {
+        height: '100%',
+    },
+    paper: {
+        padding: values.gutterMedium,
+        height: '100%',
+        opacity: '0.7',
+        '&:hover': {
+            opacity: '1',
+            cursor: 'pointer',
+        },
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+}))(({classes, title, content}) => {
+    const [opened, setOpened] = useState(false);
+    const handler = () => setOpened(!opened);
+    return (
+        <div className={classes.root}>
+            <Paper className={classes.paper} onClick={handler}><Typography variant='h4'>{title}</Typography></Paper>
+            {opened ? <Panel callback={handler} title={title}>{content}</Panel> : null}
+        </div>
+    );
+});
 
 function Presentation() {
     const {t} = useTranslation();
@@ -39,44 +117,93 @@ function Presentation() {
 }
 
 
-export const PresentationContainer = withStyles(theme => {
-    const {values} = theme;
-    return {
-        container: {
-            height: '100%',
-            padding: values.gutterSmall,
-            display: 'grid',
-            gridGap: values.gutterSmall,
-            gridTemplateColumns: `1fr 200px 800px 200px 1fr`,
-            gridTemplateRows: `min-content minmax(min-content, 1fr) min-content 200px`,
-            background: 'url(/img/background.hack.jpg) no-repeat center center fixed',
-            backgroundSize: 'cover',
-        },
-        logos: {
-            gridColumn: '2/5',
-            gridRow: '1/2',
-        },
-        presentation: {
-            gridColumn: '3/4',
-            gridRow: '3/4',
-        },
-        acceder: {
-            gridColumn: '3/4',
-            gridRow: '2/3',
-            display: 'flex',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-        },
-    };
-})(props => {
-    const {classes, user_interactions} = props;
+export const PresentationContainer = withStyles(({values}) => ({
+    container: {
+        height: '100%',
+        padding: values.gutterSmall,
+        display: 'grid',
+        gridGap: values.gutterSmall,
+        gridTemplateColumns: '1fr min-content min-content min-content min-content 1fr',
+        gridTemplateRows: 'min-content min-content 1fr min-content min-content min-content min-content 2fr min-content',
+        background: 'url(/img/background.hack.jpg) no-repeat center center fixed',
+        backgroundSize: 'cover',
+    },
+    mission: {
+        gridColumn: '2/3',
+        gridRow: '4/5',
+    },
+    logos: {
+        gridColumn: '2/6',
+        gridRow: '9/10',
+    },
+    publications: {
+        gridColumn: '3/5',
+        gridRow: '6/7',
+    },
+    benchmarks: {
+        gridColumn: '5/6',
+        gridRow: '6/8',
+    },
+    collaborators: {
+        gridColumn: '2/5',
+        gridRow: '7/8',
+    },
+    team: {
+        gridColumn: '2/3',
+        gridRow: '5/7',
+    },
+    taxonomy: {
+        gridColumn: '4/6',
+        gridRow: '4/6',
+    },
+    platform: {
+        gridColumn: '3/4',
+        gridRow: '4/6',
+    },
+    acceder: {
+        gridColumn: '3/4',
+        gridRow: '2/3',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+    },
+}))(({classes, user_interactions, client}) => {
+
+    const {t} = useTranslation();
+
     return (
         <div className={classes.container}>
             <div className={classes.logos}><Logos/></div>
             <div className={classes.acceder}>
                 <PaddedPaper><Login user_interactions={user_interactions}/></PaddedPaper>
             </div>
-            <div className={classes.presentation}><Presentation/></div>
+            <div className={classes.benchmarks}>
+                <LessOpaquePaper title={t('title:benchmarks')} content={
+                    <React.Fragment>
+                        <Typography variant='body1' style={{marginBottom: '12px'}}>{t('intro:benchmarks')}</Typography>
+                        <Benchmarks client={client} />
+                    </React.Fragment>
+                }/>
+            </div>
+            <div className={classes.mission}>
+                <LessOpaquePaper title={t('title:mission')} content={t('intro:mission')}/>
+            </div>
+            <div className={classes.team}>
+                <LessOpaquePaper title={t('title:team')} content={t('intro:team')}/>
+            </div>
+            <div className={classes.platform}>
+                <LessOpaquePaper title={t('title:platform')} content={t('intro:platform')}/>
+            </div>
+            <div className={classes.publications}>
+                <LessOpaquePaper title={t('title:publications')} content={t('intro:publications')}/>
+            </div>
+            <div className={classes.collaborators}>
+                <LessOpaquePaper title={t('title:collaborators')} content={t('intro:collaborators')}/>
+            </div>
+            <div className={classes.taxonomy}>
+                <LessOpaquePaper title={t('title:taxonomy')} content={t('intro:taxonomy')}/>
+            </div>
         </div>
     );
+
 });

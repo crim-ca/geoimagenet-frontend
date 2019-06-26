@@ -654,7 +654,10 @@ export class MapManager {
                             extent = bbox.extent;
                         }
                     });
-
+                    let attribution = "";
+                    if (layer && layer.Attribution && layer.Attribution.Title) {
+                        attribution = layer.Attribution.Title;
+                    }
                     const lyr = new TileLayer({
                         title: layer.Name,
                         type: CUSTOM_GEOIM_IMAGE_LAYER,
@@ -670,6 +673,7 @@ export class MapManager {
                             }),
                             serverType: 'geoserver',
                             crossOrigin: 'anonymous',
+                            attributions: attribution,
                         }),
                         extent: extent,
                     });
