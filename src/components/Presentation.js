@@ -18,7 +18,7 @@ const PaddedPaper = withStyles(theme => {
     };
 })(Paper);
 
-const Panel = withStyles(({values}) => ({
+const Panel = withStyles(({values, colors}) => ({
     opened: {
         display: 'grid',
         width: '100%',
@@ -30,16 +30,19 @@ const Panel = withStyles(({values}) => ({
         gridTemplateRows: '1fr min-content 2fr',
     },
     panel: {
+        color: colors.barelyWhite,
+        backgroundColor: 'black',
         padding: values.gutterMedium,
         zIndex: '100',
         opacity: '1',
         gridColumn: '2/3',
         gridRow: '2/3',
+        border: `2px solid ${colors.barelyWhite}`,
     },
     header: {
         display: 'flex',
         flexDirection: 'row',
-        margin: '12px 0',
+        marginBottom: values.gutterSmall,
         alignItems: 'baseline',
         justifyContent: 'space-between',
     }
@@ -82,7 +85,7 @@ const LessOpaquePaper = withStyles(({values}) =>({
     const handler = () => setOpened(!opened);
     return (
         <div className={classes.root}>
-            <Paper className={classes.paper} onClick={handler}>{title}</Paper>
+            <Paper className={classes.paper} onClick={handler}><Typography variant='h4'>{title}</Typography></Paper>
             {opened ? <Panel callback={handler} title={title}>{content}</Panel> : null}
         </div>
     );

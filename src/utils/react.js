@@ -64,6 +64,7 @@ export const theme = createMuiTheme({
         over_map: 10,
     },
     colors: {
+        barelyWhite: 'rgba(255, 255, 255, 0.85)',
         lightGray: 'rgba(0, 0, 0, 0.1)',
         new: 'rgba(0, 0, 0, 0.1)',
         pre_released: 'rgba(146, 209, 139, 0.9)',
