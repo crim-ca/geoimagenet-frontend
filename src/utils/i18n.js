@@ -4,6 +4,15 @@ import {initReactI18next} from "react-i18next";
 
 const resources = {
     en: {
+        title: {
+            benchmarks: 'Benchmarks',
+            mission: 'Mission',
+            platform: 'Platform',
+            taxonomy: 'Taxonomy',
+            publications: 'Publications',
+            collaborators: 'Collaborators',
+            team: 'Team',
+        },
         intro: {
             benchmarks: 'Download patches for training, upload PyTorch models, benchmark models.',
             mission: 'GeoImageNet is a unique collaborative initiative involving remote sensing researchers, developers ' +
@@ -23,6 +32,15 @@ const resources = {
         },
     },
     fr: {
+        title: {
+            benchmarks: 'Tests de Modèles',
+            mission: 'Notre Mission',
+            platform: 'La Plateforme',
+            taxonomy: 'La Taxonomie',
+            publications: 'Publications',
+            collaborators: 'Les Collaborateurs',
+            team: "L'Équipe",
+        },
         intro: {
             benchmarks: 'Tests de modèles',
             mission: 'Notre mission',

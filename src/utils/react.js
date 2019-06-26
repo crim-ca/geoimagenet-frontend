@@ -39,6 +39,7 @@ export const tableIcons = {
 };
 
 const GUTTER_SMALL = '12px';
+const GUTTER_MEDIUM = '24px';
 
 /**
  * We want to give a coherent look to all themed components.
@@ -55,6 +56,7 @@ export const theme = createMuiTheme({
         heightAppBar: '64px',
         heightActionsBar: '64px',
         gutterSmall: GUTTER_SMALL,
+        gutterMedium: GUTTER_MEDIUM,
         maxContentWidth: '1200px',
     },
     zIndex: {

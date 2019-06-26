@@ -1,6 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {withStyles, Link, Typography, Paper} from '@material-ui/core';
 import {useTranslation} from '../utils';
+
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faTimes} from '@fortawesome/free-solid-svg-icons';
 
 import {Logos} from './Logos.js';
 import {Login} from './Login.js';
@@ -15,11 +18,76 @@ const PaddedPaper = withStyles(theme => {
     };
 })(Paper);
 
-const LessOpaquePaper = withStyles({
-    root: {
-        opacity: '0.7',
+const Panel = withStyles(({values}) => ({
+    opened: {
+        display: 'grid',
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        gridTemplateColumns: '1fr minmax(min-content, 56em) 1fr',
+        gridTemplateRows: '1fr min-content 2fr',
+    },
+    panel: {
+        padding: values.gutterMedium,
+        zIndex: '100',
+        opacity: '1',
+        gridColumn: '2/3',
+        gridRow: '2/3',
+    },
+    header: {
+        display: 'flex',
+        flexDirection: 'row',
+        margin: '12px 0',
+        alignItems: 'baseline',
+        justifyContent: 'space-between',
     }
-})(Paper);
+}))(({classes, children, callback, title}) => {
+    return (
+        <div className={classes.opened}>
+            <Paper className={classes.panel}>
+                <div className={classes.header}>
+                    <Typography variant='h3'>{title}</Typography>
+                    <FontAwesomeIcon
+                        style={{cursor: 'pointer', marginLeft: '12px'}}
+                        icon={faTimes}
+                        className='fa-2x'
+                        onClick={callback}/>
+                </div>
+                {children}
+            </Paper>
+        </div>
+    );
+});
+
+const LessOpaquePaper = withStyles(({values}) =>({
+    root: {
+        height: '100%',
+    },
+    paper: {
+        padding: values.gutterMedium,
+        height: '100%',
+        opacity: '0.7',
+        '&:hover': {
+            opacity: '1',
+            cursor: 'pointer',
+        },
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+}))(({classes, title, content}) => {
+    const [opened, setOpened] = useState(false);
+    const handler = () => setOpened(!opened);
+    return (
+        <div className={classes.root}>
+            <Paper className={classes.paper} onClick={handler}>{title}</Paper>
+            {opened ? <Panel callback={handler} title={title}>{content}</Panel> : null}
+        </div>
+    );
+});
+
 function Presentation() {
     const {t} = useTranslation();
 
@@ -51,8 +119,8 @@ export const PresentationContainer = withStyles(({values}) => ({
         padding: values.gutterSmall,
         display: 'grid',
         gridGap: values.gutterSmall,
-        gridTemplateColumns: '1fr min-content min-content 200px min-content 1fr',
-        gridTemplateRows: 'min-content min-content 1fr min-content 100px min-content min-content 2fr min-content',
+        gridTemplateColumns: '1fr min-content min-content min-content min-content 1fr',
+        gridTemplateRows: 'min-content min-content 1fr min-content min-content min-content min-content 2fr min-content',
         background: 'url(/img/background.hack.jpg) no-repeat center center fixed',
         backgroundSize: 'cover',
     },
@@ -105,13 +173,27 @@ export const PresentationContainer = withStyles(({values}) => ({
             <div className={classes.acceder}>
                 <PaddedPaper><Login user_interactions={user_interactions}/></PaddedPaper>
             </div>
-            <LessOpaquePaper className={classes.benchmarks}>{t('intro:benchmarks')}</LessOpaquePaper>
-            <LessOpaquePaper className={classes.mission}>{t('intro:mission')}</LessOpaquePaper>
-            <LessOpaquePaper className={classes.team}>{t('intro:team')}</LessOpaquePaper>
-            <LessOpaquePaper className={classes.platform}>{t('intro:platform')}</LessOpaquePaper>
-            <LessOpaquePaper className={classes.publications}>{t('intro:publications')}</LessOpaquePaper>
-            <LessOpaquePaper className={classes.collaborators}>{t('intro:collaborators')}</LessOpaquePaper>
-            <LessOpaquePaper className={classes.taxonomy}>{t('intro:taxonomy')}</LessOpaquePaper>
+            <div className={classes.benchmarks}>
+                <LessOpaquePaper title={t('title:benchmarks')} content={t('intro:benchmarks')}/>
+            </div>
+            <div className={classes.mission}>
+                <LessOpaquePaper title={t('title:mission')} content={t('intro:mission')}/>
+            </div>
+            <div className={classes.team}>
+                <LessOpaquePaper title={t('title:team')} content={t('intro:team')}/>
+            </div>
+            <div className={classes.platform}>
+                <LessOpaquePaper title={t('title:platform')} content={t('intro:platform')}/>
+            </div>
+            <div className={classes.publications}>
+                <LessOpaquePaper title={t('title:publications')} content={t('intro:publications')}/>
+            </div>
+            <div className={classes.collaborators}>
+                <LessOpaquePaper title={t('title:collaborators')} content={t('intro:collaborators')}/>
+            </div>
+            <div className={classes.taxonomy}>
+                <LessOpaquePaper title={t('title:taxonomy')} content={t('intro:taxonomy')}/>
+            </div>
         </div>
     );
 
