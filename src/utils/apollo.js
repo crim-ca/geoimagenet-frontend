@@ -9,51 +9,57 @@ import {features} from '../../features';
 import https from 'https';
 
 /**
- * removing the typename from the responses because it breaks automatic displaying of results, taken from https://github.com/apollographql/apollo-client/issues/1913#issuecomment-374869527
- * Not quite sure what the typename part itself does, comments suggest it affects caching, I deem the risks of not caching responses
- * in the most efficient way to be sufficiently low in this prototype context to not really bother with this.
- * @type {InMemoryCache}
+ * Creates an apollo client with a link supporting websockets for the subscriptions (feature flag based), http queries for normal
+ * queries as well as uploading files.
+ * @param GRAPHQL_ENDPOINT String
+ * @returns ApolloClient
  */
-const cache = new InMemoryCache({
-    addTypename: false
-});
+export function create_client(GRAPHQL_ENDPOINT) {
 
-let link;
+    /**
+     * @TODO at some point move this inside MobX?
+     */
+    const cache = new InMemoryCache();
 
-if (features.subscriptions) {
-    const http_link = createUploadLink({
-        uri: GRAPHQL_ENDPOINT,
-        credentials: 'same-origin',
-        fetchOptions: {
-            agent: new https.Agent({rejectUnauthorized: false}),
-        }
-    });
-    const ws_link = new WebSocketLink({
-        uri: websocketify_uri(GRAPHQL_ENDPOINT),
-    });
+    /**
+     * Until we have time to properly structure subscriptions, only create a queries and uploads link.
+     */
+    let link;
+    if (features.subscriptions) {
+        const http_link = createUploadLink({
+            uri: GRAPHQL_ENDPOINT,
+            credentials: 'same-origin',
+            fetchOptions: {
+                agent: new https.Agent({rejectUnauthorized: false}),
+            }
+        });
+        const ws_link = new WebSocketLink({
+            uri: websocketify_uri(GRAPHQL_ENDPOINT),
+        });
 
-    link = split(
-        ({query}) => {
-            const definition = getMainDefinition(query);
-            return (
-                definition.kind === 'OperationDefinition' &&
-                definition.operation === 'subscription'
-            );
-        },
-        ws_link,
-        http_link,
-    );
-} else {
-    link = createUploadLink({
-        uri: GRAPHQL_ENDPOINT,
-        credentials: 'same-origin',
-        fetchOptions: {
-            agent: new https.Agent({rejectUnauthorized: false}),
-        }
+        link = split(
+            ({query}) => {
+                const definition = getMainDefinition(query);
+                return (
+                    definition.kind === 'OperationDefinition' &&
+                    definition.operation === 'subscription'
+                );
+            },
+            ws_link,
+            http_link,
+        );
+    } else {
+        link = createUploadLink({
+            uri: GRAPHQL_ENDPOINT,
+            credentials: 'same-origin',
+            fetchOptions: {
+                agent: new https.Agent({rejectUnauthorized: false}),
+            }
+        });
+    }
+
+    return new ApolloClient({
+        cache,
+        link
     });
 }
-
-export const client = new ApolloClient({
-    cache,
-    link
-});

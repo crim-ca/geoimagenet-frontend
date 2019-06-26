@@ -2,6 +2,34 @@ Changelog
 =========
 
 
+1.2.0 (2019-06-26)
+------------------
+
+New
+~~~
+- GEOIM-185 benchmarks widget on home screen. [Félix Gagnon-Grenier]
+- Introducing react-notifications for GEOIM-140. [Félix Gagnon-Grenier]
+
+Changes
+~~~~~~~
+- Add wms layers attributions. [David Caron]
+- GEOIM-179 deactivate expertise button until it's implemented. [Félix
+  Gagnon-Grenier]
+- Better benchmarks data. [Félix Gagnon-Grenier]
+- More elegant public extension checking. [Félix Gagnon-Grenier]
+- Refactoring apollo client creation to accept endpoint as param:
+  testing benchmark component. [Félix Gagnon-Grenier]
+
+Other
+~~~~~
+- Styling according to moqup. [Félix Gagnon-Grenier]
+- Opening panels with specific sections on clicks. [Félix Gagnon-
+  Grenier]
+- Basic grid layout of new site. [Félix Gagnon-Grenier]
+- Build and deploy all release branches. [Félix Gagnon-Grenier]
+- Test: models page. [Félix Gagnon-Grenier]
+
+
 1.1.0 (2019-06-17)
 ------------------
 

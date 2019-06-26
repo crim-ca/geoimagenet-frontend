@@ -29,6 +29,7 @@ import {
 } from './domain/constants.js';
 import {notifier} from './utils/notifications.js';
 import {debounced} from './utils/event_handling.js';
+import {NotificationManager} from 'react-notifications';
 
 /**
  * The MapManager is responsible for handling map behaviour at the boundary between the platform and OpenLayers.
@@ -366,10 +367,10 @@ export class MapManager {
 
         if (!layers.some(at_least_one_layer_is_an_image)) {
             if (this.state_proxy.current_annotation.initialized) {
-                notifier.warning('All corners of an annotation polygon must be on an image.');
+                NotificationManager.warning('All corners of an annotation polygon must be on an image.');
                 return false;
             }
-            notifier.warning('You must select an image to begin creating annotations.');
+            NotificationManager.warning('You must select an image to begin creating annotations.');
             return false;
         }
 
@@ -379,7 +380,7 @@ export class MapManager {
             if (first_layer.get('title') === this.state_proxy.current_annotation.image_title) {
                 return true;
             }
-            notifier.warning('Annotations must be made on a single image, make sure that all polygon points are on the same image.');
+            NotificationManager.warning('Annotations must be made on a single image, make sure that all polygon points are on the same image.');
             return false;
         }
 
@@ -561,7 +562,7 @@ export class MapManager {
 
             case MODE.CREATION:
                 if (this.state_proxy.selected_taxonomy_class_id === -1) {
-                    notifier.warning('You must select a taxonomy class to begin annotating content.');
+                    NotificationManager.warning('You must select a taxonomy class to begin annotating content.');
                 }
                 break;
         }
@@ -653,7 +654,10 @@ export class MapManager {
                             extent = bbox.extent;
                         }
                     });
-
+                    let attribution = "";
+                    if (layer && layer.Attribution && layer.Attribution.Title) {
+                        attribution = layer.Attribution.Title;
+                    }
                     const lyr = new TileLayer({
                         title: layer.Name,
                         type: CUSTOM_GEOIM_IMAGE_LAYER,
@@ -669,6 +673,7 @@ export class MapManager {
                             }),
                             serverType: 'geoserver',
                             crossOrigin: 'anonymous',
+                            attributions: attribution,
                         }),
                         extent: extent,
                     });
@@ -690,7 +695,7 @@ export class MapManager {
                 }
             });
         } catch (e) {
-            notifier.error('We could not interrogate Geoserver capabilities. No images will be available.');
+            NotificationManager.error('We could not interrogate Geoserver capabilities. No images will be available.');
         }
 
 
@@ -816,7 +821,7 @@ export class MapManager {
      */
     static async geojsonLogError(error) {
         const text = await error.text();
-        notifier.error(text);
+        NotificationManager.error(text);
     }
 
 

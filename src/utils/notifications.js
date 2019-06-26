@@ -1,5 +1,6 @@
 const {element, text_node, button} = require('./dom');
 import {NOTIFICATION_LIFE_SPAN_MS} from '../domain/constants.js';
+import 'react-notifications/lib/notifications.css';
 
 const root = document.body;
 const remove_notif = notif => { notif.parentNode.removeChild(notif); };
@@ -13,7 +14,7 @@ const make_notif = (text_content, close_on_click = false) => {
         notif.addEventListener('click', () => {
             remove_notif(notif);
         });
-        setTimeout(() => { remove_notif(notif); }, NOTIFICATION_LIFE_SPAN_MS)
+        setTimeout(() => { remove_notif(notif); }, NOTIFICATION_LIFE_SPAN_MS);
     }
     return notif;
 };
@@ -24,12 +25,12 @@ const create_keyup_listener = (notif, resolve, reject) => {
         switch (key) {
             case 'Escape':
                 remove_notif(notif);
-                removeEventListener('keyup', event_listener);
+                window.removeEventListener('keyup', event_listener);
                 reject();
                 break;
             case 'Enter':
                 remove_notif(notif);
-                removeEventListener('keyup', event_listener);
+                window.removeEventListener('keyup', event_listener);
                 resolve();
                 break;
         }
@@ -37,25 +38,24 @@ const create_keyup_listener = (notif, resolve, reject) => {
     return event_listener;
 };
 
+/**
+ * The notifier should be a "global" handler with which various parts or the application interact to notify the user about events.
+ * We currently hook directly to document.body to create the confirm dialog since it's not supported in react-notifications.
+ */
 export const notifier = {
-    error: text => {
-        const notif = make_notif(text, true);
-        notif.classList.add('error');
-        root.appendChild(notif);
-    },
     confirm: text => {
         return new Promise((resolve, reject) => {
             const notif = make_notif(text);
             const listener = create_keyup_listener(notif, resolve, reject);
-            addEventListener('keyup', listener);
+            window.addEventListener('keyup', listener);
             notif.classList.add('confirm');
             const yes = button(text_node('Confirm'), () => {
-                removeEventListener('keyup', listener);
+                window.removeEventListener('keyup', listener);
                 remove_notif(notif);
                 resolve();
             });
             const no = button(text_node('Cancel'), () => {
-                removeEventListener('keyup', listener);
+                window.removeEventListener('keyup', listener);
                 remove_notif(notif);
                 reject();
             });
@@ -66,15 +66,5 @@ export const notifier = {
             notif.appendChild(div);
             root.appendChild(notif);
         });
-    },
-    warning: text => {
-        const notif = make_notif(text, true);
-        notif.classList.add('warning');
-        root.appendChild(notif);
-    },
-    ok: text => {
-        const notif = make_notif(text, true);
-        notif.classList.add('ok');
-        root.appendChild(notif);
     },
 };

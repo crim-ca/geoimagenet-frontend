@@ -3,13 +3,14 @@ import {withStyles, Divider, TextField, Button, Typography, CircularProgress, Li
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Publish from '@material-ui/icons/Publish';
 import Lock from '@material-ui/icons/Lock';
-import {Mutation, Query} from "react-apollo";
+import {Mutation, Query} from 'react-apollo';
+import ApolloClient from 'apollo-client';
 import MaterialTable from 'material-table';
+import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import {tableIcons} from '../utils/react';
-import {notifier} from '../utils';
-import {client} from '../utils/apollo';
 import {features} from '../../features';
+import {NotificationManager} from 'react-notifications';
 
 const MODELS = gql`
     query models {
@@ -70,6 +71,11 @@ const UploadForm = withStyles(theme => ({
 
 export class Models extends Component {
 
+    static propTypes = {
+        client: PropTypes.instanceOf(ApolloClient).isRequired,
+        model_upload_instructions_url: PropTypes.string.isRequired,
+    };
+
     state = {
         model_name: new Date().toISOString(),
         file: null,
@@ -111,11 +117,12 @@ export class Models extends Component {
         if (data.upload_model.success) {
             await this.refetch();
         } else {
-            notifier.error(`There was a problem during upload: ${data.upload_model.message}.`);
+            NotificationManager.error(`There was a problem during upload: ${data.upload_model.message}.`);
         }
     };
 
     subscribe_jobs = async () => {
+        const {client} = this.props;
         const observable = client.subscribe({
             query: MODEL_TESTER_JOBS,
         });
@@ -123,6 +130,7 @@ export class Models extends Component {
     };
 
     query_jobs = async () => {
+        const {client} = this.props;
         let result;
         try {
             result = await client.query({
@@ -140,7 +148,7 @@ export class Models extends Component {
                 fetchPolicy: 'no-cache'
             });
         } catch (e) {
-            notifier.error('We were unable to fetch the model testing jobs.');
+            NotificationManager.error('We were unable to fetch the model testing jobs.');
             throw e;
         }
         const {data} = result;
@@ -149,6 +157,7 @@ export class Models extends Component {
 
 
     launch_job_handler = async (event, rowData) => {
+        const {client} = this.props;
         let result;
         try {
             result = await client.mutate({
@@ -168,20 +177,21 @@ export class Models extends Component {
                 }
             });
         } catch (e) {
-            notifier.error('We were unable to launch the model testing job.');
+            NotificationManager.error('We were unable to launch the model testing job.');
             throw e;
         }
         const {data: {launch_test: {message, success}}} = result;
         if (success) {
-            notifier.ok('Model testing was launched.');
+            NotificationManager.success('Model testing was launched.');
             await this.query_jobs();
         } else {
-            notifier.error(message);
+            NotificationManager.error(message);
         }
         await this.query_jobs();
     };
 
     benchmark_visibility_handler = (job_id, visibility) => async () => {
+        const {client} = this.props;
         let result;
         try {
             result = await client.mutate({
@@ -199,15 +209,15 @@ export class Models extends Component {
                 }
             });
         } catch (e) {
-            notifier.error('There was a problem with the visibility change request.');
+            NotificationManager.error('There was a problem with the visibility change request.');
             throw e;
         }
         const {data: {benchmark_visibility: {success, message}}} = result;
         if (success) {
-            notifier.ok('Benchmark visibility updated.');
+            NotificationManager.success('Benchmark visibility updated.');
             await this.query_jobs();
         } else {
-            notifier.error(message);
+            NotificationManager.error(message);
         }
     };
 
@@ -230,7 +240,7 @@ export class Models extends Component {
                                 disabled={!this.upload_is_valid()}>Upload</Button>
                             <Link
                                 target='_blank'
-                                href={THELPER_MODEL_UPLOAD_INSTRUCTIONS}>
+                                href={this.props.model_upload_instructions_url}>
                                 Click here for instructions on how to prepare your model for upload.
                             </Link>
                             {loading && (
@@ -239,7 +249,7 @@ export class Models extends Component {
                                     <CircularProgress/>
                                 </React.Fragment>
                             )}
-                            {error && notifier.error(`there was an error: ${error.message}. please try again later.`)}
+                            {error && NotificationManager.error(`there was an error: ${error.message}. please try again later.`)}
                         </UploadForm>
                     )}
                 </Mutation>

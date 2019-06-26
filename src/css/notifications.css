@@ -1,33 +1,22 @@
-div.notification {
+div.notification.confirm {
+    top: calc((100% - var(--width-sidebar)) / 2);
+    left: calc((100% - var(--width-sidebar)) / 2);
+    transform: translateX(-50%) translateY(-50%);
     border-radius: 5px;
     color: white;
     padding: 24px;
     margin: 24px;
     position: absolute;
-    top: 0;
-    left: 0;
     z-index: 1000;
     background-color: white;
     cursor: pointer;
     max-width: calc(100% / 2);
 }
-div.notification.confirm {
-    top: calc((100% - var(--width-sidebar)) / 2);
-    left: calc((100% - var(--width-sidebar)) / 2);
-    transform: translateX(-50%) translateY(-50%);
-}
-div.notification.error {
-    background-color: var(--color-red);
-}
+
 div.notification.confirm {
     background-color: var(--color-light-red);
 }
-div.notification.warning {
-    background-color: var(--color-released);
-}
-div.notification.ok {
-    background-color: var(--color-green);
-}
+
 div.notification div.actions {
     display: flex;
     align-items: baseline;

@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import {NotificationContainer} from 'react-notifications';
+
 import './css/base.css';
 import './css/notifications.css';
 import './img/icons/favicon.ico';
@@ -12,6 +14,7 @@ import {PresentationContainer} from './components/Presentation.js';
 import {UserInteractions} from './domain/user-interactions.js';
 import {create_state_proxy, StoreActions} from './store';
 import {DataQueries} from './domain/data-queries.js';
+import {create_client} from './utils/apollo';
 
 Sentry.init({
     dsn: 'https://e7309c463efe4d85abc7693a6334e8df@sentry.crim.ca/21',
@@ -23,6 +26,8 @@ addEventListener('DOMContentLoaded', () => {
     div.classList.add('root');
     document.body.appendChild(div);
 
+    const client = create_client(GRAPHQL_ENDPOINT);
+
     const state_proxy = create_state_proxy();
     const store_actions = new StoreActions(state_proxy);
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
@@ -30,7 +35,8 @@ addEventListener('DOMContentLoaded', () => {
 
     ReactDOM.render(
         <ThemedComponent>
-            <PresentationContainer user_interactions={user_interactions} />
+            <PresentationContainer user_interactions={user_interactions} client={client} />
+            <NotificationContainer/>
         </ThemedComponent>,
         div
     );

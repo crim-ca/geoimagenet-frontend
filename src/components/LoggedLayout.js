@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/core';
 
+import {NotificationContainer} from 'react-notifications';
+
 import {Menu} from './Menu.js';
 import {UserInteractions} from '../domain';
 
@@ -66,7 +68,10 @@ class LoggedLayout extends Component {
         return (
             <LayoutGrid>
                 <Top><Menu state_proxy={state_proxy} user_interactions={user_interactions} /></Top>
-                <Bottom>{children}</Bottom>
+                <Bottom>
+                    {children}
+                    <NotificationContainer/>
+                </Bottom>
             </LayoutGrid>
         );
     }

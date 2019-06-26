@@ -4,6 +4,28 @@ import {initReactI18next} from "react-i18next";
 
 const resources = {
     en: {
+        title: {
+            benchmarks: 'Benchmarks',
+            mission: 'Mission',
+            platform: 'Platform',
+            taxonomy: 'Taxonomy',
+            publications: 'Publications',
+            collaborators: 'Collaborators',
+            team: 'Team',
+        },
+        intro: {
+            benchmarks: 'Researchers download 90% of all patches to train a PyTorch model in their environment. ' +
+                'Upload and evaluate the model on the remaining 10% of patches. We offer a benchmarking service to obtain ' +
+                'performance metrics.',
+            mission: 'GeoImageNet is a unique collaborative initiative involving remote sensing researchers, developers ' +
+                'of digital research platforms, artificial intelligence experts and professionals dedicated to adding value to satellite imagery.',
+            platform: 'GeoImageNet is a collaborative research platform for researchers from different backgrounds who ' +
+                'wish to develop innovative algorithms for the exploitation of very high resolution (VHR) satellite images for various applications.',
+            taxonomy: 'Download our taxonomy',
+            publications: 'From media',
+            collaborators: 'Our collaborators',
+            team: 'The team',
+        },
         util: {
             'french': 'French',
             'english': 'English',
@@ -12,6 +34,24 @@ const resources = {
         },
     },
     fr: {
+        title: {
+            benchmarks: 'Tests de Modèles',
+            mission: 'Notre Mission',
+            platform: 'La Plateforme',
+            taxonomy: 'La Taxonomie',
+            publications: 'Publications',
+            collaborators: 'Les Collaborateurs',
+            team: "L'Équipe",
+        },
+        intro: {
+            benchmarks: 'Tests de modèles',
+            mission: 'Notre mission',
+            platform: 'La plateforme',
+            taxonomy: 'Télécharger notre taxonomie',
+            publications: 'Publications concernant GeoImageNet',
+            collaborators: 'Les collaborateurs',
+            team: "L'équipe",
+        },
         presentation: {
             'par-1': 'GeoImageNet sera élaborée par les équipes des professeurs Yacine Bouroubi et ' +
                 'Samuel Foucher et constituera une évolution de la plateforme Analyse de puissance pour la ' +
