@@ -19,8 +19,26 @@ const resources = {
                 'performance metrics.',
             mission: 'GeoImageNet is a unique collaborative initiative involving remote sensing researchers, developers ' +
                 'of digital research platforms, artificial intelligence experts and professionals dedicated to adding value to satellite imagery.',
-            platform: 'GeoImageNet is a collaborative research platform for researchers from different backgrounds who ' +
-                'wish to develop innovative algorithms for the exploitation of very high resolution (VHR) satellite images for various applications.',
+            platform: {
+                par_1: 'GeoImageNet is a collaborative research platform for researchers from different backgrounds who ' +
+                    'wish to develop innovative algorithms for the exploitation of very high resolution (VHR) satellite images for various applications.',
+                list_1: {
+                    header: 'Facts',
+                    item_1: 'OpenSource Platform in Python/JavaScript.',
+                    item_2: 'Support OGC standards (WMS, WFS, WPS)',
+                    item_3: 'GeoServer to share, process and edit geospatial data',
+                    item_4: 'Birdhouse: Web Processing Services',
+                },
+                list_2: {
+                    header: 'Connect to the platform',
+                    demo_link_text: 'see the annotations',
+                    item_1: 'If you want to take a look and do not have a login, <a href="/demo">see the annotations</a> on a base map of ' +
+                        'Canada (no Pleiade images available without a login)',
+                    item_2: `You can request a login at ${CONTACT_EMAIL} or just log in`,
+                    item_3: 'Please note that the login will give you access to the demo version and that no annotation ' +
+                        'will be use in dataset, the production platform will be available soon.\n',
+                },
+            },
             taxonomy: 'Download our taxonomy',
             publications: 'From media',
             collaborators: 'Our collaborators',
