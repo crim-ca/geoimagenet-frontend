@@ -9,6 +9,8 @@ import {Logos} from './Logos.js';
 import {Login} from './Login.js';
 import {Benchmarks} from './Benchmarks';
 
+import logo_gin from '../img/logos/logo_trans_GIN.png';
+
 const Panel = withStyles(({values, colors}) => ({
     opened: {
         display: 'grid',
@@ -216,7 +218,7 @@ export const PresentationContainer = withStyles(({values}) => ({
                 </Typography>
                 <ChangeLanguage/>
             </div>
-            <div className={classes.logoLeft}><Typography variant='h3'>GeoImageNet</Typography></div>
+            <div className={classes.logoLeft}><img alt='Logo GeoImageNet' src={logo_gin} /></div>
             <div className={classes.logos}><Logos/></div>
             <div className={classes.benchmarks}>
                 <LessOpaquePaper title={t('title:benchmarks')} content={
