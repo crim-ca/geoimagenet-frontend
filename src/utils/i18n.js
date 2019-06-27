@@ -29,10 +29,14 @@ const resources = {
         util: {
             'french': 'French',
             'english': 'English',
+            'contact': 'Contact',
+        },
+        login: {
+            'login': 'Login',
+            'forbidden': 'Login forbidden.',
+            'access_platform': 'Access platform',
             'username': "Username",
             'password': 'Password',
-            'login': 'Login',
-            'contact': 'Contact',
         },
     },
     fr: {
@@ -85,10 +89,14 @@ const resources = {
         util: {
             'french': 'Français',
             'english': 'Anglais',
+            'contact': 'Contact',
+        },
+        login: {
+            'login': 'Se Connecter',
+            'forbidden': 'Accès interdit.',
+            'access_platform': 'Accéder à la plateforme',
             'username': "Nom d'usager",
             'password': 'Mot de passe',
-            'login': 'Se Connecter',
-            'contact': 'Contact',
         },
     }
 };

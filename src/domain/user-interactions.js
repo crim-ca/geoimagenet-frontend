@@ -4,6 +4,8 @@ import {InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionReposi
 import {AccessControlList} from './access-control-list.js';
 import {NotificationManager} from 'react-notifications';
 
+import {i18n} from '../utils/i18n';
+
 /**
  * In a web app, we need top level handlers that react to specific user intentions, and interactions.
  * These are not event handlers per se, they should receive everything needed to execute everything intended by the user,
@@ -188,7 +190,7 @@ export class UserInteractions {
             await this.data_queries.login_request(form_data);
             window.location.href = '/platform';
         } catch (error) {
-            NotificationManager.error('Login forbidden.');
+            NotificationManager.error(i18n.t('login:forbidden'));
         }
     }
 
