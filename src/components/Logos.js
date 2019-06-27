@@ -1,6 +1,5 @@
 import React from 'react';
-import {withStyles, Paper, Typography, Select, MenuItem} from '@material-ui/core';
-import {useTranslation} from '../utils';
+import {withStyles, Paper, Typography} from '@material-ui/core';
 
 import crim from '../img/logos/crim.png';
 import canarie from '../img/logos/canarie.gif';
@@ -29,20 +28,6 @@ const GeoImageNetHeader = withStyles({
     }
 })(Typography);
 
-function ChangeLanguage() {
-    const {t, i18n} = useTranslation();
-    const change_language = event => {
-        const language = event.target.value;
-        i18n.changeLanguage(language);
-    };
-    return(
-        <Select value={i18n.language} onChange={change_language}>
-            <MenuItem value='fr'>{t('util:french')}</MenuItem>
-            <MenuItem value='en'>{t('util:english')}</MenuItem>
-        </Select>
-    );
-}
-
 export function Logos() {
     return (
         <LogosContainer>
@@ -52,7 +37,6 @@ export function Logos() {
             <img alt='Logo UdeS' src={UdeS}/>
             <img alt='Logo Effigis' src={effigis}/>
             <img alt='Logo NRCAN' src={nrcan}/>
-            <ChangeLanguage/>
         </LogosContainer>
     );
 }

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {withStyles, Link, Typography, Paper} from '@material-ui/core';
+import {withStyles, Link, Typography, Paper, Select, MenuItem} from '@material-ui/core';
 import {useTranslation} from '../utils';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -116,6 +116,29 @@ function Presentation() {
     );
 }
 
+const WhiteSelect = withStyles({
+    root: {
+        color: 'white',
+    },
+    icon: {
+        color: 'white',
+    },
+})(Select);
+
+function ChangeLanguage() {
+    const {t, i18n} = useTranslation();
+    const change_language = event => {
+        const language = event.target.value;
+        i18n.changeLanguage(language);
+    };
+    return(
+        <WhiteSelect value={i18n.language} onChange={change_language}>
+            <MenuItem value='fr'>{t('util:french')}</MenuItem>
+            <MenuItem value='en'>{t('util:english')}</MenuItem>
+        </WhiteSelect>
+    );
+}
+
 
 export const PresentationContainer = withStyles(({values}) => ({
     container: {
@@ -167,12 +190,25 @@ export const PresentationContainer = withStyles(({values}) => ({
         justifyContent: 'space-around',
         alignItems: 'center',
     },
+    menuRight: {
+        color: 'white',
+        gridColumn: '1/-1',
+        gridRow: '1/2',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        flexDirection: 'row',
+    },
+    input: {
+        color: 'white',
+    }
 }))(({classes, user_interactions, client}) => {
 
     const {t} = useTranslation();
 
     return (
         <div className={classes.container}>
+            <div className={classes.menuRight}><ChangeLanguage/></div>
             <div className={classes.logos}><Logos/></div>
             <div className={classes.acceder}>
                 <PaddedPaper><Login user_interactions={user_interactions}/></PaddedPaper>
