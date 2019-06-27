@@ -22,30 +22,19 @@ const LayoutGrid = withStyles(theme => {
     return <div className={classes.grid}>{children}</div>;
 });
 
-const Bottom = withStyles(theme => {
-    const {values} = theme;
-    return {
-        root: {
-            gridRow: '2/3',
-            gridColumn: '1/2',
-        }
-    };
-})(props => {
-    const {classes, children} = props;
-    return <div className={classes.root}>{children}</div>;
-});
-const Top = withStyles(theme => {
-    const {values} = theme;
-    return {
-        root: {
-            gridRow: '1/2',
-            gridColumn: '1/2',
-        }
-    };
-})(props => {
-    const {classes, children} = props;
-    return <div className={classes.root}>{children}</div>;
-});
+const Bottom = withStyles({
+    root: {
+        gridRow: '2/3',
+        gridColumn: '1/2',
+    }
+})(({classes, children}) => (<div className={classes.root}>{children}</div>));
+
+const Top = withStyles({
+    root: {
+        gridRow: '1/2',
+        gridColumn: '1/2',
+    }
+})(({classes, children}) => (<div className={classes.root}>{children}</div>));
 
 /**
  * The LoggedLayout should be used for every top level page that is behind the login.
@@ -67,7 +56,12 @@ class LoggedLayout extends Component {
          */
         return (
             <LayoutGrid>
-                <Top><Menu state_proxy={state_proxy} user_interactions={user_interactions} /></Top>
+                <Top>
+                    <Menu
+                        state_proxy={state_proxy}
+                        user_interactions={user_interactions}
+                        contact_email={CONTACT_EMAIL}/>
+                </Top>
                 <Bottom>
                     {children}
                     <NotificationContainer/>
