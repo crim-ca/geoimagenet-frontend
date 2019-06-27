@@ -14,9 +14,12 @@ const resources = {
             team: 'Team',
         },
         intro: {
-            benchmarks: 'Researchers download 90% of all patches to train a PyTorch model in their environment. ' +
-                'Upload and evaluate the model on the remaining 10% of patches. We offer a benchmarking service to obtain ' +
-                'performance metrics.',
+            benchmarks: {
+                item_1: 'The download gives you access to 90% of patches for training.',
+                item_2: 'In researchers’ environment, the dataset can be used to create a PyTorch Model.',
+                item_3: 'The trained model can be uploaded and evaluated on 10% of patches to obtain performance metrics.',
+                item_4: 'The resulting performance can be published on a benchmark service.',
+            },
             mission: 'GeoImageNet is a unique collaborative initiative involving remote sensing researchers, developers ' +
                 'of digital research platforms, artificial intelligence experts and professionals dedicated to adding value to satellite imagery.',
             platform: {

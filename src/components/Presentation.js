@@ -116,6 +116,20 @@ const WhiteSelect = withStyles({
     },
 })(Select);
 
+function BenchmarksPanel() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <ul>
+                <li>{t('intro:benchmarks.item_1')}</li>
+                <li>{t('intro:benchmarks.item_2')}</li>
+                <li>{t('intro:benchmarks.item_3')}</li>
+                <li>{t('intro:benchmarks.item_4')}</li>
+            </ul>
+        </React.Fragment>
+    );
+}
+
 function PlatformPanel() {
     const {t} = useTranslation();
     return (
@@ -246,7 +260,7 @@ export const PresentationContainer = withStyles(({values}) => ({
             <div className={classes.benchmarks}>
                 <LessOpaquePaper title={t('title:benchmarks')} content={
                     <React.Fragment>
-                        <Typography variant='body1' style={{marginBottom: '12px'}}>{t('intro:benchmarks')}</Typography>
+                        <BenchmarksPanel/>
                         <Benchmarks client={client}/>
                     </React.Fragment>
                 }/>
