@@ -22,6 +22,7 @@
     "GRAPHQL_ENDPOINT": false,
     "MAGPIE_ENDPOINT": false,
     "ML_ENDPOINT": false,
+    "CONTACT_EMAIL": false,
     "THELPER_MODEL_UPLOAD_INSTRUCTIONS": false
   }
 }

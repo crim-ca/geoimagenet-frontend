@@ -35,7 +35,10 @@ addEventListener('DOMContentLoaded', () => {
 
     ReactDOM.render(
         <ThemedComponent>
-            <PresentationContainer user_interactions={user_interactions} client={client} />
+            <PresentationContainer
+                contact_email={CONTACT_EMAIL}
+                user_interactions={user_interactions}
+                client={client} />
             <NotificationContainer/>
         </ThemedComponent>,
         div

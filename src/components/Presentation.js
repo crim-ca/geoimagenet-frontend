@@ -182,6 +182,10 @@ export const PresentationContainer = withStyles(({values}) => ({
         flexDirection: 'row',
         fontSize: '1.5em',
         lineHeight: '24px',
+        '& a': {
+            color: 'white',
+            textDecoration: 'none',
+        },
     },
     logoLeft: {
         padding: values.gutterMedium,
@@ -192,7 +196,7 @@ export const PresentationContainer = withStyles(({values}) => ({
     input: {
         color: 'white',
     }
-}))(({classes, user_interactions, client}) => {
+}))(({classes, user_interactions, client, contact_email}) => {
 
     const {t} = useTranslation();
     const [dialog_open, change_dialog_openness] = useState(false);
@@ -207,6 +211,9 @@ export const PresentationContainer = withStyles(({values}) => ({
                 <Dialog open={dialog_open} onClose={toggle_dialog}>
                     <Login user_interactions={user_interactions}/>
                 </Dialog>
+                <Typography style={{cursor: 'pointer', marginRight: '24px'}} variant='body1'>
+                    <a href={`mailto:${contact_email}`}>{t('util:contact')}</a>
+                </Typography>
                 <ChangeLanguage/>
             </div>
             <div className={classes.logoLeft}><Typography variant='h3'>GeoImageNet</Typography></div>

@@ -22,6 +22,7 @@ module.exports = {
             GRAPHQL_ENDPOINT: JSON.stringify(process.env.GRAPHQL_ENDPOINT || 'https://geoimagenetdev.crim.ca/graphql'),
             MAGPIE_ENDPOINT: JSON.stringify(process.env.MAGPIE_ENDPOINT || 'https://geoimagenetdev.crim.ca/magpie'),
             ML_ENDPOINT: JSON.stringify(process.env.ML_ENDPOINT || 'https://geoimagenetdev.crim.ca/ml'),
+            CONTACT_EMAIL: JSON.stringify(process.env.CONTACT_EMAIL || 'geoimagenet-info@crim.ca'),
             ANNOTATION_NAMESPACE_URI: JSON.stringify(process.env.ANNOTATION_NAMESPACE_URI || 'geoimagenet.public.crim.ca'),
             ANNOTATION_NAMESPACE: JSON.stringify(process.env.ANNOTATION_NAMESPACE || 'GeoImageNet'),
             ANNOTATION_LAYER: JSON.stringify(process.env.ANNOTATION_LAYER || 'annotation'),
