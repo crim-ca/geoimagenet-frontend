@@ -1,5 +1,5 @@
 import React from 'react';
-import {withStyles, Paper, Typography} from '@material-ui/core';
+import {withStyles, Paper} from '@material-ui/core';
 
 import crim from '../img/logos/crim.png';
 import canarie from '../img/logos/canarie.gif';
@@ -22,21 +22,15 @@ const LogosContainer = withStyles(theme => {
         },
     };
 })(Paper);
-const GeoImageNetHeader = withStyles({
-    root: {
-        paddingRight: '24px',
-    }
-})(Typography);
 
 export function Logos() {
     return (
         <LogosContainer>
-            <GeoImageNetHeader variant='h3'>GeoImageNet</GeoImageNetHeader>
             <img alt='Logo CRIM' src={crim}/>
-            <img alt='Logo Canarie' src={canarie}/>
             <img alt='Logo UdeS' src={UdeS}/>
             <img alt='Logo Effigis' src={effigis}/>
             <img alt='Logo NRCAN' src={nrcan}/>
+            <img alt='Logo Canarie' src={canarie}/>
         </LogosContainer>
     );
 }

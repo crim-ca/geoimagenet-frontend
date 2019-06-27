@@ -146,45 +146,45 @@ export const PresentationContainer = withStyles(({values}) => ({
         padding: values.gutterSmall,
         display: 'grid',
         gridGap: values.gutterSmall,
-        gridTemplateColumns: '1fr min-content min-content min-content min-content 1fr',
+        gridTemplateColumns: '1fr 150px min-content min-content min-content min-content 150px 1fr',
         gridTemplateRows: 'min-content min-content 1fr min-content min-content min-content min-content 2fr min-content',
         background: 'url(/img/background.hack.jpg) no-repeat center center fixed',
         backgroundSize: 'cover',
     },
     mission: {
-        gridColumn: '2/3',
+        gridColumn: '3/4',
         gridRow: '4/5',
     },
     logos: {
-        gridColumn: '2/6',
+        gridColumn: '2/8',
         gridRow: '9/10',
     },
     publications: {
-        gridColumn: '3/5',
+        gridColumn: '4/6',
         gridRow: '6/7',
     },
     benchmarks: {
-        gridColumn: '5/6',
+        gridColumn: '6/7',
         gridRow: '6/8',
     },
     collaborators: {
-        gridColumn: '2/5',
+        gridColumn: '3/6',
         gridRow: '7/8',
     },
     team: {
-        gridColumn: '2/3',
+        gridColumn: '3/4',
         gridRow: '5/7',
     },
     taxonomy: {
-        gridColumn: '4/6',
+        gridColumn: '5/7',
         gridRow: '4/6',
     },
     platform: {
-        gridColumn: '3/4',
+        gridColumn: '4/5',
         gridRow: '4/6',
     },
     acceder: {
-        gridColumn: '3/4',
+        gridColumn: '4/5',
         gridRow: '2/3',
         display: 'flex',
         justifyContent: 'space-around',
@@ -199,6 +199,12 @@ export const PresentationContainer = withStyles(({values}) => ({
         justifyContent: 'flex-end',
         flexDirection: 'row',
     },
+    logoLeft: {
+        padding: values.gutterMedium,
+        gridRow: '1/3',
+        gridColumn: '1/4',
+        color: 'white',
+    },
     input: {
         color: 'white',
     }
@@ -209,6 +215,7 @@ export const PresentationContainer = withStyles(({values}) => ({
     return (
         <div className={classes.container}>
             <div className={classes.menuRight}><ChangeLanguage/></div>
+            <div className={classes.logoLeft}><Typography variant='h3'>GeoImageNet</Typography></div>
             <div className={classes.logos}><Logos/></div>
             <div className={classes.acceder}>
                 <PaddedPaper><Login user_interactions={user_interactions}/></PaddedPaper>
