@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {withStyles, Link, Typography, Paper, Select, MenuItem} from '@material-ui/core';
+import {withStyles, Link, Typography, Paper, Select, MenuItem, Dialog} from '@material-ui/core';
 import {useTranslation} from '../utils';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -8,16 +8,6 @@ import {faTimes} from '@fortawesome/free-solid-svg-icons';
 import {Logos} from './Logos.js';
 import {Login} from './Login.js';
 import {Benchmarks} from './Benchmarks';
-
-
-const PaddedPaper = withStyles(theme => {
-    const {values} = theme;
-    return {
-        root: {
-            padding: values.gutterSmall,
-        }
-    };
-})(Paper);
 
 const Panel = withStyles(({values, colors}) => ({
     opened: {
@@ -94,9 +84,8 @@ const LessOpaquePaper = withStyles(({values}) =>({
 
 function Presentation() {
     const {t} = useTranslation();
-
     return (
-        <PaddedPaper>
+        <Paper>
             <Typography paragraph>{t('par-1')}</Typography>
             <Typography paragraph>{t('par-2')}</Typography>
             <Typography paragraph>{t('par-3')}</Typography>
@@ -112,7 +101,7 @@ function Presentation() {
                     {t("Tiré d'un article de La Tribune")}
                 </Link>
             </Typography>
-        </PaddedPaper>
+        </Paper>
     );
 }
 
@@ -183,21 +172,16 @@ export const PresentationContainer = withStyles(({values}) => ({
         gridColumn: '4/5',
         gridRow: '4/6',
     },
-    acceder: {
-        gridColumn: '4/5',
-        gridRow: '2/3',
-        display: 'flex',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-    },
     menuRight: {
         color: 'white',
         gridColumn: '1/-1',
         gridRow: '1/2',
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'baseline',
         justifyContent: 'flex-end',
         flexDirection: 'row',
+        fontSize: '1.5em',
+        lineHeight: '24px',
     },
     logoLeft: {
         padding: values.gutterMedium,
@@ -211,15 +195,22 @@ export const PresentationContainer = withStyles(({values}) => ({
 }))(({classes, user_interactions, client}) => {
 
     const {t} = useTranslation();
+    const [dialog_open, change_dialog_openness] = useState(false);
+    const toggle_dialog = () => {
+        change_dialog_openness(!dialog_open);
+    };
 
     return (
         <div className={classes.container}>
-            <div className={classes.menuRight}><ChangeLanguage/></div>
+            <div className={classes.menuRight}>
+                <Typography style={{cursor: 'pointer', marginRight: '24px'}} variant='body1' onClick={toggle_dialog}>{t('util:login')}</Typography>
+                <Dialog open={dialog_open} onClose={toggle_dialog}>
+                    <Login user_interactions={user_interactions}/>
+                </Dialog>
+                <ChangeLanguage/>
+            </div>
             <div className={classes.logoLeft}><Typography variant='h3'>GeoImageNet</Typography></div>
             <div className={classes.logos}><Logos/></div>
-            <div className={classes.acceder}>
-                <PaddedPaper><Login user_interactions={user_interactions}/></PaddedPaper>
-            </div>
             <div className={classes.benchmarks}>
                 <LessOpaquePaper title={t('title:benchmarks')} content={
                     <React.Fragment>

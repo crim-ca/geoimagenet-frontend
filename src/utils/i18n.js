@@ -31,6 +31,7 @@ const resources = {
             'english': 'English',
             'username': "Username",
             'password': 'Password',
+            'login': 'Login',
         },
     },
     fr: {
@@ -85,6 +86,7 @@ const resources = {
             'english': 'Anglais',
             'username': "Nom d'usager",
             'password': 'Mot de passe',
+            'login': 'Se Connecter',
         },
     }
 };
