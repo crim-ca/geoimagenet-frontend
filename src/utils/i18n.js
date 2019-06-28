@@ -35,11 +35,11 @@ const resources = {
                 list_2: {
                     header: 'Connect to the platform',
                     demo_link_text: 'see the annotations',
-                    item_1: 'If you want to take a look and do not have a login, <a href="/demo">see the annotations</a> on a base map of ' +
+                    item_1: 'If you want to take a look and do not have a login, <a href="/platform">see the annotations</a> on a base map of ' +
                         'Canada (no Pleiade images available without a login)',
                     item_2: `You can request a login at ${CONTACT_EMAIL} or just log in`,
                     item_3: 'Please note that the login will give you access to the demo version and that no annotation ' +
-                        'will be use in dataset, the production platform will be available soon.\n',
+                        'will be use in dataset, the production platform will be available soon.',
                 },
             },
             taxonomy: 'Download our taxonomy',

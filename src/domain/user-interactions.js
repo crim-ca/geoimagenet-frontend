@@ -110,7 +110,7 @@ export class UserInteractions {
          * @type {Object}
          */
         const magpie_session_json = await this.data_queries.current_user_session();
-        const {user} = magpie_session_json;
+        const {user, authenticated} = magpie_session_json;
         const user_instance = new User(user.user_name, user.email, user.group_names);
         this.store_actions.set_session_user(user_instance);
         let json_response;
@@ -144,7 +144,7 @@ export class UserInteractions {
             }
             throw e;
         }
-        const acl = new AccessControlList(resource_permission_repository);
+        const acl = new AccessControlList(resource_permission_repository, authenticated);
         this.store_actions.set_acl(acl);
 
     };
