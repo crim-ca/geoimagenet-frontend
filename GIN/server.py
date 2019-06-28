@@ -51,6 +51,8 @@ path_equivalences = {
 public_resources = [
     '/',
     '/login',
+    '/platform',
+    '/platform.bundle.js',
     '/presentation.bundle.js',
 ]
 public_extension_types = ('.jpg', '.png', '.gif', '.ico', '.woff', '.ttf')

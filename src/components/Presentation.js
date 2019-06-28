@@ -57,7 +57,7 @@ const Panel = withStyles(({values, colors}) => ({
     );
 });
 
-const LessOpaquePaper = withStyles(({values}) =>({
+const LessOpaquePaper = withStyles(({values}) => ({
     root: {
         height: '100%',
     },
@@ -116,13 +116,49 @@ const WhiteSelect = withStyles({
     },
 })(Select);
 
+function BenchmarksPanel() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <ul>
+                <li>{t('intro:benchmarks.item_1')}</li>
+                <li>{t('intro:benchmarks.item_2')}</li>
+                <li>{t('intro:benchmarks.item_3')}</li>
+                <li>{t('intro:benchmarks.item_4')}</li>
+            </ul>
+        </React.Fragment>
+    );
+}
+
+function PlatformPanel() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <Typography variant='body1'>{t('intro:platform.par_1')}</Typography>
+            <Typography variant='h6'>{t('intro:platform.list_1.header')}</Typography>
+            <ul>
+                <li>{t('intro:platform.list_1.item_1')}</li>
+                <li>{t('intro:platform.list_1.item_2')}</li>
+                <li>{t('intro:platform.list_1.item_3')}</li>
+                <li>{t('intro:platform.list_1.item_4')}</li>
+            </ul>
+            <Typography variant='h6'>{t('intro:platform.list_2.header')}</Typography>
+            <ul>
+                <li dangerouslySetInnerHTML={{ __html: t('intro:platform.list_2.item_1') }} />
+                <li>{t('intro:platform.list_2.item_2')}</li>
+                <li>{t('intro:platform.list_2.item_3')}</li>
+            </ul>
+        </React.Fragment>
+    );
+}
+
 function ChangeLanguage() {
     const {t, i18n} = useTranslation();
     const change_language = event => {
         const language = event.target.value;
         i18n.changeLanguage(language);
     };
-    return(
+    return (
         <WhiteSelect value={i18n.language} onChange={change_language}>
             <MenuItem value='fr'>{t('util:french')}</MenuItem>
             <MenuItem value='en'>{t('util:english')}</MenuItem>
@@ -209,7 +245,8 @@ export const PresentationContainer = withStyles(({values}) => ({
     return (
         <div className={classes.container}>
             <div className={classes.menuRight}>
-                <Typography style={{cursor: 'pointer', marginRight: '24px'}} variant='body1' onClick={toggle_dialog}>{t('login:login')}</Typography>
+                <Typography style={{cursor: 'pointer', marginRight: '24px'}} variant='body1'
+                            onClick={toggle_dialog}>{t('login:login')}</Typography>
                 <Dialog open={dialog_open} onClose={toggle_dialog}>
                     <Login user_interactions={user_interactions}/>
                 </Dialog>
@@ -218,13 +255,13 @@ export const PresentationContainer = withStyles(({values}) => ({
                 </Typography>
                 <ChangeLanguage/>
             </div>
-            <div className={classes.logoLeft}><img alt='Logo GeoImageNet' src={logo_gin} /></div>
+            <div className={classes.logoLeft}><img alt='Logo GeoImageNet' src={logo_gin}/></div>
             <div className={classes.logos}><Logos/></div>
             <div className={classes.benchmarks}>
                 <LessOpaquePaper title={t('title:benchmarks')} content={
                     <React.Fragment>
-                        <Typography variant='body1' style={{marginBottom: '12px'}}>{t('intro:benchmarks')}</Typography>
-                        <Benchmarks client={client} />
+                        <BenchmarksPanel/>
+                        <Benchmarks client={client}/>
                     </React.Fragment>
                 }/>
             </div>
@@ -235,7 +272,7 @@ export const PresentationContainer = withStyles(({values}) => ({
                 <LessOpaquePaper title={t('title:team')} content={t('intro:team')}/>
             </div>
             <div className={classes.platform}>
-                <LessOpaquePaper title={t('title:platform')} content={t('intro:platform')}/>
+                <LessOpaquePaper title={t('title:platform')} content={<PlatformPanel/>}/>
             </div>
             <div className={classes.publications}>
                 <LessOpaquePaper title={t('title:publications')} content={t('intro:publications')}/>

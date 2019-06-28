@@ -30,6 +30,7 @@ import {
 import {notifier} from './utils/notifications.js';
 import {debounced} from './utils/event_handling.js';
 import {NotificationManager} from 'react-notifications';
+import {READ, WMS} from './domain/constants';
 
 /**
  * The MapManager is responsible for handling map behaviour at the boundary between the platform and OpenLayers.
@@ -804,9 +805,11 @@ export class MapManager {
             layers: annotation_layers,
         });
 
-        this.map.addLayer(RGB_group);
-        this.map.addLayer(NRG_group);
-        this.map.addLayer(image_markers_group);
+        if (this.state_proxy.acl.can(READ, WMS)) {
+            this.map.addLayer(RGB_group);
+            this.map.addLayer(NRG_group);
+            this.map.addLayer(image_markers_group);
+        }
         this.map.addLayer(base_maps_group);
         this.map.addLayer(annotations_group);
 
