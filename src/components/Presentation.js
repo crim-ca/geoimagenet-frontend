@@ -116,6 +116,18 @@ const WhiteSelect = withStyles({
     },
 })(Select);
 
+function TaxonomyPanel() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            {t('intro:taxonomy')}
+            <Typography variant='body2'>
+                <a download href={`${GEOIMAGENET_API_URL}/taxonomy_classes`}>{t('intro:taxonomy.download')}</a>
+            </Typography>
+        </React.Fragment>
+    );
+}
+
 function BenchmarksPanel() {
     const {t} = useTranslation();
     return (
@@ -281,7 +293,7 @@ export const PresentationContainer = withStyles(({values}) => ({
                 <LessOpaquePaper title={t('title:collaborators')} content={t('intro:collaborators')}/>
             </div>
             <div className={classes.taxonomy}>
-                <LessOpaquePaper title={t('title:taxonomy')} content={t('intro:taxonomy')}/>
+                <LessOpaquePaper title={t('title:taxonomy')} content={<TaxonomyPanel/>}/>
             </div>
         </div>
     );

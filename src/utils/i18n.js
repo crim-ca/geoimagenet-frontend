@@ -42,7 +42,9 @@ const resources = {
                         'will be use in dataset, the production platform will be available soon.',
                 },
             },
-            taxonomy: 'Download our taxonomy',
+            taxonomy: {
+                download: 'Download our taxonomy.'
+            },
             publications: 'From media',
             collaborators: 'Our collaborators',
             team: 'The team',
@@ -74,7 +76,9 @@ const resources = {
             benchmarks: 'Tests de modèles',
             mission: 'Notre mission',
             platform: 'La plateforme',
-            taxonomy: 'Télécharger notre taxonomie',
+            taxonomy: {
+                download: 'Télécharger notre taxonomie.'
+            },
             publications: 'Publications concernant GeoImageNet',
             collaborators: 'Les collaborateurs',
             team: "L'équipe",
