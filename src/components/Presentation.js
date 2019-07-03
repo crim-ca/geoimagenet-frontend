@@ -2,60 +2,20 @@ import React, {useState} from 'react';
 import {withStyles, Link, Typography, Paper, Select, MenuItem, Dialog} from '@material-ui/core';
 import {useTranslation} from '../utils';
 
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faTimes} from '@fortawesome/free-solid-svg-icons';
-
 import {Logos} from './Logos.js';
 import {Login} from './Login.js';
 import {Benchmarks} from './Benchmarks';
 
 import logo_gin from '../img/logos/logo_trans_GIN.png';
 
-const Panel = withStyles(({values, colors}) => ({
-    opened: {
-        display: 'grid',
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        gridTemplateColumns: '1fr minmax(min-content, 56em) 1fr',
-        gridTemplateRows: '1fr min-content 2fr',
-    },
-    panel: {
+const DarkDialog = withStyles(({colors, values}) => ({
+    paper: {
+        padding: values.gutterMedium,
         color: colors.barelyWhite,
         backgroundColor: 'black',
-        padding: values.gutterMedium,
-        zIndex: '100',
-        opacity: '1',
-        gridColumn: '2/3',
-        gridRow: '2/3',
         border: `2px solid ${colors.barelyWhite}`,
-    },
-    header: {
-        display: 'flex',
-        flexDirection: 'row',
-        marginBottom: values.gutterSmall,
-        alignItems: 'baseline',
-        justifyContent: 'space-between',
     }
-}))(({classes, children, callback, title}) => {
-    return (
-        <div className={classes.opened}>
-            <Paper className={classes.panel}>
-                <div className={classes.header}>
-                    <Typography variant='h3'>{title}</Typography>
-                    <FontAwesomeIcon
-                        style={{cursor: 'pointer', marginLeft: '12px'}}
-                        icon={faTimes}
-                        className='fa-2x'
-                        onClick={callback}/>
-                </div>
-                {children}
-            </Paper>
-        </div>
-    );
-});
+}))(Dialog);
 
 const LessOpaquePaper = withStyles(({values}) => ({
     root: {
@@ -75,11 +35,18 @@ const LessOpaquePaper = withStyles(({values}) => ({
     },
 }))(({classes, title, content}) => {
     const [opened, setOpened] = useState(false);
-    const handler = () => setOpened(!opened);
+    const close = () => { setOpened(false); };
+    const open = () => { setOpened(true); };
     return (
         <div className={classes.root}>
-            <Paper className={classes.paper} onClick={handler}><Typography variant='h4'>{title}</Typography></Paper>
-            {opened ? <Panel callback={handler} title={title}>{content}</Panel> : null}
+            <Paper className={classes.paper} onClick={open}><Typography variant='h3'>{title}</Typography></Paper>
+            <DarkDialog
+                maxWidth='xl'
+                open={opened}
+                onClose={close}>
+                <Typography variant='h4'>{title}</Typography>
+                {content}
+            </DarkDialog>
         </div>
     );
 });
