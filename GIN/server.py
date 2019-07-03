@@ -3,7 +3,6 @@ import gunicorn.app.base
 from os import path
 from mimetypes import MimeTypes
 from urllib.error import HTTPError
-import sentry_sdk
 from jinja2.exceptions import TemplateNotFound
 from http.cookies import SimpleCookie
 from os import environ as actual_environment
@@ -15,7 +14,9 @@ import requests
 
 mimetypes = MimeTypes()
 
-sentry_sdk.init('https://855d6407dc424a5e95029d10600fbff5:7881d331c24c4c9187387c7845cfa0c3@sentry.crim.ca/20')
+if 'FRONTEND_PYTHON_SENTRY_DSN' in actual_environment:
+    import sentry_sdk
+    sentry_sdk.init(actual_environment.get('FRONTEND_PYTHON_SENTRY_DSN'))
 
 
 def make_full_file_path(request_uri):

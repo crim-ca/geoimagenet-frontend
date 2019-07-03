@@ -23,6 +23,7 @@
     "MAGPIE_ENDPOINT": false,
     "ML_ENDPOINT": false,
     "CONTACT_EMAIL": false,
-    "THELPER_MODEL_UPLOAD_INSTRUCTIONS": false
+    "THELPER_MODEL_UPLOAD_INSTRUCTIONS": false,
+    "FRONTEND_JS_SENTRY_DSN": false
   }
 }

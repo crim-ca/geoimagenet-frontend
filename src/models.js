@@ -19,7 +19,7 @@ import './css/notifications.css';
 import './img/icons/favicon.ico';
 
 Sentry.init({
-    dsn: 'https://e7309c463efe4d85abc7693a6334e8df@sentry.crim.ca/21'
+    dsn: FRONTEND_JS_SENTRY_DSN,
 });
 
 addEventListener('DOMContentLoaded', async () => {
