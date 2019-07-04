@@ -35,8 +35,12 @@ const LessOpaquePaper = withStyles(({values}) => ({
     },
 }))(({classes, title, content}) => {
     const [opened, setOpened] = useState(false);
-    const close = () => { setOpened(false); };
-    const open = () => { setOpened(true); };
+    const close = () => {
+        setOpened(false);
+    };
+    const open = () => {
+        setOpened(true);
+    };
     return (
         <div className={classes.root}>
             <Paper className={classes.paper} onClick={open}><Typography variant='h3'>{title}</Typography></Paper>
@@ -123,7 +127,7 @@ function PlatformPanel() {
             </ul>
             <Typography variant='h6'>{t('intro:platform.list_2.header')}</Typography>
             <ul>
-                <li dangerouslySetInnerHTML={{ __html: t('intro:platform.list_2.item_1') }} />
+                <li dangerouslySetInnerHTML={{__html: t('intro:platform.list_2.item_1')}}/>
                 <li>{t('intro:platform.list_2.item_2')}</li>
                 <li>{t('intro:platform.list_2.item_3')}</li>
             </ul>
@@ -142,6 +146,56 @@ function ChangeLanguage() {
             <MenuItem value='fr'>{t('util:french')}</MenuItem>
             <MenuItem value='en'>{t('util:english')}</MenuItem>
         </WhiteSelect>
+    );
+}
+
+function Publications() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <Typography variant='h5'>{t('intro:publications.presentation')}</Typography>
+            <ul>
+                <li>
+                    <p></p>
+                    <a target='_blank'></a>
+                </li>
+            </ul>
+            <Typography variant='h5'>{t('intro:publications.press')}</Typography>
+            <ul>
+                <li>
+                    <a
+                        rel='noopener noreferrer'
+                        target='_blank'
+                        href='https://www.usherbrooke.ca/actualites/nouvelles/nouvelles-details/article/38764/'>
+                        Université de Sherbrooke
+                    </a>
+                </li>
+                <li>
+                    <a
+                        rel='noopener noreferrer'
+                        target='_blank'
+                        href='https://www.crim.ca/fr/nouvelles/geoimagenet-l-intelligence-artificielle-appliquee-aux-images-satellites'>
+                        CRIM
+                    </a>
+                </li>
+                <li>
+                    <a
+                        rel='noopener noreferrer'
+                        target='_blank'
+                        href='https://www.effigis.com/fr/financement-federal-pour-la-r-et-d-dune-application-dinterpretation-automatisee-dimages-satellite-par-intelligence-artificielle/'>
+                        Effigis Géo-Solutions
+                    </a>
+                </li>
+                <li>
+                    <a
+                        rel='noopener noreferrer'
+                        target='_blank'
+                        href='https://www.canarie.ca/fr/canarie-distribue-44-millions-de-dollars-a-vingt-equipes-de-recherche-pour-quelles-perfectionnent-leurs-logiciels-afin-dameliorer-les-vaccins-de-surveiller-le-changement-climatique/'>
+                        Canarie
+                    </a>
+                </li>
+            </ul>
+        </React.Fragment>
     );
 }
 
@@ -254,7 +308,7 @@ export const PresentationContainer = withStyles(({values}) => ({
                 <LessOpaquePaper title={t('title:platform')} content={<PlatformPanel/>}/>
             </div>
             <div className={classes.publications}>
-                <LessOpaquePaper title={t('title:publications')} content={t('intro:publications')}/>
+                <LessOpaquePaper title={t('title:publications')} content={<Publications />}/>
             </div>
             <div className={classes.collaborators}>
                 <LessOpaquePaper title={t('title:collaborators')} content={t('intro:collaborators')}/>

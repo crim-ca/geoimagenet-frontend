@@ -45,7 +45,10 @@ const resources = {
             taxonomy: {
                 download: 'Download our taxonomy.'
             },
-            publications: 'From media',
+            publications: {
+                presentation: 'Presentation',
+                press: 'Press Release',
+            },
             collaborators: 'Our collaborators',
             team: 'The team',
         },
