@@ -48,6 +48,38 @@ const resources = {
             publications: {
                 presentation: 'Presentation',
                 press: 'Press Release',
+                abstract: 'Abstract',
+                poster: 'Poster',
+                presentations: {
+                    item_1: '2019, GeoImageNet: a Collaborative Platform for Deep Learning Application to Very High ' +
+                        'Resolution EO Images, Yacine Bouroudi, Claude Chapdelaine, Samuel Foucher, David Byrns, Mario Beaulieu, ' +
+                        'Pierre-Luc St-Charles, Mickaël Germain, Étienne Lauzier-Hudon, Pierre Bugnet, Nouri Sabo and ' +
+                        'Claire Gosselin, 40 ième Symposium canadien de télédétection, 4-6 juin 2019 ',
+                    item_2: '2019, GeoImageNet: A Collaborative Platform for the Annotation of VHR Images, Claude Chapdelaine, ' +
+                        'Samuel Foucher, Yacine Bouroubi, David Byrns, Mario Beaulieu, Pierre Bugnet, Pierre-Luc St-Charles, ' +
+                        'Tom Landry, Mickaël Germain, Living Planet 2019, Milan, Italy. ',
+                },
+                press_releases: {
+                    item_1: {
+                        intro: 'Press release from <u>Université de Sherbrooke</u> : ',
+                        link_text: 'Une plateforme pour l’application de techniques d’intelligence artificielle à ' +
+                            'l’exploitation des images satellites',
+                    },
+                    item_2: {
+                        intro: 'Press release from <u>CRIM</u> : ',
+                        link_text: 'GeoImageNet : l’intelligence artificielle appliquée aux images satellites!',
+                    },
+                    item_3: {
+                        intro: 'Press release from <u>Effigis Géo-Solutions</u> : ',
+                        link_text: 'An Automated Satellite Image Interpretation Application Based on Artificial ' +
+                            'Intelligence is awarded Federal R & D Funding',
+                    },
+                    item_4: {
+                        intro: 'Press release from <u>CANARIE</u> : ',
+                        link_text: 'CANARIE Awards $4.4M to 20 Research Teams to Develop Advanced Software to Improve ' +
+                            'Vaccines, Monitor Climate Change, and More',
+                    },
+                },
             },
             collaborators: 'Our collaborators',
             team: 'The team',
@@ -82,7 +114,42 @@ const resources = {
             taxonomy: {
                 download: 'Télécharger notre taxonomie.'
             },
-            publications: 'Publications concernant GeoImageNet',
+            publications: {
+                presentation: 'Présentation',
+                press: 'Communiqués de presse',
+                abstract: 'Résumé',
+                poster: 'Affiche',
+                presentations: {
+                    item_1: '2019, GeoImageNet: a Collaborative Platform for Deep Learning Application to Very High ' +
+                        'Resolution EO Images, Yacine Bouroudi, Claude Chapdelaine, Samuel Foucher, David Byrns, Mario Beaulieu, ' +
+                        'Pierre-Luc St-Charles, Mickaël Germain, Étienne Lauzier-Hudon, Pierre Bugnet, Nouri Sabo and ' +
+                        'Claire Gosselin, 40 ième Symposium canadien de télédétection, 4-6 juin 2019 ',
+                    item_2: '2019, GeoImageNet: A Collaborative Platform for the Annotation of VHR Images, Claude Chapdelaine, ' +
+                        'Samuel Foucher, Yacine Bouroubi, David Byrns, Mario Beaulieu, Pierre Bugnet, Pierre-Luc St-Charles, ' +
+                        'Tom Landry, Mickaël Germain, Living Planet 2019, Milan, Italy. ',
+                },
+                press_releases: {
+                    item_1: {
+                        intro: 'Communiqué de l’<u>Université de Sherbrooke</u> : ',
+                        link_text: 'Une plateforme pour l’application de techniques d’intelligence artificielle à ' +
+                            'l’exploitation des images satellites',
+                    },
+                    item_2: {
+                        intro: 'Communiqué du <u>CRIM</u> : ',
+                        link_text: 'GeoImageNet : l’intelligence artificielle appliquée aux images satellites!',
+                    },
+                    item_3: {
+                        intro: 'Communiqué d’<u>Effigis Géo-Solutions</u> : ',
+                        link_text: 'Financement fédéral pour la recherche et développement d’une application ' +
+                            'd’interprétation automatisée d’images satellite par intelligence artificielle',
+                    },
+                    item_4: {
+                        intro: 'Communiqué de <u>CANARIE</u> : ',
+                        link_text: 'CANARIE distribue 4,4 millions de dollars à vingt équipes de recherche pour qu’elles ' +
+                            'perfectionnent leurs logiciels afin d’améliorer les vaccins, de surveiller le changement climatique et bien davantage',
+                    },
+                },
+            },
             collaborators: 'Les collaborateurs',
             team: "L'équipe",
         },

@@ -14,6 +14,9 @@ const DarkDialog = withStyles(({colors, values}) => ({
         color: colors.barelyWhite,
         backgroundColor: 'black',
         border: `2px solid ${colors.barelyWhite}`,
+        '& li': {
+            margin: values.gutterSmall
+        },
     }
 }))(Dialog);
 
@@ -54,29 +57,6 @@ const LessOpaquePaper = withStyles(({values}) => ({
         </div>
     );
 });
-
-function Presentation() {
-    const {t} = useTranslation();
-    return (
-        <Paper>
-            <Typography paragraph>{t('par-1')}</Typography>
-            <Typography paragraph>{t('par-2')}</Typography>
-            <Typography paragraph>{t('par-3')}</Typography>
-            <Typography paragraph>{t('par-4')}</Typography>
-            <Typography paragraph>{t('par-5')}</Typography>
-            <Typography paragraph>{t('par-6')}</Typography>
-            <Typography paragraph>{t('par-7')}</Typography>
-
-            <Typography paragraph>
-                <Link target='_blank'
-                      rel='noopener noreferrer'
-                      href={t('https://www.latribune.ca/affaires/des-images-satellites-a-tres-haute-resolution-a-ludes-39c600cd8c87c862a133db22b75462c5')}>
-                    {t("Tiré d'un article de La Tribune")}
-                </Link>
-            </Typography>
-        </Paper>
-    );
-}
 
 const WhiteSelect = withStyles({
     root: {
@@ -156,43 +136,57 @@ function Publications() {
             <Typography variant='h5'>{t('intro:publications.presentation')}</Typography>
             <ul>
                 <li>
-                    <p></p>
-                    <a target='_blank'></a>
+                    {t('intro:publications.presentations.item_1')}
+                    (<Link
+                        rel='noopener noreferrer'
+                        href='/pdf/CSRS2019_abstract_en.pdf'
+                        target='_blank'>{t('intro:publications.abstract')}</Link>)
+                    (<Link
+                        rel='noopener noreferrer'
+                        href='/pdf/GeoImageNet_in_40th_Canadian_Symposium_on_Remote_Sensing-05_June_2019.pdf'
+                        target='_blank'>{t('intro:publications.presentation')}</Link>)
+                </li>
+                <li>
+                    {t('intro:publications.presentations.item_2')}
+                    (<Link
+                        rel='noopener noreferrer'
+                        href='/pdf/LivingPlanet_GeoImageNet_2019_poster.pdf'
+                        target='_blank'>{t('intro:publications.poster')}</Link>)
                 </li>
             </ul>
             <Typography variant='h5'>{t('intro:publications.press')}</Typography>
             <ul>
                 <li>
-                    <a
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_1.intro')}}/>
+                    <Link
+                        dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_1.link_text')}}
                         rel='noopener noreferrer'
                         target='_blank'
-                        href='https://www.usherbrooke.ca/actualites/nouvelles/nouvelles-details/article/38764/'>
-                        Université de Sherbrooke
-                    </a>
+                        href='https://www.usherbrooke.ca/actualites/nouvelles/nouvelles-details/article/38764/'/>
                 </li>
                 <li>
-                    <a
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_2.intro')}}/>
+                    <Link
+                        dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_2.link_text')}}
                         rel='noopener noreferrer'
                         target='_blank'
-                        href='https://www.crim.ca/fr/nouvelles/geoimagenet-l-intelligence-artificielle-appliquee-aux-images-satellites'>
-                        CRIM
-                    </a>
+                        href='https://www.crim.ca/fr/nouvelles/geoimagenet-l-intelligence-artificielle-appliquee-aux-images-satellites'/>
                 </li>
                 <li>
-                    <a
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_3.intro')}}/>
+                    <Link
+                        dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_3.link_text')}}
                         rel='noopener noreferrer'
                         target='_blank'
-                        href='https://www.effigis.com/fr/financement-federal-pour-la-r-et-d-dune-application-dinterpretation-automatisee-dimages-satellite-par-intelligence-artificielle/'>
-                        Effigis Géo-Solutions
-                    </a>
+                        href='https://www.effigis.com/fr/financement-federal-pour-la-r-et-d-dune-application-dinterpretation-automatisee-dimages-satellite-par-intelligence-artificielle/'/>
                 </li>
                 <li>
-                    <a
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_4.intro')}}/>
+                    <Link
+                        dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_4.link_text')}}
                         rel='noopener noreferrer'
                         target='_blank'
-                        href='https://www.canarie.ca/fr/canarie-distribue-44-millions-de-dollars-a-vingt-equipes-de-recherche-pour-quelles-perfectionnent-leurs-logiciels-afin-dameliorer-les-vaccins-de-surveiller-le-changement-climatique/'>
-                        Canarie
-                    </a>
+                        href='https://www.canarie.ca/fr/canarie-distribue-44-millions-de-dollars-a-vingt-equipes-de-recherche-pour-quelles-perfectionnent-leurs-logiciels-afin-dameliorer-les-vaccins-de-surveiller-le-changement-climatique/'/>
                 </li>
             </ul>
         </React.Fragment>
@@ -308,7 +302,7 @@ export const PresentationContainer = withStyles(({values}) => ({
                 <LessOpaquePaper title={t('title:platform')} content={<PlatformPanel/>}/>
             </div>
             <div className={classes.publications}>
-                <LessOpaquePaper title={t('title:publications')} content={<Publications />}/>
+                <LessOpaquePaper title={t('title:publications')} content={<Publications/>}/>
             </div>
             <div className={classes.collaborators}>
                 <LessOpaquePaper title={t('title:collaborators')} content={t('intro:collaborators')}/>
