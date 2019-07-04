@@ -36,7 +36,7 @@ const LessOpaquePaper = withStyles(({values}) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-}))(({classes, title, content}) => {
+}))(({classes, title, content, maxWidth = 'xl'}) => {
     const [opened, setOpened] = useState(false);
     const close = () => {
         setOpened(false);
@@ -48,7 +48,7 @@ const LessOpaquePaper = withStyles(({values}) => ({
         <div className={classes.root}>
             <Paper className={classes.paper} onClick={open}><Typography variant='h3'>{title}</Typography></Paper>
             <DarkDialog
-                maxWidth='xl'
+                maxWidth={maxWidth}
                 open={opened}
                 onClose={close}>
                 <Typography variant='h4'>{title}</Typography>
@@ -67,14 +67,27 @@ const WhiteSelect = withStyles({
     },
 })(Select);
 
-function TaxonomyPanel() {
+function ChangeLanguage() {
+    const {t, i18n} = useTranslation();
+    const change_language = event => {
+        const language = event.target.value;
+        i18n.changeLanguage(language);
+    };
+    return (
+        <WhiteSelect value={i18n.language} onChange={change_language}>
+            <MenuItem value='fr'>{t('util:french')}</MenuItem>
+            <MenuItem value='en'>{t('util:english')}</MenuItem>
+        </WhiteSelect>
+    );
+}
+
+function Taxonomy() {
     const {t} = useTranslation();
     return (
         <React.Fragment>
-            {t('intro:taxonomy')}
-            <Typography variant='body2'>
-                <a download href={`${GEOIMAGENET_API_URL}/taxonomy_classes`}>{t('intro:taxonomy.download')}</a>
-            </Typography>
+            <Typography variant='body1'>{t('intro:taxonomy.par_1')}</Typography>
+            <Typography variant='body1'>{t('intro:taxonomy.par_2')}</Typography>
+            <Link download href={`${GEOIMAGENET_API_URL}/taxonomy_classes`}>{t('intro:taxonomy.download')}</Link>
         </React.Fragment>
     );
 }
@@ -93,39 +106,29 @@ function BenchmarksPanel() {
     );
 }
 
-function PlatformPanel() {
+function Platform() {
     const {t} = useTranslation();
     return (
         <React.Fragment>
             <Typography variant='body1'>{t('intro:platform.par_1')}</Typography>
-            <Typography variant='h6'>{t('intro:platform.list_1.header')}</Typography>
+            <Typography variant='h6'>{t('intro:platform.section_1.header')}</Typography>
             <ul>
-                <li>{t('intro:platform.list_1.item_1')}</li>
-                <li>{t('intro:platform.list_1.item_2')}</li>
-                <li>{t('intro:platform.list_1.item_3')}</li>
-                <li>{t('intro:platform.list_1.item_4')}</li>
+                <li dangerouslySetInnerHTML={{__html: t('intro:platform.section_1.item_1')}}/>
+                <li>{t('intro:platform.section_1.item_2')}</li>
+                <li>{t('intro:platform.section_1.item_3')}</li>
+                <li dangerouslySetInnerHTML={{__html: t('intro:platform.section_1.item_4')}}/>
             </ul>
-            <Typography variant='h6'>{t('intro:platform.list_2.header')}</Typography>
+            <Typography variant='h6'>{t('intro:platform.section_2.header')}</Typography>
+            <Typography dangerouslySetInnerHTML={{__html: t('intro:platform.section_2.par_1')}} variant='body1'/>
+            <Typography dangerouslySetInnerHTML={{__html: t('intro:platform.section_2.par_2')}} variant='body1'/>
+            <Typography variant='h6'>{t('intro:platform.section_3.header')}</Typography>
             <ul>
-                <li dangerouslySetInnerHTML={{__html: t('intro:platform.list_2.item_1')}}/>
-                <li>{t('intro:platform.list_2.item_2')}</li>
-                <li>{t('intro:platform.list_2.item_3')}</li>
+                <li>{t('intro:platform.section_3.item_1')}</li>
+                <li>{t('intro:platform.section_3.item_2')}</li>
+                <li>{t('intro:platform.section_3.item_3')}</li>
+                <li>{t('intro:platform.section_3.item_4')}</li>
             </ul>
         </React.Fragment>
-    );
-}
-
-function ChangeLanguage() {
-    const {t, i18n} = useTranslation();
-    const change_language = event => {
-        const language = event.target.value;
-        i18n.changeLanguage(language);
-    };
-    return (
-        <WhiteSelect value={i18n.language} onChange={change_language}>
-            <MenuItem value='fr'>{t('util:french')}</MenuItem>
-            <MenuItem value='en'>{t('util:english')}</MenuItem>
-        </WhiteSelect>
     );
 }
 
@@ -133,66 +136,128 @@ function Publications() {
     const {t} = useTranslation();
     return (
         <React.Fragment>
-            <Typography variant='h5'>{t('intro:publications.presentation')}</Typography>
+            <Typography variant='h5'>{t('intro:publications.section_1.header')}</Typography>
             <ul>
                 <li>
-                    {t('intro:publications.presentations.item_1')}
+                    {t('intro:publications.section_1.item_1')}
                     (<Link
-                        rel='noopener noreferrer'
-                        href='/pdf/CSRS2019_abstract_en.pdf'
-                        target='_blank'>{t('intro:publications.abstract')}</Link>)
+                    rel='noopener noreferrer'
+                    href='/pdf/CSRS2019_abstract_en.pdf'
+                    target='_blank'>{t('intro:publications.abstract')}</Link>)
                     (<Link
-                        rel='noopener noreferrer'
-                        href='/pdf/GeoImageNet_in_40th_Canadian_Symposium_on_Remote_Sensing-05_June_2019.pdf'
-                        target='_blank'>{t('intro:publications.presentation')}</Link>)
+                    rel='noopener noreferrer'
+                    href='/pdf/GeoImageNet_in_40th_Canadian_Symposium_on_Remote_Sensing-05_June_2019.pdf'
+                    target='_blank'>{t('intro:publications.presentation')}</Link>)
                 </li>
                 <li>
-                    {t('intro:publications.presentations.item_2')}
+                    {t('intro:publications.section_1.item_2')}
                     (<Link
-                        rel='noopener noreferrer'
-                        href='/pdf/LivingPlanet_GeoImageNet_2019_poster.pdf'
-                        target='_blank'>{t('intro:publications.poster')}</Link>)
+                    rel='noopener noreferrer'
+                    href='/pdf/LivingPlanet_GeoImageNet_2019_poster.pdf'
+                    target='_blank'>{t('intro:publications.poster')}</Link>)
                 </li>
             </ul>
-            <Typography variant='h5'>{t('intro:publications.press')}</Typography>
+            <Typography variant='h5'>{t('intro:publications.section_2.header')}</Typography>
             <ul>
                 <li>
-                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_1.intro')}}/>
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_1.intro')}}/>
                     <Link
-                        dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_1.link_text')}}
+                        dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_1.link_text')}}
                         rel='noopener noreferrer'
                         target='_blank'
                         href='https://www.usherbrooke.ca/actualites/nouvelles/nouvelles-details/article/38764/'/>
                 </li>
                 <li>
-                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_2.intro')}}/>
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_2.intro')}}/>
                     <Link
-                        dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_2.link_text')}}
+                        dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_2.link_text')}}
                         rel='noopener noreferrer'
                         target='_blank'
                         href='https://www.crim.ca/fr/nouvelles/geoimagenet-l-intelligence-artificielle-appliquee-aux-images-satellites'/>
                 </li>
                 <li>
-                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_3.intro')}}/>
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_3.intro')}}/>
                     <Link
-                        dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_3.link_text')}}
+                        dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_3.link_text')}}
                         rel='noopener noreferrer'
                         target='_blank'
                         href='https://www.effigis.com/fr/financement-federal-pour-la-r-et-d-dune-application-dinterpretation-automatisee-dimages-satellite-par-intelligence-artificielle/'/>
                 </li>
                 <li>
-                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_4.intro')}}/>
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_4.intro')}}/>
                     <Link
-                        dangerouslySetInnerHTML={{__html: t('intro:publications.press_releases.item_4.link_text')}}
+                        dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_4.link_text')}}
                         rel='noopener noreferrer'
                         target='_blank'
                         href='https://www.canarie.ca/fr/canarie-distribue-44-millions-de-dollars-a-vingt-equipes-de-recherche-pour-quelles-perfectionnent-leurs-logiciels-afin-dameliorer-les-vaccins-de-surveiller-le-changement-climatique/'/>
                 </li>
             </ul>
+            <Typography variant='h5'>{t('intro:publications.section_3.header')}</Typography>
+            <ul>
+                <li>{t('intro:publications.section_3.item_1')}</li>
+            </ul>
         </React.Fragment>
     );
 }
 
+function Mission() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <Typography variant='body1' dangerouslySetInnerHTML={{__html: t('intro:mission.what')}}/>
+            <Typography variant='body1' dangerouslySetInnerHTML={{__html: t('intro:mission.how')}}/>
+            <Typography variant='body1' dangerouslySetInnerHTML={{__html: t('intro:mission.why')}}/>
+        </React.Fragment>
+    );
+}
+
+function Team() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <Typography variant='h6'>{t('intro:team.section_1.header')}</Typography>
+            <ul>
+                <li>{t('intro:team.section_1.item_1')}</li>
+                <li>{t('intro:team.section_1.item_2')}</li>
+                <li>{t('intro:team.section_1.item_3')}</li>
+            </ul>
+            <Typography variant='h6'>{t('intro:team.section_2.header')}</Typography>
+            <ul>
+                <li>{t('intro:team.section_2.item_1')}</li>
+                <li>{t('intro:team.section_2.item_2')}</li>
+                <li>{t('intro:team.section_2.item_3')}</li>
+                <li>{t('intro:team.section_2.item_4')}</li>
+                <li>{t('intro:team.section_2.item_5')}</li>
+                <li>{t('intro:team.section_2.item_6')}</li>
+                <li>{t('intro:team.section_2.item_7')}</li>
+                <li>{t('intro:team.section_2.item_8')}</li>
+            </ul>
+            <Typography variant='h6'>{t('intro:team.section_3.header')}</Typography>
+            <ul>
+                <li>{t('intro:team.section_3.item_1')}</li>
+                <li>{t('intro:team.section_3.item_2')}</li>
+                <li>{t('intro:team.section_3.item_3')}</li>
+            </ul>
+            <Typography variant='h6'>{t('intro:team.section_4.header')}</Typography>
+            <ul>
+                <li>{t('intro:team.section_4.item_1')}</li>
+            </ul>
+        </React.Fragment>
+    );
+}
+
+function Collaborators() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <Typography variant='body1'>{t('intro:collaborators.item_1')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_2')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_3')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_4')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_5')}</Typography>
+        </React.Fragment>
+    );
+}
 
 export const PresentationContainer = withStyles(({values}) => ({
     container: {
@@ -293,22 +358,22 @@ export const PresentationContainer = withStyles(({values}) => ({
                 }/>
             </div>
             <div className={classes.mission}>
-                <LessOpaquePaper title={t('title:mission')} content={t('intro:mission')}/>
+                <LessOpaquePaper title={t('title:mission')} content={<Mission/>} maxWidth='lg'/>
             </div>
             <div className={classes.team}>
-                <LessOpaquePaper title={t('title:team')} content={t('intro:team')}/>
+                <LessOpaquePaper title={t('title:team')} content={<Team/>}/>
             </div>
             <div className={classes.platform}>
-                <LessOpaquePaper title={t('title:platform')} content={<PlatformPanel/>}/>
+                <LessOpaquePaper title={t('title:platform')} content={<Platform/>} maxWidth='lg'/>
             </div>
             <div className={classes.publications}>
                 <LessOpaquePaper title={t('title:publications')} content={<Publications/>}/>
             </div>
             <div className={classes.collaborators}>
-                <LessOpaquePaper title={t('title:collaborators')} content={t('intro:collaborators')}/>
+                <LessOpaquePaper title={t('title:collaborators')} content={<Collaborators/>}/>
             </div>
             <div className={classes.taxonomy}>
-                <LessOpaquePaper title={t('title:taxonomy')} content={<TaxonomyPanel/>}/>
+                <LessOpaquePaper title={t('title:taxonomy')} content={<Taxonomy/>}/>
             </div>
         </div>
     );
