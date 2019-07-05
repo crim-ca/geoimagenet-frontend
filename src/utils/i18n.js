@@ -114,6 +114,11 @@ const resources = {
                 item_3: 'Jérôme Théau – Université de Sherbrooke',
                 item_4: 'Nouri Nabo – NRCAN',
                 item_5: 'François Cavayas – Université de Montréal',
+                item_6: 'Pierre Gravel - NRCAN',
+                item_7: 'Yves Moisan - NRCAN',
+                item_8: 'Mathieu Turgeon-Pelchat - NRCAN',
+                item_9: 'Daniel Pilon - NRCAN',
+                item_10: 'David Lapointe - NRCAN',
             },
             team: {
                 section_1: {
@@ -270,8 +275,13 @@ const resources = {
                 item_1: 'Yacine Bouroubi – Université de Sherbrooke',
                 item_2: 'Samuel Foucher – CRIM',
                 item_3: 'Jérôme Théau – Université de Sherbrooke',
-                item_4: 'Nouri Nabo – NRCAN',
+                item_4: 'Nouri Nabo – RNCAN',
                 item_5: 'François Cavayas – Université de Montréal',
+                item_6: 'Pierre Gravel - RNCAN',
+                item_7: 'Yves Moisan - RNCAN',
+                item_8: 'Mathieu Turgeon-Pelchat - RNCAN',
+                item_9: 'Daniel Pilon - RNCAN',
+                item_10: 'David Lapointe - RNCAN',
             },
             team: {
                 section_1: {

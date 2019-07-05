@@ -255,6 +255,11 @@ function Collaborators() {
             <Typography variant='body1'>{t('intro:collaborators.item_3')}</Typography>
             <Typography variant='body1'>{t('intro:collaborators.item_4')}</Typography>
             <Typography variant='body1'>{t('intro:collaborators.item_5')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_6')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_7')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_8')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_9')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_10')}</Typography>
         </React.Fragment>
     );
 }
