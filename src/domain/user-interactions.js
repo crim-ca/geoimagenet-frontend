@@ -4,6 +4,8 @@ import {InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionReposi
 import {AccessControlList} from './access-control-list.js';
 import {NotificationManager} from 'react-notifications';
 
+import {i18n} from '../utils/i18n';
+
 /**
  * In a web app, we need top level handlers that react to specific user intentions, and interactions.
  * These are not event handlers per se, they should receive everything needed to execute everything intended by the user,
@@ -108,7 +110,7 @@ export class UserInteractions {
          * @type {Object}
          */
         const magpie_session_json = await this.data_queries.current_user_session();
-        const {user} = magpie_session_json;
+        const {user, authenticated} = magpie_session_json;
         const user_instance = new User(user.user_name, user.email, user.group_names);
         this.store_actions.set_session_user(user_instance);
         let json_response;
@@ -142,7 +144,7 @@ export class UserInteractions {
             }
             throw e;
         }
-        const acl = new AccessControlList(resource_permission_repository);
+        const acl = new AccessControlList(resource_permission_repository, authenticated);
         this.store_actions.set_acl(acl);
 
     };
@@ -188,7 +190,7 @@ export class UserInteractions {
             await this.data_queries.login_request(form_data);
             window.location.href = '/platform';
         } catch (error) {
-            NotificationManager.error('Login forbidden.');
+            NotificationManager.error(i18n.t('login:forbidden'));
         }
     }
 

@@ -17,7 +17,7 @@ import {DataQueries} from './domain/data-queries.js';
 import {create_client} from './utils/apollo';
 
 Sentry.init({
-    dsn: 'https://e7309c463efe4d85abc7693a6334e8df@sentry.crim.ca/21',
+    dsn: FRONTEND_JS_SENTRY_DSN,
 });
 
 addEventListener('DOMContentLoaded', () => {
@@ -35,7 +35,10 @@ addEventListener('DOMContentLoaded', () => {
 
     ReactDOM.render(
         <ThemedComponent>
-            <PresentationContainer user_interactions={user_interactions} client={client} />
+            <PresentationContainer
+                contact_email={CONTACT_EMAIL}
+                user_interactions={user_interactions}
+                client={client} />
             <NotificationContainer/>
         </ThemedComponent>,
         div

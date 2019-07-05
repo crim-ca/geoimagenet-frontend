@@ -12,9 +12,6 @@ import {ANNOTATION} from '../../domain/constants.js';
 
 const StyledListItem = withStyles({
     root: {
-        '&:focus': {
-            backgroundColor: 'inherit',
-        },
         padding: '4px',
         justifyContent: 'space-between',
     },

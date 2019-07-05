@@ -1,71 +1,26 @@
 import React, {useState} from 'react';
-import {withStyles, Link, Typography, Paper} from '@material-ui/core';
+import {withStyles, Link, Typography, Paper, Select, MenuItem, Dialog} from '@material-ui/core';
 import {useTranslation} from '../utils';
-
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faTimes} from '@fortawesome/free-solid-svg-icons';
 
 import {Logos} from './Logos.js';
 import {Login} from './Login.js';
 import {Benchmarks} from './Benchmarks';
 
+import logo_gin from '../img/logos/logo_trans_GIN.png';
 
-const PaddedPaper = withStyles(theme => {
-    const {values} = theme;
-    return {
-        root: {
-            padding: values.gutterSmall,
-        }
-    };
-})(Paper);
-
-const Panel = withStyles(({values, colors}) => ({
-    opened: {
-        display: 'grid',
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        gridTemplateColumns: '1fr minmax(min-content, 56em) 1fr',
-        gridTemplateRows: '1fr min-content 2fr',
-    },
-    panel: {
+const DarkDialog = withStyles(({colors, values}) => ({
+    paper: {
+        padding: values.gutterMedium,
         color: colors.barelyWhite,
         backgroundColor: 'black',
-        padding: values.gutterMedium,
-        zIndex: '100',
-        opacity: '1',
-        gridColumn: '2/3',
-        gridRow: '2/3',
         border: `2px solid ${colors.barelyWhite}`,
-    },
-    header: {
-        display: 'flex',
-        flexDirection: 'row',
-        marginBottom: values.gutterSmall,
-        alignItems: 'baseline',
-        justifyContent: 'space-between',
+        '& li': {
+            margin: values.gutterSmall
+        },
     }
-}))(({classes, children, callback, title}) => {
-    return (
-        <div className={classes.opened}>
-            <Paper className={classes.panel}>
-                <div className={classes.header}>
-                    <Typography variant='h3'>{title}</Typography>
-                    <FontAwesomeIcon
-                        style={{cursor: 'pointer', marginLeft: '12px'}}
-                        icon={faTimes}
-                        className='fa-2x'
-                        onClick={callback}/>
-                </div>
-                {children}
-            </Paper>
-        </div>
-    );
-});
+}))(Dialog);
 
-const LessOpaquePaper = withStyles(({values}) =>({
+const LessOpaquePaper = withStyles(({values}) => ({
     root: {
         height: '100%',
     },
@@ -81,41 +36,233 @@ const LessOpaquePaper = withStyles(({values}) =>({
         alignItems: 'center',
         justifyContent: 'center',
     },
-}))(({classes, title, content}) => {
+}))(({classes, title, content, maxWidth = 'xl'}) => {
     const [opened, setOpened] = useState(false);
-    const handler = () => setOpened(!opened);
+    const close = () => {
+        setOpened(false);
+    };
+    const open = () => {
+        setOpened(true);
+    };
     return (
         <div className={classes.root}>
-            <Paper className={classes.paper} onClick={handler}><Typography variant='h4'>{title}</Typography></Paper>
-            {opened ? <Panel callback={handler} title={title}>{content}</Panel> : null}
+            <Paper className={classes.paper} onClick={open}><Typography variant='h3'>{title}</Typography></Paper>
+            <DarkDialog
+                maxWidth={maxWidth}
+                open={opened}
+                onClose={close}>
+                <Typography variant='h4'>{title}</Typography>
+                {content}
+            </DarkDialog>
         </div>
     );
 });
 
-function Presentation() {
-    const {t} = useTranslation();
+const WhiteSelect = withStyles({
+    root: {
+        color: 'white',
+    },
+    icon: {
+        color: 'white',
+    },
+})(Select);
 
+function ChangeLanguage() {
+    const {t, i18n} = useTranslation();
+    const change_language = event => {
+        const language = event.target.value;
+        i18n.changeLanguage(language);
+    };
     return (
-        <PaddedPaper>
-            <Typography paragraph>{t('par-1')}</Typography>
-            <Typography paragraph>{t('par-2')}</Typography>
-            <Typography paragraph>{t('par-3')}</Typography>
-            <Typography paragraph>{t('par-4')}</Typography>
-            <Typography paragraph>{t('par-5')}</Typography>
-            <Typography paragraph>{t('par-6')}</Typography>
-            <Typography paragraph>{t('par-7')}</Typography>
-
-            <Typography paragraph>
-                <Link target='_blank'
-                      rel='noopener noreferrer'
-                      href={t('https://www.latribune.ca/affaires/des-images-satellites-a-tres-haute-resolution-a-ludes-39c600cd8c87c862a133db22b75462c5')}>
-                    {t("Tiré d'un article de La Tribune")}
-                </Link>
-            </Typography>
-        </PaddedPaper>
+        <WhiteSelect value={i18n.language} onChange={change_language}>
+            <MenuItem value='fr'>{t('util:french')}</MenuItem>
+            <MenuItem value='en'>{t('util:english')}</MenuItem>
+        </WhiteSelect>
     );
 }
 
+function Taxonomy() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <Typography variant='body1'>{t('intro:taxonomy.par_1')}</Typography>
+            <Typography variant='body1'>{t('intro:taxonomy.par_2')}</Typography>
+            <Link download href={`${GEOIMAGENET_API_URL}/taxonomy_classes`}>{t('intro:taxonomy.download')}</Link>
+        </React.Fragment>
+    );
+}
+
+function BenchmarksPanel() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <ul>
+                <li>{t('intro:benchmarks.item_1')}</li>
+                <li>{t('intro:benchmarks.item_2')}</li>
+                <li>{t('intro:benchmarks.item_3')}</li>
+                <li>{t('intro:benchmarks.item_4')}</li>
+            </ul>
+        </React.Fragment>
+    );
+}
+
+function Platform() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <Typography variant='body1'>{t('intro:platform.par_1')}</Typography>
+            <Typography variant='h6'>{t('intro:platform.section_1.header')}</Typography>
+            <ul>
+                <li dangerouslySetInnerHTML={{__html: t('intro:platform.section_1.item_1')}}/>
+                <li>{t('intro:platform.section_1.item_2')}</li>
+                <li>{t('intro:platform.section_1.item_3')}</li>
+                <li dangerouslySetInnerHTML={{__html: t('intro:platform.section_1.item_4')}}/>
+            </ul>
+            <Typography variant='h6'>{t('intro:platform.section_2.header')}</Typography>
+            <Typography dangerouslySetInnerHTML={{__html: t('intro:platform.section_2.par_1')}} variant='body1'/>
+            <Typography dangerouslySetInnerHTML={{__html: t('intro:platform.section_2.par_2')}} variant='body1'/>
+            <Typography variant='h6'>{t('intro:platform.section_3.header')}</Typography>
+            <ul>
+                <li>{t('intro:platform.section_3.item_1')}</li>
+                <li>{t('intro:platform.section_3.item_2')}</li>
+                <li>{t('intro:platform.section_3.item_3')}</li>
+                <li>{t('intro:platform.section_3.item_4')}</li>
+            </ul>
+        </React.Fragment>
+    );
+}
+
+function Publications() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <Typography variant='h5'>{t('intro:publications.section_1.header')}</Typography>
+            <ul>
+                <li>
+                    {t('intro:publications.section_1.item_1')}
+                    (<Link
+                    rel='noopener noreferrer'
+                    href='/pdf/CSRS2019_abstract_en.pdf'
+                    target='_blank'>{t('intro:publications.abstract')}</Link>)
+                    (<Link
+                    rel='noopener noreferrer'
+                    href='/pdf/GeoImageNet_in_40th_Canadian_Symposium_on_Remote_Sensing-05_June_2019.pdf'
+                    target='_blank'>{t('intro:publications.presentation')}</Link>)
+                </li>
+                <li>
+                    {t('intro:publications.section_1.item_2')}
+                    (<Link
+                    rel='noopener noreferrer'
+                    href='/pdf/LivingPlanet_GeoImageNet_2019_poster.pdf'
+                    target='_blank'>{t('intro:publications.poster')}</Link>)
+                </li>
+            </ul>
+            <Typography variant='h5'>{t('intro:publications.section_2.header')}</Typography>
+            <ul>
+                <li>
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_1.intro')}}/>
+                    <Link
+                        dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_1.link_text')}}
+                        rel='noopener noreferrer'
+                        target='_blank'
+                        href='https://www.usherbrooke.ca/actualites/nouvelles/nouvelles-details/article/38764/'/>
+                </li>
+                <li>
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_2.intro')}}/>
+                    <Link
+                        dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_2.link_text')}}
+                        rel='noopener noreferrer'
+                        target='_blank'
+                        href='https://www.crim.ca/fr/nouvelles/geoimagenet-l-intelligence-artificielle-appliquee-aux-images-satellites'/>
+                </li>
+                <li>
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_3.intro')}}/>
+                    <Link
+                        dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_3.link_text')}}
+                        rel='noopener noreferrer'
+                        target='_blank'
+                        href='https://www.effigis.com/fr/financement-federal-pour-la-r-et-d-dune-application-dinterpretation-automatisee-dimages-satellite-par-intelligence-artificielle/'/>
+                </li>
+                <li>
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_4.intro')}}/>
+                    <Link
+                        dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_4.link_text')}}
+                        rel='noopener noreferrer'
+                        target='_blank'
+                        href='https://www.canarie.ca/fr/canarie-distribue-44-millions-de-dollars-a-vingt-equipes-de-recherche-pour-quelles-perfectionnent-leurs-logiciels-afin-dameliorer-les-vaccins-de-surveiller-le-changement-climatique/'/>
+                </li>
+            </ul>
+            <Typography variant='h5'>{t('intro:publications.section_3.header')}</Typography>
+            <ul>
+                <li>{t('intro:publications.section_3.item_1')}</li>
+            </ul>
+        </React.Fragment>
+    );
+}
+
+function Mission() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <Typography variant='body1' dangerouslySetInnerHTML={{__html: t('intro:mission.what')}}/>
+            <Typography variant='body1' dangerouslySetInnerHTML={{__html: t('intro:mission.how')}}/>
+            <Typography variant='body1' dangerouslySetInnerHTML={{__html: t('intro:mission.why')}}/>
+        </React.Fragment>
+    );
+}
+
+function Team() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <Typography variant='h6'>{t('intro:team.section_1.header')}</Typography>
+            <ul>
+                <li>{t('intro:team.section_1.item_1')}</li>
+                <li>{t('intro:team.section_1.item_2')}</li>
+                <li>{t('intro:team.section_1.item_3')}</li>
+            </ul>
+            <Typography variant='h6'>{t('intro:team.section_2.header')}</Typography>
+            <ul>
+                <li>{t('intro:team.section_2.item_1')}</li>
+                <li>{t('intro:team.section_2.item_2')}</li>
+                <li>{t('intro:team.section_2.item_3')}</li>
+                <li>{t('intro:team.section_2.item_4')}</li>
+                <li>{t('intro:team.section_2.item_5')}</li>
+                <li>{t('intro:team.section_2.item_6')}</li>
+                <li>{t('intro:team.section_2.item_7')}</li>
+                <li>{t('intro:team.section_2.item_8')}</li>
+            </ul>
+            <Typography variant='h6'>{t('intro:team.section_3.header')}</Typography>
+            <ul>
+                <li>{t('intro:team.section_3.item_1')}</li>
+                <li>{t('intro:team.section_3.item_2')}</li>
+                <li>{t('intro:team.section_3.item_3')}</li>
+            </ul>
+            <Typography variant='h6'>{t('intro:team.section_4.header')}</Typography>
+            <ul>
+                <li>{t('intro:team.section_4.item_1')}</li>
+            </ul>
+        </React.Fragment>
+    );
+}
+
+function Collaborators() {
+    const {t} = useTranslation();
+    return (
+        <React.Fragment>
+            <Typography variant='body1'>{t('intro:collaborators.item_1')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_2')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_3')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_4')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_5')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_6')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_7')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_8')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_9')}</Typography>
+            <Typography variant='body1'>{t('intro:collaborators.item_10')}</Typography>
+        </React.Fragment>
+    );
+}
 
 export const PresentationContainer = withStyles(({values}) => ({
     container: {
@@ -123,85 +270,115 @@ export const PresentationContainer = withStyles(({values}) => ({
         padding: values.gutterSmall,
         display: 'grid',
         gridGap: values.gutterSmall,
-        gridTemplateColumns: '1fr min-content min-content min-content min-content 1fr',
+        gridTemplateColumns: '1fr 150px min-content min-content min-content min-content 150px 1fr',
         gridTemplateRows: 'min-content min-content 1fr min-content min-content min-content min-content 2fr min-content',
         background: 'url(/img/background.hack.jpg) no-repeat center center fixed',
         backgroundSize: 'cover',
     },
     mission: {
-        gridColumn: '2/3',
+        gridColumn: '3/4',
         gridRow: '4/5',
     },
     logos: {
-        gridColumn: '2/6',
+        gridColumn: '2/8',
         gridRow: '9/10',
     },
     publications: {
-        gridColumn: '3/5',
+        gridColumn: '4/6',
         gridRow: '6/7',
     },
     benchmarks: {
-        gridColumn: '5/6',
+        gridColumn: '6/7',
         gridRow: '6/8',
     },
     collaborators: {
-        gridColumn: '2/5',
+        gridColumn: '3/6',
         gridRow: '7/8',
     },
     team: {
-        gridColumn: '2/3',
+        gridColumn: '3/4',
         gridRow: '5/7',
     },
     taxonomy: {
-        gridColumn: '4/6',
+        gridColumn: '5/7',
         gridRow: '4/6',
     },
     platform: {
-        gridColumn: '3/4',
+        gridColumn: '4/5',
         gridRow: '4/6',
     },
-    acceder: {
-        gridColumn: '3/4',
-        gridRow: '2/3',
+    menuRight: {
+        color: 'white',
+        gridColumn: '1/-1',
+        gridRow: '1/2',
         display: 'flex',
-        justifyContent: 'space-around',
-        alignItems: 'center',
+        alignItems: 'baseline',
+        justifyContent: 'flex-end',
+        flexDirection: 'row',
+        fontSize: '1.5em',
+        lineHeight: '24px',
+        '& a': {
+            color: 'white',
+            textDecoration: 'none',
+        },
     },
-}))(({classes, user_interactions, client}) => {
+    logoLeft: {
+        padding: values.gutterMedium,
+        gridRow: '1/3',
+        gridColumn: '1/4',
+        color: 'white',
+    },
+    input: {
+        color: 'white',
+    }
+}))(({classes, user_interactions, client, contact_email}) => {
 
     const {t} = useTranslation();
+    const [dialog_open, change_dialog_openness] = useState(false);
+    const toggle_dialog = () => {
+        change_dialog_openness(!dialog_open);
+    };
 
     return (
         <div className={classes.container}>
-            <div className={classes.logos}><Logos/></div>
-            <div className={classes.acceder}>
-                <PaddedPaper><Login user_interactions={user_interactions}/></PaddedPaper>
+            <div className={classes.menuRight}>
+                <Typography style={{cursor: 'pointer', marginRight: '24px'}} variant='body1'
+                            onClick={toggle_dialog}>{t('login:login')}</Typography>
+                <Dialog open={dialog_open} onClose={toggle_dialog}>
+                    <Login user_interactions={user_interactions}/>
+                </Dialog>
+                <Typography style={{cursor: 'pointer', marginRight: '24px'}} variant='body1'>
+                    <a href={`mailto:${contact_email}`}>{t('util:contact')}</a>
+                </Typography>
+                <ChangeLanguage/>
             </div>
+            <div className={classes.logoLeft}><img alt='Logo GeoImageNet' src={logo_gin}/></div>
+            <div className={classes.logos}><Logos/></div>
             <div className={classes.benchmarks}>
                 <LessOpaquePaper title={t('title:benchmarks')} content={
                     <React.Fragment>
-                        <Typography variant='body1' style={{marginBottom: '12px'}}>{t('intro:benchmarks')}</Typography>
-                        <Benchmarks client={client} />
+                        <BenchmarksPanel/>
+                        <Benchmarks client={client}/>
                     </React.Fragment>
                 }/>
             </div>
             <div className={classes.mission}>
-                <LessOpaquePaper title={t('title:mission')} content={t('intro:mission')}/>
+                <LessOpaquePaper title={t('title:mission')} content={<Mission/>} maxWidth='lg'/>
             </div>
             <div className={classes.team}>
-                <LessOpaquePaper title={t('title:team')} content={t('intro:team')}/>
+                <LessOpaquePaper title={t('title:team')} content={<Team/>}/>
             </div>
             <div className={classes.platform}>
-                <LessOpaquePaper title={t('title:platform')} content={t('intro:platform')}/>
+                <LessOpaquePaper title={t('title:platform')} content={<Platform/>} maxWidth='lg'/>
             </div>
             <div className={classes.publications}>
-                <LessOpaquePaper title={t('title:publications')} content={t('intro:publications')}/>
+                <LessOpaquePaper title={t('title:publications')} content={<Publications/>}/>
             </div>
             <div className={classes.collaborators}>
-                <LessOpaquePaper title={t('title:collaborators')} content={t('intro:collaborators')}/>
+                <LessOpaquePaper title={t('title:collaborators')} content={<Collaborators/>}/>
             </div>
             <div className={classes.taxonomy}>
-                <LessOpaquePaper title={t('title:taxonomy')} content={t('intro:taxonomy')}/>
+                <LessOpaquePaper title={t('title:taxonomy')} content={<Taxonomy/>}/>
             </div>
         </div>
     );

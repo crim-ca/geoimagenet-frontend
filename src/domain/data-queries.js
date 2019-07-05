@@ -57,11 +57,26 @@ export class DataQueries {
     /**
      * Returns information for the user associated with current cookies. We rely on the cookies being automatically associated
      * to requests here. This is fairly usual behaviour.
+     * Added the merging of two requests because they both have only part of the needed information: session knows if we're authenticated or not,
+     * but users/current will happily return an user object even for not-logged users (the famed anonymous user).
+     * @todo as we are coupled to the idea that there is an actual user that is anonymous, we could add test around this boundary
      * @returns {Promise<Object>}
      */
     current_user_session = async () => {
-        const res = await make_http_request(`${this.magpie_endpoint}/users/current`);
-        return res.json();
+        const responses = await Promise.all([
+            make_http_request(`${this.magpie_endpoint}/users/current`),
+            make_http_request(`${this.magpie_endpoint}/session`),
+        ]);
+        const jsons = await Promise.all(responses.map(res => res.json()));
+        const merged_information = {};
+        jsons.forEach(json => {
+            if (json.code === 200) {
+                Object.assign(merged_information, json);
+            } else {
+                throw new Error('We could not interrogate magpie for user information.');
+            }
+        });
+        return merged_information;
     };
 
     /**

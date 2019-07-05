@@ -112,7 +112,13 @@ export const DATASETS = 'datasets';
 export const ANNOTATIONS = 'annotations';
 
 /**
- * Magpie resource for annotaion validation sections and interactions
+ * Magpie resource for annotation validation sections and interactions
  * @type {string}
  */
 export const VALIDATIONS = 'validations';
+
+/**
+ * Magpie resource for reading the wms copyright protected images.
+ * @type {string}
+ */
+export const WMS = 'wms';

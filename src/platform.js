@@ -20,7 +20,7 @@ import './img/icons/favicon.ico';
 import {theme} from './utils/react.js';
 
 Sentry.init({
-    dsn: 'https://e7309c463efe4d85abc7693a6334e8df@sentry.crim.ca/21'
+    dsn: FRONTEND_JS_SENTRY_DSN,
 });
 
 /**
@@ -62,6 +62,32 @@ export class PlatformLoader {
         this.user_interactions = new UserInteractions(this.store_actions, this.data_queries);
     }
 
+    make_platform() {
+        return <Platform
+            state_proxy={this.state_proxy}
+            store_actions={this.store_actions}
+            user_interactions={this.user_interactions}
+            data_queries={this.data_queries}/>;
+    }
+
+    /**
+     * we must make sure not to return the whole logged layout when the request is not authenticated: that situation
+     * means we are in a demo platform context.
+     * @todo at some point add the possibility of quick login from this state so that humans don't need to go back to the home page to login.
+     * @returns {*}
+     */
+    make_layout() {
+        const {acl: {authenticated}} = this.state_proxy;
+        if (authenticated) {
+            return (
+                <LoggedLayout state_proxy={this.state_proxy} user_interactions={this.user_interactions}>
+                    {this.make_platform()}
+                </LoggedLayout>
+            );
+        }
+        return this.make_platform();
+    }
+
     /**
      * Render the react components on the page passing the services to each as needed.
      * Fetch the basic information for the page to show something meaningful.
@@ -73,16 +99,12 @@ export class PlatformLoader {
         div.classList.add('root');
         document.body.appendChild(div);
 
+        await this.user_interactions.refresh_user_resources_permissions();
+
         ReactDOM.render(
             <MuiThemeProvider theme={theme}>
-                <CssBaseline />
-                <LoggedLayout state_proxy={this.state_proxy} user_interactions={this.user_interactions}>
-                    <Platform
-                        state_proxy={this.state_proxy}
-                        store_actions={this.store_actions}
-                        user_interactions={this.user_interactions}
-                        data_queries={this.data_queries} />
-                </LoggedLayout>
+                <CssBaseline/>
+                {this.make_layout()}
             </MuiThemeProvider>,
             div
         );

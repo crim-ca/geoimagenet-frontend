@@ -84,7 +84,12 @@ export const theme = createMuiTheme({
             root: {
                 padding: GUTTER_SMALL,
             }
-        }
+        },
+        MuiTypography: {
+            body1: {
+                margin: `${GUTTER_SMALL} 0`
+            }
+        },
     },
 });
 

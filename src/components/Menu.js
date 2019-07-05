@@ -43,22 +43,23 @@ class Menu extends Component {
     static propTypes = {
         state_proxy: PropTypes.object.isRequired,
         user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
+        contact_email: PropTypes.string.isRequired,
     };
 
     /**
      * Defines the different menus that can be shown when logged in
-     * @todo bring back model and help when we have an idea what to put in there
+     * @todo bring back help when we have an idea what to put in there
      * @private
      * @type {{title: string, href: string}[]}
      */
-    static menus = [
+    menus = [
         {title: 'Home', href: '/'},
         {title: 'Platform', href: '/platform'},
         {title: 'Dataset', href: '/datasets'},
         {title: 'Model', href: '/models'},
         {title: 'Benchmarks', href: '/benchmarks'},
         //{title: 'Help', href: '/help'},
-        {title: 'Contact', href: 'mailto:(contact@geoimagenet.crim.ca)'},
+        {title: 'Contact', href: `mailto:${this.props.contact_email}`},
     ];
 
     render() {
@@ -66,7 +67,7 @@ class Menu extends Component {
         const {state_proxy, user_interactions} = this.props;
         return (
             <MenuContainerDiv>
-                {Menu.menus.map((menu, i) => <MenuLink href={menu.href}
+                {this.menus.map((menu, i) => <MenuLink href={menu.href}
                                                        key={i}
                                                        underline={menu.href === current_url ? 'always' : 'hover'}
                                                        color={menu.href === current_url ? 'textPrimary' : 'textSecondary'}>{menu.title}</MenuLink>

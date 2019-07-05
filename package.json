@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Frontend annotation platform for GeoImageNet",
   "directories": {
     "test": "test"
@@ -32,8 +32,8 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.15",
     "@fortawesome/free-solid-svg-icons": "^5.7.2",
     "@fortawesome/react-fontawesome": "^0.1.4",
-    "@material-ui/core": "^4.0.1",
-    "@material-ui/icons": "^4.0.1",
+    "@material-ui/core": "^4.1.3",
+    "@material-ui/icons": "^4.2.1",
     "apollo": "^2.9.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.4",
