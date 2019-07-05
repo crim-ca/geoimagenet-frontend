@@ -195,20 +195,20 @@ class TaxonomyClassListElement extends Component {
                                 selected={this.props.state_proxy.selected_taxonomy_class_id === taxonomy_class.id}
                                 button>
                     <StyledLabelAndCountSpan>
-                        <TaxonomyClassLabel label={taxonomy_class.name_fr} />
+                        <TaxonomyClassLabel label={taxonomy_class.name_en} />
                         {taxonomy_class.counts[ANNOTATION.STATUS.NEW]
                             ? <AnnotationsCount class='annotation_new'
-                                                tooltip={`new annotations of class ${taxonomy_class.name_fr}`}
+                                                tooltip={`new annotations of class ${taxonomy_class.name_en}`}
                                                 count={taxonomy_class.counts[ANNOTATION.STATUS.NEW]} />
                             : null}
                         {taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]
                             ? <AnnotationsCount class='annotation_released'
-                                                tooltip={`released annotations of class ${taxonomy_class.name_fr}`}
+                                                tooltip={`released annotations of class ${taxonomy_class.name_en}`}
                                                 count={taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]} />
                             : null}
                         {taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]
                             ? <AnnotationsCount class='annotation_validated'
-                                                tooltip={`validated annotations of class ${taxonomy_class.name_fr}`}
+                                                tooltip={`validated annotations of class ${taxonomy_class.name_en}`}
                                                 count={taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]} />
                             : null}
                     </StyledLabelAndCountSpan>
