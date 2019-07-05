@@ -35,7 +35,7 @@ pipeline {
 
         stage('DeployLatest') {
             when {
-                expression { return GIT_LOCAL_BRANCH.startsWith("develop") }
+                expression { return GIT_LOCAL_BRANCH.startsWith("develop") || GIT_LOCAL_BRANCH.startsWith("release") }
             }
             steps {
                 sh 'docker tag $LOCAL_IMAGE_NAME $LATEST_IMAGE_NAME'
@@ -47,7 +47,7 @@ pipeline {
 
         stage('DeployTag') {
             when {
-                expression { return GIT_LOCAL_BRANCH.startsWith("release") }
+                expression { return GIT_LOCAL_BRANCH.startsWith("master") }
             }
             steps {
                 sh 'docker tag $LOCAL_IMAGE_NAME $LATEST_IMAGE_NAME'
