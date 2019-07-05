@@ -162,7 +162,7 @@ const resources = {
         title: {
             benchmarks: 'Benchmark/Test',
             mission: 'Mission',
-            platform: 'La Plateforme',
+            platform: 'Plateforme',
             taxonomy: 'Taxonomie',
             publications: 'Publications',
             collaborators: 'Collaborateurs de recherche',
