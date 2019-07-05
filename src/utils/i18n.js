@@ -122,7 +122,7 @@ const resources = {
             },
             team: {
                 section_1: {
-                    header: 'University of Sherbrooke:',
+                    header: 'Université de Sherbrooke:',
                     item_1: 'Yacine Bouroubi',
                     item_2: 'Mickaël Germain',
                     item_3: 'Étienne Lauzier-Hudon',
