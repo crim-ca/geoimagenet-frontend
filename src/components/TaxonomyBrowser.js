@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
-import {Tabs, Tab} from '@material-ui/core';
+import {Tabs, Tab, CircularProgress} from '@material-ui/core';
 
 import {TaxonomyClassListElement} from './taxonomy/TaxonomyClassListElement.js';
 import {UserInteractions} from '../domain/user-interactions.js';
@@ -45,26 +45,41 @@ class TaxonomySelector extends Component {
     };
 
     state = {
-        value: '',
+        value: 0,
     };
 
-    handle_tab_select = async (event, value) => {
+
+    /**
+     * We use the positional id because the actual taxonomy id is hidden within the versions of the taxonomies, which is a bit more
+     * of a hassle to use to select the right one than if it were flat.
+     * It's probable that structure will change in the future, so basically selecting whatever taxonomy was built in the order
+     * in which it was built if safer.
+     * @param event
+     * @param {number} taxonomy_positional_id the 0 indexed position of the taxonomy to be selected in the store's collection of taxonomies
+     * @returns {Promise<void>}
+     */
+    handle_tab_select = async (event, taxonomy_positional_id) => {
+        this.setState({value: taxonomy_positional_id});
 
         const {select_taxonomy} = this.props.user_interactions;
+        const value = this.props.state_proxy.taxonomies[taxonomy_positional_id];
 
-        this.setState({value});
         const version = value['versions'][0];
         await select_taxonomy(version, value.name);
     };
 
     render() {
 
-        const {value} = this.state;
+        // Building a tabs component without an actual value to pass in errors with material-ui.
         const {taxonomies} = this.props.state_proxy;
+        if (taxonomies.length === 0) {
+            return <CircularProgress />;
+        }
 
+        const {value} = this.state;
         return (
             <Tabs value={value} onChange={this.handle_tab_select}>
-                { taxonomies.map((taxonomy, i) => <Tab value={taxonomy} key={i} label={taxonomy.name_en || taxonomy.name_fr} />) }
+                { taxonomies.map((taxonomy, i) => <Tab value={i} key={i} label={taxonomy.name_en || taxonomy.name_fr} />) }
             </Tabs>
         );
     }

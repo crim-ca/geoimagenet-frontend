@@ -33,13 +33,18 @@ addEventListener('DOMContentLoaded', () => {
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
     const user_interactions = new UserInteractions(store_actions, data_queries);
 
+    user_interactions.fetch_taxonomies();
+
     ReactDOM.render(
         <ThemedComponent>
-            <PresentationContainer
-                contact_email={CONTACT_EMAIL}
-                user_interactions={user_interactions}
-                client={client} />
-            <NotificationContainer/>
+            <div style={{height: '100%'}}>
+                <PresentationContainer
+                    state_proxy={state_proxy}
+                    contact_email={CONTACT_EMAIL}
+                    user_interactions={user_interactions}
+                    client={client}/>
+                <NotificationContainer/>
+            </div>
         </ThemedComponent>,
         div
     );
