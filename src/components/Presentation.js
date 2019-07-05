@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {withStyles, Link, Typography, Paper, Select, MenuItem, Dialog} from '@material-ui/core';
+import Clear from '@material-ui/icons/Clear';
 import {useTranslation} from '../utils';
 
 import {Logos} from './Logos.js';
@@ -36,6 +37,12 @@ const LessOpaquePaper = withStyles(({values}) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    top: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'baseline',
+        justifyContent: 'space-between',
+    },
 }))(({classes, title, content, maxWidth = 'xl'}) => {
     const [opened, setOpened] = useState(false);
     const close = () => {
@@ -51,7 +58,10 @@ const LessOpaquePaper = withStyles(({values}) => ({
                 maxWidth={maxWidth}
                 open={opened}
                 onClose={close}>
-                <Typography variant='h4'>{title}</Typography>
+                <div className={classes.top}>
+                    <Typography variant='h4'>{title}</Typography>
+                    <Clear style={{cursor: 'pointer'}} onClick={close} />
+                </div>
                 {content}
             </DarkDialog>
         </div>
