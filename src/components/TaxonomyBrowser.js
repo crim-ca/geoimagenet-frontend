@@ -42,6 +42,7 @@ class TaxonomySelector extends Component {
     static propTypes = {
         state_proxy: PropTypes.object.isRequired,
         user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
+        t: PropTypes.func.isRequired,
     };
 
     state = {
@@ -77,9 +78,10 @@ class TaxonomySelector extends Component {
         }
 
         const {value} = this.state;
+        const {t} = this.props;
         return (
             <Tabs value={value} onChange={this.handle_tab_select}>
-                { taxonomies.map((taxonomy, i) => <Tab value={i} key={i} label={taxonomy.name_en || taxonomy.name_fr} />) }
+                { taxonomies.map((taxonomy, i) => <Tab value={i} key={i} label={t(`taxonomy_classes:${taxonomy.versions[0].root_taxonomy_class_id}`)} />) }
             </Tabs>
         );
     }

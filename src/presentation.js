@@ -21,7 +21,7 @@ Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
 });
 
-addEventListener('DOMContentLoaded', () => {
+addEventListener('DOMContentLoaded', async () => {
 
     const div = document.createElement('div');
     div.classList.add('root');
@@ -34,7 +34,7 @@ addEventListener('DOMContentLoaded', () => {
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
     const user_interactions = new UserInteractions(store_actions, data_queries, i18n);
 
-    user_interactions.fetch_taxonomies();
+    await user_interactions.fetch_taxonomies();
 
     ReactDOM.render(
         <ThemedComponent>
