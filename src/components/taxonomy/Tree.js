@@ -4,6 +4,7 @@ import {Chip, Collapse, List, ListItem, Tooltip, withStyles} from '@material-ui/
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 import {UserInteractions} from '../../domain';
+import {i18n} from '../../utils';
 
 /*
 The taxonomy tree should allow the user to navigate in a taxonomy's classes
@@ -66,6 +67,7 @@ class ListElement extends Component {
             ? make_toggle_callback(taxonomy_class)
             : null;
 
+        const label = i18n.t(`taxonomy_classes:${taxonomy_class.id}`);
         return (
             <StyledList>
                 <StyledListItem className='taxonomy_class_list_element'
@@ -73,20 +75,20 @@ class ListElement extends Component {
                                 selected={state_proxy.selected_taxonomy_class_id === taxonomy_class.id}
                                 button>
                     <StyledLabelAndCountSpan>
-                        <TaxonomyClassLabel label={taxonomy_class.name_en}/>
+                        <TaxonomyClassLabel label={label}/>
                         {taxonomy_class.counts[ANNOTATION.STATUS.NEW]
                             ? <AnnotationsCount class_name='annotation_new'
-                                                tooltip={`new annotations of class ${taxonomy_class.name_en}`}
+                                                tooltip={`new annotations of class ${label}`}
                                                 count={taxonomy_class.counts[ANNOTATION.STATUS.NEW]}/>
                             : null}
                         {taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]
                             ? <AnnotationsCount class_name='annotation_released'
-                                                tooltip={`released annotations of class ${taxonomy_class.name_en}`}
+                                                tooltip={`released annotations of class ${label}`}
                                                 count={taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]}/>
                             : null}
                         {taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]
                             ? <AnnotationsCount class_name='annotation_validated'
-                                                tooltip={`validated annotations of class ${taxonomy_class.name_en}`}
+                                                tooltip={`validated annotations of class ${label}`}
                                                 count={taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]}/>
                             : null}
                     </StyledLabelAndCountSpan>

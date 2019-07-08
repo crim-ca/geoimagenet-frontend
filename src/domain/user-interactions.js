@@ -21,8 +21,9 @@ export class UserInteractions {
      *
      * @param {StoreActions} store_actions
      * @param {DataQueries} data_queries
+     * @param {object} i18next_instance
      */
-    constructor(store_actions, data_queries) {
+    constructor(store_actions, data_queries, i18next_instance) {
         /**
          * @private
          * @type {StoreActions}
@@ -33,6 +34,11 @@ export class UserInteractions {
          * @type {DataQueries}
          */
         this.data_queries = data_queries;
+        /**
+         * @private
+         * @type {object}
+         */
+        this.i18next_instance = i18next_instance;
 
         this.select_taxonomy = this.select_taxonomy.bind(this);
         this.release_annotations = this.release_annotations.bind(this);
@@ -70,6 +76,7 @@ export class UserInteractions {
      *  - build default values for each taxonomy class element (such as the checked, for visibility selection, or opened, for tree navigation)
      *  - by default, we toggle the first level of the tree, so that user down not have to do it
      *  - toggle visibility for every class in the taxonomy
+     *  - build the localized versions strings in the i18n framework (ideally only if theye not already present)
      *
      * @param {object} version
      * @param {string} taxonomy_name
@@ -90,7 +97,18 @@ export class UserInteractions {
             const root_taxonomy_class = await this.data_queries.fetch_taxonomy_classes(version['root_taxonomy_class_id']);
             const counts = await this.data_queries.flat_taxonomy_classes_counts(version['root_taxonomy_class_id']);
 
+            /**
+             * the build_taxonomy_classes_structure has the nice side-effect of building a flat taxonomy classes structure as well!
+             * so we will neatly ask it to generate language dictionaries for newly added taxonomy classes afterwards
+             */
             this.store_actions.build_taxonomy_classes_structures(root_taxonomy_class);
+
+            const fr_dict = this.store_actions.generate_localized_taxonomy_classes_labels('fr');
+            const en_dict = this.store_actions.generate_localized_taxonomy_classes_labels('en');
+
+            this.i18next_instance.addResources('fr', 'taxonomy_classes', fr_dict);
+            this.i18next_instance.addResources('en', 'taxonomy_classes', en_dict);
+
             this.store_actions.set_annotation_counts(counts);
 
             this.store_actions.toggle_taxonomy_class_tree_element(version['root_taxonomy_class_id']);

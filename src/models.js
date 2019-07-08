@@ -10,6 +10,7 @@ import {element, get_by_id} from './utils/dom.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
 import {Models} from './components/Models';
 import {theme} from './utils/react.js';
+import {i18n} from './utils';
 
 import {create_client} from './utils/apollo';
 import {ApolloProvider} from 'react-apollo';
@@ -27,7 +28,7 @@ addEventListener('DOMContentLoaded', async () => {
     const state_proxy = create_state_proxy();
     const store_actions = new StoreActions(state_proxy);
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
-    const user_interactions = new UserInteractions(store_actions, data_queries);
+    const user_interactions = new UserInteractions(store_actions, data_queries, i18n);
     const apollo_client = create_client(GRAPHQL_ENDPOINT);
 
     const div = element('div');

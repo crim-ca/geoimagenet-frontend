@@ -72,6 +72,28 @@ export class StoreActions {
     }
 
     /**
+     * We want to extract all localized taxonomy classes strings and send them in a dictionary that makes ids correspond to names.
+     * Later on, we'll use i18next to translate the strings.
+     * @param {string} lang
+     */
+    @action.bound
+    generate_localized_taxonomy_classes_labels(lang) {
+        const {flat_taxonomy_classes} = this.state_proxy;
+        const dict = {};
+        for (const taxonomy_class_id in flat_taxonomy_classes) {
+            if (flat_taxonomy_classes.hasOwnProperty(taxonomy_class_id)) {
+                const taxonomy_class = flat_taxonomy_classes[taxonomy_class_id];
+                const name_tag = `name_${lang}`;
+                if (taxonomy_class.hasOwnProperty(name_tag)) {
+                    dict[taxonomy_class.id] = taxonomy_class[name_tag];
+                }
+            }
+
+        }
+        return dict;
+    }
+
+    /**
      * Take the raw data structure from the api and transform it into usable structures for the UI.
      *
      * loop over an object, build a class instance from it.
