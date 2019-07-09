@@ -64,7 +64,7 @@ const LessOpaquePaper = withStyles(({values}) => ({
                 open={opened}
                 onClose={close}>
                 <div className={classes.top}>
-                    <Typography variant='h4'>{title}</Typography>
+                    <Typography style={{marginRight: '24px'}} variant='h4'>{title}</Typography>
                     <Clear style={{cursor: 'pointer'}} onClick={close}/>
                 </div>
                 {content}
