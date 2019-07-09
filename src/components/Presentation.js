@@ -107,7 +107,7 @@ class Taxonomy extends React.Component {
                 <Typography variant='body1'>{t('intro:taxonomy.par_1')}</Typography>
                 <Typography variant='body1'>{t('intro:taxonomy.par_2')}</Typography>
                 <Link download href={`${GEOIMAGENET_API_URL}/taxonomy_classes`}>{t('intro:taxonomy.download')}</Link>
-                <Paper>
+                <Paper style={{marginTop: '12px'}}>
                     <TaxonomySelector user_interactions={user_interactions}
                                       t={t}
                                       state_proxy={state_proxy}/>

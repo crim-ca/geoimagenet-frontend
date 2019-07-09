@@ -46,6 +46,7 @@ class TaxonomySelector extends Component {
     };
 
     state = {
+        loading: true,
         value: 0,
     };
 
@@ -59,7 +60,7 @@ class TaxonomySelector extends Component {
         // dirtily select the first taxonomy in the list.
         await user_interactions.fetch_taxonomies();
         await user_interactions.select_taxonomy(state_proxy.taxonomies[0].versions[0], state_proxy.taxonomies[0].name);
-        this.forceUpdate();
+        this.setState({loading: false});
     }
 
     /**
@@ -84,13 +85,20 @@ class TaxonomySelector extends Component {
     render() {
 
         // Building a tabs component without an actual value to pass in errors with material-ui.
-        const {taxonomies} = this.props.state_proxy;
+        const {t, state_proxy: {taxonomies}} = this.props;
+        if (this.state.loading) {
+            return (
+                <div style={{display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'center'}}>
+                    <CircularProgress/>
+                </div>
+            );
+        }
+
         if (taxonomies.length === 0) {
-            return <CircularProgress/>;
+            return <p>{t('intro:taxonomy.no_taxonomies')}</p>;
         }
 
         const {value} = this.state;
-        const {t} = this.props;
         return (
             <Tabs value={value} onChange={this.handle_tab_select}>
                 {taxonomies.map((taxonomy, i) => <Tab value={i} key={i}
