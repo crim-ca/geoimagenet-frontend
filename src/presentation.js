@@ -34,8 +34,6 @@ addEventListener('DOMContentLoaded', async () => {
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
     const user_interactions = new UserInteractions(store_actions, data_queries, i18n);
 
-    await user_interactions.fetch_taxonomies();
-
     ReactDOM.render(
         <ThemedComponent>
             <div style={{height: '100%'}}>

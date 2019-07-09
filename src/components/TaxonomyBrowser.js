@@ -29,7 +29,7 @@ class TaxonomyClasses extends Component {
                                               state_proxy={this.props.state_proxy}
                                               user_interactions={this.props.user_interactions}
                                               invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility}
-                                              toggle_taxonomy_class_tree_element={this.props.toggle_taxonomy_class_tree_element} />
+                                              toggle_taxonomy_class_tree_element={this.props.toggle_taxonomy_class_tree_element}/>
                 ))}
             </ul>
         );
@@ -49,6 +49,18 @@ class TaxonomySelector extends Component {
         value: 0,
     };
 
+    constructor(props) {
+        super(props);
+        this.init();
+    }
+
+    async init() {
+        const {user_interactions, state_proxy} = this.props;
+        // dirtily select the first taxonomy in the list.
+        await user_interactions.fetch_taxonomies();
+        await user_interactions.select_taxonomy(state_proxy.taxonomies[0].versions[0], state_proxy.taxonomies[0].name);
+        this.forceUpdate();
+    }
 
     /**
      * We use the positional id because the actual taxonomy id is hidden within the versions of the taxonomies, which is a bit more
@@ -74,14 +86,15 @@ class TaxonomySelector extends Component {
         // Building a tabs component without an actual value to pass in errors with material-ui.
         const {taxonomies} = this.props.state_proxy;
         if (taxonomies.length === 0) {
-            return <CircularProgress />;
+            return <CircularProgress/>;
         }
 
         const {value} = this.state;
         const {t} = this.props;
         return (
             <Tabs value={value} onChange={this.handle_tab_select}>
-                { taxonomies.map((taxonomy, i) => <Tab value={i} key={i} label={t(`taxonomy_classes:${taxonomy.versions[0].root_taxonomy_class_id}`)} />) }
+                {taxonomies.map((taxonomy, i) => <Tab value={i} key={i}
+                                                      label={t(`taxonomy_classes:${taxonomy.versions[0].root_taxonomy_class_id}`)}/>)}
             </Tabs>
         );
     }

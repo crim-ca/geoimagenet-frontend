@@ -101,10 +101,7 @@ export class PlatformLoader {
         div.classList.add('root');
         document.body.appendChild(div);
 
-        await Promise.all([
-            this.user_interactions.refresh_user_resources_permissions(),
-            this.user_interactions.fetch_taxonomies(),
-        ]);
+        await this.user_interactions.refresh_user_resources_permissions();
 
         ReactDOM.render(
             <MuiThemeProvider theme={theme}>
