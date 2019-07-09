@@ -151,6 +151,16 @@ const resources = {
                 },
             },
         },
+        taxonomy_viewer: {
+            tooltip: {
+                new: '{{count}} new annotation of class {{taxonomy_class}}.',
+                new_plural: '{{count}} new annotations of class {{taxonomy_class}}.',
+                released: '{{count}} released annotation of class {{taxonomy_class}}.',
+                released_plural: '{{count}} released annotations of class {{taxonomy_class}}.',
+                validated: '{{count}} valid annotation of class {{taxonomy_class}}.',
+                validated_plural: '{{count}} valid annotations of class {{taxonomy_class}}.',
+            },
+        },
         util: {
             'french': 'French',
             'english': 'English',
@@ -313,6 +323,16 @@ const resources = {
                     header: 'RNCan :',
                     item_1: 'Mathieu Turgeon-Pelchat',
                 },
+            },
+        },
+        taxonomy_viewer: {
+            tooltip: {
+                new: '{{count}} nouvelle annotation de classe {{taxonomy_class}}.',
+                new_plural: '{{count}} nouvelles annotations de classe {{taxonomy_class}}.',
+                released: '{{count}} annotations relâchées de classe {{taxonomy_class}}.',
+                released_plural: '{{count}} annotation relâchée de classe {{taxonomy_class}}.',
+                validated: '{{count}} annotation valide de classe {{taxonomy_class}}.',
+                validated_plural: '{{count}} annotations valides de classe {{taxonomy_class}}.',
             },
         },
         util: {

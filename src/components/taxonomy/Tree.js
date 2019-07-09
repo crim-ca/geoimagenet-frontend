@@ -42,19 +42,21 @@ const SpacedChip = withStyles({
 function TaxonomyClassLabel({label}) {
     return <span>{label}</span>;
 }
+
 TaxonomyClassLabel.propTypes = {
     label: PropTypes.string,
 };
 
 function AnnotationsCount({class_name, count, tooltip}) {
     return (
-        <Tooltip title={`${count} ${tooltip}`}>
+        <Tooltip title={tooltip}>
             <SpacedChip label={count}
                         className={class_name}
                         variant='outlined'/>
         </Tooltip>
     );
 }
+
 AnnotationsCount.propTypes = {
     class_name: PropTypes.string,
     count: PropTypes.number,
@@ -85,17 +87,35 @@ class ListElement extends Component {
                         <TaxonomyClassLabel label={label}/>
                         {taxonomy_class.counts[ANNOTATION.STATUS.NEW]
                             ? <AnnotationsCount class_name='annotation_new'
-                                                tooltip={`new annotations of class ${label}`}
+                                                tooltip={t(
+                                                    'taxonomy_viewer:tooltip.new',
+                                                    {
+                                                        count: taxonomy_class.counts[ANNOTATION.STATUS.NEW],
+                                                        taxonomy_class: label,
+                                                    }
+                                                )}
                                                 count={taxonomy_class.counts[ANNOTATION.STATUS.NEW]}/>
                             : null}
                         {taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]
                             ? <AnnotationsCount class_name='annotation_released'
-                                                tooltip={`released annotations of class ${label}`}
+                                                tooltip={t(
+                                                    'taxonomy_viewer:tooltip.released',
+                                                    {
+                                                        count: taxonomy_class.counts[ANNOTATION.STATUS.RELEASED],
+                                                        taxonomy_class: label,
+                                                    }
+                                                )}
                                                 count={taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]}/>
                             : null}
                         {taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]
                             ? <AnnotationsCount class_name='annotation_validated'
-                                                tooltip={`validated annotations of class ${label}`}
+                                                tooltip={t(
+                                                    'taxonomy_viewer:tooltip.validated',
+                                                    {
+                                                        count: taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED],
+                                                        taxonomy_class: label,
+                                                    }
+                                                )}
                                                 count={taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]}/>
                             : null}
                     </StyledLabelAndCountSpan>
