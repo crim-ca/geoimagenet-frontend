@@ -65,15 +65,6 @@ label.checkbox_eye [type=checkbox]:checked + span {
 .taxonomy_class_list_element:hover .actions {
     visibility: visible;
 }
-div.annotation_new {
-    background-color: var(--color-new);
-}
-div.annotation_released {
-    background-color: var(--color-released);
-}
-div.annotation_validated {
-    background-color: var(--color-validated);
-}
 span.icon {
     height: 30px;
     width: 30px;

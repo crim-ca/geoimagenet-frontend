@@ -75,3 +75,12 @@ button {
 button:focus {
     outline: none;
 }
+div.annotation_new {
+    background-color: var(--color-new);
+}
+div.annotation_released {
+    background-color: var(--color-released);
+}
+div.annotation_validated {
+    background-color: var(--color-validated);
+}
