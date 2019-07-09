@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Sentry from '@sentry/browser';
 import {CssBaseline, MuiThemeProvider} from '@material-ui/core';
+import {i18n} from './utils';
 
 import {DataQueries} from './domain/data-queries.js';
 import {create_state_proxy, StoreActions} from './store';
@@ -27,7 +28,7 @@ addEventListener('DOMContentLoaded', async () => {
     const state_proxy = create_state_proxy();
     const store_actions = new StoreActions(state_proxy);
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
-    const user_interactions = new UserInteractions(store_actions, data_queries);
+    const user_interactions = new UserInteractions(store_actions, data_queries, i18n);
     const apollo_client = create_client(GRAPHQL_ENDPOINT);
 
     const div = element('div');

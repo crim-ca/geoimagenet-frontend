@@ -1,13 +1,18 @@
 import React, {useState} from 'react';
 import {withStyles, Link, Typography, Paper, Select, MenuItem, Dialog} from '@material-ui/core';
 import Clear from '@material-ui/icons/Clear';
-import {useTranslation} from '../utils';
+import {useTranslation, withTranslation} from '../utils';
+import {Tree} from './taxonomy/Tree';
+import {observer} from 'mobx-react';
+import PropTypes from 'prop-types';
+
 
 import {Logos} from './Logos.js';
 import {Login} from './Login.js';
 import {Benchmarks} from './Benchmarks';
 
 import logo_gin from '../img/logos/logo_trans_GIN.png';
+import {TaxonomySelector} from './TaxonomyBrowser';
 
 const DarkDialog = withStyles(({colors, values}) => ({
     paper: {
@@ -59,8 +64,8 @@ const LessOpaquePaper = withStyles(({values}) => ({
                 open={opened}
                 onClose={close}>
                 <div className={classes.top}>
-                    <Typography variant='h4'>{title}</Typography>
-                    <Clear style={{cursor: 'pointer'}} onClick={close} />
+                    <Typography style={{marginRight: '24px'}} variant='h4'>{title}</Typography>
+                    <Clear style={{cursor: 'pointer'}} onClick={close}/>
                 </div>
                 {content}
             </DarkDialog>
@@ -91,16 +96,39 @@ function ChangeLanguage() {
     );
 }
 
-function Taxonomy() {
-    const {t} = useTranslation();
-    return (
-        <React.Fragment>
-            <Typography variant='body1'>{t('intro:taxonomy.par_1')}</Typography>
-            <Typography variant='body1'>{t('intro:taxonomy.par_2')}</Typography>
-            <Link download href={`${GEOIMAGENET_API_URL}/taxonomy_classes`}>{t('intro:taxonomy.download')}</Link>
-        </React.Fragment>
-    );
+@observer
+class Taxonomy extends React.Component {
+    render() {
+        const {state_proxy, user_interactions, t} = this.props;
+        const taxonomy_class = state_proxy.flat_taxonomy_classes[state_proxy.selected_taxonomy.root_taxonomy_class_id];
+        const classes = taxonomy_class ? [taxonomy_class] : [];
+        return (
+            <React.Fragment>
+                <Typography variant='body1'>{t('intro:taxonomy.par_1')}</Typography>
+                <Typography variant='body1'>{t('intro:taxonomy.par_2')}</Typography>
+                <Link download href={`${GEOIMAGENET_API_URL}/taxonomy_classes`}>{t('intro:taxonomy.download')}</Link>
+                <Paper style={{marginTop: '12px'}}>
+                    <TaxonomySelector user_interactions={user_interactions}
+                                      t={t}
+                                      state_proxy={state_proxy}/>
+                {classes.length > 0
+                    ? <Tree
+                            t={t}
+                            state_proxy={state_proxy}
+                            user_interactions={user_interactions}
+                            taxonomy_classes={classes}/>
+                    : null}
+                </Paper>
+            </React.Fragment>
+        );
+    }
 }
+Taxonomy.propTypes = {
+    user_interactions: PropTypes.any.isRequired,
+    state_proxy: PropTypes.object.isRequired,
+    t: PropTypes.func.isRequired,
+};
+const TranslatedTaxonomy = withTranslation()(Taxonomy);
 
 function BenchmarksPanel() {
     const {t} = useTranslation();
@@ -341,7 +369,7 @@ export const PresentationContainer = withStyles(({values}) => ({
     input: {
         color: 'white',
     }
-}))(({classes, user_interactions, client, contact_email}) => {
+}))(({classes, state_proxy, user_interactions, client, contact_email}) => {
 
     const {t} = useTranslation();
     const [dialog_open, change_dialog_openness] = useState(false);
@@ -388,7 +416,9 @@ export const PresentationContainer = withStyles(({values}) => ({
                 <LessOpaquePaper title={t('title:collaborators')} content={<Collaborators/>}/>
             </div>
             <div className={classes.taxonomy}>
-                <LessOpaquePaper title={t('title:taxonomy')} content={<Taxonomy/>}/>
+                <LessOpaquePaper title={t('title:taxonomy')} content={
+                    <TranslatedTaxonomy state_proxy={state_proxy} user_interactions={user_interactions}/>
+                }/>
             </div>
         </div>
     );

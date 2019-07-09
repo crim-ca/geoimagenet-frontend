@@ -9,6 +9,7 @@ import {create_state_proxy, StoreActions} from './store';
 import {UserInteractions} from './domain/user-interactions.js';
 import {Platform} from './components/Platform.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
+import {i18n} from './utils';
 
 import './css/base.css';
 import './css/style_platform.css';
@@ -38,8 +39,9 @@ export class PlatformLoader {
      * @param {String} geoimagenet_api_endpoint geoimagenet api deployed endpoint to use in this instance of the platform
      * @param {String} magpie_endpoint magpie installation to use in this instance of the platform
      * @param {String} ml_endpoint machine learning endpoint
+     * @param {object} i18next_instance
      */
-    constructor(geoimagenet_api_endpoint, magpie_endpoint, ml_endpoint) {
+    constructor(geoimagenet_api_endpoint, magpie_endpoint, ml_endpoint, i18next_instance) {
         /**
          * @private
          * @type {GeoImageNetStore}
@@ -59,7 +61,7 @@ export class PlatformLoader {
          * @private
          * @type {UserInteractions}
          */
-        this.user_interactions = new UserInteractions(this.store_actions, this.data_queries);
+        this.user_interactions = new UserInteractions(this.store_actions, this.data_queries, i18next_instance);
     }
 
     make_platform() {
@@ -109,13 +111,12 @@ export class PlatformLoader {
             div
         );
 
-        await this.user_interactions.fetch_taxonomies();
         register_section_handles('section-handle');
     }
 }
 
 addEventListener('DOMContentLoaded', async () => {
-    const platform_loader = new PlatformLoader(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
+    const platform_loader = new PlatformLoader(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT, i18n);
     try {
         await platform_loader.init();
     } catch (e) {

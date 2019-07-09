@@ -19,6 +19,8 @@ import {StoreActions} from '../store';
 import {LayerSwitcher} from '../LayerSwitcher.js';
 import {AnnotationStatusFilter} from './AnnotationStatusFilter.js';
 
+import {withTranslation} from '../utils';
+
 const StyledPanelDetails = withStyles({
     root: {
         flexDirection: 'column'
@@ -95,7 +97,7 @@ const SidebarBottom = withStyles(theme => {
  * or there would be nothing to mount the map onto.
  */
 @observer
-class Platform extends Component {
+class PlatformWrapper extends Component {
     /**
      * @type {Object}
      * @property {Object} state_proxy
@@ -107,7 +109,8 @@ class Platform extends Component {
         state_proxy: PropTypes.object.isRequired,
         store_actions: PropTypes.instanceOf(StoreActions).isRequired,
         user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
-        data_queries: PropTypes.instanceOf(DataQueries).isRequired
+        data_queries: PropTypes.instanceOf(DataQueries).isRequired,
+        t: PropTypes.func.isRequired,
     };
 
     /**
@@ -176,6 +179,8 @@ class Platform extends Component {
 
     render() {
 
+        const {t} = this.props;
+
         const taxonomy_class = this.props.state_proxy.flat_taxonomy_classes[this.props.state_proxy.selected_taxonomy.root_taxonomy_class_id];
         const classes = taxonomy_class ? [taxonomy_class] : [];
         const {expanded} = this.state;
@@ -199,6 +204,7 @@ class Platform extends Component {
                             </ExpansionPanelSummary>
                             <StyledPanelDetails>
                                 <TaxonomySelector user_interactions={this.props.user_interactions}
+                                                  t={t}
                                                   state_proxy={this.props.state_proxy}/>
 
                                 <TaxonomyClasses map_manager={this.map_manager}
@@ -226,4 +232,8 @@ class Platform extends Component {
     }
 }
 
-export {Platform};
+const Platform = withTranslation()(PlatformWrapper);
+
+export {
+    Platform
+};

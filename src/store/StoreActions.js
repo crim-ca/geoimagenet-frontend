@@ -63,12 +63,39 @@ export class StoreActions {
     /**
      * Invert the opened property for specific taxonomy class id
      * @param {int} taxonomy_class_id
+     * @param {boolean|null} opened we should allow to override the toggling to force open or closed
      */
     @action.bound
-    toggle_taxonomy_class_tree_element(taxonomy_class_id) {
+    toggle_taxonomy_class_tree_element(taxonomy_class_id, opened = null) {
         /** @type {TaxonomyClass} taxonomy_class */
         const taxonomy_class = this.state_proxy.flat_taxonomy_classes[taxonomy_class_id];
-        taxonomy_class.opened = !taxonomy_class.opened;
+        if (opened === null) {
+            taxonomy_class.opened = !taxonomy_class.opened;
+            return;
+        }
+        taxonomy_class.opened = opened;
+    }
+
+    /**
+     * We want to extract all localized taxonomy classes strings and send them in a dictionary that makes ids correspond to names.
+     * Later on, we'll use i18next to translate the strings.
+     * @param {string} lang
+     */
+    @action.bound
+    generate_localized_taxonomy_classes_labels(lang) {
+        const {flat_taxonomy_classes} = this.state_proxy;
+        const dict = {};
+        for (const taxonomy_class_id in flat_taxonomy_classes) {
+            if (flat_taxonomy_classes.hasOwnProperty(taxonomy_class_id)) {
+                const taxonomy_class = flat_taxonomy_classes[taxonomy_class_id];
+                const name_tag = `name_${lang}`;
+                if (taxonomy_class.hasOwnProperty(name_tag)) {
+                    dict[taxonomy_class.id] = taxonomy_class[name_tag];
+                }
+            }
+
+        }
+        return dict;
     }
 
     /**
