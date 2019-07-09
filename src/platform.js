@@ -61,7 +61,7 @@ export class PlatformLoader {
          * @private
          * @type {UserInteractions}
          */
-        this.user_interactions = new UserInteractions(this.store_actions, this.data_queries);
+        this.user_interactions = new UserInteractions(this.store_actions, this.data_queries, i18next_instance);
     }
 
     make_platform() {
@@ -101,7 +101,10 @@ export class PlatformLoader {
         div.classList.add('root');
         document.body.appendChild(div);
 
-        await this.user_interactions.refresh_user_resources_permissions();
+        await Promise.all([
+            this.user_interactions.refresh_user_resources_permissions(),
+            this.user_interactions.fetch_taxonomies(),
+        ]);
 
         ReactDOM.render(
             <MuiThemeProvider theme={theme}>
@@ -111,7 +114,6 @@ export class PlatformLoader {
             div
         );
 
-        await this.user_interactions.fetch_taxonomies();
         register_section_handles('section-handle');
     }
 }

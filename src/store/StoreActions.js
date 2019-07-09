@@ -63,12 +63,17 @@ export class StoreActions {
     /**
      * Invert the opened property for specific taxonomy class id
      * @param {int} taxonomy_class_id
+     * @param {boolean|null} opened we should allow to override the toggling to force open or closed
      */
     @action.bound
-    toggle_taxonomy_class_tree_element(taxonomy_class_id) {
+    toggle_taxonomy_class_tree_element(taxonomy_class_id, opened = null) {
         /** @type {TaxonomyClass} taxonomy_class */
         const taxonomy_class = this.state_proxy.flat_taxonomy_classes[taxonomy_class_id];
-        taxonomy_class.opened = !taxonomy_class.opened;
+        if (opened === null) {
+            taxonomy_class.opened = !taxonomy_class.opened;
+            return;
+        }
+        taxonomy_class.opened = opened;
     }
 
     /**

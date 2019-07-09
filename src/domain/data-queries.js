@@ -135,7 +135,7 @@ export class DataQueries {
      * @returns {Promise<Object>}
      */
     fetch_taxonomy_classes = async root_taxonomy_class_id => {
-        const res = await make_http_request(`${this.geoimagenet_api_endpoint}/taxonomy_classes/${root_taxonomy_class_id}`);
+        const res = await make_http_request(`${this.geoimagenet_api_endpoint}/taxonomy_classes`);
         return res.json();
     };
 

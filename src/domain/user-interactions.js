@@ -40,7 +40,6 @@ export class UserInteractions {
          */
         this.i18next_instance = i18next_instance;
 
-        this.select_taxonomy = this.select_taxonomy.bind(this);
         this.release_annotations = this.release_annotations.bind(this);
     }
 
@@ -53,10 +52,33 @@ export class UserInteractions {
         }
     };
 
-    fetch_taxonomies = async () => {
+    /**
+     * When fetching taxonomies, we need to
+     *  - actually fetch the taxonomies
+     *  - fetch the taxonomy classes
+     *  - build default values for each taxonomy class element (such as the checked, for visibility selection, or opened, for tree navigation)
+     *  - build the localized versions strings in the i18n framework (ideally only if theye not already present)
+     *
+     * @returns {Promise<void>}
+     */
+    @action.bound
+    async fetch_taxonomies() {
         try {
             const taxonomies = await this.data_queries.fetch_taxonomies();
             this.store_actions.set_taxonomy(taxonomies);
+            const root_taxonomy_classes = await this.data_queries.fetch_taxonomy_classes(1);
+            /**
+             * the build_taxonomy_classes_structure has the nice side-effect of building a flat taxonomy classes structure as well!
+             * so we will neatly ask it to generate language dictionaries for newly added taxonomy classes afterwards
+             */
+            root_taxonomy_classes.forEach(root_taxonomy_class => this.store_actions.build_taxonomy_classes_structures(root_taxonomy_class));
+
+            const fr_dict = this.store_actions.generate_localized_taxonomy_classes_labels('fr');
+            const en_dict = this.store_actions.generate_localized_taxonomy_classes_labels('en');
+
+            this.i18next_instance.addResources('fr', 'taxonomy_classes', fr_dict);
+            this.i18next_instance.addResources('en', 'taxonomy_classes', en_dict);
+
         } catch (e) {
             switch (e.status) {
                 case 404:
@@ -67,16 +89,11 @@ export class UserInteractions {
                     NotificationManager.error('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
             }
         }
-    };
+    }
 
     /**
      *
-     * When the user selects a taxonomy, we need to
-     *  - fetch the taxonomy
-     *  - build default values for each taxonomy class element (such as the checked, for visibility selection, or opened, for tree navigation)
-     *  - by default, we toggle the first level of the tree, so that user down not have to do it
-     *  - toggle visibility for every class in the taxonomy
-     *  - build the localized versions strings in the i18n framework (ideally only if theye not already present)
+     * When the user selects a taxonomy, we decide to refresh the annotation counts, as they can change more often than the classes themselves.
      *
      * @param {object} version
      * @param {string} taxonomy_name
@@ -92,26 +109,9 @@ export class UserInteractions {
             elements: [],
         });
         try {
-            // TODO eventually make both requests under a Promise.all as they are not co-dependant
-
-            const root_taxonomy_class = await this.data_queries.fetch_taxonomy_classes(version['root_taxonomy_class_id']);
             const counts = await this.data_queries.flat_taxonomy_classes_counts(version['root_taxonomy_class_id']);
-
-            /**
-             * the build_taxonomy_classes_structure has the nice side-effect of building a flat taxonomy classes structure as well!
-             * so we will neatly ask it to generate language dictionaries for newly added taxonomy classes afterwards
-             */
-            this.store_actions.build_taxonomy_classes_structures(root_taxonomy_class);
-
-            const fr_dict = this.store_actions.generate_localized_taxonomy_classes_labels('fr');
-            const en_dict = this.store_actions.generate_localized_taxonomy_classes_labels('en');
-
-            this.i18next_instance.addResources('fr', 'taxonomy_classes', fr_dict);
-            this.i18next_instance.addResources('en', 'taxonomy_classes', en_dict);
-
             this.store_actions.set_annotation_counts(counts);
-
-            this.store_actions.toggle_taxonomy_class_tree_element(version['root_taxonomy_class_id']);
+            this.store_actions.toggle_taxonomy_class_tree_element(version['root_taxonomy_class_id'], true);
         } catch (e) {
             NotificationManager.error('We were unable to fetch the taxonomy classes.');
         }
