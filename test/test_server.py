@@ -24,7 +24,7 @@ supported_files_mapping = {
 }
 
 
-def test_can_read_ttf_and_woff_files_mime_types():
+def test_can_guess_necessary_mime_types():
     for file_name, result in supported_files_mapping.items():
         mime_type = gin_mimetypes.guess_type(f'./test_data/filetypes/{file_name}')
         assert mime_type == result
