@@ -7,9 +7,7 @@ or unkown.
 We should verify the environment supports the mime types needed for the application.
 """
 
-from mimetypes import MimeTypes
-
-mimetypes = MimeTypes()
+from GIN.utils import gin_mimetypes
 
 supported_files_mapping = {
     'icons.ttf': ('application/font-sfnt', None),
@@ -28,5 +26,5 @@ supported_files_mapping = {
 
 def test_can_read_ttf_and_woff_files_mime_types():
     for file_name, result in supported_files_mapping.items():
-        mime_type = mimetypes.guess_type(f'./test_data/filetypes/{file_name}')
+        mime_type = gin_mimetypes.guess_type(f'./test_data/filetypes/{file_name}')
         assert mime_type == result
