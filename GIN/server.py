@@ -1,18 +1,12 @@
 import multiprocessing
 import gunicorn.app.base
-from os import path
-from mimetypes import MimeTypes
-from urllib.error import HTTPError
-from jinja2.exceptions import TemplateNotFound
-from http.cookies import SimpleCookie
-from os import environ as actual_environment
-
-from GIN.Server.Routing import mapper
-from GIN.Server.Exception import NotFound
-from GIN.DependencyInjection import Injector
 import requests
 
-mimetypes = MimeTypes()
+from os import path, environ as actual_environment
+from http.cookies import SimpleCookie
+from GIN.utils import gin_mimetypes
+from GIN.DependencyInjection import Injector
+
 
 if 'FRONTEND_PYTHON_SENTRY_DSN' in actual_environment:
     import sentry_sdk
@@ -73,7 +67,6 @@ def handler_app(environ, start_response):
     top level request handler for the GeoImageNet platform backend.
     anything but the resources necessary for the home to be correctly displayed should be protected behind the login.
     """
-    request_method = environ['REQUEST_METHOD']
     request_uri = environ['PATH_INFO']
 
     if resource_is_private(request_uri):
@@ -96,43 +89,14 @@ def handler_app(environ, start_response):
     # TODO glaring security hole here? could serve virtually any file on the server? fix to only serve from dist anyway
     full_file_path = make_full_file_path(request_uri)
     if request_wants_file(full_file_path):
-        mime_type = mimetypes.guess_type(full_file_path)[0]
+        mime_type = gin_mimetypes.guess_type(full_file_path)[0]
         with open(full_file_path, 'rb') as file:
             start_response('200 OK', [('Content-Type', mime_type)])
             return [file.read()]
 
-    try:
-
-        match = mapper.match(request_uri, request_method)
-
-        if match is None:
-            raise NotFound
-
-        for key, value in match.items():
-            injector.define_param(key, value)
-
-        handler_instance = injector.make(match['handler'])
-        handler_callable = getattr(handler_instance, match['method'])
-
-        status, headers, data = injector.execute(handler_callable)
-
-    except (NotFound, TemplateNotFound):
-        status = '404 NOT FOUND'
-        headers = [('Content-type', 'text/plain')]
-        data = 'This page does not exist'
-    except HTTPError as err:
-        status = f'{err.code} {err.reason}'
-        headers = [('Content-type', 'text/plain')]
-        data = err.msg
-    except ConnectionError:
-        status = '500 CONNECTION REFUSED'
-        headers = [('Content-type', 'text/plain')]
-        data = 'The API is down at the moment. We could not fetch the resource.'
-    except Exception as err:
-        sentry_sdk.capture_exception(err)
-        status = '500 SERVER ERROR'
-        headers = [('Content-type', 'text/plain')]
-        data = 'The server was unable to generate a response, and hopes you will pardon it.'
+    status = '404 NOT FOUND'
+    headers = [('Content-type', 'text/plain')]
+    data = 'This page does not exist'
 
     start_response(status, headers)
     return [bytes(data, 'utf8')]

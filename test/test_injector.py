@@ -1,8 +1,5 @@
-import pytest
-
 from GIN.DependencyInjection import Injector
 from GIN.Templating import Renderer
-from GIN.Server import Handler
 
 
 class ValueObject:
@@ -41,18 +38,6 @@ def test_provisioned_instance():
     renderer_1 = injector.make(Renderer)
     renderer_2 = injector.make(Renderer)
     assert renderer_1 is renderer_2
-
-
-def test_creates_rendering_handler():
-    injector = Injector()
-    rendering_handler = injector.make(Handler.Rendering)
-    assert isinstance(rendering_handler, Handler.Rendering)
-
-
-def test_making_a_module_throws_exception():
-    injector = Injector()
-    with pytest.raises(RuntimeError):
-        injector.make(Handler)
 
 
 def test_injector_can_execute_callables():

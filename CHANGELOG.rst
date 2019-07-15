@@ -2,6 +2,116 @@ Changelog
 =========
 
 
+1.3.3 (2019-07-15)
+------------------
+
+Fix
+~~~
+- GEOIM-221 - add necessary mimetypes to module before guessing types +
+  massive unused code cleanup. [Félix Gagnon-Grenier]
+
+Other
+~~~~~
+- Test: GEOIM-221 - test for various filetypes. [Félix Gagnon-Grenier]
+- Merge branch 'release-1.3.2' into develop. [Félix Gagnon-Grenier]
+
+
+1.3.2 (2019-07-09)
+------------------
+
+New
+~~~
+- GEOIM-211 - traduction pluralisée des tooltips d'annotations. [Félix
+  Gagnon-Grenier]
+- GEOIM-211 adding basic tree view to the presentations taxonomy widget.
+  [Félix Gagnon-Grenier]
+
+Changes
+~~~~~~~
+- GEOIM-212 - add spacing to the close handle. [Félix Gagnon-Grenier]
+- GEOIM-211 - open first taxonomy on loading taxonomy selector. [Félix
+  Gagnon-Grenier]
+- GEOIM-211 - fetching taxonomy classes when loading the page. [Félix
+  Gagnon-Grenier]
+
+Fix
+~~~
+- GEOIM-211 - inverted actual pluralization. [Félix Gagnon-Grenier]
+- GEOIM-211 - bring colors for the front page. [Félix Gagnon-Grenier]
+
+Other
+~~~~~
+- Merge branch 'release-1.3.2' [Félix Gagnon-Grenier]
+- Bump version to 1.3.2. [Félix Gagnon-Grenier]
+- GEOIM-211 - adding circular progress during taxonomy load. [Félix
+  Gagnon-Grenier]
+- GEOIM-211 injecting translation callback. [Félix Gagnon-Grenier]
+- GEOIM-211 - crude translation of taxonomy classes labels. [Félix
+  Gagnon-Grenier]
+
+
+1.3.1 (2019-07-05)
+------------------
+
+New
+~~~
+- GEOIM-212 - clear icon to close dialogs. [Félix Gagnon-Grenier]
+
+Fix
+~~~
+- GEOIM-215 switch for english. [Félix Gagnon-Grenier]
+
+Other
+~~~~~
+- Bump version 1.3.1. [Félix Gagnon-Grenier]
+
+
+1.3.0 (2019-07-05)
+------------------
+
+New
+~~~
+- GEOIM-202 - integrating presentation content from translated
+  documents. [Félix Gagnon-Grenier]
+- GEOIM-192 - links to pdf files and publications. [Félix Gagnon-
+  Grenier]
+- GEOIM-191 download taxonomy classes. [Félix Gagnon-Grenier]
+- GEOIM-188 let non authenticated users see the platform without images.
+  [Félix Gagnon-Grenier]
+- GEOIM-187 logo from image. [Félix Gagnon-Grenier]
+- GEOIM-187 contact link on home page. [Félix Gagnon-Grenier]
+
+Changes
+~~~~~~~
+- Test to see if jenkins can build tags on master. [Félix Gagnon-
+  Grenier]
+- GEOIM-216 nouveaux collaborateurs. [Félix Gagnon-Grenier]
+- GEOIM-192 - adding basic links for external publications. [Félix
+  Gagnon-Grenier]
+- GEOIM-158 take sentry dsn from environment. [Félix Gagnon-Grenier]
+- Translating login message. [Félix Gagnon-Grenier]
+- GEOIM-187 replace background. [Félix Gagnon-Grenier]
+- GEOIM-187 hiding login in dialog. [Félix Gagnon-Grenier]
+- GEOIM-187 reordering logos. [Félix Gagnon-Grenier]
+- GEOIM-187 put language to the top. [Félix Gagnon-Grenier]
+- Deploy develop as latest, use release for tags. [Félix Gagnon-Grenier]
+
+Fix
+~~~
+- Typo. [Félix Gagnon-Grenier]
+- GEOIM-213. [Félix Gagnon-Grenier]
+- GEOIM-186 ease of use with material-ui dialogs. [Félix Gagnon-Grenier]
+- Added correct contact mail in menu as well. [Félix Gagnon-Grenier]
+- GEOIM-193 remove faulty code prevent background-color from changing.
+  [Félix Gagnon-Grenier]
+
+Other
+~~~~~
+- Bumped to version 1.3.0. [Félix Gagnon-Grenier]
+- Benchmark text from mockup. [Félix Gagnon-Grenier]
+- Ugly setting of unescaped html. [Félix Gagnon-Grenier]
+
+
 1.2.0 (2019-06-26)
 ------------------
 
