@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 import {Tabs, Tab, CircularProgress} from '@material-ui/core';
+import {captureException} from '@sentry/browser';
 
 import {TaxonomyClassListElement} from './taxonomy/TaxonomyClassListElement.js';
 import {UserInteractions} from '../domain/user-interactions.js';
@@ -57,9 +58,13 @@ class TaxonomySelector extends Component {
 
     async init() {
         const {user_interactions, state_proxy} = this.props;
-        // dirtily select the first taxonomy in the list.
-        await user_interactions.fetch_taxonomies();
-        await user_interactions.select_taxonomy(state_proxy.taxonomies[0].versions[0], state_proxy.taxonomies[0].name);
+        try {
+            // dirtily select the first taxonomy in the list.
+            await user_interactions.fetch_taxonomies();
+            await user_interactions.select_taxonomy(state_proxy.taxonomies[0].versions[0], state_proxy.taxonomies[0].name);
+        } catch (e) {
+            captureException(e);
+        }
         this.setState({loading: false});
     }
 
