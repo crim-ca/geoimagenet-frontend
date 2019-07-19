@@ -9,7 +9,7 @@ import {create_state_proxy, StoreActions} from './store';
 import {UserInteractions} from './domain/user-interactions.js';
 import {element, get_by_id} from './utils/dom.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
-import {Datasets} from './components/Datasets.js';
+import {Datasets} from './components/Datasets';
 import {theme} from './utils/react.js';
 
 import {create_client} from './utils/apollo';
@@ -38,13 +38,11 @@ addEventListener('DOMContentLoaded', async () => {
 
     ReactDOM.render(
         <MuiThemeProvider theme={theme}>
-            <CssBaseline/>
+            <CssBaseline />
             <ApolloProvider client={apollo_client}>
                 <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}>
                     <Datasets
-                        client={apollo_client}
-                        state_proxy={state_proxy}
-                        store_actions={store_actions}/>
+                        state_proxy={state_proxy} />
                 </LoggedLayout>
             </ApolloProvider>
 

@@ -41,7 +41,7 @@ addEventListener('DOMContentLoaded', async () => {
             <CssBaseline />
             <ApolloProvider client={apollo_client}>
                 <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}>
-                    <Benchmarks client={apollo_client} />
+                    <Benchmarks />
                 </LoggedLayout>
             </ApolloProvider>
 

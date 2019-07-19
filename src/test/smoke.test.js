@@ -1,6 +1,6 @@
 const React = require('react');
 const {Benchmarks} = require('../components/Benchmarks');
-const {Models} = require('../components/Models');
+const {Models} = require('../components/Models/Models');
 const {render, configure} = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
 const {create_client} = require('../utils/apollo');

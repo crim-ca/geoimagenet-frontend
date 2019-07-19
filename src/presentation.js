@@ -16,6 +16,7 @@ import {create_state_proxy, StoreActions} from './store';
 import {DataQueries} from './domain/data-queries.js';
 import {create_client} from './utils/apollo';
 import {i18n} from './utils';
+import {ApolloProvider} from "react-apollo";
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
@@ -36,14 +37,15 @@ addEventListener('DOMContentLoaded', async () => {
 
     ReactDOM.render(
         <ThemedComponent>
-            <div style={{height: '100%'}}>
+            <ApolloProvider client={client}>
+                <div style={{height: '100%'}}>
                 <PresentationContainer
                     state_proxy={state_proxy}
                     contact_email={CONTACT_EMAIL}
-                    user_interactions={user_interactions}
-                    client={client}/>
-                <NotificationContainer/>
+                    user_interactions={user_interactions} />
+                <NotificationContainer />
             </div>
+            </ApolloProvider>
         </ThemedComponent>,
         div
     );
