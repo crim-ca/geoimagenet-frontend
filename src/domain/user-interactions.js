@@ -1,4 +1,4 @@
-import {notifier} from '../utils/notifications.js';
+import {DialogManager} from '../utils/Dialogs';
 import {action} from 'mobx';
 import {InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionRepository, User} from './entities.js';
 import {AccessControlList} from './access-control-list.js';
@@ -175,7 +175,7 @@ export class UserInteractions {
      * @returns {Promise<void>}
      */
     async release_annotations(taxonomy_class_id) {
-        await notifier.confirm('Do you really want to release all the annotations of the selected class, as well as its children?');
+        await DialogManager.confirm('Do you really want to release all the annotations of the selected class, as well as its children?');
         try {
             await this.data_queries.release_annotations_request(taxonomy_class_id);
             const counts = await this.data_queries.flat_taxonomy_classes_counts(taxonomy_class_id);

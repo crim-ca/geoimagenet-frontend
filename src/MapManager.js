@@ -16,6 +16,7 @@ import TileGrid from 'ol/tilegrid/TileGrid';
 import VectorLayer from 'ol/layer/Vector';
 import {fromExtent} from 'ol/geom/Polygon';
 import {boundingExtent, buffer, getArea, getWidth, getTopLeft, getCenter} from 'ol/extent';
+import {DialogManager} from './utils/Dialogs';
 
 import {
     MODE,
@@ -27,7 +28,6 @@ import {
     CUSTOM_GEOIM_IMAGE_LAYER,
     VIEW_CENTER, VALID_OPENLAYERS_ANNOTATION_RESOLUTION
 } from './domain/constants.js';
-import {notifier} from './utils/notifications.js';
 import {debounced} from './utils/event_handling.js';
 import {NotificationManager} from 'react-notifications';
 import {READ, WMS} from './domain/constants';
@@ -530,7 +530,7 @@ export class MapManager {
                 break;
 
             case MODE.DELETE:
-                await notifier.confirm(`Do you really want to delete the highlighted feature?`);
+                await DialogManager.confirm(`Do you really want to delete the highlighted feature?`);
                 try {
                     await this.data_queries.delete_annotations_request(feature_ids);
                 } catch (error) {
