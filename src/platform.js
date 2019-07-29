@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import * as Sentry from '@sentry/browser';
 import {CssBaseline, MuiThemeProvider} from '@material-ui/core';
 
-import {register_section_handles} from './utils/sections.js';
 import {DataQueries} from './domain/data-queries.js';
 import {create_state_proxy, StoreActions} from './store';
 import {UserInteractions} from './domain/user-interactions.js';
@@ -110,8 +109,6 @@ export class PlatformLoader {
             </MuiThemeProvider>,
             div
         );
-
-        register_section_handles('section-handle');
     }
 }
 

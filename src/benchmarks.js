@@ -7,7 +7,6 @@ import {i18n} from './utils';
 import {DataQueries} from './domain/data-queries.js';
 import {create_state_proxy, StoreActions} from './store';
 import {UserInteractions} from './domain/user-interactions.js';
-import {element, get_by_id} from './utils/dom.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
 import {Benchmarks} from './components/Benchmarks';
 import {theme} from './utils/react.js';
@@ -31,7 +30,7 @@ addEventListener('DOMContentLoaded', async () => {
     const user_interactions = new UserInteractions(store_actions, data_queries, i18n);
     const apollo_client = create_client(GRAPHQL_ENDPOINT);
 
-    const div = element('div');
+    const div = document.createElement('div');
     div.id = 'root';
     div.classList.add('root');
     document.body.appendChild(div);
@@ -46,7 +45,7 @@ addEventListener('DOMContentLoaded', async () => {
             </ApolloProvider>
 
         </MuiThemeProvider>,
-        get_by_id('root')
+        div
     );
 
     await user_interactions.refresh_user_resources_permissions();
