@@ -14,6 +14,12 @@
       }
     },
     {
+      "name": "esdoc-flow-type-plugin",
+      "option": {
+        "enable": true
+      }
+    },
+    {
       "name": "esdoc-react-plugin"
     },
     {

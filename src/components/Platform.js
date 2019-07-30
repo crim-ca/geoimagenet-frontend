@@ -155,7 +155,6 @@ class PlatformWrapper extends Component {
 
         this.map_manager = new MapManager(
             GEOSERVER_URL,
-            ANNOTATION_NAMESPACE_URI,
             ANNOTATION_NAMESPACE,
             ANNOTATION_LAYER,
             'map',

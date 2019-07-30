@@ -4,7 +4,7 @@
  * This file is a mess, I know it, you know it, now move along and let me refactor
  */
 
-import {autorun, ObservableMap} from 'mobx';
+import {autorun} from 'mobx';
 
 import {Group, Vector} from 'ol/layer';
 import {fromLonLat, get as getProjection} from 'ol/proj';
@@ -48,49 +48,99 @@ import {GeoImageNetStore} from "./store/GeoImageNetStore";
 /**
  * The MapManager is responsible for handling map behaviour at the boundary between the platform and OpenLayers.
  * It should listen to specific OL events and trigger domain interactions in accordance.
+ *
+ * We are using arrow functions to bind the scope of member methods
+ * changing foo = () => {}; to foo = function() {} _will_ break things in interesting and unexpected ways
  */
 export class MapManager {
 
+    /**
+     * The deployment's Geoserver endpoint
+     * @private
+     */
     geoserver_url: string;
-    annotation_namespace_uri: string;
-    annotation_namespace: string;
-    annotation_layer: string;
-    map_div_id: string;
-    cql_filter: string;
-    previous_mode: string|null;
 
+    /**
+     * Geoserver classifies annotations in namespaces, we need it to construct urls.
+     * @private
+     */
+    annotation_namespace: string;
+
+    /**
+     * While for the user an annotation represents an instance of a taxonomy class on an image, for the platform
+     * it is actually a feature on an OpenLayers layer. Our features are served from a Geoserver instance,
+     * and this property should contain the layer mounted on Geoserver that contains our annotations.
+     * @private
+     */
+    annotation_layer: string;
+
+    /**
+     * @private
+     */
+    cql_filter: string;
+
+    /**
+     * @private
+     */
+    previous_mode: string | null;
+
+    /**
+     * @private
+     */
     layer_switcher: LayerSwitcher;
+
+    /**
+     * @private
+     */
     store_actions: StoreActions;
+
+    /**
+     * We use MobX as state manager, this is our top level MobX observable store.
+     * @private
+     */
     state_proxy: GeoImageNetStore;
+
+    /**
+     * @private
+     */
     data_queries: DataQueries;
 
+    /**
+     * @private
+     */
     formatGeoJson: GeoJSON;
+
+    /**
+     * Reference to the OL map instance.
+     * @private
+     * @type {Map}
+     */
     map: Map;
+
+    /**
+     * Reference to the OL View object.
+     * @private
+     */
     view: View;
+
+    /**
+     * @private
+     */
     draw: Interaction;
+
+    /**
+     * @private
+     */
     modify: Interaction;
+
+    /**
+     * We want to show the mouse position to the users, it's called a "control" in open layers.
+     * @private
+     */
     mouse_position: Control;
 
-    /**
-     using arrow functions to bind the scope of member methods
-     changing foo = () => {}; to foo = function() {} _will_ break things in interesting and unexpected ways
-     */
-
-    /**
-     * @public
-     * @param {String} geoserver_url
-     * @param {String} annotation_namespace_uri
-     * @param {String} annotation_namespace
-     * @param {String} annotation_layer
-     * @param {String} map_div_id
-     * @param {Object} state_proxy
-     * @param {StoreActions} store_actions
-     * @param {DataQueries} data_queries
-     * @param {LayerSwitcher} layer_switcher
-     */
     constructor(
         geoserver_url: string,
-        annotation_namespace_uri: string,
         annotation_namespace: string,
         annotation_layer: string,
         map_div_id: string,
@@ -100,65 +150,19 @@ export class MapManager {
         layer_switcher: LayerSwitcher
     ) {
 
-        /**
-         * The deployment's Geoserver endpoint
-         * @private
-         * @type {String}
-         */
         this.geoserver_url = geoserver_url;
-        /**
-         * Geoserver classifies annotations in namespaces, we need it to construct urls.
-         * @private
-         * @type {String}
-         */
         this.annotation_namespace = annotation_namespace;
-        /**
-         * While for the user an annotation represents an instance of a taxonomy class on an image, for the platform
-         * it is actually a feature on an OpenLayers layer. Our features are served from a Geoserver instance,
-         * and this property should contain the layer mounted on Geoserver that contains our annotations.
-         * @private
-         * @type {String}
-         */
         this.annotation_layer = annotation_layer;
-        /**
-         * We use MobX as state manager, this is our top level mobx observable store.
-         * @private
-         * @type {Object}
-         */
         this.state_proxy = state_proxy;
-        /**
-         * @private
-         * @type {StoreActions}
-         */
         this.store_actions = store_actions;
-        /**
-         * @private
-         * @type {DataQueries}
-         */
         this.data_queries = data_queries;
-
-        /**
-         * @type {LayerSwitcher}
-         */
         this.layer_switcher = layer_switcher;
-
         this.previous_mode = null;
-
-        /**
-         * Reference to the OL View object.
-         * @private
-         * @type {View}
-         */
         this.view = new View({
             center: fromLonLat(VIEW_CENTER.CENTRE),
             zoom: VIEW_CENTER.ZOOM_LEVEL
         });
 
-        /**
-         * Reference to the OL map instance.
-         * @private
-         * @type {Map}
-         */
         this.map = new Map({
             target: map_div_id,
             view: this.view,
@@ -465,7 +469,7 @@ export class MapManager {
         }
 
         this.store_actions.end_annotation();
-    }
+    };
 
     receive_modifyend_event = async (event: Event) => {
 
