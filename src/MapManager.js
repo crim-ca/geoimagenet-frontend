@@ -1,10 +1,17 @@
-import {autorun} from 'mobx';
+// @flow
+
+/**
+ * This file is a mess, I know it, you know it, now move along and let me refactor
+ */
+
+import {autorun, ObservableMap} from 'mobx';
 
 import {Group, Vector} from 'ol/layer';
 import {fromLonLat, get as getProjection} from 'ol/proj';
-import {MousePosition, ScaleLine} from 'ol/control';
-import {Draw, Modify} from 'ol/interaction';
+import {Control, MousePosition, ScaleLine} from 'ol/control';
+import {Draw, Interaction, Modify} from 'ol/interaction';
 import {View, Collection, Feature, Map} from 'ol';
+import {Event} from 'ol/events';
 import {toStringHDMS} from 'ol/coordinate';
 import VectorSource from 'ol/source/Vector';
 import {bbox} from 'ol/loadingstrategy';
@@ -33,12 +40,36 @@ import {
 import {debounced} from './utils/event_handling.js';
 import {NotificationManager} from 'react-notifications';
 import {READ, WMS} from './domain/constants';
+import {StoreActions} from "./store";
+import {DataQueries} from "./domain/data-queries";
+import {LayerSwitcher} from "./LayerSwitcher";
+import {GeoImageNetStore} from "./store/GeoImageNetStore";
 
 /**
  * The MapManager is responsible for handling map behaviour at the boundary between the platform and OpenLayers.
  * It should listen to specific OL events and trigger domain interactions in accordance.
  */
 export class MapManager {
+
+    geoserver_url: string;
+    annotation_namespace_uri: string;
+    annotation_namespace: string;
+    annotation_layer: string;
+    map_div_id: string;
+    cql_filter: string;
+    previous_mode: string|null;
+
+    layer_switcher: LayerSwitcher;
+    store_actions: StoreActions;
+    state_proxy: GeoImageNetStore;
+    data_queries: DataQueries;
+
+    formatGeoJson: GeoJSON;
+    map: Map;
+    view: View;
+    draw: Interaction;
+    modify: Interaction;
+    mouse_position: Control;
 
     /**
      using arrow functions to bind the scope of member methods
@@ -58,15 +89,15 @@ export class MapManager {
      * @param {LayerSwitcher} layer_switcher
      */
     constructor(
-        geoserver_url,
-        annotation_namespace_uri,
-        annotation_namespace,
-        annotation_layer,
-        map_div_id,
-        state_proxy,
-        store_actions,
-        data_queries,
-        layer_switcher
+        geoserver_url: string,
+        annotation_namespace_uri: string,
+        annotation_namespace: string,
+        annotation_layer: string,
+        map_div_id: string,
+        state_proxy: GeoImageNetStore,
+        store_actions: StoreActions,
+        data_queries: DataQueries,
+        layer_switcher: LayerSwitcher
     ) {
 
         /**
@@ -112,13 +143,6 @@ export class MapManager {
         this.layer_switcher = layer_switcher;
 
         this.previous_mode = null;
-
-        // bind class methods passed as event handlers to prevent the changed execution context from breaking class functionality
-        this.draw_condition_callback = this.draw_condition_callback.bind(this);
-        this.receive_drawend_event = this.receive_drawend_event.bind(this);
-        this.receive_modifyend_event = this.receive_modifyend_event.bind(this);
-        this.receive_map_viewport_click_event = this.receive_map_viewport_click_event.bind(this);
-        this.receive_resolution_change_event = this.receive_resolution_change_event.bind(this);
 
         /**
          * Reference to the OL View object.
@@ -287,7 +311,7 @@ export class MapManager {
      *
      * @todo maybe at some point rethink the ordering of the layers but so far it's not problematic
      */
-    create_vector_layer(title, source, color, visible = true, zIndex = 99999999) {
+    create_vector_layer(title: string, source: VectorSource, color: string, visible: boolean = true, zIndex: number = 99999999) {
 
         const style_function = (feature, resolution) => {
             const {show_labels} = this.state_proxy;
@@ -330,7 +354,7 @@ export class MapManager {
      * Some actions need to redraw the annotations on the viewport. This method clears then refreshes the features on the specified layer.
      * @param {String} status
      */
-    refresh_source_by_status(status) {
+    refresh_source_by_status(status: string) {
         this.state_proxy.annotations_sources[status].clear();
         this.state_proxy.annotations_sources[status].refresh(true);
     }
@@ -343,7 +367,7 @@ export class MapManager {
      * @param event
      * @returns {boolean}
      */
-    draw_condition_callback(event) {
+    draw_condition_callback = (event: Event) => {
 
         /**
          make sure that each click is correct to create the annotation
@@ -390,7 +414,7 @@ export class MapManager {
         this.store_actions.start_annotation(first_layer.get('title'));
 
         return true;
-    }
+    };
 
     /**
      * When changing resolution we need to activate or deactivate user annotation. That is because after a certain distance,
@@ -398,7 +422,7 @@ export class MapManager {
      * @private
      * @param event
      */
-    receive_resolution_change_event(event) {
+    receive_resolution_change_event = (event: Event) => {
         const resolution = event.target.get('resolution');
         if (resolution < VALID_OPENLAYERS_ANNOTATION_RESOLUTION) {
             this.store_actions.activate_actions();
@@ -413,7 +437,7 @@ export class MapManager {
                 this.store_actions.set_mode(MODE.VISUALIZE);
             }
         }
-    }
+    };
 
     /**
      * Launch the creation of a new annotation. This should also update the "new" annotations count of the relevant
@@ -422,7 +446,7 @@ export class MapManager {
      * @param event
      * @returns {Promise<void>}
      */
-    async receive_drawend_event(event) {
+    receive_drawend_event = async (event: Event) => {
 
         const feature = event.feature;
         feature.setProperties({
@@ -443,7 +467,7 @@ export class MapManager {
         this.store_actions.end_annotation();
     }
 
-    async receive_modifyend_event(event) {
+    receive_modifyend_event = async (event: Event) => {
 
         const modifiedFeatures = [];
         event.features.forEach((feature) => {
@@ -460,7 +484,7 @@ export class MapManager {
             MapManager.geojsonLogError(error);
         }
 
-    }
+    };
 
     /**
      * When handling clicks we sometimes need to get an aggregation of all features under the cursor.
@@ -468,7 +492,7 @@ export class MapManager {
      * @param event
      * @returns {Array}
      */
-    aggregate_features_at_cursor(event) {
+    aggregate_features_at_cursor(event: Event) {
         const features = [];
         this.map.forEachFeatureAtPixel(event.pixel, feature => {
             features.push(feature);
@@ -476,7 +500,7 @@ export class MapManager {
         return features;
     }
 
-    get_aggregated_feature_ids(features) {
+    get_aggregated_feature_ids(features: Array<Feature>) {
         const feature_ids = [];
         features.forEach(f => {
             if (f.getId() !== undefined) {
@@ -493,7 +517,7 @@ export class MapManager {
      * @param event
      * @returns {Promise<void>}
      */
-    async receive_map_viewport_click_event(event) {
+    receive_map_viewport_click_event = async (event: Event) => {
         const features = this.aggregate_features_at_cursor(event);
         const feature_ids = this.get_aggregated_feature_ids(features);
 
@@ -584,7 +608,7 @@ export class MapManager {
                 }
                 break;
         }
-    }
+    };
 
     /**
      *
@@ -592,7 +616,7 @@ export class MapManager {
      * @param status
      * @returns {VectorSource}
      */
-    create_vector_source(features, status) {
+    create_vector_source(features: Array<Feature>, status: string) {
         return new VectorSource({
             format: new GeoJSON(),
             features: features,
@@ -839,7 +863,7 @@ export class MapManager {
      * @param error
      * @returns {Promise<void>}
      */
-    static async geojsonLogError(error) {
+    static async geojsonLogError(error: Response) {
         const text = await error.text();
         NotificationManager.error(text);
     }
