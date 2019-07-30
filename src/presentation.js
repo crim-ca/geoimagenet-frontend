@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import {NotificationContainer} from 'react-notifications';
 
 import './css/base.css';
-import './css/notifications.css';
+import 'react-notifications/lib/notifications.css';
 import './img/icons/favicon.ico';
 import './img/background.hack.jpg';
 

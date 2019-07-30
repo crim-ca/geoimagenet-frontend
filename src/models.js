@@ -15,7 +15,7 @@ import {create_client} from './utils/apollo';
 import {ApolloProvider} from 'react-apollo';
 
 import './css/base.css';
-import './css/notifications.css';
+import 'react-notifications/lib/notifications.css';
 import './img/icons/favicon.ico';
 
 Sentry.init({

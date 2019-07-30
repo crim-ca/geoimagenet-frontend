@@ -18,6 +18,8 @@ import {fromExtent} from 'ol/geom/Polygon';
 import {boundingExtent, buffer, getArea, getWidth, getTopLeft, getCenter} from 'ol/extent';
 import {DialogManager} from './utils/Dialogs';
 
+import {captureException} from '@sentry/browser';
+
 import {
     MODE,
     ANNOTATION,
@@ -542,10 +544,18 @@ export class MapManager {
                     await this.data_queries.delete_annotations_request(feature_ids);
                 } catch (error) {
                     MapManager.geojsonLogError(error);
+                    return;
                 }
-                features.forEach(f => {
-                    this.state_proxy.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(f);
-                });
+
+                try {
+                    features.forEach(f => {
+                        this.state_proxy.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(f);
+                    });
+                } catch (e) {
+                    captureException(e);
+                    NotificationManager.error('We were unable to delete the annotation for unknown internal reasons.');
+                }
+
                 break;
 
             case MODE.VALIDATE:

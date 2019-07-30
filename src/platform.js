@@ -15,11 +15,12 @@ import {DialogContainer} from './utils/Dialogs';
 import './css/base.css';
 import './css/style_platform.css';
 import './css/layer_switcher.css';
-import './css/notifications.css';
+import 'react-notifications/lib/notifications.css';
 import './css/open_layers.css';
 import './img/icons/favicon.ico';
 
 import {theme} from './utils/react.js';
+import {NotificationContainer} from "react-notifications";
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
@@ -109,6 +110,7 @@ export class PlatformLoader {
                 <CssBaseline/>
                 {this.make_layout()}
                 <DialogContainer/>
+                <NotificationContainer />
             </MuiThemeProvider>,
             div
         );
