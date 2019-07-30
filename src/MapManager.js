@@ -530,7 +530,14 @@ export class MapManager {
                 break;
 
             case MODE.DELETE:
-                await DialogManager.confirm(`Do you really want to delete the highlighted feature?`);
+
+                try {
+                    await DialogManager.confirm(`Do you really want to delete the highlighted feature?`);
+                } catch (e) {
+                    // if we catched it means user did not want to delete the annotation, simply return, nothing problematic here.
+                    return;
+                }
+
                 try {
                     await this.data_queries.delete_annotations_request(feature_ids);
                 } catch (error) {

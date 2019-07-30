@@ -10,6 +10,8 @@ import {Platform} from './components/Platform.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
 import {i18n} from './utils';
 
+import {DialogContainer} from './utils/Dialogs';
+
 import './css/base.css';
 import './css/style_platform.css';
 import './css/layer_switcher.css';
@@ -106,6 +108,7 @@ export class PlatformLoader {
             <MuiThemeProvider theme={theme}>
                 <CssBaseline/>
                 {this.make_layout()}
+                <DialogContainer/>
             </MuiThemeProvider>,
             div
         );

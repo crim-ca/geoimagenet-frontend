@@ -12,14 +12,13 @@ type Props = {
 
 export class PromisifiedDialog extends React.Component<Props> {
     render() {
-        const {open, text, handle_accept, handle_refuse} = this.props;
         return (
             <Dialog
-                open={open}>
-                <DialogContent>{text}</DialogContent>
+                open={this.props.open}>
+                <DialogContent>{this.props.text}</DialogContent>
                 <DialogActions>
-                    <Button onClick={handle_accept}>accept</Button>
-                    <Button onClick={handle_refuse}>cancel</Button>
+                    <Button onClick={this.props.handle_accept}>accept</Button>
+                    <Button onClick={this.props.handle_refuse}>cancel</Button>
                 </DialogActions>
             </Dialog>
         );
