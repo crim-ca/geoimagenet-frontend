@@ -18,6 +18,11 @@ class DialogManagerClass {
         this.dialog_creation_callback = null;
     };
 
+    /**
+     *
+     * @param {string} text
+     * @returns {Promise<R>}
+     */
     confirm = (text: string): Promise<void> => {
 
         return new Promise((resolve, reject) => {
