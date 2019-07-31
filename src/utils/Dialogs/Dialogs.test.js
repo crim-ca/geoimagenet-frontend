@@ -63,41 +63,24 @@ describe('We should be able to instantiate the container and use it to display d
         wrapper.unmount();
     });
 
-    test('We can resolve or reject the promise through the button clicks', () => {
-        /**
-         * TODO here I repeat the test for both accept and refusal of promise, there's assuredly a more elegant way of testing for promise rejection or resolution
-         */
+    test('We can resolve or reject the promise through the button clicks', async () => {
         const wrapper = shallow(<DialogContainer />);
         let promise;
         let buttons;
 
         promise = DialogManager.confirm('test accept');
-        promise.then(() => {
-            expect(true).toBe(true);
-        });
         buttons = wrapper.find(PromisifiedDialog).dive().find(Dialog).dive().find(DialogActions).dive().find(Button);
         expect(buttons).toHaveLength(2);
         buttons.first().simulate('click');
+        expect(promise).resolves.toBe('test accept');
 
-        /**
-         * We resolved the promise with the confirmation button. the dialog should be closed and the state reset
-         */
         expect(wrapper.state()).toEqual(base_state);
 
         promise = DialogManager.confirm('test reject');
-        promise.then(
-            null,
-            () => {
-                expect(true).toBe(true);
-            }
-        );
         buttons = wrapper.find(PromisifiedDialog).dive().find(Dialog).dive().find(DialogActions).dive().find(Button);
-        expect(buttons).toHaveLength(2);
-        buttons.first().simulate('click');
+        buttons.last().simulate('click');
+        expect(promise).rejects.toBe('test reject');
 
-        /**
-         * We resolved the promise with the confirmation button. the dialog should be closed and the state reset
-         */
         expect(wrapper.state()).toEqual(base_state);
 
         wrapper.unmount();
@@ -112,16 +95,13 @@ describe('We should be able to instantiate the container and use it to display d
         wrapper.unmount();
     });
 
-    test('Calling the confirm method without container correctly throws', () => {
-        expect(() => {
-            DialogManager.confirm('test throw because no container');
-        }).toThrow();
+    test('Calling the confirm method without container correctly throws', async () => {
+        await expect(DialogManager.confirm('test throw because no container')).rejects.toEqual('There is no dialog creation callback registered. Did you instantiate a DialogContainer?');
 
         DialogManager.register_dialog_creation_callback('invalid function');
 
-        expect(() => {
-            DialogManager.confirm('test throw because invalid callback');
-        }).toThrow();
+        await expect(DialogManager.confirm('test throw because invalid callback')).rejects.toEqual('The dialog creation callback registered is not a function. ' +
+            'Did you instantiate a DialogContainer?');
     });
 
 });

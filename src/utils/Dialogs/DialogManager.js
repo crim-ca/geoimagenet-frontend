@@ -20,17 +20,18 @@ class DialogManagerClass {
 
     confirm = (text: string): Promise<void> => {
 
-        if (typeof this.dialog_creation_callback === 'function') {
-            return new Promise((resolve, reject) => {
-                this.dialog_creation_callback(text, resolve, reject);
-            });
-        }
+        return new Promise((resolve, reject) => {
+            if (typeof this.dialog_creation_callback === 'function') {
+                return this.dialog_creation_callback(text, resolve, reject);
+            }
+            if (this.dialog_creation_callback === null) {
+                reject('There is no dialog creation callback registered. Did you instantiate a DialogContainer?');
+            }
+            reject('The dialog creation callback registered is not a function. ' +
+                'Did you instantiate a DialogContainer?');
+        });
 
-        if (this.dialog_creation_callback === null) {
-            throw new Error('There is no dialog creation callback registered. Did you instantiate a DialogContainer?');
-        }
-        throw new Error('The dialog creation callback registered is not a function. ' +
-            'Did you instantiate a DialogContainer?');
+
     };
 
 }

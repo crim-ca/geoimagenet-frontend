@@ -12,6 +12,11 @@ type State = {
     handle_refuse: Function | null,
 };
 
+/**
+ * There should be a single <DialogContainer /> in the app. Processes that want to obtain confirmation must import the DialogManager
+ * singleton and invoke the confirm('Do you really want?') method on it. Currently only supports an yes/no confirmation,
+ * without customization on the actual button text nor multiple different resolutions.
+ */
 export class DialogContainer extends React.Component<Props, State> {
 
     state = {
@@ -30,6 +35,10 @@ export class DialogContainer extends React.Component<Props, State> {
         DialogManager.remove_dialog_creation_callback();
     }
 
+    /**
+     * The callback meant to be passed to the DialogManager for when we want confirmation from the user.
+     * It should not be called from the container itself.
+     */
     handle_dialog_request = (text: string, handle_accept: Function, handle_refuse: Function) => {
         this.setState({
             open: true,
@@ -39,14 +48,18 @@ export class DialogContainer extends React.Component<Props, State> {
         });
     };
 
-    handle_close_dialog = (callback: Function) => async () => {
+    /**
+     * Decorates the promise resolution method: we need to close the dialog before resolving the promise.
+     */
+    handle_close_dialog = (promise_resolution_callback: Function) => async () => {
+        const confirmation_message = this.state.text;
         await this.setState({
             open: false,
             text: '',
             handle_accept: null,
             handle_refuse: null,
         });
-        callback();
+        promise_resolution_callback(confirmation_message);
     };
 
     render() {
