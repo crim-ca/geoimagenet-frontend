@@ -62,8 +62,8 @@ export class DialogContainer extends React.Component<Props, State> {
      * @param promise_resolution_callback this handler decorates either resolve or reject promise resolution, send the one needed
      * @private
      */
-    handle_close_dialog(promise_resolution_callback: Function<any>): Function {
-        return async (): void => {
+    handle_close_dialog(promise_resolution_callback: Function): Function {
+        return async (): Promise<void> => {
             const confirmation_message = this.state.text;
             await this.setState({
                 open: false,
