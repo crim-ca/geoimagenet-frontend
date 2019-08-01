@@ -579,7 +579,7 @@ export class MapManager {
                     features.forEach(f => {
                         const taxonomy_class_id = f.get('taxonomy_class_id');
                         this.state_proxy.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(f);
-                        this.state_proxy.flat_taxonomy_classes[taxonomy_class_id].counts[ANNOTATION.STATUS.NEW]--;
+                        this.store_actions.decrement_new_annotations_count(taxonomy_class_id);
                     });
                 } catch (e) {
                     captureException(e);

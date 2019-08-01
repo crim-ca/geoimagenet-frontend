@@ -1,5 +1,5 @@
 [ignore]
-.*/next/.*
+.*/.next/.*
 .*/bin/.*
 .*/coverage/.*
 .*/dist/.*
@@ -13,5 +13,6 @@
 [lints]
 
 [options]
+esproposal.decorators=ignore
 
 [strict]
