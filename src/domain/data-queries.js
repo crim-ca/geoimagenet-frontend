@@ -67,7 +67,11 @@ export const LAUNCH_TEST_JOB = gql`
             success
             message
             job {
+                id
+                status
+                progress
                 status_location
+                visibility
             }
         }
     }
