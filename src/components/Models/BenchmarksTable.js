@@ -5,21 +5,31 @@ import Publish from '@material-ui/icons/Publish';
 import Lock from '@material-ui/icons/Lock';
 import MaterialTable from "material-table";
 import {compose} from "react-apollo";
-import graphql from "react-apollo/graphql";
+import {graphql} from "react-apollo/graphql";
 import React from "react";
 import {BENCHMARKS_JOBS, CHANGE_BENCHMARK_VISIBILITY} from "../../domain/data-queries";
 import {NotificationManager} from "react-notifications";
-import PropTypes from "prop-types";
 
-const make_publish_icon = () => <Publish/>;
-const make_lock_icon = () => <Lock/>;
+const make_publish_icon = () => <Publish />;
+const make_lock_icon = () => <Lock />;
 
-function BenchmarksTableComponent({data: {jobs, refetch}, mutate}) {
+type Props = {
+    data: {
+        jobs: Array<Object>,
+        refetch: Function,
+        startPolling: Function,
+        stopPolling: Function,
+    },
+    mutate: Function
+};
 
-    const benchmark_visibility_handler = (job_id, visibility) => async () => {
+class BenchmarksTableComponent extends React.Component<Props> {
+
+    benchmark_visibility_handler = (job_id, visibility) => async () => {
+        const {data: {refetch}} = this.props;
         let result;
         try {
-            result = await mutate({
+            result = await this.props.mutate({
                 variables: {
                     job_id: job_id,
                     visibility: visibility,
@@ -38,42 +48,51 @@ function BenchmarksTableComponent({data: {jobs, refetch}, mutate}) {
         refetch();
     };
 
+    pending_jobs() {
+        const {data: {jobs}} = this.props;
+        if (!jobs) {
+            return false;
+        }
+        return jobs.some(job => job.status === 'running' || job.status === 'accepted');
+    }
 
-    return (
-        <MaterialTable
-            title='Benchmarks jobs'
-            icons={tableIcons}
-            actions={[
-                rowData => ({
-                    icon: make_publish_icon,
-                    tooltip: 'publish',
-                    onClick: benchmark_visibility_handler(rowData.id, 'public'),
-                    disabled: rowData.visibility === 'public',
-                }),
-                rowData => ({
-                    icon: make_lock_icon,
-                    tooltip: 'unpublish',
-                    onClick: benchmark_visibility_handler(rowData.id, 'private'),
-                    disabled: rowData.visibility === 'private',
-                }),
-            ]}
-            columns={[
-                {title: 'ID', field: 'id'},
-                {title: 'Visibility', field: 'visibility'},
-                {title: 'Status', field: 'status'},
-                {title: 'Message', field: 'status_location'},
-                {title: 'Progress', field: 'progress'},
-            ]}
-            data={jobs}
-        />
-    );
+    render() {
+        const {data: {jobs, startPolling, stopPolling}} = this.props;
+        if (this.pending_jobs()) {
+            startPolling(5 * 1000);
+        } else {
+            stopPolling();
+        }
+        return (
+            <MaterialTable
+                title='Benchmarks jobs'
+                icons={tableIcons}
+                actions={[
+                    rowData => ({
+                        icon: make_publish_icon,
+                        tooltip: 'publish',
+                        onClick: this.benchmark_visibility_handler(rowData.id, 'public'),
+                        disabled: rowData.visibility === 'public',
+                    }),
+                    rowData => ({
+                        icon: make_lock_icon,
+                        tooltip: 'unpublish',
+                        onClick: this.benchmark_visibility_handler(rowData.id, 'private'),
+                        disabled: rowData.visibility === 'private',
+                    }),
+                ]}
+                columns={[
+                    {title: 'ID', field: 'id'},
+                    {title: 'Visibility', field: 'visibility'},
+                    {title: 'Status', field: 'status'},
+                    {title: 'Message', field: 'status_location'},
+                    {title: 'Progress', field: 'progress'},
+                ]}
+                data={jobs}
+            />
+        );
+    }
 }
-
-
-BenchmarksTableComponent.propTypes = {
-    data: PropTypes.object.isRequired,
-    mutate: PropTypes.func.isRequired,
-};
 
 export const BenchmarksTable = compose(
     graphql(BENCHMARKS_JOBS),

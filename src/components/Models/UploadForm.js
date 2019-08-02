@@ -3,7 +3,7 @@
 import {Button, CircularProgress, Link, TextField, Typography, withStyles} from "@material-ui/core";
 import PropTypes from 'prop-types';
 import React, {useState} from "react";
-import graphql from "react-apollo/graphql";
+import {graphql} from "react-apollo/graphql";
 import {NotificationManager} from "react-notifications";
 import {UPLOAD_MODEL} from '../../domain/data-queries';
 

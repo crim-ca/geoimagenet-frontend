@@ -5,7 +5,7 @@ import MaterialTable from "material-table";
 import {tableIcons} from "../../utils/react";
 import PropTypes from "prop-types";
 import {compose} from "react-apollo";
-import graphql from "react-apollo/graphql";
+import {graphql} from "react-apollo/graphql";
 import React from "react";
 import {MODELS, LAUNCH_TEST_JOB} from '../../domain/data-queries';
 import {NotificationManager} from "react-notifications";
