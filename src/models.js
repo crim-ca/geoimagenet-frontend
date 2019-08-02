@@ -1,3 +1,5 @@
+// @flow
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Sentry from '@sentry/browser';
@@ -18,11 +20,12 @@ import './css/base.css';
 import 'react-notifications/lib/notifications.css';
 import './img/icons/favicon.ico';
 
+
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
 });
 
-addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', async () => {
 
     const state_proxy = create_state_proxy();
     const store_actions = new StoreActions(state_proxy);
@@ -33,6 +36,11 @@ addEventListener('DOMContentLoaded', async () => {
     const div = document.createElement('div');
     div.id = 'root';
     div.classList.add('root');
+
+    if (!document.body) {
+        return new Error("There doesn't seem to be an html document with which to work here. This is weird, and we can't show you anything.");
+    }
+
     document.body.appendChild(div);
 
     ReactDOM.render(

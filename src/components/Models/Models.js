@@ -1,6 +1,7 @@
+// @flow
+
 import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core';
-import PropTypes from 'prop-types';
 import {ModelsTable} from './ModelsTable';
 import {UploadForm} from './UploadForm';
 import {BenchmarksTable} from './BenchmarksTable';
@@ -23,11 +24,11 @@ const Grid = withStyles(({values}) => ({
     </div>
 ));
 
-export class Models extends Component {
+type Props = {
+    model_upload_instructions_url: string,
+};
 
-    static propTypes = {
-        model_upload_instructions_url: PropTypes.string.isRequired,
-    };
+export class Models extends Component<Props> {
 
     render() {
         return (

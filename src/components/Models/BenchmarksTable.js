@@ -1,8 +1,11 @@
+// @flow
+
 import {tableIcons} from "../../utils/react";
 import Publish from '@material-ui/icons/Publish';
 import Lock from '@material-ui/icons/Lock';
 import MaterialTable from "material-table";
-import {graphql, compose} from "react-apollo";
+import {compose} from "react-apollo";
+import graphql from "react-apollo/graphql";
 import React from "react";
 import {BENCHMARKS_JOBS, CHANGE_BENCHMARK_VISIBILITY} from "../../domain/data-queries";
 import {NotificationManager} from "react-notifications";

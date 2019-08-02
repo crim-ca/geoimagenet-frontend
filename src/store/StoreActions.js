@@ -16,13 +16,13 @@ import {GeoImageNetStore} from "./GeoImageNetStore";
  */
 
 type AnnotationCounts = {
-    [ANNOTATION.STATUS.NEW]: number,
-    [ANNOTATION.STATUS.PRE_RELEASED]: number,
-    [ANNOTATION.STATUS.RELEASED]: number,
-    [ANNOTATION.STATUS.REVIEW]: number,
-    [ANNOTATION.STATUS.VALIDATED]: number,
-    [ANNOTATION.STATUS.REJECTED]: number,
-    [ANNOTATION.STATUS.DELETED]: number,
+    NEW: number,
+    PRE_RELEASED: number,
+    RELEASED: number,
+    REVIEW: number,
+    VALIDATED: number,
+    REJECTED: number,
+    DELETED: number,
 };
 
 export class StoreActions {

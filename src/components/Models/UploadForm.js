@@ -1,9 +1,19 @@
+// @flow
+
 import {Button, CircularProgress, Link, TextField, Typography, withStyles} from "@material-ui/core";
 import PropTypes from 'prop-types';
 import React, {useState} from "react";
-import {graphql} from "react-apollo";
+import graphql from "react-apollo/graphql";
 import {NotificationManager} from "react-notifications";
 import {UPLOAD_MODEL} from '../../domain/data-queries';
+
+type State = {
+    model_name: string,
+    file: null,
+    validity: null,
+    benchmarks_jobs: Array<Object>,
+    loading: boolean,
+};
 
 const UploadFormContainer = withStyles(theme => ({
     root: {
@@ -21,7 +31,10 @@ const UploadFormContainer = withStyles(theme => ({
 
 function UploadFormComponent({mutate, model_upload_instructions_url}) {
 
-    const [state, setState] = useState({
+    let state: State;
+    let setState: Function;
+
+    [state, setState] = useState({
         model_name: new Date().toISOString(),
         file: null,
         validity: false,

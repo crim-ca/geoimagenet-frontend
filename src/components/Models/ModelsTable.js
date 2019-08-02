@@ -1,8 +1,11 @@
+// @flow
+
 import PlayArrow from "@material-ui/icons/PlayArrow";
 import MaterialTable from "material-table";
 import {tableIcons} from "../../utils/react";
 import PropTypes from "prop-types";
-import {graphql, compose} from "react-apollo";
+import {compose} from "react-apollo";
+import graphql from "react-apollo/graphql";
 import React from "react";
 import {MODELS, LAUNCH_TEST_JOB} from '../../domain/data-queries';
 import {NotificationManager} from "react-notifications";
