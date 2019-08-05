@@ -7,10 +7,13 @@ import {graphql} from "react-apollo/graphql";
 import {NotificationManager} from "react-notifications";
 import {UPLOAD_MODEL} from '../../domain/graphql_queries';
 
+type Validity = {
+    valid: boolean
+};
 type State = {
     model_name: string,
-    file: null,
-    validity: null,
+    file: File|null,
+    validity: Validity,
     benchmarks_jobs: Array<Object>,
     loading: boolean,
 };
@@ -39,7 +42,7 @@ class UploadFormComponent extends React.Component<Props, State> {
     state = {
         model_name: new Date().toISOString(),
         file: null,
-        validity: false,
+        validity: {valid: false},
         benchmarks_jobs: [],
         loading: false,
     };
@@ -58,7 +61,7 @@ class UploadFormComponent extends React.Component<Props, State> {
                         console.log('in updateing...');
                     },
                 });
-                this.setState({file: null, validity: false, loading: false});
+                this.setState({file: null, validity: {valid: false}, loading: false});
             } catch (e) {
                 console.log(e);
                 NotificationManager.error(`there was an error: ${e.message}. please try again later.`);
@@ -81,7 +84,9 @@ class UploadFormComponent extends React.Component<Props, State> {
         return model_name.length > 0 && validity.valid;
     };
 
-    file_changed = ({target: {validity, files: [file]}}) => {
+    file_changed = (event: Event) => {
+        const target: EventTarget = event.target;
+        const {validity, files: [file]}: {validity: Validity, files: Array<File>} = target;
         this.setState({file, validity});
     };
 

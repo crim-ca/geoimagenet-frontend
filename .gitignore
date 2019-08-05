@@ -25,4 +25,4 @@ dist/*
 .graphqlconfig
 schema.graphql
 
-flow-typed
+flow-typed/npm
