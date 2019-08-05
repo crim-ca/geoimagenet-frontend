@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React from "react";
 import {graphql} from "react-apollo/graphql";
 import {NotificationManager} from "react-notifications";
-import {UPLOAD_MODEL} from '../../domain/data-queries';
+import {UPLOAD_MODEL} from '../../domain/graphql_queries';
 
 type State = {
     model_name: string,

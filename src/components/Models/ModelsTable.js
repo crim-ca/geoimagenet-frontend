@@ -6,7 +6,7 @@ import {tableIcons} from "../../utils/react";
 import {compose} from "react-apollo";
 import {graphql} from "react-apollo/graphql";
 import React from "react";
-import {MODELS, LAUNCH_TEST_JOB} from '../../domain/data-queries';
+import {MODELS, LAUNCH_TEST_JOB, BENCHMARKS_JOBS} from '../../domain/graphql_queries';
 import {NotificationManager} from "react-notifications";
 
 const make_play_arrow = () => <PlayArrow />;
@@ -28,11 +28,11 @@ class ModelsTableComponent extends React.Component<Props> {
                 variables: {
                     model_id: rowData.id
                 },
-                update: (cache, {data: {upload_model: {model}}}) => {
-                    const {models} = cache.readQuery({query: MODELS});
+                update: (cache, {data: {launch_test: {job}}}) => {
+                    const {jobs} = cache.readQuery({query: BENCHMARKS_JOBS});
                     cache.writeQuery({
-                        query: MODELS,
-                        data: {models: models.concat([model])},
+                        query: BENCHMARKS_JOBS,
+                        data: {jobs: jobs.concat([job])},
                     });
                 },
             });

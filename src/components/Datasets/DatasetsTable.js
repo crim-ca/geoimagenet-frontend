@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {tableIcons} from "../../utils/react";
 import {graphql} from 'react-apollo';
 import {Link} from '@material-ui/core';
-import {DATASETS} from '../../domain/data-queries';
+import {DATASETS} from '../../domain/graphql_queries';
 
 function DatasetsTableComponent({data: {datasets}, ml_endpoint}) {
 

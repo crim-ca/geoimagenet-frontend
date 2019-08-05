@@ -3,7 +3,7 @@ import {graphql, compose} from 'react-apollo';
 import {tableIcons} from "../../utils/react";
 import PropTypes from 'prop-types';
 import React from "react";
-import {DATASET_CREATION_JOBS, LAUNCH_DATASET_CREATION_JOB} from '../../domain/data-queries';
+import {DATASET_CREATION_JOBS, LAUNCH_DATASET_CREATION_JOB} from '../../domain/graphql_queries';
 import {Button} from "@material-ui/core";
 import {NotificationManager} from "react-notifications";
 

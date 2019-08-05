@@ -7,7 +7,7 @@ import MaterialTable from "material-table";
 import {compose} from "react-apollo";
 import {graphql} from "react-apollo/graphql";
 import React from "react";
-import {BENCHMARKS_JOBS, CHANGE_BENCHMARK_VISIBILITY} from "../../domain/data-queries";
+import {BENCHMARKS_JOBS, CHANGE_BENCHMARK_VISIBILITY} from "../../domain/graphql_queries";
 import {NotificationManager} from "react-notifications";
 
 const make_publish_icon = () => <Publish />;

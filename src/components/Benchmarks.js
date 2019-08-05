@@ -3,7 +3,7 @@ import {withStyles} from '@material-ui/core';
 import PropTypes from 'prop-types';
 import MaterialTable from 'material-table';
 import {tableIcons} from '../utils/react';
-import {PUBLIC_BENCHMARKS} from "../domain/data-queries";
+import {PUBLIC_BENCHMARKS} from "../domain/graphql_queries";
 import {graphql} from "react-apollo";
 
 const Grid = withStyles({
