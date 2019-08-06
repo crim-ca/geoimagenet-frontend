@@ -90,7 +90,7 @@ export const BENCHMARKS_JOBS = gql`
             id
             status
             progress
-            status_location
+            status_message
             visibility
         }
     }

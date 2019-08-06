@@ -85,7 +85,7 @@ class BenchmarksTableComponent extends React.Component<Props> {
                     {title: 'ID', field: 'id'},
                     {title: 'Visibility', field: 'visibility'},
                     {title: 'Status', field: 'status'},
-                    {title: 'Message', field: 'status_location'},
+                    {title: 'Message', field: 'status_message'},
                     {title: 'Progress', field: 'progress'},
                 ]}
                 data={jobs}
