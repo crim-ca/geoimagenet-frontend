@@ -9,11 +9,11 @@ import {BenchmarksTable} from './BenchmarksTable';
 const Grid = withStyles(({values}) => ({
     root: {
         display: 'grid',
-        gridTemplateColumns: '1fr max-content 1fr',
+        gridTemplateColumns: `${values.gutterMedium} 1fr minmax(300px, max-content) 1fr ${values.gutterMedium}`,
         gridTemplateRows: 'min-content',
     },
     content: {
-        gridColumn: '2/3',
+        gridColumn: '3/4',
         display: 'grid',
         gridTemplateRows: 'min-content',
         gridGap: values.gutterSmall,
