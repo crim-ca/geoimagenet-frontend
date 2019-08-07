@@ -1,15 +1,15 @@
 import {MuiThemeProvider} from "@material-ui/core";
-import {theme} from "../../utils/react";
+import {theme} from "../utils/react";
 
 const {MockedProvider} = require('react-apollo/test-utils');
 const React = require('react');
 const {mount, configure} = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
-const {Models} = require('./Models');
-const {ModelsTable} = require('./ModelsTable');
-const {BenchmarksTable} = require('./BenchmarksTable');
-const {UploadForm} = require('./UploadForm');
-const {MODELS, LAUNCH_TEST_JOB, BENCHMARKS_JOBS, UPLOAD_MODEL} = require('../../domain/graphql_queries');
+const {Models} = require('../components/Models/Models');
+const {ModelsTable} = require('../components/Models/ModelsTable');
+const {BenchmarksTable} = require('../components/Models/BenchmarksTable');
+const {UploadForm} = require('../components/Models/UploadForm');
+const {MODELS, LAUNCH_TEST_JOB, BENCHMARKS_JOBS, UPLOAD_MODEL} = require('../domain/graphql_queries');
 const {NotificationContainer} = require('react-notifications');
 const wait = require('waait');
 const {JSDOM} = require('jsdom');
@@ -57,6 +57,7 @@ describe('We render some models', () => {
         wrapper.update();
         expect(wrapper.find(ModelsTable)).toHaveLength(1);
         expect(wrapper.find(ModelsTable).html()).toContain('test_model');
+        expect(wrapper.find(BenchmarksTable).html()).toContain('Job done.');
         wrapper.unmount();
     });
 
@@ -177,7 +178,7 @@ const mocks = [
                         id: 'new-benchmark-id',
                         status: 'accepted',
                         progress: 1,
-                        status_location: '',
+                        status_message: '',
                         visibility: 'hidden',
                     }
                 }
@@ -195,9 +196,8 @@ const mocks = [
                         id: 'benchmark_id',
                         status: 'finished',
                         progress: 100,
-                        status_location: '',
+                        status_message: 'Job done.',
                         visibility: 'hidden',
-                        __typename: 'bruh-benchmark',
                     }
                 ]
             }

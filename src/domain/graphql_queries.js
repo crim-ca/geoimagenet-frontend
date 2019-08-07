@@ -68,7 +68,7 @@ export const LAUNCH_TEST_JOB = gql`
                 id
                 status
                 progress
-                status_location
+                status_message
                 visibility
             }
         }
