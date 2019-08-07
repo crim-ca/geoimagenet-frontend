@@ -28,12 +28,14 @@ class ModelsTableComponent extends React.Component<Props> {
                 variables: {
                     model_id: rowData.id
                 },
-                update: (cache, {data: {launch_test: {job}}}) => {
-                    const {jobs} = cache.readQuery({query: BENCHMARKS_JOBS});
-                    cache.writeQuery({
-                        query: BENCHMARKS_JOBS,
-                        data: {jobs: jobs.concat([job])},
-                    });
+                update: (cache, {data: {launch_test: {success, job}}}) => {
+                    if (success) {
+                        const {jobs} = cache.readQuery({query: BENCHMARKS_JOBS});
+                        cache.writeQuery({
+                            query: BENCHMARKS_JOBS,
+                            data: {jobs: jobs.concat([job])},
+                        });
+                    }
                 },
             });
         } catch (e) {

@@ -37,20 +37,29 @@ copyProps(window, global);
 
 configure({adapter: new Adapter()});
 
-const TestingModels = () => (
-    <MuiThemeProvider theme={theme}>
-        <MockedProvider mocks={mocks} addTypename={false}>
-            <Models model_upload_instructions_url='/instructions' />
-        </MockedProvider>
-        <NotificationContainer />
-    </MuiThemeProvider>
-);
+type Props = {
+    mocks: Array<Object>,
+}
+
+class TestingModels extends React.Component<Props> {
+    render() {
+        const {mocks} = this.props;
+        return (
+            <MuiThemeProvider theme={theme}>
+                <MockedProvider mocks={mocks} addTypename={false}>
+                    <Models model_upload_instructions_url='/instructions' />
+                </MockedProvider>
+                <NotificationContainer />
+            </MuiThemeProvider>
+        );
+    }
+}
 
 const dummy_file = new File(['foo'], 'filename');
 
 describe('We render some models', () => {
     test('Models table renders', async () => {
-        const wrapper = mount(<TestingModels />);
+        const wrapper = mount(<TestingModels mocks={mocks} />);
         expect(wrapper.html()).toContain('Models');
         expect(wrapper.find(ModelsTable).html()).not.toContain('test_model');
         await wait(0);
@@ -62,7 +71,7 @@ describe('We render some models', () => {
     });
 
     test('Launching a job adds a job to the jobs table', async () => {
-        const wrapper = mount(<TestingModels />);
+        const wrapper = mount(<TestingModels mocks={mocks} />);
         expect(wrapper.html()).toContain('Models');
         expect(wrapper.html()).toContain('Benchmarks');
         expect(wrapper.find(ModelsTable).html()).not.toContain('test_model');
@@ -85,8 +94,26 @@ describe('We render some models', () => {
         wrapper.unmount();
     });
 
-    test('Upload form uploads a file', async () => {
-        const wrapper = mount(<TestingModels />);
+    test('No dataset error on job launch show notification', async () => {
+        const wrapper = mount(<TestingModels mocks={no_dataset_error_mock} />);
+
+        await wait(0);
+        wrapper.update();
+
+        wrapper.find(ModelsTable).find('tbody').find('tr').find('button').simulate('click');
+
+        await wait(0);
+        wrapper.update();
+
+        const notification_container = wrapper.find(NotificationContainer);
+        expect(notification_container).toHaveLength(1);
+        expect(notification_container.html()).toContain('There does not seem to be datasets yet. Please ask your admin to create a dataset before launching tests.');
+
+        wrapper.unmount();
+    });
+
+    test('Upload form uploads a file and reloads table', async () => {
+        const wrapper = mount(<TestingModels mocks={mocks} />);
         let upload_form = wrapper.find(UploadForm);
         expect(upload_form).toHaveLength(1);
         let button = upload_form.find('button');
@@ -110,6 +137,9 @@ describe('We render some models', () => {
         button = upload_form.find('button');
         expect(button.prop('disabled')).toEqual(false);
 
+        // this test suite is not finished, it should not pass
+        expect(false).toBe(true);
+
         /*
         @TODO finish testing file upload
         button.simulate('click');
@@ -123,6 +153,45 @@ describe('We render some models', () => {
         wrapper.unmount();
     });
 });
+
+const MODELS_MOCK_QUERY = {
+    request: {
+        query: MODELS,
+    },
+    result: {
+        data: {
+            models: [
+                {
+                    id: '5193a839-de70-4533-a874-fc4361e27c53',
+                    name: 'test_model',
+                    path: '/data/geoimagenet/models/2019/6/ckpt.0000.PTW-SCPL1-20190425-162746.pth',
+                    created: '2019-06-03T18:08:07.161000+00:00',
+                }
+            ]
+        }
+    }
+};
+
+const no_dataset_error_mock = [
+    MODELS_MOCK_QUERY,
+    {
+        request: {
+            query: LAUNCH_TEST_JOB,
+            variables: {
+                model_id: '5193a839-de70-4533-a874-fc4361e27c53', // this MUST correspond to the id of the mocked test_model
+            }
+        },
+        result: {
+            data: {
+                launch_test: {
+                    success: false,
+                    message: 'There does not seem to be datasets yet. Please ask your admin to create a dataset before launching tests.',
+                    job: null
+                }
+            }
+        }
+    }
+];
 
 const mocks = [
     {
@@ -145,23 +214,7 @@ const mocks = [
             }
         },
     },
-    {
-        request: {
-            query: MODELS,
-        },
-        result: {
-            data: {
-                models: [
-                    {
-                        id: '5193a839-de70-4533-a874-fc4361e27c53',
-                        name: 'test_model',
-                        path: '/data/geoimagenet/models/2019/6/ckpt.0000.PTW-SCPL1-20190425-162746.pth',
-                        created: '2019-06-03T18:08:07.161000+00:00',
-                    }
-                ]
-            }
-        }
-    },
+    MODELS_MOCK_QUERY,
     {
         request: {
             query: LAUNCH_TEST_JOB,
