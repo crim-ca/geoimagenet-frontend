@@ -7,7 +7,7 @@ import {withStyles} from '@material-ui/core';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPaperPlane} from '@fortawesome/free-solid-svg-icons';
 
-import {TaxonomyClasses} from '../TaxonomyBrowser.js';
+import {Classes} from './Classes';
 import {ANNOTATION} from '../../domain/constants.js';
 
 const StyledListItem = withStyles({
@@ -219,13 +219,13 @@ class TaxonomyClassListElement extends Component {
                 {children
                     ? (
                         <Collapse in={taxonomy_class.opened}>
-                            <TaxonomyClasses classes={children}
-                                             map_manager={this.props.map_manager}
-                                             store_actions={this.props.store_actions}
-                                             state_proxy={this.props.state_proxy}
-                                             user_interactions={this.props.user_interactions}
-                                             invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility}
-                                             toggle_taxonomy_class_tree_element={this.props.toggle_taxonomy_class_tree_element} />
+                            <Classes classes={children}
+                                     map_manager={this.props.map_manager}
+                                     store_actions={this.props.store_actions}
+                                     state_proxy={this.props.state_proxy}
+                                     user_interactions={this.props.user_interactions}
+                                     invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility}
+                                     toggle_taxonomy_class_tree_element={this.props.toggle_taxonomy_class_tree_element} />
                         </Collapse>)
                     : null
                 }

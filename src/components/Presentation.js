@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {withStyles, Link, Typography, Paper, Select, MenuItem, Dialog} from '@material-ui/core';
 import Clear from '@material-ui/icons/Clear';
 import {useTranslation, withTranslation} from '../utils';
-import {Tree} from './taxonomy/Tree';
+import {Tree} from './Taxonomy/Tree';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 
@@ -12,7 +12,7 @@ import {Login} from './Login.js';
 import {Benchmarks} from './Benchmarks';
 
 import logo_gin from '../img/logos/logo_trans_GIN.png';
-import {TaxonomySelector} from './TaxonomyBrowser';
+import {Selector} from './Taxonomy/Selector';
 
 const DarkDialog = withStyles(({colors, values}) => ({
     paper: {
@@ -108,9 +108,9 @@ class Taxonomy extends React.Component {
                 <Typography variant='body1'>{t('intro:taxonomy.par_2')}</Typography>
                 <Link download href={`${GEOIMAGENET_API_URL}/taxonomy_classes`}>{t('intro:taxonomy.download')}</Link>
                 <Paper style={{marginTop: '12px'}}>
-                    <TaxonomySelector user_interactions={user_interactions}
-                                      t={t}
-                                      state_proxy={state_proxy} />
+                    <Selector user_interactions={user_interactions}
+                              t={t}
+                              state_proxy={state_proxy} />
                     {classes.length > 0
                         ? <Tree
                             t={t}

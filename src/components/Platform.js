@@ -11,7 +11,8 @@ import {
 import {ExpandMore} from '@material-ui/icons';
 
 import {Actions} from './Actions.js';
-import {TaxonomyClasses, TaxonomySelector} from './TaxonomyBrowser.js';
+import {Classes} from './Taxonomy/Classes';
+import {Selector} from './Taxonomy/Selector';
 import {MapManager} from '../MapManager.js';
 import {DataQueries} from '../domain/data-queries.js';
 import {UserInteractions} from '../domain/user-interactions.js';
@@ -75,7 +76,8 @@ const Sidebar = withStyles({
     root: {
         gridRow: '1/3',
         gridColumn: '3/4',
-    }
+        padding: 0,
+    },
 })(Paper);
 
 const SidebarBottom = withStyles(theme => {
@@ -202,17 +204,17 @@ class PlatformWrapper extends Component {
                                 Taxonomies and Classes
                             </ExpansionPanelSummary>
                             <StyledPanelDetails>
-                                <TaxonomySelector user_interactions={this.props.user_interactions}
-                                                  t={t}
-                                                  state_proxy={this.props.state_proxy}/>
+                                <Selector user_interactions={this.props.user_interactions}
+                                          t={t}
+                                          state_proxy={this.props.state_proxy}/>
 
-                                <TaxonomyClasses map_manager={this.map_manager}
-                                                 user_interactions={this.props.user_interactions}
-                                                 store_actions={this.props.store_actions}
-                                                 state_proxy={this.props.state_proxy}
-                                                 invert_taxonomy_class_visibility={this.props.store_actions.invert_taxonomy_class_visibility}
-                                                 toggle_taxonomy_class_tree_element={this.props.store_actions.toggle_taxonomy_class_tree_element}
-                                                 classes={classes}/>
+                                <Classes map_manager={this.map_manager}
+                                         user_interactions={this.props.user_interactions}
+                                         store_actions={this.props.store_actions}
+                                         state_proxy={this.props.state_proxy}
+                                         invert_taxonomy_class_visibility={this.props.store_actions.invert_taxonomy_class_visibility}
+                                         toggle_taxonomy_class_tree_element={this.props.store_actions.toggle_taxonomy_class_tree_element}
+                                         classes={classes}/>
                             </StyledPanelDetails>
                         </ExpansionPanel>
                         <ExpansionPanel expanded={expanded === 'layers'}
