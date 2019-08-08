@@ -159,7 +159,7 @@ function Platform() {
             </ul>
             <Typography variant='h6'>{t('intro:platform.section_2.header')}</Typography>
             <Typography dangerouslySetInnerHTML={{__html: t('intro:platform.section_2.par_1')}} variant='body1' />
-            <Typography dangerouslySetInnerHTML={{__html: t('intro:platform.section_2.par_2')}} variant='body1' />
+            <Typography dangerouslySetInnerHTML={{__html: t('intro:platform.section_2.par_2', {contact_email: CONTACT_EMAIL})}} variant='body1' />
             <Typography variant='h6'>{t('intro:platform.section_3.header')}</Typography>
             <ul>
                 <li>{t('intro:platform.section_3.item_1')}</li>

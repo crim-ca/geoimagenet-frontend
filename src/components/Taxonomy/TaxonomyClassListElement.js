@@ -1,14 +1,22 @@
+// @flow
+
 import {observer} from 'mobx-react';
 import {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Collapse, List, ListItem, Chip, Tooltip} from '@material-ui/core';
+import {Collapse, List, ListItem} from '@material-ui/core';
 import React from 'react';
 import {withStyles} from '@material-ui/core';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPaperPlane} from '@fortawesome/free-solid-svg-icons';
 
+import {AnnotationCounts} from './AnnotationCounts';
+
 import {Classes} from './Classes';
 import {ANNOTATION} from '../../domain/constants.js';
+import {typeof TaxonomyClass} from "../../domain/entities";
+import {typeof UserInteractions} from "../../domain";
+import {typeof StoreActions} from "../../store";
+import {typeof GeoImageNetStore} from "../../store/GeoImageNetStore";
 
 const StyledListItem = withStyles({
     root: {
@@ -22,11 +30,6 @@ const StyledList = withStyles({
         paddingBottom: 0,
     }
 })(List);
-const SpacedChip = withStyles({
-    root: {
-        marginLeft: '6px',
-    },
-})(Chip);
 
 @observer
 class ReleaseButton extends Component {
@@ -56,25 +59,6 @@ class Checkbox extends Component {
                        onChange={this.props.change_handler} />
                 <span />
             </label>
-        );
-    }
-}
-
-@observer
-class AnnotationsCount extends Component {
-    static propTypes = {
-        class: PropTypes.string.isRequired,
-        count: PropTypes.number.isRequired,
-        tooltip: PropTypes.string.isRequired,
-    };
-
-    render() {
-        return (
-            <Tooltip title={`${this.props.count} ${this.props.tooltip}`}>
-                <SpacedChip label={this.props.count}
-                            className={this.props.class}
-                            variant='outlined' />
-            </Tooltip>
         );
     }
 }
@@ -127,21 +111,22 @@ const StyledLabelAndCountSpan = withStyles({
     return <span className={classes.root}>{children}</span>;
 });
 
+type Props = {
+    toggle_taxonomy_class_tree_element: Function,
+    invert_taxonomy_class_visibility: Function,
+    refresh_source_by_status: Function,
+    taxonomy_class: TaxonomyClass,
+    user_interactions: UserInteractions,
+    store_actions: StoreActions,
+    state_proxy: GeoImageNetStore,
+};
+
 /**
  * The TaxonomyClassListElement element is an entry in the taxonomy classes list, as well as any children the class might have.
  * It should allow for toggling of visibility for its classes, as well as releasing new annotations that are currently pending for that class.
  */
 @observer
-class TaxonomyClassListElement extends Component {
-    static propTypes = {
-        toggle_taxonomy_class_tree_element: PropTypes.func.isRequired,
-        invert_taxonomy_class_visibility: PropTypes.func.isRequired,
-        taxonomy_class: PropTypes.object.isRequired,
-        user_interactions: PropTypes.object.isRequired,
-        map_manager: PropTypes.object.isRequired,
-        store_actions: PropTypes.object.isRequired,
-        state_proxy: PropTypes.object.isRequired,
-    };
+class TaxonomyClassListElement extends Component<Props> {
 
     /**
      * Create the click handler with the relevant class entity
@@ -163,8 +148,8 @@ class TaxonomyClassListElement extends Component {
         try {
             event.stopPropagation();
             await this.props.user_interactions.release_annotations(taxonomy_class.id);
-            this.props.map_manager.refresh_source_by_status(ANNOTATION.STATUS.NEW);
-            this.props.map_manager.refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
+            this.props.refresh_source_by_status(ANNOTATION.STATUS.NEW);
+            this.props.refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
         } catch (e) {
             throw e;
         }
@@ -181,7 +166,7 @@ class TaxonomyClassListElement extends Component {
 
     render() {
 
-        const {taxonomy_class} = this.props;
+        const {taxonomy_class, state_proxy} = this.props;
         const {children} = taxonomy_class;
 
         const label_click_callback = children && children.length > 0
@@ -196,21 +181,7 @@ class TaxonomyClassListElement extends Component {
                                 button>
                     <StyledLabelAndCountSpan>
                         <TaxonomyClassLabel label={taxonomy_class.name_en} />
-                        {taxonomy_class.counts[ANNOTATION.STATUS.NEW]
-                            ? <AnnotationsCount class='annotation_new'
-                                                tooltip={`new annotations of class ${taxonomy_class.name_en}`}
-                                                count={taxonomy_class.counts[ANNOTATION.STATUS.NEW]} />
-                            : null}
-                        {taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]
-                            ? <AnnotationsCount class='annotation_released'
-                                                tooltip={`released annotations of class ${taxonomy_class.name_en}`}
-                                                count={taxonomy_class.counts[ANNOTATION.STATUS.RELEASED]} />
-                            : null}
-                        {taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]
-                            ? <AnnotationsCount class='annotation_validated'
-                                                tooltip={`validated annotations of class ${taxonomy_class.name_en}`}
-                                                count={taxonomy_class.counts[ANNOTATION.STATUS.VALIDATED]} />
-                            : null}
+                        <AnnotationCounts name_en={taxonomy_class.name_en} counts={taxonomy_class.counts} state_proxy={state_proxy}/>
                     </StyledLabelAndCountSpan>
                     <TaxonomyClassActions taxonomy_class={taxonomy_class}
                                           release_handler={this.make_release_handler(taxonomy_class)}
@@ -220,10 +191,10 @@ class TaxonomyClassListElement extends Component {
                     ? (
                         <Collapse in={taxonomy_class.opened}>
                             <Classes classes={children}
-                                     map_manager={this.props.map_manager}
                                      store_actions={this.props.store_actions}
                                      state_proxy={this.props.state_proxy}
                                      user_interactions={this.props.user_interactions}
+                                     refresh_source_by_status={this.props.refresh_source_by_status}
                                      invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility}
                                      toggle_taxonomy_class_tree_element={this.props.toggle_taxonomy_class_tree_element} />
                         </Collapse>)

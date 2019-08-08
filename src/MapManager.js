@@ -16,7 +16,7 @@ import {toStringHDMS} from 'ol/coordinate';
 import VectorSource from 'ol/source/Vector';
 import {bbox} from 'ol/loadingstrategy';
 import {Circle, Fill, Stroke, Style, Text} from 'ol/style';
-import {GeoJSON} from 'ol/format';
+import {GeoJSON, WMSCapabilities} from 'ol/format';
 import TileLayer from 'ol/layer/Tile';
 import {BingMaps, Cluster, OSM, TileWMS} from 'ol/source';
 import TileGrid from 'ol/tilegrid/TileGrid';
@@ -35,15 +35,25 @@ import {
     ANNOTATION_STATUS_AS_ARRAY,
     ALLOWED_BING_MAPS,
     CUSTOM_GEOIM_IMAGE_LAYER,
-    VIEW_CENTER, VALID_OPENLAYERS_ANNOTATION_RESOLUTION
+    VIEW_CENTER,
+    VALID_OPENLAYERS_ANNOTATION_RESOLUTION,
+    READ,
+    WMS
 } from './domain/constants.js';
 import {debounced} from './utils/event_handling.js';
 import {NotificationManager} from 'react-notifications';
-import {READ, WMS} from './domain/constants';
 import {StoreActions} from "./store";
 import {DataQueries} from "./domain/data-queries";
 import {LayerSwitcher} from "./LayerSwitcher";
 import {GeoImageNetStore} from "./store/GeoImageNetStore";
+import {make_http_request} from "./utils/http";
+
+async function geoserver_capabilities(url) {
+    let parser = new WMSCapabilities();
+    const res = await make_http_request(url);
+    const text = await res.text();
+    return parser.read(text);
+}
 
 /**
  * The MapManager is responsible for handling map behaviour at the boundary between the platform and OpenLayers.
@@ -356,12 +366,11 @@ export class MapManager {
 
     /**
      * Some actions need to redraw the annotations on the viewport. This method clears then refreshes the features on the specified layer.
-     * @param {String} status
      */
-    refresh_source_by_status(status: string) {
+    refresh_source_by_status = (status: string) => {
         this.state_proxy.annotations_sources[status].clear();
         this.state_proxy.annotations_sources[status].refresh(true);
-    }
+    };
 
     /**
      * When in annotation mode, we need some kind of control over the effect of each click.
@@ -688,7 +697,7 @@ export class MapManager {
             resolutions[z] = size / Math.pow(2, z);
         }
         try {
-            const result = await this.data_queries.geoserver_capabilities(`${this.geoserver_url}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
+            const result = await geoserver_capabilities(`${this.geoserver_url}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
             const capability = result.Capability;
             capability.Layer.Layer.forEach(layer => {
                 if (layer.KeywordList.some(keyword => keyword === 'GEOIMAGENET')) {

@@ -3,11 +3,11 @@
 import {TaxonomyClass} from '../domain/entities.js';
 import {ANNOTATION, MODE} from '../domain/constants.js';
 import {observable, action, runInAction} from 'mobx';
-import {Collection} from "ol";
-import {Source} from "ol/source";
 import {AccessControlList} from "../domain/access-control-list";
 import {Taxonomy, User} from "../domain/entities";
-import {Vector} from "ol/layer";
+import {typeof Collection} from "ol";
+import {typeof Source} from "ol/source";
+import {typeof Vector} from "ol/layer";
 import {GeoImageNetStore} from "./GeoImageNetStore";
 
 /**
@@ -43,12 +43,15 @@ export class StoreActions {
 
     /**
      * When user adds an annotation status to the visibility pool, we need to update the store.
-     * @param {String} annotation_status_text
      */
     @action.bound
-    toggle_annotation_status_visibility(annotation_status_text: string) {
+    toggle_annotation_status_visibility(annotation_status_text: string, override_activated: boolean = null) {
         const annotation_status_instance = this.state_proxy.annotation_status_list[annotation_status_text];
-        annotation_status_instance.activated = !annotation_status_instance.activated;
+        if (override_activated !== null) {
+            annotation_status_instance.activated = override_activated;
+        } else {
+            annotation_status_instance.activated = !annotation_status_instance.activated;
+        }
         this.set_annotation_layer_visibility(annotation_status_text, annotation_status_instance.activated);
     }
 
@@ -78,7 +81,7 @@ export class StoreActions {
      * @param {boolean|null} opened we should allow to override the toggling to force open or closed
      */
     @action.bound
-    toggle_taxonomy_class_tree_element(taxonomy_class_id: number, opened: boolean|null = null) {
+    toggle_taxonomy_class_tree_element(taxonomy_class_id: number, opened: boolean | null = null) {
         /** @type {TaxonomyClass} taxonomy_class */
         const taxonomy_class = this.state_proxy.flat_taxonomy_classes[taxonomy_class_id];
         if (opened === null) {
@@ -237,7 +240,7 @@ export class StoreActions {
      */
     @action.bound
     set_annotation_layer_visibility(key: string, visible: boolean) {
-        this.state_proxy.annotations_layers[key].setVisible(visible);
+        this.state_proxy.annotation_status_list[key].activated = visible;
     }
 
     @action.bound
@@ -257,7 +260,7 @@ export class StoreActions {
      *                       otherwise sets visibility to visible value passed to the function
      */
     @action.bound
-    invert_taxonomy_class_visibility(t: TaxonomyClass, visible: boolean|null = null) {
+    invert_taxonomy_class_visibility(t: TaxonomyClass, visible: boolean | null = null) {
         runInAction(() => {
             if (visible !== null) {
                 t.visible = visible;

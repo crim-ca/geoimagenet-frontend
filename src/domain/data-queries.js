@@ -1,5 +1,4 @@
 import {make_http_request, post_json, put_json} from '../utils/http.js';
-import {WMSCapabilities} from 'ol/format';
 
 /**
  * Here we find all the actual requests for data from the api.
@@ -151,13 +150,6 @@ export class DataQueries {
 
     modify_geojson_features = async payload => {
         return put_json(`${this.geoimagenet_api_endpoint}/annotations`, payload);
-    };
-
-    geoserver_capabilities = async url => {
-        let parser = new WMSCapabilities();
-        const res = await make_http_request(url);
-        const text = await res.text();
-        return parser.read(text);
     };
 
 }

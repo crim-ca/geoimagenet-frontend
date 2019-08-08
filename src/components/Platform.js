@@ -11,16 +11,13 @@ import {
 import {ExpandMore} from '@material-ui/icons';
 
 import {Actions} from './Actions.js';
-import {Classes} from './Taxonomy/Classes';
-import {Selector} from './Taxonomy/Selector';
+import {Viewer} from './Taxonomy/Viewer';
 import {MapManager} from '../MapManager.js';
 import {DataQueries} from '../domain/data-queries.js';
 import {UserInteractions} from '../domain/user-interactions.js';
 import {StoreActions} from '../store';
 import {LayerSwitcher} from '../LayerSwitcher.js';
 import {AnnotationStatusFilter} from './AnnotationStatusFilter.js';
-
-import {withTranslation} from '../utils';
 
 const StyledPanelDetails = withStyles({
     root: {
@@ -99,7 +96,7 @@ const SidebarBottom = withStyles(theme => {
  * or there would be nothing to mount the map onto.
  */
 @observer
-class PlatformWrapper extends Component {
+class Platform extends Component {
     /**
      * @type {Object}
      * @property {Object} state_proxy
@@ -112,7 +109,6 @@ class PlatformWrapper extends Component {
         store_actions: PropTypes.instanceOf(StoreActions).isRequired,
         user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
         data_queries: PropTypes.instanceOf(DataQueries).isRequired,
-        t: PropTypes.func.isRequired,
     };
 
     /**
@@ -180,10 +176,6 @@ class PlatformWrapper extends Component {
 
     render() {
 
-        const {t} = this.props;
-
-        const taxonomy_class = this.props.state_proxy.flat_taxonomy_classes[this.props.state_proxy.selected_taxonomy.root_taxonomy_class_id];
-        const classes = taxonomy_class ? [taxonomy_class] : [];
         const {expanded} = this.state;
 
         return (
@@ -204,17 +196,11 @@ class PlatformWrapper extends Component {
                                 Taxonomies and Classes
                             </ExpansionPanelSummary>
                             <StyledPanelDetails>
-                                <Selector user_interactions={this.props.user_interactions}
-                                          t={t}
-                                          state_proxy={this.props.state_proxy}/>
-
-                                <Classes map_manager={this.map_manager}
-                                         user_interactions={this.props.user_interactions}
-                                         store_actions={this.props.store_actions}
-                                         state_proxy={this.props.state_proxy}
-                                         invert_taxonomy_class_visibility={this.props.store_actions.invert_taxonomy_class_visibility}
-                                         toggle_taxonomy_class_tree_element={this.props.store_actions.toggle_taxonomy_class_tree_element}
-                                         classes={classes}/>
+                                <Viewer
+                                    refresh_source_by_status={this.map_manager.refresh_source_by_status}
+                                    state_proxy={this.props.state_proxy}
+                                    user_interactions={this.props.user_interactions}
+                                    store_actions={this.props.store_actions} />
                             </StyledPanelDetails>
                         </ExpansionPanel>
                         <ExpansionPanel expanded={expanded === 'layers'}
@@ -232,8 +218,6 @@ class PlatformWrapper extends Component {
         );
     }
 }
-
-const Platform = withTranslation()(PlatformWrapper);
 
 export {
     Platform
