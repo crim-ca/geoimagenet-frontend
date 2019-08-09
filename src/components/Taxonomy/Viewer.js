@@ -7,6 +7,7 @@ import {withTranslation} from "../../utils";
 import {typeof UserInteractions} from "../../domain";
 import {typeof GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {typeof StoreActions} from "../../store";
+import {observer} from "mobx-react";
 
 type Props = {
     t: Function,
@@ -16,6 +17,7 @@ type Props = {
     refresh_source_by_status: Function,
 };
 
+@observer
 class Viewer extends React.Component<Props> {
     render() {
 

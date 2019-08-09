@@ -2,8 +2,7 @@ import {observer} from "mobx-react";
 import React, {Component} from "react";
 import PropTypes from "prop-types";
 import {UserInteractions} from "../../domain";
-import {captureException} from "@sentry/browser";
-import {CircularProgress, Tab, Tabs} from "@material-ui/core";
+import {Tab, Tabs} from "@material-ui/core";
 
 @observer
 class Selector extends Component {
@@ -14,26 +13,8 @@ class Selector extends Component {
     };
 
     state = {
-        loading: true,
         value: 0,
     };
-
-    constructor(props) {
-        super(props);
-        this.init();
-    }
-
-    async init() {
-        const {user_interactions, state_proxy} = this.props;
-        try {
-            // dirtily select the first taxonomy in the list.
-            await user_interactions.fetch_taxonomies();
-            await user_interactions.select_taxonomy(state_proxy.taxonomies[0].versions[0], state_proxy.taxonomies[0].name);
-        } catch (e) {
-            captureException(e);
-        }
-        this.setState({loading: false});
-    }
 
     /**
      * We use the positional id because the actual taxonomy id is hidden within the versions of the taxonomies, which is a bit more
@@ -58,13 +39,6 @@ class Selector extends Component {
 
         // Building a tabs component without an actual value to pass in errors with material-ui.
         const {t, state_proxy: {taxonomies}} = this.props;
-        if (this.state.loading) {
-            return (
-                <div style={{display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'center'}}>
-                    <CircularProgress/>
-                </div>
-            );
-        }
 
         if (taxonomies.length === 0) {
             return <p>{t('intro:taxonomy.no_taxonomies')}</p>;

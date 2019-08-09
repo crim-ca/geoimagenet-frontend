@@ -17,6 +17,7 @@ const {JSDOM} = require('jsdom');
 const {window} = new JSDOM(`<!doctype html>`);
 const {i18n} = require('../utils');
 const wait = require('waait');
+const {Tab} = require('@material-ui/core');
 
 function copyProps(src, target) {
     Object.defineProperties(target, {
@@ -88,10 +89,8 @@ describe('Taxonomy viewer', () => {
         expect(wrapper.find(Viewer)).toHaveLength(1);
         expect(wrapper.find(Selector)).toHaveLength(1);
         expect(wrapper.find(Classes).length).toBeGreaterThan(1);
-
         await wait(0);
         wrapper.update();
-
         expect(wrapper.find(SpacedChip).length).toBeGreaterThan(0);
     });
 
@@ -100,25 +99,19 @@ describe('Taxonomy viewer', () => {
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.RELEASED);
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.REVIEW);
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.VALIDATED);
-
         const wrapper = mount(<TestableTaxonomyViewer />);
-
         expect(state_proxy.annotation_status_list[ANNOTATION.STATUS.NEW].activated).toBe(false);
         expect(state_proxy.annotation_status_list[ANNOTATION.STATUS.RELEASED].activated).toBe(false);
         expect(state_proxy.annotation_status_list[ANNOTATION.STATUS.REVIEW].activated).toBe(false);
         expect(state_proxy.annotation_status_list[ANNOTATION.STATUS.VALIDATED].activated).toBe(false);
-
         await wait(0);
         wrapper.update();
-
         expect(wrapper.find(SpacedChip).length).toEqual(0);
-
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.NEW);
         expect(state_proxy.annotation_status_list[ANNOTATION.STATUS.NEW].activated).toBe(true);
         await wait(0);
         wrapper.update();
         expect(wrapper.find(SpacedChip).length).toBeGreaterThan(0);
-
     });
 
     test('All different status have their chips appearing.', async () => {
@@ -130,31 +123,42 @@ describe('Taxonomy viewer', () => {
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.REJECTED, false);
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.DELETED, false);
         const wrapper = mount(<TestableTaxonomyViewer />);
-
         await wait(0);
         wrapper.update();
-
         expect(wrapper.find(SpacedChip).length).toEqual(0);
-
-
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.PRE_RELEASED);
         expect(state_proxy.annotation_status_list[ANNOTATION.STATUS.PRE_RELEASED].activated).toBe(true);
         await wait(0);
         wrapper.update();
         expect(wrapper.find(SpacedChip).length).toBeGreaterThan(0);
-
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.REJECTED);
         expect(state_proxy.annotation_status_list[ANNOTATION.STATUS.REJECTED].activated).toBe(true);
         await wait(0);
         wrapper.update();
         expect(wrapper.find(SpacedChip).length).toBeGreaterThan(0);
-
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.DELETED);
         expect(state_proxy.annotation_status_list[ANNOTATION.STATUS.DELETED].activated).toBe(true);
         await wait(0);
         wrapper.update();
         expect(wrapper.find(SpacedChip).length).toBeGreaterThan(0);
 
+    });
+
+    test('Changing tabs loads taxonomy', async () => {
+        const wrapper = mount(<TestableTaxonomyViewer />);
+        await wait(0);
+        wrapper.update();
+        const tabs = wrapper.find(Tab);
+        expect(tabs.length).toEqual(2);
+        tabs.first().simulate('click');
+        await wait(0);
+        wrapper.update();
+        expect(wrapper.html()).toContain('Land cover');
+        tabs.last().simulate('click');
+        await wait(0);
+        wrapper.update();
+        expect(wrapper.html()).toContain('Objects');
+        wrapper.unmount();
     });
 
 });
