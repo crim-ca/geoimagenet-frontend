@@ -78,9 +78,23 @@ button:focus {
 div.annotation_new {
     background-color: var(--color-new);
 }
+div.annotation_pre_released {
+    background-color: var(--color-pre-released);
+}
 div.annotation_released {
     background-color: var(--color-released);
 }
+div.annotation_review {
+    background-color: var(--color-review);
+}
 div.annotation_validated {
     background-color: var(--color-validated);
+}
+div.annotation_rejected {
+    background-color: var(--color-rejected);
+    color: white;
+}
+div.annotation_deleted {
+    background-color: var(--color-deleted);
+    color: white;
 }
