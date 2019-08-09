@@ -186,17 +186,13 @@ export class MapManager {
 
         const style = getComputedStyle(document.body);
 
-        const {annotation_status_list, annotations_collections, annotations_sources} = this.state_proxy;
+        const {annotations_collections, annotations_sources} = this.state_proxy;
 
-        Object.keys(annotation_status_list).forEach(key => {
-            const {activated} = annotation_status_list[key];
-
+        ANNOTATION_STATUS_AS_ARRAY.forEach(key => {
             const color = style.getPropertyValue(`--color-${key}`);
             this.store_actions.set_annotation_collection(key, new Collection());
             this.store_actions.set_annotation_source(key, this.create_vector_source(annotations_collections[key], key));
-
-            const vectorLayer = this.create_vector_layer(key, annotations_sources[key], color, activated);
-
+            const vectorLayer = this.create_vector_layer(key, annotations_sources[key], color, true);
             this.store_actions.set_annotation_layer(key, vectorLayer);
         });
 
