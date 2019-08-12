@@ -157,47 +157,37 @@ export class StoreActions {
     }
 
     /**
-     * Call when it's certain the the annotation was added, this only updates the local storage for displaying purposes.
-     * Counts not being computed automaticaly from children counts (nothing really to gain there for now)
-     * we also need to update the parent's new annotations count if any.
+     * When changing an annotation count, we need to go up the annotation tree and accomplish the same change.
+     * Parent classes count all their children, so a change on a children must affect all parents.
      */
     @action.bound
-    increment_new_annotations_count(taxonomy_class_id: number) {
+    change_annotation_status_count(taxonomy_class_id: number, status: string, quantity: number) {
+
+        if (!Number.isInteger(quantity) || quantity === 0) {
+            throw new TypeError(`${quantity} is an invalid quantity argument to change annotation counts.`);
+        }
+        if (Object.values(ANNOTATION.STATUS).indexOf(status) === -1) {
+            throw new TypeError(`${status} is not a status that is supported by our platform.`);
+        }
+        if (! (taxonomy_class_id in this.state_proxy.flat_taxonomy_classes)) {
+            throw new TypeError('Trying to change the counts of a non-existent taxonomy class.');
+        }
 
         let instance = this.state_proxy.flat_taxonomy_classes[taxonomy_class_id];
-        let counts = instance['counts'];
-
+        let {counts} = instance;
         /**
-         * Technically this could be initialized, but in the case it's not, put a 1 in there.
-         * @type {*|number}
+         * if we're under 0, we're decrementing, and the lowest possible value is 0.
+         * otherwise, we might be adding to an undefined number, so default to 1 in that case
+         *
+         * since the quantity is under 0, we need to _add_ it to the count so that it is correctly substracted to the value
          */
-        counts[ANNOTATION.STATUS.NEW] = (counts[ANNOTATION.STATUS.NEW] + 1) || 1;
+        counts[status] = quantity < 0 ? Math.max(counts[status] + quantity, 0) : (counts[status] + quantity) || quantity;
 
         while (instance.parent_id !== null) {
             instance = this.state_proxy.flat_taxonomy_classes[instance.parent_id];
-            counts = instance['counts'];
-            counts[ANNOTATION.STATUS.NEW] = (counts[ANNOTATION.STATUS.NEW] + 1) || 1;
+            ({counts} = instance);
+            counts[status] = quantity < 0 ? Math.max(counts[status] + quantity, 0) : (counts[status] + quantity) || quantity;
         }
-
-    }
-
-    /**
-     * similar to increment_new_annotations_count, however for decrementing. no kidding.
-     */
-    @action.bound
-    decrement_new_annotations_count(taxonomy_class_id: number) {
-
-        let instance = this.state_proxy.flat_taxonomy_classes[taxonomy_class_id];
-        let counts = instance['counts'];
-
-        counts[ANNOTATION.STATUS.NEW] = Math.max(counts[ANNOTATION.STATUS.NEW] - 1, 0);
-
-        while (instance.parent_id !== null) {
-            instance = this.state_proxy.flat_taxonomy_classes[instance.parent_id];
-            counts = instance['counts'];
-            counts[ANNOTATION.STATUS.NEW] = Math.max(counts[ANNOTATION.STATUS.NEW] - 1, 0);
-        }
-
     }
 
     @action.bound

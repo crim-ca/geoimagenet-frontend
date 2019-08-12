@@ -107,10 +107,12 @@ async function delete_annotation_under_click(
         features.forEach(f => {
             const taxonomy_class_id = f.get('taxonomy_class_id');
             state_proxy.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(f);
-            store_actions.decrement_new_annotations_count(taxonomy_class_id);
+            state_proxy.annotations_sources[ANNOTATION.STATUS.DELETED].addFeature(f);
+            store_actions.change_annotation_status_count(taxonomy_class_id, ANNOTATION.STATUS.NEW, -1);
+            store_actions.change_annotation_status_count(taxonomy_class_id, ANNOTATION.STATUS.DELETED, 1);
         });
     } catch (error) {
-        NotificationManager.error('We were unable to delete the annotation for unknown internal reasons.');
+        NotificationManager.error(error.message);
         captureException(error);
     }
 }
@@ -136,8 +138,8 @@ async function reject_features_under_click(feature_ids: Array<number>, data_quer
     refresh_source_by_status(ANNOTATION.STATUS.REJECTED);
 }
 
-async function validate_creation_event_has_features() {
-    if (this.state_proxy.selected_taxonomy_class_id === -1) {
+async function validate_creation_event_has_features(state_proxy: GeoImageNetStore) {
+    if (state_proxy.selected_taxonomy_class_id === -1) {
         NotificationManager.warning('You must select a taxonomy class to begin annotating content.');
     }
 }
@@ -555,7 +557,7 @@ export class MapManager {
         try {
             const new_feature_id = await this.data_queries.create_geojson_feature(payload);
             feature.setId(`${this.annotation_layer}.${new_feature_id}`);
-            this.store_actions.increment_new_annotations_count(this.state_proxy.selected_taxonomy_class_id);
+            this.store_actions.change_annotation_status_count(this.state_proxy.selected_taxonomy_class_id, ANNOTATION.STATUS.NEW, 1);
         } catch (error) {
             MapManager.geojsonLogError(error);
         }
@@ -610,7 +612,7 @@ export class MapManager {
      * OpenLayers allows us to register a single event handler for the click event on the map. From there, we need to infer
      * the user's intent and dispatch the click to relevant more specialized handlers.
      */
-    receive_map_viewport_click_event = async (event: Event): Promise<void> => {
+    receive_map_viewport_click_event = (event: Event) => {
         const features = this.aggregate_features_at_cursor(event);
         const feature_ids = this.get_aggregated_feature_ids(features);
 
@@ -628,16 +630,10 @@ export class MapManager {
                 return reject_features_under_click(feature_ids, this.data_queries, this.refresh_source_by_status);
 
             case MODE.CREATION:
-                return validate_creation_event_has_features();
+                return validate_creation_event_has_features(this.state_proxy);
         }
     };
 
-    /**
-     *
-     * @param features
-     * @param status
-     * @returns {VectorSource}
-     */
     create_vector_source(features: Array<Feature>, status: string) {
         return new VectorSource({
             format: new GeoJSON(),
