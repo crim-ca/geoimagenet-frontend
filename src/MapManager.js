@@ -10,7 +10,8 @@ import {Group, Vector} from 'ol/layer';
 import {fromLonLat, get as getProjection} from 'ol/proj';
 import {Control, MousePosition, ScaleLine} from 'ol/control';
 import {Draw, Interaction, Modify} from 'ol/interaction';
-import {View, Collection, Feature, Map} from 'ol';
+import {Collection, Feature, Map} from 'ol';
+import View from 'ol/View';
 import {Event} from 'ol/events';
 import {toStringHDMS} from 'ol/coordinate';
 import VectorSource from 'ol/source/Vector';
@@ -53,6 +54,92 @@ async function geoserver_capabilities(url) {
     const res = await make_http_request(url);
     const text = await res.text();
     return parser.read(text);
+}
+
+function navigate_to_clicked_feature_group(features: Array<Feature>, view: View) {
+    features.forEach(global_feature_layer => {
+        // cluster source features regroup all individual features in one
+        if (global_feature_layer.get('features')) {
+            const actual_features = global_feature_layer.get('features');
+
+            const coords = [];
+            if (actual_features.length > 1) {
+                actual_features.forEach(single_feature => {
+                    const extent = single_feature.get('geometry').getExtent();
+                    const min = [extent[0], extent[1]];
+                    const max = [extent[2], extent[3]];
+                    coords.push(min);
+                    coords.push(max);
+                });
+                const bounding_extent = new boundingExtent(coords);
+                const buffered_extent = new buffer(bounding_extent, 100);
+                view.fit(buffered_extent, {
+                    duration: 1000
+                });
+            } else {
+                const extent = actual_features[0].get('geometry').getExtent();
+                view.animate({
+                    center: getCenter(extent),
+                    resolution: VALID_OPENLAYERS_ANNOTATION_RESOLUTION - 0.0001,
+                    duration: 1000
+                });
+            }
+        }
+    });
+}
+
+async function delete_annotation_under_click(
+    features: Array<Feature>,
+    feature_ids: Array<number>,
+    data_queries: DataQueries,
+    state_proxy: GeoImageNetStore,
+    store_actions: StoreActions,
+) {
+    try {
+        await DialogManager.confirm(`Do you really want to delete the highlighted feature?`);
+    } catch (e) {
+        // if we catched it means user did not want to delete the annotation, simply return, nothing problematic here.
+        return;
+    }
+
+    try {
+        await data_queries.delete_annotations_request(feature_ids);
+        features.forEach(f => {
+            const taxonomy_class_id = f.get('taxonomy_class_id');
+            state_proxy.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(f);
+            store_actions.decrement_new_annotations_count(taxonomy_class_id);
+        });
+    } catch (error) {
+        NotificationManager.error('We were unable to delete the annotation for unknown internal reasons.');
+        captureException(error);
+    }
+}
+
+async function validate_features_under_click(feature_ids: Array<number>, data_queries: DataQueries, refresh_source_by_status: Function) {
+    try {
+        await data_queries.validate_annotations_request(feature_ids);
+    } catch (error) {
+        NotificationManager.error('We were unable to validate the annotation.');
+        captureException(error);
+    }
+    refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
+    refresh_source_by_status(ANNOTATION.STATUS.VALIDATED);
+}
+
+async function reject_features_under_click(feature_ids: Array<number>, data_queries: DataQueries, refresh_source_by_status: Function) {
+    try {
+        await data_queries.reject_annotations_request(feature_ids);
+    } catch (error) {
+        MapManager.geojsonLogError(error);
+    }
+    refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
+    refresh_source_by_status(ANNOTATION.STATUS.REJECTED);
+}
+
+async function validate_creation_event_has_features() {
+    if (this.state_proxy.selected_taxonomy_class_id === -1) {
+        NotificationManager.warning('You must select a taxonomy class to begin annotating content.');
+    }
 }
 
 /**
@@ -520,104 +607,28 @@ export class MapManager {
     }
 
     /**
-     * This is the general click management event handler. Depending on a lot of factors,
-     * this will dispatch the click to various handlers and actions.
-     * @private
-     * @param event
-     * @returns {Promise<void>}
+     * OpenLayers allows us to register a single event handler for the click event on the map. From there, we need to infer
+     * the user's intent and dispatch the click to relevant more specialized handlers.
      */
-    receive_map_viewport_click_event = async (event: Event) => {
+    receive_map_viewport_click_event = async (event: Event): Promise<void> => {
         const features = this.aggregate_features_at_cursor(event);
         const feature_ids = this.get_aggregated_feature_ids(features);
 
         switch (this.state_proxy.mode) {
-
             case MODE.VISUALIZE:
-                features.forEach(global_feature_layer => {
-                    // cluster source features regroup all individual features in one
-                    if (global_feature_layer.get('features')) {
-                        const actual_features = global_feature_layer.get('features');
-
-                        const coords = [];
-                        if (actual_features.length > 1) {
-                            actual_features.forEach(single_feature => {
-                                const extent = single_feature.get('geometry').getExtent();
-                                const min = [extent[0], extent[1]];
-                                const max = [extent[2], extent[3]];
-                                coords.push(min);
-                                coords.push(max);
-                            });
-                            const bounding_extent = new boundingExtent(coords);
-                            const buffered_extent = new buffer(bounding_extent, 100);
-                            this.view.fit(buffered_extent, {
-                                duration: 1000
-                            });
-                        } else {
-                            const extent = actual_features[0].get('geometry').getExtent();
-                            this.view.animate({
-                                center: getCenter(extent),
-                                resolution: VALID_OPENLAYERS_ANNOTATION_RESOLUTION - 0.0001,
-                                duration: 1000
-                            });
-                        }
-                    }
-                });
-                break;
+                return navigate_to_clicked_feature_group(features, this.view);
 
             case MODE.DELETE:
-
-                try {
-                    await DialogManager.confirm(`Do you really want to delete the highlighted feature?`);
-                } catch (e) {
-                    // if we catched it means user did not want to delete the annotation, simply return, nothing problematic here.
-                    return;
-                }
-
-                try {
-                    await this.data_queries.delete_annotations_request(feature_ids);
-                } catch (error) {
-                    MapManager.geojsonLogError(error);
-                    return;
-                }
-
-                try {
-                    features.forEach(f => {
-                        const taxonomy_class_id = f.get('taxonomy_class_id');
-                        this.state_proxy.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(f);
-                        this.store_actions.decrement_new_annotations_count(taxonomy_class_id);
-                    });
-                } catch (e) {
-                    captureException(e);
-                    NotificationManager.error('We were unable to delete the annotation for unknown internal reasons.');
-                }
-
-                break;
+                return delete_annotation_under_click(features, feature_ids, this.data_queries, this.state_proxy, this.store_actions);
 
             case MODE.VALIDATE:
-                try {
-                    await this.data_queries.validate_annotations_request(feature_ids);
-                } catch (error) {
-                    MapManager.geojsonLogError(error);
-                }
-                this.refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
-                this.refresh_source_by_status(ANNOTATION.STATUS.VALIDATED);
-                break;
+                return validate_features_under_click(feature_ids, this.data_queries, this.refresh_source_by_status);
 
             case MODE.REJECT:
-                try {
-                    await this.data_queries.reject_annotations_request(feature_ids);
-                } catch (error) {
-                    MapManager.geojsonLogError(error);
-                }
-                this.refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
-                this.refresh_source_by_status(ANNOTATION.STATUS.REJECTED);
-                break;
+                return reject_features_under_click(feature_ids, this.data_queries, this.refresh_source_by_status);
 
             case MODE.CREATION:
-                if (this.state_proxy.selected_taxonomy_class_id === -1) {
-                    NotificationManager.warning('You must select a taxonomy class to begin annotating content.');
-                }
-                break;
+                return validate_creation_event_has_features();
         }
     };
 
