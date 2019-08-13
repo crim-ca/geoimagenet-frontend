@@ -311,6 +311,10 @@ export class MapManager {
             e.element.revision_ = 0;
         });
 
+
+        /**
+         * We need to show the layers that are activated in the filters, and refresh them when we change the visible classes selection
+         */
         autorun(() => {
             const {annotation_status_list} = this.state_proxy;
 
@@ -322,21 +326,18 @@ export class MapManager {
                     visible.push(taxonomy_class.id);
                 }
             });
-
             if (visible.length > 0) {
                 this.cql_filter = `taxonomy_class_id IN (${visible.join(',')})`;
             } else {
                 this.cql_filter = '';
             }
-            const status_list = [];
+
             Object.keys(annotation_status_list).forEach(k => {
-                const status = annotation_status_list[k];
-                if (status.activated) {
-                    status_list.push(status.text);
+                const {activated, text} = annotation_status_list[k];
+                this.state_proxy.annotations_layers[text].setVisible(activated);
+                if (activated) {
+                    this.refresh_source_by_status(text);
                 }
-            });
-            status_list.forEach(s => {
-                this.refresh_source_by_status(s);
             });
         });
 
