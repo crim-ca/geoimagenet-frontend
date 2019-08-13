@@ -45,7 +45,7 @@ export class StoreActions {
      * When user adds an annotation status to the visibility pool, we need to update the store.
      */
     @action.bound
-    toggle_annotation_status_visibility(annotation_status_text: string, override_activated: boolean = null) {
+    toggle_annotation_status_visibility(annotation_status_text: string, override_activated: boolean|null = null) {
         const annotation_status_instance = this.state_proxy.annotation_status_list[annotation_status_text];
         if (override_activated !== null) {
             annotation_status_instance.activated = override_activated;

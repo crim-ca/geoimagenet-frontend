@@ -24,9 +24,6 @@ import TileGrid from 'ol/tilegrid/TileGrid';
 import VectorLayer from 'ol/layer/Vector';
 import {fromExtent} from 'ol/geom/Polygon';
 import {boundingExtent, buffer, getArea, getWidth, getTopLeft, getCenter} from 'ol/extent';
-import {DialogManager} from './utils/Dialogs';
-
-import {captureException} from '@sentry/browser';
 
 import {
     MODE,
@@ -89,62 +86,6 @@ function navigate_to_clicked_feature_group(features: Array<Feature>, view: View)
     });
 }
 
-async function delete_annotation_under_click(
-    features: Array<Feature>,
-    feature_ids: Array<number>,
-    data_queries: DataQueries,
-    state_proxy: GeoImageNetStore,
-    store_actions: StoreActions,
-) {
-    try {
-        await DialogManager.confirm(`Do you really want to delete the highlighted feature?`);
-    } catch (e) {
-        // if we catched it means user did not want to delete the annotation, simply return, nothing problematic here.
-        return;
-    }
-
-    try {
-        await data_queries.delete_annotations_request(feature_ids);
-        features.forEach(f => {
-            const taxonomy_class_id = f.get('taxonomy_class_id');
-            state_proxy.annotations_sources[ANNOTATION.STATUS.NEW].removeFeature(f);
-            state_proxy.annotations_sources[ANNOTATION.STATUS.DELETED].addFeature(f);
-            store_actions.change_annotation_status_count(taxonomy_class_id, ANNOTATION.STATUS.NEW, -1);
-            store_actions.change_annotation_status_count(taxonomy_class_id, ANNOTATION.STATUS.DELETED, 1);
-        });
-    } catch (error) {
-        NotificationManager.error(error.message);
-        captureException(error);
-    }
-}
-
-async function validate_features_under_click(feature_ids: Array<number>, data_queries: DataQueries, refresh_source_by_status: Function) {
-    try {
-        await data_queries.validate_annotations_request(feature_ids);
-    } catch (error) {
-        NotificationManager.error('We were unable to validate the annotation.');
-        captureException(error);
-    }
-    refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
-    refresh_source_by_status(ANNOTATION.STATUS.VALIDATED);
-}
-
-async function reject_features_under_click(feature_ids: Array<number>, data_queries: DataQueries, refresh_source_by_status: Function) {
-    try {
-        await data_queries.reject_annotations_request(feature_ids);
-    } catch (error) {
-        MapManager.geojsonLogError(error);
-    }
-    refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
-    refresh_source_by_status(ANNOTATION.STATUS.REJECTED);
-}
-
-async function validate_creation_event_has_features(state_proxy: GeoImageNetStore) {
-    if (state_proxy.selected_taxonomy_class_id === -1) {
-        NotificationManager.warning('You must select a taxonomy class to begin annotating content.');
-    }
-}
-
 /**
  * The MapManager is responsible for handling map behaviour at the boundary between the platform and OpenLayers.
  * It should listen to specific OL events and trigger domain interactions in accordance.
@@ -203,11 +144,6 @@ export class MapManager {
     /**
      * @private
      */
-    data_queries: DataQueries;
-
-    /**
-     * @private
-     */
     formatGeoJson: GeoJSON;
 
     /**
@@ -251,7 +187,6 @@ export class MapManager {
         map_div_id: string,
         state_proxy: GeoImageNetStore,
         store_actions: StoreActions,
-        data_queries: DataQueries,
         layer_switcher: LayerSwitcher,
         user_interactions: UserInteractions
     ) {
@@ -261,11 +196,18 @@ export class MapManager {
         this.annotation_layer = annotation_layer;
         this.state_proxy = state_proxy;
         this.store_actions = store_actions;
-        this.data_queries = data_queries;
         this.layer_switcher = layer_switcher;
         this.user_interactions = user_interactions;
 
         this.previous_mode = null;
+
+
+        this.formatGeoJson = new GeoJSON({
+            dataProjection: 'EPSG:3857',
+            featureProjection: 'EPSG:3857',
+            geometryName: 'geometry',
+        });
+
         this.view = new View({
             center: fromLonLat(VIEW_CENTER.CENTRE),
             zoom: VIEW_CENTER.ZOOM_LEVEL
@@ -313,8 +255,8 @@ export class MapManager {
             condition: this.draw_condition_callback
         });
 
-        this.draw.on('drawend', this.receive_drawend_event);
-        this.modify.on('modifyend', this.receive_modifyend_event);
+        this.draw.on('drawend', this.user_interactions.create_drawend_handler(this.formatGeoJson, this.annotation_layer));
+        this.modify.on('modifyend', this.user_interactions.create_modifyend_handler(this.formatGeoJson));
 
         this.state_proxy.annotations_collections[ANNOTATION.STATUS.NEW].on('add', (e) => {
             e.element.revision_ = 0;
@@ -364,12 +306,6 @@ export class MapManager {
         this.map.addControl(this.mouse_position);
 
         this.map.addEventListener('click', this.receive_map_viewport_click_event);
-
-        this.formatGeoJson = new GeoJSON({
-            dataProjection: 'EPSG:3857',
-            featureProjection: 'EPSG:3857',
-            geometryName: 'geometry',
-        });
 
         autorun(() => {
             const {show_labels, annotation_status_list} = this.state_proxy;
@@ -548,53 +484,6 @@ export class MapManager {
     };
 
     /**
-     * Launch the creation of a new annotation. This should also update the "new" annotations count of the relevant
-     * taxonomy class.
-     * @private
-     * @param event
-     * @returns {Promise<void>}
-     */
-    receive_drawend_event = async (event: Event) => {
-
-        const feature = event.feature;
-        feature.setProperties({
-            taxonomy_class_id: this.state_proxy.selected_taxonomy_class_id,
-            annotator_id: 1,
-            image_name: this.state_proxy.current_annotation.image_title,
-        });
-        const payload = this.formatGeoJson.writeFeature(feature);
-
-        try {
-            const new_feature_id = await this.data_queries.create_geojson_feature(payload);
-            feature.setId(`${this.annotation_layer}.${new_feature_id}`);
-            this.store_actions.change_annotation_status_count(this.state_proxy.selected_taxonomy_class_id, ANNOTATION.STATUS.NEW, 1);
-        } catch (error) {
-            MapManager.geojsonLogError(error);
-        }
-
-        this.store_actions.end_annotation();
-    };
-
-    receive_modifyend_event = async (event: Event) => {
-
-        const modifiedFeatures = [];
-        event.features.forEach((feature) => {
-            if (feature.revision_ >= 1) {
-                modifiedFeatures.push(feature);
-                feature.revision_ = 0;
-            }
-        });
-        const payload = this.formatGeoJson.writeFeatures(modifiedFeatures);
-
-        try {
-            await this.data_queries.modify_geojson_features(payload);
-        } catch (error) {
-            MapManager.geojsonLogError(error);
-        }
-
-    };
-
-    /**
      * When handling clicks we sometimes need to get an aggregation of all features under the cursor.
      * This is a convenience wrapper around OL functionnality that does this.
      * @param event
@@ -631,18 +520,30 @@ export class MapManager {
                 return navigate_to_clicked_feature_group(features, this.view);
 
             case MODE.DELETE:
-                return delete_annotation_under_click(features, feature_ids, this.data_queries, this.state_proxy, this.store_actions);
+                if (!(features.length > 0)) {
+                    return;
+                }
+                return this.user_interactions.delete_annotation_under_click(features, feature_ids);
 
             case MODE.VALIDATE:
-                return validate_features_under_click(feature_ids, this.data_queries, this.refresh_source_by_status);
+                if (!(features.length > 0)) {
+                    return;
+                }
+                return this.user_interactions.validate_features_under_click(features, feature_ids);
 
             case MODE.REJECT:
-                return reject_features_under_click(feature_ids, this.data_queries, this.refresh_source_by_status);
+                if (!(features.length > 0)) {
+                    return;
+                }
+                return this.user_interactions.reject_features_under_click(features, feature_ids);
 
             case MODE.CREATION:
-                return validate_creation_event_has_features(this.state_proxy);
+                return this.user_interactions.validate_creation_event_has_features();
 
             case MODE.ASK_EXPERTISE:
+                if (!(features.length > 0)) {
+                    return;
+                }
                 return this.user_interactions.ask_expertise_for_features(feature_ids);
         }
     };

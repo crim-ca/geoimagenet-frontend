@@ -3,6 +3,7 @@ import React from 'react';
 import {observer} from "mobx-react";
 import {Chip, Tooltip, withStyles} from "@material-ui/core";
 import {ANNOTATION_STATUS_AS_ARRAY} from "../../domain/constants";
+import {typeof GeoImageNetStore} from "../../store/GeoImageNetStore";
 
 export const SpacedChip = withStyles({
     root: {
@@ -12,8 +13,8 @@ export const SpacedChip = withStyles({
 
 type Props = {
     name_en: string,
-    counts: number,
-    state_proxy: {}
+    counts: Counts,
+    state_proxy: GeoImageNetStore
 };
 
 @observer

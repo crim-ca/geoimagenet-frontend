@@ -158,7 +158,6 @@ class Platform extends Component {
             'map',
             state_proxy,
             store_actions,
-            data_queries,
             this.layer_switcher,
             user_interactions
         );

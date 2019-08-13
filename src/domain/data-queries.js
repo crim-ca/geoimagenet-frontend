@@ -2,33 +2,32 @@
 
 import {make_http_request, post_json, put_json} from '../utils/http.js';
 
+type MergedSessionInformation = {
+    authenticated: boolean,
+    code: number,
+    detail: string,
+    type: string,
+    user: {
+        email: string,
+        group_names: string[],
+        user_id: number,
+        user_name: string
+    },
+};
+
 /**
  * Here we find all the actual requests for data from the api.
  * @todo refactor http utilities as their class to inject them here.
  */
 export class DataQueries {
 
-    /**
-     * @public
-     * @param {String} geoimagenet_api_url
-     * @param {String} magpie_endpoint
-     * @param {String} ml_endpoint
-     */
-    constructor(geoimagenet_api_url, magpie_endpoint, ml_endpoint) {
-        /**
-         * @private
-         * @type {String}
-         */
+    geoimagenet_api_endpoint: string;
+    magpie_endpoint: string;
+    ml_endpoint: string;
+
+    constructor(geoimagenet_api_url: string, magpie_endpoint: string, ml_endpoint: string) {
         this.geoimagenet_api_endpoint = geoimagenet_api_url;
-        /**
-         * @private
-         * @type {String}
-         */
         this.magpie_endpoint = magpie_endpoint;
-        /**
-         * @private
-         * @type {String}
-         */
         this.ml_endpoint = ml_endpoint;
     }
 
@@ -36,18 +35,15 @@ export class DataQueries {
         return make_http_request(`${this.magpie_endpoint}/signout`);
     }
 
-    login_request(form_data) {
+    login_request(form_data: {}) {
         const payload = JSON.stringify(form_data);
         return post_json(`${this.magpie_endpoint}/signin`, payload);
     }
 
     /**
      * Launches the dataset creation task through the geoimagenet api, that will in turn call the machine learning api.
-     * @param {String} dataset_name
-     * @param {Number} taxonomy_id
-     * @returns {Promise<*|*|undefined>}
      */
-    launch_dataset_creation = (dataset_name, taxonomy_id) => {
+    launch_dataset_creation = (dataset_name: string, taxonomy_id: number) => {
         const payload = JSON.stringify({
             name: dataset_name,
             taxonomy_id: taxonomy_id,
@@ -61,9 +57,8 @@ export class DataQueries {
      * Added the merging of two requests because they both have only part of the needed information: session knows if we're authenticated or not,
      * but users/current will happily return an user object even for not-logged users (the famed anonymous user).
      * @todo as we are coupled to the idea that there is an actual user that is anonymous, we could add test around this boundary
-     * @returns {Promise<Object>}
      */
-    current_user_session = async () => {
+    current_user_session = async (): Promise<MergedSessionInformation> => {
         const responses = await Promise.all([
             make_http_request(`${this.magpie_endpoint}/users/current`),
             make_http_request(`${this.magpie_endpoint}/session`),
@@ -86,12 +81,12 @@ export class DataQueries {
      * @param {String} service_name
      * @returns {Promise<String>}
      */
-    current_user_permissions = async (service_name) => {
+    current_user_permissions = async (service_name: string) => {
         const res = await make_http_request(`${this.magpie_endpoint}/users/current/services/${service_name}/resources?inherit=true`);
         return res.json();
     };
 
-    release_annotations_request = taxonomy_class_id => {
+    release_annotations_request = (taxonomy_class_id: number) => {
         const payload = JSON.stringify({
             taxonomy_class_id: taxonomy_class_id,
         });
@@ -104,21 +99,21 @@ export class DataQueries {
      * @param {Number[]} annotation_ids
      * @returns {Promise<*>}
      */
-    validate_annotations_request = annotation_ids => {
+    validate_annotations_request = (annotation_ids: number[]) => {
         const payload = JSON.stringify({
             annotation_ids: annotation_ids,
         });
         return post_json(`${this.geoimagenet_api_endpoint}/annotations/validate`, payload);
     };
 
-    reject_annotations_request = annotation_ids => {
+    reject_annotations_request = (annotation_ids: number[]) => {
         const payload = JSON.stringify({
             annotation_ids: annotation_ids,
         });
         return post_json(`${this.geoimagenet_api_endpoint}/annotations/reject`, payload);
     };
 
-    delete_annotations_request = annotation_ids => {
+    delete_annotations_request = (annotation_ids: number[]) => {
         const payload = JSON.stringify({
             annotation_ids: annotation_ids
         });
@@ -132,25 +127,23 @@ export class DataQueries {
 
     /**
      * Fetch the taxonomy classes in a nested data structure to represent the nested tree we can see in the UI.
-     * @param {int} root_taxonomy_class_id
-     * @returns {Promise<Object>}
      */
-    fetch_taxonomy_classes = async root_taxonomy_class_id => {
+    fetch_taxonomy_classes = async () => {
         const res = await make_http_request(`${this.geoimagenet_api_endpoint}/taxonomy_classes`);
         return res.json();
     };
 
-    flat_taxonomy_classes_counts = async root_taxonomy_class_id => {
+    flat_taxonomy_classes_counts = async (root_taxonomy_class_id: number) => {
         const res = await make_http_request(`${this.geoimagenet_api_endpoint}/annotations/counts/${root_taxonomy_class_id}`);
         return res.json();
     };
 
-    create_geojson_feature = async payload => {
+    create_geojson_feature = async (payload: string) => {
         const res = await post_json(`${this.geoimagenet_api_endpoint}/annotations`, payload);
         return res.json();
     };
 
-    modify_geojson_features = async payload => {
+    modify_geojson_features = async (payload: string) => {
         return put_json(`${this.geoimagenet_api_endpoint}/annotations`, payload);
     };
 

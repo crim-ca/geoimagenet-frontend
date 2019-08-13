@@ -51,7 +51,7 @@ export class PlatformLoader {
         this.state_proxy = create_state_proxy();
         this.store_actions = new StoreActions(this.state_proxy);
         this.data_queries = new DataQueries(geoimagenet_api_endpoint, magpie_endpoint, ml_endpoint);
-        this.user_interactions = new UserInteractions(this.store_actions, this.data_queries, i18next_instance);
+        this.user_interactions = new UserInteractions(this.store_actions, this.data_queries, i18next_instance, this.state_proxy);
     }
 
     make_platform() {

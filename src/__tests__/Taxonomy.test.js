@@ -5,6 +5,7 @@ import {DataQueries} from "../domain/data-queries";
 import {UserInteractions} from "../domain";
 import {ANNOTATIONS_COUNTS_RESPONSE, TAXONOMY_CLASSES_RESPONSE, TAXONOMY_RESPONSE} from "./api_responses";
 import {ANNOTATION} from "../domain/constants";
+import {GeoImageNetStore} from "../store/GeoImageNetStore";
 
 const React = require('react');
 const {mount, configure} = require('enzyme');
@@ -45,33 +46,23 @@ type Props = {};
 const data_queries = new DataQueries('', '', '');
 const state_proxy = create_state_proxy();
 const store_actions = new StoreActions(state_proxy);
-const user_interactions = new UserInteractions(store_actions, data_queries, i18n);
+const user_interactions = new UserInteractions(store_actions, data_queries, i18n, state_proxy);
 
 data_queries.fetch_taxonomies = jest.fn(() => TAXONOMY_RESPONSE);
 data_queries.fetch_taxonomy_classes = jest.fn(() => TAXONOMY_CLASSES_RESPONSE);
 data_queries.flat_taxonomy_classes_counts = jest.fn(() => ANNOTATIONS_COUNTS_RESPONSE);
 
+const refresh_source_callback_mock = () => {};
+
 class TestableTaxonomyViewer extends React.Component<Props> {
-
-    constructor(props) {
-        super(props);
-        this.state_proxy = state_proxy;
-        this.store_actions = store_actions;
-        this.data_queries = data_queries;
-        this.user_interactions = user_interactions;
-    }
-
-    refresh_source_callback_mock = (source) => {
-        console.log(`refreshing source ${source}`);
-    };
 
     render() {
         return (
             <Viewer
-                state_proxy={this.state_proxy}
-                user_interactions={this.user_interactions}
-                store_actions={this.store_actions}
-                refresh_source_by_status={this.refresh_source_callback_mock} />
+                state_proxy={state_proxy}
+                user_interactions={user_interactions}
+                store_actions={store_actions}
+                refresh_source_by_status={refresh_source_callback_mock} />
         );
     }
 }
