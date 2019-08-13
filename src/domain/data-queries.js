@@ -1,3 +1,5 @@
+// @flow
+
 import {make_http_request, post_json, put_json} from '../utils/http.js';
 
 /**
@@ -150,6 +152,14 @@ export class DataQueries {
 
     modify_geojson_features = async payload => {
         return put_json(`${this.geoimagenet_api_endpoint}/annotations`, payload);
+    };
+
+    review_request = async (feature_ids: Array<number>, review_requested: boolean) => {
+        const payload = JSON.stringify({
+            annotation_ids: feature_ids,
+            boolean: review_requested
+        });
+        return post_json(`${this.geoimagenet_api_endpoint}/annotations/request_review`, payload);
     };
 
 }

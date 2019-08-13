@@ -139,7 +139,7 @@ class Platform extends Component {
      * callback and create the map manager only when the dom is correctly created.
      */
     componentDidMount() {
-        const {state_proxy, store_actions, data_queries} = this.props;
+        const {state_proxy, store_actions, data_queries, user_interactions} = this.props;
 
         /**
          * The Layer Switcher is paramount to the map: it should allow easy access and toggling to the various displayed layers.
@@ -159,7 +159,8 @@ class Platform extends Component {
             state_proxy,
             store_actions,
             data_queries,
-            this.layer_switcher
+            this.layer_switcher,
+            user_interactions
         );
     }
 

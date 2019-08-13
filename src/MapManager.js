@@ -48,6 +48,7 @@ import {DataQueries} from "./domain/data-queries";
 import {LayerSwitcher} from "./LayerSwitcher";
 import {GeoImageNetStore} from "./store/GeoImageNetStore";
 import {make_http_request} from "./utils/http";
+import {typeof UserInteractions} from "./domain";
 
 async function geoserver_capabilities(url) {
     let parser = new WMSCapabilities();
@@ -238,6 +239,11 @@ export class MapManager {
      */
     mouse_position: Control;
 
+    /**
+     * @private
+     */
+    user_interactions: UserInteractions;
+
     constructor(
         geoserver_url: string,
         annotation_namespace: string,
@@ -246,7 +252,8 @@ export class MapManager {
         state_proxy: GeoImageNetStore,
         store_actions: StoreActions,
         data_queries: DataQueries,
-        layer_switcher: LayerSwitcher
+        layer_switcher: LayerSwitcher,
+        user_interactions: UserInteractions
     ) {
 
         this.geoserver_url = geoserver_url;
@@ -256,6 +263,8 @@ export class MapManager {
         this.store_actions = store_actions;
         this.data_queries = data_queries;
         this.layer_switcher = layer_switcher;
+        this.user_interactions = user_interactions;
+
         this.previous_mode = null;
         this.view = new View({
             center: fromLonLat(VIEW_CENTER.CENTRE),
@@ -632,6 +641,9 @@ export class MapManager {
 
             case MODE.CREATION:
                 return validate_creation_event_has_features(this.state_proxy);
+
+            case MODE.ASK_EXPERTISE:
+                return this.user_interactions.ask_expertise_for_features(feature_ids);
         }
     };
 

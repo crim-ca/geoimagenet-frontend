@@ -5,6 +5,9 @@ import {AccessControlList} from './access-control-list.js';
 import {NotificationManager} from 'react-notifications';
 
 import {i18n} from '../utils/i18n';
+import {Feature} from "ol";
+import {DataQueries} from "./data-queries";
+import {captureException} from "@sentry/browser";
 
 /**
  * In a web app, we need top level handlers that react to specific user intentions, and interactions.
@@ -42,6 +45,16 @@ export class UserInteractions {
 
         this.release_annotations = this.release_annotations.bind(this);
     }
+
+    ask_expertise_for_features = async (feature_ids: Array<number>) => {
+        try {
+            await this.data_queries.review_request(feature_ids, true);
+            NotificationManager.success('Features were marked for expertise.');
+        } catch (error) {
+            captureException(error);
+            NotificationManager.error(error.message);
+        }
+    };
 
     logout = async () => {
         try {
