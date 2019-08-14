@@ -1,3 +1,5 @@
+// @flow strict
+
 import {observable, configure} from 'mobx';
 import {GeoImageNetStore} from './GeoImageNetStore.js';
 

@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 type DialogCreationCallback = (text: string, handle_accept: Function, handle_refuse: Function) => void
 
@@ -19,7 +19,6 @@ class DialogManagerClass {
     };
 
     /**
-     *
      * @param {string} text
      * @returns {Promise<R>}
      */

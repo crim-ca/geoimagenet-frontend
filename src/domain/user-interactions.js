@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 import {DialogManager} from '../utils/Dialogs';
 import {action} from 'mobx';
@@ -10,13 +10,13 @@ import {ANNOTATION} from "./constants";
 import {captureException} from "@sentry/browser";
 import {DataQueries} from "./data-queries";
 
-import typeof i18n from 'i18next';
-import {typeof Event} from "ol/events";
-import {typeof GeoJSON} from "ol/format";
-import {typeof StoreActions} from "../store";
-import {typeof GeoImageNetStore} from "../store/GeoImageNetStore";
-import {typeof Feature} from "ol";
-import {typeof TaxonomyClass} from "./entities";
+import i18n from 'i18next';
+import {Event} from "ol/events";
+import {GeoJSON} from "ol/format";
+import {StoreActions} from "../store";
+import {GeoImageNetStore} from "../store/GeoImageNetStore";
+import {Feature} from "ol";
+import {TaxonomyClass} from "./entities";
 
 
 /**
@@ -129,7 +129,7 @@ export class UserInteractions {
      * Launch the creation of a new annotation. This should also update the "new" annotations count of the relevant
      * taxonomy class.
      */
-    create_drawend_handler = (format_geojson: GeoJSON, annotation_layer: string) => async (event: Event) => {
+    create_drawend_handler = (format_geojson: GeoJSON, annotation_layer: string, annotation_namespace: string) => async (event: Event) => {
         const {feature}: { feature: Feature } = event;
         feature.setProperties({
             taxonomy_class_id: this.state_proxy.selected_taxonomy_class_id,
@@ -137,8 +137,11 @@ export class UserInteractions {
         });
         const payload = format_geojson.writeFeature(feature);
         try {
-            const new_feature_id = await this.data_queries.create_geojson_feature(payload);
+            const [new_feature_id] = await this.data_queries.create_geojson_feature(payload);
             feature.setId(`${annotation_layer}.${new_feature_id}`);
+            const typename = `${annotation_namespace}:${annotation_layer}`;
+            const feature_from_distant_api = await this.data_queries.get_annotation_by_id(new_feature_id, typename);
+            feature.set('name', feature_from_distant_api.properties.name);
             this.store_actions.change_annotation_status_count(this.state_proxy.selected_taxonomy_class_id, ANNOTATION.STATUS.NEW, 1);
         } catch (error) {
             NotificationManager.error(error.message);

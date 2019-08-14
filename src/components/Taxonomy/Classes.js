@@ -2,10 +2,10 @@
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import {TaxonomyClassListElement} from './TaxonomyClassListElement.js';
-import {typeof TaxonomyClass} from "../../domain/entities";
-import {typeof UserInteractions} from "../../domain";
-import {typeof StoreActions} from "../../store";
-import {typeof GeoImageNetStore} from "../../store/GeoImageNetStore";
+import {TaxonomyClass} from "../../domain/entities";
+import {UserInteractions} from "../../domain";
+import {StoreActions} from "../../store";
+import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 
 type Props = {
     toggle_taxonomy_class_tree_element: Function,

@@ -5,6 +5,7 @@
 .*/dist/.*
 .*/templates/.*
 .*/venv/.*
+.*/node_modules/.*
 
 [include]
 
@@ -16,3 +17,9 @@
 esproposal.decorators=ignore
 
 [strict]
+nonstrict-import
+unclear-type
+unsafe-getters-setters
+untyped-import
+untyped-type-import
+sketchy-null

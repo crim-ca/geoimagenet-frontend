@@ -43,7 +43,7 @@ copyProps(window, global);
 configure({adapter: new Adapter()});
 type Props = {};
 
-const data_queries = new DataQueries('', '', '');
+const data_queries = new DataQueries('', '', '', '');
 const state_proxy = create_state_proxy();
 const store_actions = new StoreActions(state_proxy);
 const user_interactions = new UserInteractions(store_actions, data_queries, i18n, state_proxy);

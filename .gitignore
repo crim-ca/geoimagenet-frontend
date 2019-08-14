@@ -25,4 +25,7 @@ dist/*
 .graphqlconfig
 schema.graphql
 
-flow-typed/npm
+flow-typed/npm/*
+!flow-typed/npm/ol_vx.x.x.js
+!flow-typed/npm/mobx_vx.x.x.js
+!flow-typed/npm/react-apollo_vx.x.x.js

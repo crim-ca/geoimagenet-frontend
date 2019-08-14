@@ -3,7 +3,7 @@ import React from 'react';
 import {observer} from "mobx-react";
 import {Chip, Tooltip, withStyles} from "@material-ui/core";
 import {ANNOTATION_STATUS_AS_ARRAY} from "../../domain/constants";
-import {typeof GeoImageNetStore} from "../../store/GeoImageNetStore";
+import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 
 export const SpacedChip = withStyles({
     root: {

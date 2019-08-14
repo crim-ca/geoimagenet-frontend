@@ -12,10 +12,10 @@ import {TaxonomyClassActions} from './TaxonomyClassActions';
 
 import {Classes} from './Classes';
 import {ANNOTATION} from '../../domain/constants.js';
-import {typeof TaxonomyClass} from "../../domain/entities";
-import {typeof UserInteractions} from "../../domain";
-import {typeof StoreActions} from "../../store";
-import {typeof GeoImageNetStore} from "../../store/GeoImageNetStore";
+import {TaxonomyClass} from "../../domain/entities";
+import {UserInteractions} from "../../domain";
+import {StoreActions} from "../../store";
+import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 
 const StyledListItem = withStyles({
     root: {

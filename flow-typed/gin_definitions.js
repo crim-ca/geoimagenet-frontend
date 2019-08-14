@@ -8,11 +8,12 @@ declare var FRONTEND_JS_SENTRY_DSN: string;
 declare var ANNOTATION_LAYER: string;
 declare var ANNOTATION_NAMESPACE: string;
 
-declare module "./img/icons/favicon.ico" {}
+declare module './img/icons/favicon.ico' {}
+declare module 'react-notifications/lib/notifications.css' {}
 
 declare type Counts = {
     'new': number,
-    'pre-released': number,
+    'pre_released': number,
     'released': number,
     'rejected': number,
     'validated': number,

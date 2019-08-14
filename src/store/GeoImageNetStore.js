@@ -1,7 +1,9 @@
+// @flow strict
 import {ANNOTATION, MODE} from '../domain/constants.js';
 import {AccessControlList} from '../domain/access-control-list.js';
 import {AnnotationStatus, ResourcePermissionRepository} from '../domain/entities.js';
 import {observable} from 'mobx';
+import {User} from "../domain/entities";
 
 /**
  * The application state must, at each given time, fully represent what a user is seeing.
@@ -91,9 +93,8 @@ export class GeoImageNetStore {
 
     /**
      * An instance with the current user's information.
-     * @type {User|null}
      */
-    logged_user = null;
+    logged_user: User | null = null;
 
     /**
      * We need to be able to control how annotations are created. Once we begin adding points, we limit the adding of points

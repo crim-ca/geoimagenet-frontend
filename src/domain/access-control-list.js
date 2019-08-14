@@ -1,3 +1,6 @@
+// @flow strict
+import {ResourcePermissionRepository} from "./entities";
+
 /**
  * This class represents the actions an user can do in the platform. Certain buttons and interactions are dependant on
  * having permissions, that are to be configured in [Magpie](https://github.com/ouranosinc/magpie).
@@ -19,39 +22,26 @@
 
 export class AccessControlList {
 
-    /**
-     * @private
-     * @type {Object}
-     */
-    repository;
+    repository: ResourcePermissionRepository;
 
     /**
-     * @public
      * @readonly
-     * @type {Boolean}
      * an user can have permissions to read some resources, while not being authentificated (mostly anonymous, tbqh)
      * hence, we originally use the authentificated boolean to control such flow, mostly the logged layout vs not logged layout
      * while this technically could be easily overwritten by the user on the client, we don't rely on this to actually
      * protect password protected resources.
      */
-    authenticated;
+    authenticated: boolean;
 
-    /**
-     * @param {ResourcePermissionRepository} resource_permission_repository
-     * @param {Boolean} authenticated
-     */
-    constructor(resource_permission_repository, authenticated = false) {
+    constructor(resource_permission_repository: ResourcePermissionRepository, authenticated: boolean = false) {
         this.repository = resource_permission_repository;
         this.authenticated = authenticated;
     }
 
     /**
      * Verifies a permission's existence in the permissions repository.
-     * @param {String} permission_name
-     * @param {String} resource
-     * @returns {boolean}
      */
-    can(permission_name, resource) {
+    can(permission_name: string, resource: string): boolean {
         if (this.repository.permissions[resource]) {
             const permissions_on_resource = this.repository.permissions[resource].permission_names;
             return permissions_on_resource.indexOf(permission_name) !== -1;

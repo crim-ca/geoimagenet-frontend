@@ -1,12 +1,13 @@
-// @flow
+// @flow strict
 
 import {withStyles} from "@material-ui/core";
 import React from "react";
 import {LayerSwitcher} from "../../LayerSwitcher";
 import {MapManager} from "./MapManager";
-import {typeof GeoImageNetStore} from "../../store/GeoImageNetStore";
-import {typeof StoreActions} from "../../store";
-import {typeof UserInteractions} from "../../domain";
+import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import {StoreActions} from "../../store";
+import {UserInteractions} from "../../domain";
+import {Interactions} from "./Interactions";
 
 type Props = {
     classes: { root: {} },
@@ -54,6 +55,8 @@ class MapContainer extends React.Component<Props> {
             this.layer_switcher,
             user_interactions
         );
+
+        new Interactions(this.map_manager.map, state_proxy, user_interactions, store_actions, this.map_manager.formatGeoJson, ANNOTATION_LAYER, ANNOTATION_NAMESPACE);
     }
 
     render() {

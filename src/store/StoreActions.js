@@ -5,9 +5,9 @@ import {ANNOTATION, MODE} from '../domain/constants.js';
 import {observable, action, runInAction} from 'mobx';
 import {AccessControlList} from "../domain/access-control-list";
 import {Taxonomy, User} from "../domain/entities";
-import {typeof Collection} from "ol";
-import {typeof Source} from "ol/source";
-import {typeof Vector} from "ol/layer";
+import {Collection} from "ol";
+import {Source} from "ol/source";
+import {Vector} from "ol/layer";
 import {GeoImageNetStore} from "./GeoImageNetStore";
 
 /**

@@ -12,10 +12,17 @@ type Validity = {
 };
 type State = {
     model_name: string,
-    file: File|null,
+    file: File | null,
     validity: Validity,
-    benchmarks_jobs: Array<Object>,
+    benchmarks_jobs: {}[],
     loading: boolean,
+};
+type UploadEventTarget = {
+    validity: Validity,
+    files: File[]
+};
+type UploadEvent = {
+    target: UploadEventTarget,
 };
 
 const UploadFormContainer = withStyles(theme => ({
@@ -37,6 +44,7 @@ type Props = {
     model_upload_instructions_url: string,
 };
 
+
 class UploadFormComponent extends React.Component<Props, State> {
 
     state = {
@@ -51,30 +59,31 @@ class UploadFormComponent extends React.Component<Props, State> {
     upload_model = async () => {
         const {file, validity, model_name} = this.state;
         const {mutate} = this.props;
-        let result;
         if (validity.valid) {
             try {
+
                 await this.setState({loading: true});
-                result = await mutate({
+                const result = await mutate({
                     variables: {file, model_name},
                     update: () => {
                         console.log('in updateing...');
                     },
                 });
                 this.setState({file: null, validity: {valid: false}, loading: false});
+                const {data: {upload_model: {message, success}}} = result;
+
+                if (success) {
+                    NotificationManager.success('Model testing was launched.');
+                } else {
+                    NotificationManager.error(message);
+                }
+
             } catch (e) {
                 console.log(e);
                 NotificationManager.error(`there was an error: ${e.message}. please try again later.`);
             }
 
             this.setState({loading: false});
-
-            const {data: {upload_model: {message, success}}} = result;
-            if (success) {
-                NotificationManager.success('Model testing was launched.');
-            } else {
-                NotificationManager.error(message);
-            }
 
         }
     };
@@ -84,9 +93,9 @@ class UploadFormComponent extends React.Component<Props, State> {
         return model_name.length > 0 && validity.valid;
     };
 
-    file_changed = (event: Event) => {
-        const target: EventTarget = event.target;
-        const {validity, files: [file]}: {validity: Validity, files: Array<File>} = target;
+    file_changed = (event: UploadEvent) => {
+        const target: UploadEventTarget = event.target;
+        const {validity, files: [file]} = target;
         this.setState({file, validity});
     };
 

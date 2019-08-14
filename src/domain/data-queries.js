@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 import {make_http_request, post_json, put_json} from '../utils/http.js';
 
@@ -22,14 +22,27 @@ type MergedSessionInformation = {
 export class DataQueries {
 
     geoimagenet_api_endpoint: string;
+    geoserver_endpoint: string;
     magpie_endpoint: string;
     ml_endpoint: string;
 
-    constructor(geoimagenet_api_url: string, magpie_endpoint: string, ml_endpoint: string) {
+    constructor(geoimagenet_api_url: string, geoserver_endpoint: string, magpie_endpoint: string, ml_endpoint: string) {
         this.geoimagenet_api_endpoint = geoimagenet_api_url;
+        this.geoserver_endpoint = geoserver_endpoint;
         this.magpie_endpoint = magpie_endpoint;
         this.ml_endpoint = ml_endpoint;
     }
+
+    /**
+     * we overwrite the return for the first element because this method is called get by id, we only ever want one element
+     */
+    get_annotation_by_id = async (id: number, typename: string) => {
+        const url = `${this.geoserver_endpoint}/wfs?service=WFS&version=1.1.0&request=GetFeature` +
+            `&typeName=${typename}&outputFormat=application/json&srsname=EPSG:3857&cql_filter=id=${id}`;
+        const response = await make_http_request(url);
+        const json = await response.json();
+        return json.features[0];
+    };
 
     logout_request() {
         return make_http_request(`${this.magpie_endpoint}/signout`);

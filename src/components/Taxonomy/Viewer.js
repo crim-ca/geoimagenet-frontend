@@ -4,9 +4,9 @@ import React from 'react';
 import {Selector} from "./Selector";
 import {Classes} from "./Classes";
 import {withTranslation} from "../../utils";
-import {typeof UserInteractions} from "../../domain";
-import {typeof GeoImageNetStore} from "../../store/GeoImageNetStore";
-import {typeof StoreActions} from "../../store";
+import {UserInteractions} from "../../domain";
+import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import {StoreActions} from "../../store";
 import {observer} from "mobx-react";
 
 type Props = {

@@ -1,3 +1,4 @@
+// @flow strict
 export const make_http_request = async (url, options) => {
     try {
         const res = await fetch(url, options);

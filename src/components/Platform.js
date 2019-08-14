@@ -14,9 +14,9 @@ import {Actions} from './Actions.js';
 import {Viewer} from './Taxonomy/Viewer';
 import {AnnotationStatusFilter} from './AnnotationStatusFilter.js';
 import {MapContainer} from './Map/MapContainer';
-import {typeof GeoImageNetStore} from "../store/GeoImageNetStore";
+import {GeoImageNetStore} from "../store/GeoImageNetStore";
 import {UserInteractions} from '../domain/user-interactions.js';
-import {typeof StoreActions} from '../store';
+import {StoreActions} from '../store';
 
 const StyledPanelDetails = withStyles({
     root: {

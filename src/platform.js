@@ -22,7 +22,7 @@ import './img/icons/favicon.ico';
 import {theme} from './utils/react.js';
 import {NotificationContainer} from "react-notifications";
 import {captureException} from "@sentry/browser";
-import {typeof GeoImageNetStore} from "./store/GeoImageNetStore";
+import {GeoImageNetStore} from "./store/GeoImageNetStore";
 import {LoadingSplashCircle} from "./components/LoadingSplashCircle";
 
 Sentry.init({
@@ -46,11 +46,11 @@ export class PlatformLoader {
     user_interactions: UserInteractions;
 
 
-    constructor(geoimagenet_api_endpoint: string, magpie_endpoint: string, ml_endpoint: string, i18next_instance) {
+    constructor(geoimagenet_api_endpoint: string, geoserver_endpoint: string, magpie_endpoint: string, ml_endpoint: string, i18next_instance) {
 
         this.state_proxy = create_state_proxy();
         this.store_actions = new StoreActions(this.state_proxy);
-        this.data_queries = new DataQueries(geoimagenet_api_endpoint, magpie_endpoint, ml_endpoint);
+        this.data_queries = new DataQueries(geoimagenet_api_endpoint, geoserver_endpoint, magpie_endpoint, ml_endpoint);
         this.user_interactions = new UserInteractions(this.store_actions, this.data_queries, i18next_instance, this.state_proxy);
     }
 
@@ -117,7 +117,7 @@ export class PlatformLoader {
 }
 
 addEventListener('DOMContentLoaded', async () => {
-    const platform_loader = new PlatformLoader(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT, i18n);
+    const platform_loader = new PlatformLoader(GEOIMAGENET_API_URL, GEOSERVER_URL, MAGPIE_ENDPOINT, ML_ENDPOINT, i18n);
     try {
         await platform_loader.init();
     } catch (e) {
