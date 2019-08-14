@@ -350,8 +350,7 @@ export class MapManager {
 
         const style_function = (feature, resolution) => {
             const {show_labels} = this.state_proxy;
-            const taxonomy_class = this.state_proxy.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
-            const label = taxonomy_class.name_en || taxonomy_class.name_fr;
+            const label = feature.get('name');
             const styles = [
                 new Style({
                     fill: new Fill({
