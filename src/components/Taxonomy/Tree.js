@@ -168,6 +168,4 @@ Tree.propTypes = {
     t: PropTypes.func.isRequired,
 };
 
-export {
-    Tree,
-};
+export {Tree};

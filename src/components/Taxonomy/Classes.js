@@ -39,6 +39,4 @@ class Classes extends Component<Props> {
 }
 
 
-export {
-    Classes,
-};
+export {Classes};

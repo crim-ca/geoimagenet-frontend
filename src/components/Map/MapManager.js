@@ -37,15 +37,14 @@ import {
     VALID_OPENLAYERS_ANNOTATION_RESOLUTION,
     READ,
     WMS
-} from './domain/constants.js';
-import {debounced} from './utils/event_handling.js';
+} from '../../domain/constants.js';
+import {debounced} from '../../utils/event_handling.js';
 import {NotificationManager} from 'react-notifications';
-import {StoreActions} from "./store";
-import {DataQueries} from "./domain/data-queries";
-import {LayerSwitcher} from "./LayerSwitcher";
-import {GeoImageNetStore} from "./store/GeoImageNetStore";
-import {make_http_request} from "./utils/http";
-import {typeof UserInteractions} from "./domain";
+import {StoreActions} from "../../store";
+import {LayerSwitcher} from "../../LayerSwitcher";
+import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import {make_http_request} from "../../utils/http";
+import {typeof UserInteractions} from "../../domain";
 
 async function geoserver_capabilities(url) {
     let parser = new WMSCapabilities();
@@ -287,7 +286,7 @@ export class MapManager {
                 const {activated, text} = annotation_status_list[k];
                 this.state_proxy.annotations_layers[text].setVisible(activated);
                 if (activated) {
-                    this.refresh_source_by_status(text);
+                    this.user_interactions.refresh_source_by_status(text);
                 }
             });
         });
@@ -318,7 +317,7 @@ export class MapManager {
                     Object.keys(annotation_status_list).forEach(k => {
                         const annotation_status = annotation_status_list[k];
                         if (annotation_status.activated) {
-                            this.refresh_source_by_status(annotation_status.text);
+                            this.user_interactions.refresh_source_by_status(annotation_status.text);
                         }
                     });
             }
@@ -394,14 +393,6 @@ export class MapManager {
             zIndex: zIndex
         });
     }
-
-    /**
-     * Some actions need to redraw the annotations on the viewport. This method clears then refreshes the features on the specified layer.
-     */
-    refresh_source_by_status = (status: string) => {
-        this.state_proxy.annotations_sources[status].clear();
-        this.state_proxy.annotations_sources[status].refresh(true);
-    };
 
     /**
      * When in annotation mode, we need some kind of control over the effect of each click.

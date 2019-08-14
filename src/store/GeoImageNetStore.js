@@ -25,7 +25,6 @@ export class GeoImageNetStore {
         [ANNOTATION.STATUS.NEW]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.NEW, true)),
         [ANNOTATION.STATUS.PRE_RELEASED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.PRE_RELEASED)),
         [ANNOTATION.STATUS.RELEASED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.RELEASED, true)),
-        [ANNOTATION.STATUS.REVIEW]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.REVIEW, true)),
         [ANNOTATION.STATUS.VALIDATED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.VALIDATED, true)),
         [ANNOTATION.STATUS.REJECTED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.REJECTED)),
         [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.DELETED)),

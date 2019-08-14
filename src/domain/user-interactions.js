@@ -29,7 +29,7 @@ export class UserInteractions {
 
     store_actions: StoreActions;
     data_queries: DataQueries;
-    i18next_instance;
+    i18next_instance: i18n;
     state_proxy: GeoImageNetStore;
 
     /**
@@ -45,6 +45,14 @@ export class UserInteractions {
 
         this.release_annotations = this.release_annotations.bind(this);
     }
+
+    /**
+     * Some actions need to redraw the annotations on the viewport. This method clears then refreshes the features on the specified layer.
+     */
+    refresh_source_by_status = (status: string) => {
+        this.state_proxy.annotations_sources[status].clear();
+        this.state_proxy.annotations_sources[status].refresh(true);
+    };
 
     switch_features_from_source_to_source(features: Array<Feature>, old_source: string, new_source: string) {
         /**
@@ -313,7 +321,7 @@ export class UserInteractions {
             await this.data_queries.login_request(form_data);
             window.location.href = '/platform';
         } catch (error) {
-            NotificationManager.error(i18n.t('login:forbidden'));
+            NotificationManager.error(this.i18next_instance.t('login:forbidden'));
         }
     }
 

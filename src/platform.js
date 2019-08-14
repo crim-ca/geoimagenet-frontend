@@ -59,8 +59,7 @@ export class PlatformLoader {
             <Platform
                 state_proxy={this.state_proxy}
                 store_actions={this.store_actions}
-                user_interactions={this.user_interactions}
-                data_queries={this.data_queries} />
+                user_interactions={this.user_interactions} />
         );
     }
 
