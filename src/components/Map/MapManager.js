@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 /**
  * This file is a mess, I know it, you know it, now move along and let me refactor

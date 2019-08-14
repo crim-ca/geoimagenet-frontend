@@ -1,6 +1,10 @@
 // @flow strict
 
-type DialogCreationCallback = (text: string, handle_accept: Function, handle_refuse: Function) => void
+type DialogCreationCallback = (
+    text: string,
+    handle_accept: () => void,
+    handle_refuse: () => void,
+) => void
 
 class DialogManagerClass {
 

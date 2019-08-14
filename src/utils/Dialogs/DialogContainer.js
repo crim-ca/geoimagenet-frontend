@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 import React from 'react';
 import {DialogManager} from "./DialogManager";
@@ -8,9 +8,19 @@ type Props = {};
 type State = {
     open: boolean,
     text: string,
-    handle_accept: Function | null,
-    handle_refuse: Function | null,
+    handle_accept: () => Promise<void>,
+    handle_refuse: () => Promise<void>,
 };
+
+const default_handle_accept = () => { throw new Error('The default handle resolve was called, this means the dialog container was probably not correctly instantiated.'); };
+const default_handle_refuse = () => { throw new Error('The default handle reject was called, this means the dialog container was probably not correctly instantiated.'); };
+
+const default_state = {
+        open: false,
+        text: '',
+        handle_accept: default_handle_accept,
+        handle_refuse: default_handle_refuse,
+    };
 
 /**
  * There should be a single <DialogContainer /> in the app. Processes that want to obtain confirmation must import the DialogManager
@@ -19,16 +29,7 @@ type State = {
  */
 export class DialogContainer extends React.Component<Props, State> {
 
-    /**
-     * @private
-     * @type {{handle_accept: Function|null, handle_refuse: Function|null, text: string, open: boolean}}
-     */
-    state = {
-        open: false,
-        text: '',
-        handle_accept: null,
-        handle_refuse: null,
-    };
+    state = Object.assign({}, default_state);
 
     constructor() {
         super();
@@ -48,7 +49,7 @@ export class DialogContainer extends React.Component<Props, State> {
      * It should not be called from the container itself. We use the arrow function because we need to bind this method
      * to the class here.
      */
-    handle_dialog_request = (text: string, handle_accept: Function, handle_refuse: Function) => {
+    handle_dialog_request = (text: string, handle_accept: () => void, handle_refuse: () => void) => {
         this.setState({
             open: true,
             text,
@@ -62,15 +63,10 @@ export class DialogContainer extends React.Component<Props, State> {
      * @param promise_resolution_callback this handler decorates either resolve or reject promise resolution, send the one needed
      * @private
      */
-    handle_close_dialog(promise_resolution_callback: Function): Function {
+    handle_close_dialog(promise_resolution_callback: (string) => void): () => Promise<void> {
         return async (): Promise<void> => {
             const confirmation_message = this.state.text;
-            await this.setState({
-                open: false,
-                text: '',
-                handle_accept: null,
-                handle_refuse: null,
-            });
+            await this.setState(Object.assign({}, default_state));
             promise_resolution_callback(confirmation_message);
         };
     }

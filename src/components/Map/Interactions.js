@@ -13,7 +13,7 @@ import GeoJSON from "ol/format/GeoJSON.js";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from "../../domain";
 import {StoreActions} from "../../store";
-import Event from 'ol/events/Event.js';
+import typeof Event from 'ol/events/Event.js';
 
 export class Interactions {
 

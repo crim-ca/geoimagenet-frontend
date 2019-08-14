@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 import {TaxonomyClass} from '../domain/entities.js';
 import {ANNOTATION, MODE} from '../domain/constants.js';
@@ -9,6 +9,7 @@ import {Collection} from "ol";
 import {Source} from "ol/source";
 import {Vector} from "ol/layer";
 import {GeoImageNetStore} from "./GeoImageNetStore";
+import type {TaxonomyClassFromAPI} from "../Types";
 
 /**
  * The store actions are lower level action handlers, in the sense that they are not directly related to a user's actions,
@@ -122,7 +123,7 @@ export class StoreActions {
      *
      */
     @action.bound
-    build_taxonomy_classes_structures(nested_taxonomy_classes_from_api: Object) {
+    build_taxonomy_classes_structures(taxonomy_class_from_api: TaxonomyClassFromAPI) {
 
         const assign_top_object_to_list = (object, parent_id = null) => {
             const current_raw = object;
@@ -152,7 +153,7 @@ export class StoreActions {
             }
         };
 
-        assign_top_object_to_list(nested_taxonomy_classes_from_api);
+        assign_top_object_to_list(taxonomy_class_from_api);
 
     }
 
@@ -270,13 +271,11 @@ export class StoreActions {
             if (taxonomy_class.visible === true) {
                 visible_ids.push(taxonomy_class.id);
             }
-            if (taxonomy_class.children && taxonomy_class.children.length > 0) {
-                aggregate_selected_ids(taxonomy_class.children);
-            }
         };
 
-        this.state_proxy.selected_taxonomy.elements.forEach(c => {
-            aggregate_selected_ids(c);
+        Object.keys(this.state_proxy.flat_taxonomy_classes).forEach(key => {
+            const taxonomy_class = this.state_proxy.flat_taxonomy_classes[key];
+            aggregate_selected_ids(taxonomy_class);
         });
         this.set_visible_classes(visible_ids);
 

@@ -16,7 +16,8 @@ import {GeoJSON} from "ol/format";
 import {StoreActions} from "../store";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 import {Feature} from "ol";
-import {TaxonomyClass} from "./entities";
+import {Taxonomy, TaxonomyClass} from "./entities";
+import type {TaxonomyClassesDataFromAPI} from "../Types";
 
 
 /**
@@ -199,10 +200,11 @@ export class UserInteractions {
      */
     @action.bound
     async fetch_taxonomies() {
+
         try {
             const taxonomies = await this.data_queries.fetch_taxonomies();
             this.store_actions.set_taxonomy(taxonomies);
-            const root_taxonomy_classes = await this.data_queries.fetch_taxonomy_classes();
+            const root_taxonomy_classes: TaxonomyClassesDataFromAPI = await this.data_queries.fetch_taxonomy_classes();
             /**
              * the build_taxonomy_classes_structure has the nice side-effect of building a flat taxonomy classes structure as well!
              * so we will neatly ask it to generate language dictionaries for newly added taxonomy classes afterwards
@@ -231,18 +233,12 @@ export class UserInteractions {
      * When the user selects a taxonomy, we decide to refresh the annotation counts, as they can change more often than the classes themselves.
      */
     @action.bound
-    async select_taxonomy(version: Version_API, taxonomy_name: string) {
-        this.store_actions.set_selected_taxonomy({
-            id: version['taxonomy_id'],
-            name: taxonomy_name,
-            version: version['version'],
-            root_taxonomy_class_id: version['root_taxonomy_class_id'],
-            elements: [],
-        });
+    async select_taxonomy(taxonomy: Taxonomy, root_taxonomy_class_id: number) {
+        this.store_actions.set_selected_taxonomy(taxonomy);
         try {
-            const counts = await this.data_queries.flat_taxonomy_classes_counts(version['root_taxonomy_class_id']);
+            const counts = await this.data_queries.flat_taxonomy_classes_counts(root_taxonomy_class_id);
             this.store_actions.set_annotation_counts(counts);
-            this.store_actions.toggle_taxonomy_class_tree_element(version['root_taxonomy_class_id'], true);
+            this.store_actions.toggle_taxonomy_class_tree_element(root_taxonomy_class_id, true);
         } catch (e) {
             NotificationManager.error('We were unable to fetch the taxonomy classes.');
         }

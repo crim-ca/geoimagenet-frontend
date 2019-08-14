@@ -29,10 +29,10 @@ class Selector extends Component {
         this.setState({value: taxonomy_positional_id});
 
         const {select_taxonomy} = this.props.user_interactions;
-        const value = this.props.state_proxy.taxonomies[taxonomy_positional_id];
+        const taxonomy = this.props.state_proxy.taxonomies[taxonomy_positional_id];
 
-        const version = value['versions'][0];
-        await select_taxonomy(version, value.name);
+        const version = taxonomy['versions'][0];
+        await select_taxonomy(taxonomy, version.root_taxonomy_class_id);
     };
 
     render() {

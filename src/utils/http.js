@@ -1,5 +1,5 @@
 // @flow strict
-export const make_http_request = async (url, options) => {
+export const make_http_request = async (url: string, options: RequestOptions = {}) => {
     try {
         const res = await fetch(url, options);
         if (res.ok) {
@@ -11,7 +11,7 @@ export const make_http_request = async (url, options) => {
     }
 };
 
-export const post_json = (url, payload) => {
+export const post_json = (url: string, payload: string) => {
     return make_http_request(url, {
         method: 'POST',
         body: payload,
@@ -21,7 +21,7 @@ export const post_json = (url, payload) => {
     });
 };
 
-export const put_json = async (url, payload) => {
+export const put_json = async (url: string, payload: string) => {
     return make_http_request(url, {
         method: 'PUT',
         body: payload,

@@ -24,6 +24,7 @@ import {NotificationContainer} from "react-notifications";
 import {captureException} from "@sentry/browser";
 import {GeoImageNetStore} from "./store/GeoImageNetStore";
 import {LoadingSplashCircle} from "./components/LoadingSplashCircle";
+import {Taxonomy} from "./domain/entities";
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
@@ -99,7 +100,7 @@ export class PlatformLoader {
         try {
             // dirtily select the first taxonomy in the list.
             await user_interactions.fetch_taxonomies();
-            await user_interactions.select_taxonomy(state_proxy.taxonomies[0].versions[0], state_proxy.taxonomies[0].name);
+            await user_interactions.select_taxonomy(state_proxy.taxonomies[0], state_proxy.taxonomies[0].versions[0].root_taxonomy_class_id);
         } catch (e) {
             captureException(e);
         }

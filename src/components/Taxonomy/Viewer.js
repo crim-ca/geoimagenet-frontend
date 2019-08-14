@@ -23,7 +23,12 @@ class Viewer extends React.Component<Props> {
 
         const {t, state_proxy, user_interactions, store_actions} = this.props;
 
-        const taxonomy_class = state_proxy.flat_taxonomy_classes[state_proxy.selected_taxonomy.root_taxonomy_class_id];
+        if (state_proxy.selected_taxonomy === null) {
+            return null;
+        }
+
+        // TODO when versions are actually implemented in the system this will need to be reviewed
+        const taxonomy_class = state_proxy.flat_taxonomy_classes[state_proxy.selected_taxonomy.versions[0].root_taxonomy_class_id];
         const classes = taxonomy_class ? [taxonomy_class] : [];
 
         return (

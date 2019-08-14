@@ -52,8 +52,8 @@ test('accessing flat classes changes nested ones', () => {
     };
     store_actions.build_taxonomy_classes_structures(classes_from_api);
     action(() => {
-        state_proxy.flat_taxonomy_classes[1]['name'] = 'test_name';
-        expect(state_proxy.selected_taxonomy.elements[1]['name']).toEqual('test_name');
+        state_proxy.flat_taxonomy_classes[1]['children'][0]['name'] = 'test_name';
+        expect(state_proxy.flat_taxonomy_classes[2]['name']).toEqual('test_name');
     });
 });
 

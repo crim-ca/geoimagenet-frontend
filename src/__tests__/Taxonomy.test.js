@@ -5,7 +5,6 @@ import {DataQueries} from "../domain/data-queries";
 import {UserInteractions} from "../domain";
 import {ANNOTATIONS_COUNTS_RESPONSE, TAXONOMY_CLASSES_RESPONSE, TAXONOMY_RESPONSE} from "./api_responses";
 import {ANNOTATION} from "../domain/constants";
-import {GeoImageNetStore} from "../store/GeoImageNetStore";
 
 const React = require('react');
 const {mount, configure} = require('enzyme');
@@ -71,7 +70,7 @@ describe('Taxonomy viewer', () => {
 
     beforeEach(async () => {
         await user_interactions.fetch_taxonomies();
-        await user_interactions.select_taxonomy(state_proxy.taxonomies[1].versions[0], state_proxy.taxonomies[1].name);
+        await user_interactions.select_taxonomy(state_proxy.taxonomies[1], state_proxy.taxonomies[1].versions[0].root_taxonomy_class_id);
     });
 
     test('Building the taxonomy from real data shows annotations', async () => {
@@ -88,12 +87,10 @@ describe('Taxonomy viewer', () => {
     test('Toggling filters shows and hides annotation counts', async () => {
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.NEW);
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.RELEASED);
-        store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.REVIEW);
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.VALIDATED);
         const wrapper = mount(<TestableTaxonomyViewer />);
         expect(state_proxy.annotation_status_list[ANNOTATION.STATUS.NEW].activated).toBe(false);
         expect(state_proxy.annotation_status_list[ANNOTATION.STATUS.RELEASED].activated).toBe(false);
-        expect(state_proxy.annotation_status_list[ANNOTATION.STATUS.REVIEW].activated).toBe(false);
         expect(state_proxy.annotation_status_list[ANNOTATION.STATUS.VALIDATED].activated).toBe(false);
         await wait(0);
         wrapper.update();
@@ -109,7 +106,6 @@ describe('Taxonomy viewer', () => {
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.NEW, false);
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.PRE_RELEASED, false);
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.RELEASED, false);
-        store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.REVIEW, false);
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.VALIDATED, false);
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.REJECTED, false);
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.DELETED, false);

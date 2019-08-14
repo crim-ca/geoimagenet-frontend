@@ -1,5 +1,11 @@
+// @flow strict
+
+import Base from 'ol/layer/Base';
+import Group from 'ol/layer/Group';
+import Map from 'ol/Map';
 import {Control} from 'ol/control';
 import {unByKey} from 'ol/Observable';
+import {Feature} from "ol";
 
 /**
  * Somewhat dirty hack to know if the device supports touch events, but probably reliable. Might leak the touch event, but
@@ -24,7 +30,12 @@ function isTouchDevice() {
  */
 class LayerSwitcher extends Control {
 
-    constructor(opt_options, toggle_layer_callback) {
+    toggle_layer_callback: (string) => void;
+    mapListeners: (() => void)[];
+    class_name: string;
+    panel: HTMLElement;
+
+    constructor(opt_options: {target: string | HTMLElement}, toggle_layer_callback: string => void) {
 
         const options = opt_options || {};
         const {target} = options;
@@ -55,9 +66,6 @@ class LayerSwitcher extends Control {
         element.appendChild(this.panel);
         this.enableTouchScroll_(this.panel);
 
-        this.forEachRecursive = this.forEachRecursive.bind(this);
-
-
     }
 
     /**
@@ -80,9 +88,8 @@ class LayerSwitcher extends Control {
 
     /**
      * Set the map instance the control is associated with.
-     * @param {ol.Map} map The map instance.
      */
-    setMap(map) {
+    setMap(map: Map) {
         // Clean up listeners associated with the previous map
         for (let i = 0; i < this.mapListeners.length; i++) {
             unByKey(this.mapListeners[i]);
@@ -119,7 +126,7 @@ class LayerSwitcher extends Control {
      * @param {ol.Layer.Base} layer The layer whos visibility will be toggled.
      * @param visible bool wether to make it visible or not
      */
-    setVisible_(layer, visible) {
+    setVisible_(layer: Base, visible: boolean) {
         const map = this.getMap();
         layer.setVisible(visible);
         if (visible && layer.get('type') === 'base') {
@@ -134,11 +141,8 @@ class LayerSwitcher extends Control {
 
     /**
      * Render all layers that are children of a group.
-     * @private
-     * @param {ol.layer.Base} layer Layer to be rendered (should have a title property).
-     * @param {Number} idx Position in parent group list.
      */
-    renderLayer_(layer, idx) {
+    renderLayer_(layer: Base, idx: number) {
 
         const this_ = this;
 
@@ -200,15 +204,15 @@ class LayerSwitcher extends Control {
     /**
      * Render all layers that are children of a group.
      * @private
-     * @param {ol.Layer.Group} lyr Group layer whos children will be rendered.
-     * @param {Element} elm DOM element that children will be appended to.
+     * @param layer_group Group layer whose children will be rendered.
+     * @param element DOM element that children will be appended to.
      */
-    renderLayers_(lyr, elm) {
-        const lyrs = lyr.getLayers().getArray().slice().reverse();
-        for (var i = 0, l; i < lyrs.length; i++) {
-            l = lyrs[i];
+    renderLayers_(layer_group: Group, element: HTMLElement) {
+        const layers = layer_group.getLayers().getArray().slice().reverse();
+        for (var i = 0, l; i < layers.length; i++) {
+            l = layers[i];
             if (l.get('title')) {
-                elm.appendChild(this.renderLayer_(l, i));
+                element.appendChild(this.renderLayer_(l, i));
             }
         }
     }
@@ -216,18 +220,18 @@ class LayerSwitcher extends Control {
     /**
      * **Static** Call the supplied function for each layer in the passed layer group
      * recursing nested groups.
-     * @param {ol.layer.Group} lyr The layer group to start iterating from.
-     * @param {Function} fn Callback which will be called for each `ol.layer.Base`
+     * @param layer_group The layer group to start iterating from.
+     * @param callback Callback which will be called for each `ol.layer.Base`
      * found under `lyr`. The signature for `fn` is the same as `ol.Collection#forEach`
      */
-    forEachRecursive(lyr, fn) {
-        lyr.getLayers().forEach((lyr, idx, a) => {
-            fn(lyr, idx, a);
-            if (lyr.getLayers) {
-                this.forEachRecursive(lyr, fn);
+    forEachRecursive = (layer_group: Group, callback: (Feature, number, Feature[]) => void) => {
+        layer_group.getLayers().forEach((layer, index, collection) => {
+            callback(layer, index, collection);
+            if (layer.getLayers) {
+                this.forEachRecursive(layer, callback);
             }
         });
-    }
+    };
 
     /**
      * Generate a UUID
@@ -235,7 +239,7 @@ class LayerSwitcher extends Control {
      *
      * Adapted from http://stackoverflow.com/a/2117523/526860
      */
-    uuid() {
+    uuid(): string {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             const r = Math.random() * 16 | 0;
             const v = c === 'x' ? r : (r & 0x3 | 0x8);
@@ -248,7 +252,7 @@ class LayerSwitcher extends Control {
      * @desc Apply workaround to enable scrolling of overflowing content within an
      * element. Adapted from https://gist.github.com/chrismbarr/4107472
      */
-    enableTouchScroll_ = function (elm) {
+    enableTouchScroll_ = function (elm: HTMLElement) {
         if (isTouchDevice()) {
             let scrollStartPos = 0;
             elm.addEventListener("touchstart", function (event) {
