@@ -54,6 +54,16 @@ export class UserInteractions {
         this.state_proxy.annotations_sources[status].refresh(true);
     };
 
+    refresh_all_sources = () => {
+        const {annotation_status_list} = this.state_proxy;
+        Object.keys(this.state_proxy.annotation_status_list).forEach(k => {
+            const annotation_status = annotation_status_list[k];
+            if (annotation_status.activated) {
+                this.refresh_source_by_status(annotation_status.text);
+            }
+        });
+    };
+
     switch_features_from_source_to_source(features: Array<Feature>, old_source: string, new_source: string) {
         /**
          * while it would seem tempting to move the features all at once and change the count with the features.length,
@@ -155,9 +165,10 @@ export class UserInteractions {
 
     };
 
-    ask_expertise_for_features = async (feature_ids: Array<number>) => {
+    ask_expertise_for_features = async (feature_ids: number[]) => {
         try {
             await this.data_queries.review_request(feature_ids, true);
+            this.refresh_all_sources();
             NotificationManager.success('Features were marked for expertise.');
         } catch (error) {
             captureException(error);

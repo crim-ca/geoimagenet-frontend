@@ -345,15 +345,6 @@ export class MapManager {
 
     /**
      * Convenience factory function to create layers.
-     * @private
-     * @param {String} title
-     * @param {VectorSource} source
-     * @param {String} color
-     * @param {boolean} visible
-     * @param {Number} zIndex The default is 99999999 because image layers are ordered by their observation date (20190202)
-     * @returns {VectorLayer}
-     *
-     * @todo maybe at some point rethink the ordering of the layers but so far it's not problematic
      */
     create_vector_layer(title: string, source: VectorSource, color: string, visible: boolean = true, zIndex: number = 99999999) {
 
@@ -361,28 +352,47 @@ export class MapManager {
             const {show_labels} = this.state_proxy;
             const taxonomy_class = this.state_proxy.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
             const label = taxonomy_class.name_en || taxonomy_class.name_fr;
-            return new Style({
-                fill: new Fill({
-                    color: 'rgba(255, 255, 255, 0.25)',
-                }),
-                stroke: new Stroke({
-                    color: color,
-                    width: 2
-                }),
-                image: new Circle({
-                    radius: 7,
+            const styles = [
+                new Style({
                     fill: new Fill({
+                        color: 'rgba(255, 255, 255, 0.25)',
+                    }),
+                    stroke: new Stroke({
                         color: color,
-                    })
+                        width: 2
+                    }),
+                    image: new Circle({
+                        radius: 7,
+                        fill: new Fill({
+                            color: color,
+                        })
+                    }),
                 }),
-                text: new Text({
-                    font: '16px Calibri, sans-serif',
-                    fill: new Fill({color: '#000'}),
-                    stroke: new Stroke({color: '#FFF', width: 2}),
-                    text: show_labels ? (resolution > 100 ? '' : label) : '',
-                    overflow: true,
-                }),
-            });
+            ];
+            if (show_labels) {
+                styles.push(new Style({
+                    text: new Text({
+                        font: '16px Calibri, sans-serif',
+                        fill: new Fill({color: '#000'}),
+                        stroke: new Stroke({color: '#FFF', width: 2}),
+                        text: resolution > 100 ? '' : label,
+                        overflow: true,
+                    }),
+                }));
+            }
+            if (feature.get('review_requested')) {
+                styles.push(new Style({
+                    text: new Text({
+                        font: '36px Calibri, sans-serif',
+                        fill: new Fill({color: '#000'}),
+                        stroke: new Stroke({color: '#FFF', width: 2}),
+                        text: '?',
+                        overflow: true,
+                        offsetY: show_labels ? 36 : 0,
+                    }),
+                }));
+            }
+            return styles;
         };
 
         return new Vector({
@@ -488,7 +498,7 @@ export class MapManager {
         return features;
     }
 
-    get_aggregated_feature_ids(features: Array<Feature>) {
+    get_aggregated_feature_ids(features: Feature[]) {
         const feature_ids = [];
         features.forEach(f => {
             if (f.getId() !== undefined) {
@@ -541,7 +551,7 @@ export class MapManager {
 
     create_vector_source(features: Array<Feature>, status: string) {
         return new VectorSource({
-            format: new GeoJSON(),
+            format: this.formatGeoJson,
             features: features,
             url: (extent) => {
                 let baseUrl = `${this.geoserver_url}/wfs?service=WFS&` +
