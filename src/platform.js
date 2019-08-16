@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import * as Sentry from '@sentry/browser';
 import {CssBaseline, MuiThemeProvider} from '@material-ui/core';
 
-import {register_section_handles} from './utils/sections.js';
 import {DataQueries} from './domain/data-queries.js';
 import {create_state_proxy, StoreActions} from './store';
 import {UserInteractions} from './domain/user-interactions.js';
@@ -11,14 +10,21 @@ import {Platform} from './components/Platform.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
 import {i18n} from './utils';
 
+import {DialogContainer} from './components/Dialogs';
+
 import './css/base.css';
 import './css/style_platform.css';
 import './css/layer_switcher.css';
-import './css/notifications.css';
+import 'react-notifications/lib/notifications.css';
 import './css/open_layers.css';
 import './img/icons/favicon.ico';
 
 import {theme} from './utils/react.js';
+import {NotificationContainer} from "react-notifications";
+import {captureException} from "@sentry/browser";
+import {GeoImageNetStore} from "./store/GeoImageNetStore";
+import {LoadingSplashCircle} from "./components/LoadingSplashCircle";
+import {Taxonomy} from "./domain/entities";
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
@@ -35,41 +41,27 @@ Sentry.init({
  */
 export class PlatformLoader {
 
-    /**
-     * @param {String} geoimagenet_api_endpoint geoimagenet api deployed endpoint to use in this instance of the platform
-     * @param {String} magpie_endpoint magpie installation to use in this instance of the platform
-     * @param {String} ml_endpoint machine learning endpoint
-     * @param {object} i18next_instance
-     */
-    constructor(geoimagenet_api_endpoint, magpie_endpoint, ml_endpoint, i18next_instance) {
-        /**
-         * @private
-         * @type {GeoImageNetStore}
-         */
+    state_proxy: GeoImageNetStore;
+    store_actions: StoreActions;
+    data_queries: DataQueries;
+    user_interactions: UserInteractions;
+
+
+    constructor(geoimagenet_api_endpoint: string, geoserver_endpoint: string, magpie_endpoint: string, ml_endpoint: string, i18next_instance) {
+
         this.state_proxy = create_state_proxy();
-        /**
-         * @private
-         * @type {StoreActions}
-         */
         this.store_actions = new StoreActions(this.state_proxy);
-        /**
-         * @private
-         * @type {DataQueries}
-         */
-        this.data_queries = new DataQueries(geoimagenet_api_endpoint, magpie_endpoint, ml_endpoint);
-        /**
-         * @private
-         * @type {UserInteractions}
-         */
-        this.user_interactions = new UserInteractions(this.store_actions, this.data_queries, i18next_instance);
+        this.data_queries = new DataQueries(geoimagenet_api_endpoint, geoserver_endpoint, magpie_endpoint, ml_endpoint);
+        this.user_interactions = new UserInteractions(this.store_actions, this.data_queries, i18next_instance, this.state_proxy);
     }
 
     make_platform() {
-        return <Platform
-            state_proxy={this.state_proxy}
-            store_actions={this.store_actions}
-            user_interactions={this.user_interactions}
-            data_queries={this.data_queries}/>;
+        return (
+            <Platform
+                state_proxy={this.state_proxy}
+                store_actions={this.store_actions}
+                user_interactions={this.user_interactions} />
+        );
     }
 
     /**
@@ -101,22 +93,32 @@ export class PlatformLoader {
         div.classList.add('root');
         document.body.appendChild(div);
 
+        ReactDOM.render(<LoadingSplashCircle />, div);
+
         await this.user_interactions.refresh_user_resources_permissions();
+        const {user_interactions, state_proxy} = this;
+        try {
+            // dirtily select the first taxonomy in the list.
+            await user_interactions.fetch_taxonomies();
+            await user_interactions.select_taxonomy(state_proxy.taxonomies[0], state_proxy.taxonomies[0].versions[0].root_taxonomy_class_id);
+        } catch (e) {
+            captureException(e);
+        }
 
         ReactDOM.render(
             <MuiThemeProvider theme={theme}>
-                <CssBaseline/>
+                <CssBaseline />
                 {this.make_layout()}
+                <DialogContainer />
+                <NotificationContainer />
             </MuiThemeProvider>,
             div
         );
-
-        register_section_handles('section-handle');
     }
 }
 
 addEventListener('DOMContentLoaded', async () => {
-    const platform_loader = new PlatformLoader(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT, i18n);
+    const platform_loader = new PlatformLoader(GEOIMAGENET_API_URL, GEOSERVER_URL, MAGPIE_ENDPOINT, ML_ENDPOINT, i18n);
     try {
         await platform_loader.init();
     } catch (e) {

@@ -7,16 +7,15 @@ import {i18n} from './utils';
 import {DataQueries} from './domain/data-queries.js';
 import {create_state_proxy, StoreActions} from './store';
 import {UserInteractions} from './domain/user-interactions.js';
-import {element, get_by_id} from './utils/dom.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
-import {Datasets} from './components/Datasets.js';
+import {Datasets} from './components/Datasets';
 import {theme} from './utils/react.js';
 
 import {create_client} from './utils/apollo';
 import {ApolloProvider} from 'react-apollo';
 
 import './css/base.css';
-import './css/notifications.css';
+import 'react-notifications/lib/notifications.css';
 import './img/icons/favicon.ico';
 
 Sentry.init({
@@ -27,29 +26,27 @@ addEventListener('DOMContentLoaded', async () => {
 
     const state_proxy = create_state_proxy();
     const store_actions = new StoreActions(state_proxy);
-    const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
-    const user_interactions = new UserInteractions(store_actions, data_queries, i18n);
+    const data_queries = new DataQueries(GEOIMAGENET_API_URL, GEOSERVER_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
+    const user_interactions = new UserInteractions(store_actions, data_queries, i18n, state_proxy);
     const apollo_client = create_client(GRAPHQL_ENDPOINT);
 
-    const div = element('div');
+    const div = document.createElement('div');
     div.id = 'root';
     div.classList.add('root');
     document.body.appendChild(div);
 
     ReactDOM.render(
         <MuiThemeProvider theme={theme}>
-            <CssBaseline/>
+            <CssBaseline />
             <ApolloProvider client={apollo_client}>
                 <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}>
                     <Datasets
-                        client={apollo_client}
-                        state_proxy={state_proxy}
-                        store_actions={store_actions}/>
+                        state_proxy={state_proxy} />
                 </LoggedLayout>
             </ApolloProvider>
 
         </MuiThemeProvider>,
-        get_by_id('root')
+        div
     );
 
     await user_interactions.refresh_user_resources_permissions();

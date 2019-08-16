@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {withStyles, Link, Typography, Paper, Select, MenuItem, Dialog} from '@material-ui/core';
 import Clear from '@material-ui/icons/Clear';
 import {useTranslation, withTranslation} from '../utils';
-import {Tree} from './taxonomy/Tree';
+import {Tree} from './Taxonomy/Tree';
 import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 
@@ -12,7 +12,7 @@ import {Login} from './Login.js';
 import {Benchmarks} from './Benchmarks';
 
 import logo_gin from '../img/logos/logo_trans_GIN.png';
-import {TaxonomySelector} from './TaxonomyBrowser';
+import {Selector} from './Taxonomy/Selector';
 
 const DarkDialog = withStyles(({colors, values}) => ({
     paper: {
@@ -65,7 +65,7 @@ const LessOpaquePaper = withStyles(({values}) => ({
                 onClose={close}>
                 <div className={classes.top}>
                     <Typography style={{marginRight: '24px'}} variant='h4'>{title}</Typography>
-                    <Clear style={{cursor: 'pointer'}} onClick={close}/>
+                    <Clear style={{cursor: 'pointer'}} onClick={close} />
                 </div>
                 {content}
             </DarkDialog>
@@ -108,21 +108,22 @@ class Taxonomy extends React.Component {
                 <Typography variant='body1'>{t('intro:taxonomy.par_2')}</Typography>
                 <Link download href={`${GEOIMAGENET_API_URL}/taxonomy_classes`}>{t('intro:taxonomy.download')}</Link>
                 <Paper style={{marginTop: '12px'}}>
-                    <TaxonomySelector user_interactions={user_interactions}
-                                      t={t}
-                                      state_proxy={state_proxy}/>
-                {classes.length > 0
-                    ? <Tree
+                    <Selector user_interactions={user_interactions}
+                              t={t}
+                              state_proxy={state_proxy} />
+                    {classes.length > 0
+                        ? <Tree
                             t={t}
                             state_proxy={state_proxy}
                             user_interactions={user_interactions}
-                            taxonomy_classes={classes}/>
-                    : null}
+                            taxonomy_classes={classes} />
+                        : null}
                 </Paper>
             </React.Fragment>
         );
     }
 }
+
 Taxonomy.propTypes = {
     user_interactions: PropTypes.any.isRequired,
     state_proxy: PropTypes.object.isRequired,
@@ -151,14 +152,14 @@ function Platform() {
             <Typography variant='body1'>{t('intro:platform.par_1')}</Typography>
             <Typography variant='h6'>{t('intro:platform.section_1.header')}</Typography>
             <ul>
-                <li dangerouslySetInnerHTML={{__html: t('intro:platform.section_1.item_1')}}/>
+                <li dangerouslySetInnerHTML={{__html: t('intro:platform.section_1.item_1')}} />
                 <li>{t('intro:platform.section_1.item_2')}</li>
                 <li>{t('intro:platform.section_1.item_3')}</li>
-                <li dangerouslySetInnerHTML={{__html: t('intro:platform.section_1.item_4')}}/>
+                <li dangerouslySetInnerHTML={{__html: t('intro:platform.section_1.item_4')}} />
             </ul>
             <Typography variant='h6'>{t('intro:platform.section_2.header')}</Typography>
-            <Typography dangerouslySetInnerHTML={{__html: t('intro:platform.section_2.par_1')}} variant='body1'/>
-            <Typography dangerouslySetInnerHTML={{__html: t('intro:platform.section_2.par_2')}} variant='body1'/>
+            <Typography dangerouslySetInnerHTML={{__html: t('intro:platform.section_2.par_1')}} variant='body1' />
+            <Typography dangerouslySetInnerHTML={{__html: t('intro:platform.section_2.par_2', {contact_email: CONTACT_EMAIL})}} variant='body1' />
             <Typography variant='h6'>{t('intro:platform.section_3.header')}</Typography>
             <ul>
                 <li>{t('intro:platform.section_3.item_1')}</li>
@@ -198,36 +199,36 @@ function Publications() {
             <Typography variant='h5'>{t('intro:publications.section_2.header')}</Typography>
             <ul>
                 <li>
-                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_1.intro')}}/>
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_1.intro')}} />
                     <Link
                         dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_1.link_text')}}
                         rel='noopener noreferrer'
                         target='_blank'
-                        href='https://www.usherbrooke.ca/actualites/nouvelles/nouvelles-details/article/38764/'/>
+                        href='https://www.usherbrooke.ca/actualites/nouvelles/nouvelles-details/article/38764/' />
                 </li>
                 <li>
-                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_2.intro')}}/>
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_2.intro')}} />
                     <Link
                         dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_2.link_text')}}
                         rel='noopener noreferrer'
                         target='_blank'
-                        href='https://www.crim.ca/fr/nouvelles/geoimagenet-l-intelligence-artificielle-appliquee-aux-images-satellites'/>
+                        href='https://www.crim.ca/fr/nouvelles/geoimagenet-l-intelligence-artificielle-appliquee-aux-images-satellites' />
                 </li>
                 <li>
-                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_3.intro')}}/>
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_3.intro')}} />
                     <Link
                         dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_3.link_text')}}
                         rel='noopener noreferrer'
                         target='_blank'
-                        href='https://www.effigis.com/fr/financement-federal-pour-la-r-et-d-dune-application-dinterpretation-automatisee-dimages-satellite-par-intelligence-artificielle/'/>
+                        href='https://www.effigis.com/fr/financement-federal-pour-la-r-et-d-dune-application-dinterpretation-automatisee-dimages-satellite-par-intelligence-artificielle/' />
                 </li>
                 <li>
-                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_4.intro')}}/>
+                    <span dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_4.intro')}} />
                     <Link
                         dangerouslySetInnerHTML={{__html: t('intro:publications.section_2.item_4.link_text')}}
                         rel='noopener noreferrer'
                         target='_blank'
-                        href='https://www.canarie.ca/fr/canarie-distribue-44-millions-de-dollars-a-vingt-equipes-de-recherche-pour-quelles-perfectionnent-leurs-logiciels-afin-dameliorer-les-vaccins-de-surveiller-le-changement-climatique/'/>
+                        href='https://www.canarie.ca/fr/canarie-distribue-44-millions-de-dollars-a-vingt-equipes-de-recherche-pour-quelles-perfectionnent-leurs-logiciels-afin-dameliorer-les-vaccins-de-surveiller-le-changement-climatique/' />
                 </li>
             </ul>
             <Typography variant='h5'>{t('intro:publications.section_3.header')}</Typography>
@@ -242,9 +243,9 @@ function Mission() {
     const {t} = useTranslation();
     return (
         <React.Fragment>
-            <Typography variant='body1' dangerouslySetInnerHTML={{__html: t('intro:mission.what')}}/>
-            <Typography variant='body1' dangerouslySetInnerHTML={{__html: t('intro:mission.how')}}/>
-            <Typography variant='body1' dangerouslySetInnerHTML={{__html: t('intro:mission.why')}}/>
+            <Typography variant='body1' dangerouslySetInnerHTML={{__html: t('intro:mission.what')}} />
+            <Typography variant='body1' dangerouslySetInnerHTML={{__html: t('intro:mission.how')}} />
+            <Typography variant='body1' dangerouslySetInnerHTML={{__html: t('intro:mission.why')}} />
         </React.Fragment>
     );
 }
@@ -369,7 +370,7 @@ export const PresentationContainer = withStyles(({values}) => ({
     input: {
         color: 'white',
     }
-}))(({classes, state_proxy, user_interactions, client, contact_email}) => {
+}))(({classes, state_proxy, user_interactions, contact_email}) => {
 
     const {t} = useTranslation();
     const [dialog_open, change_dialog_openness] = useState(false);
@@ -383,42 +384,42 @@ export const PresentationContainer = withStyles(({values}) => ({
                 <Typography style={{cursor: 'pointer', marginRight: '24px'}} variant='body1'
                             onClick={toggle_dialog}>{t('login:login')}</Typography>
                 <Dialog open={dialog_open} onClose={toggle_dialog}>
-                    <Login user_interactions={user_interactions}/>
+                    <Login user_interactions={user_interactions} />
                 </Dialog>
                 <Typography style={{cursor: 'pointer', marginRight: '24px'}} variant='body1'>
                     <a href={`mailto:${contact_email}`}>{t('util:contact')}</a>
                 </Typography>
-                <ChangeLanguage/>
+                <ChangeLanguage />
             </div>
-            <div className={classes.logoLeft}><img alt='Logo GeoImageNet' src={logo_gin}/></div>
-            <div className={classes.logos}><Logos/></div>
+            <div className={classes.logoLeft}><img alt='Logo GeoImageNet' src={logo_gin} /></div>
+            <div className={classes.logos}><Logos /></div>
             <div className={classes.benchmarks}>
                 <LessOpaquePaper title={t('title:benchmarks')} content={
                     <React.Fragment>
-                        <BenchmarksPanel/>
-                        <Benchmarks client={client}/>
+                        <BenchmarksPanel />
+                        <Benchmarks />
                     </React.Fragment>
-                }/>
+                } />
             </div>
             <div className={classes.mission}>
-                <LessOpaquePaper title={t('title:mission')} content={<Mission/>} maxWidth='lg'/>
+                <LessOpaquePaper title={t('title:mission')} content={<Mission />} maxWidth='lg' />
             </div>
             <div className={classes.team}>
-                <LessOpaquePaper title={t('title:team')} content={<Team/>}/>
+                <LessOpaquePaper title={t('title:team')} content={<Team />} />
             </div>
             <div className={classes.platform}>
-                <LessOpaquePaper title={t('title:platform')} content={<Platform/>} maxWidth='lg'/>
+                <LessOpaquePaper title={t('title:platform')} content={<Platform />} maxWidth='lg' />
             </div>
             <div className={classes.publications}>
-                <LessOpaquePaper title={t('title:publications')} content={<Publications/>}/>
+                <LessOpaquePaper title={t('title:publications')} content={<Publications />} />
             </div>
             <div className={classes.collaborators}>
-                <LessOpaquePaper title={t('title:collaborators')} content={<Collaborators/>}/>
+                <LessOpaquePaper title={t('title:collaborators')} content={<Collaborators />} />
             </div>
             <div className={classes.taxonomy}>
                 <LessOpaquePaper title={t('title:taxonomy')} content={
-                    <TranslatedTaxonomy state_proxy={state_proxy} user_interactions={user_interactions}/>
-                }/>
+                    <TranslatedTaxonomy state_proxy={state_proxy} user_interactions={user_interactions} />
+                } />
             </div>
         </div>
     );

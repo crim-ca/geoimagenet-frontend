@@ -1,6 +1,8 @@
-export const debounced = (delay, func) => {
+// @flow strict
+
+export const debounced = (delay: number, func: () => void) => {
     let timer_id;
-    return (...args) => {
+    return (...args: string | number[]) => {
         if (timer_id) {
             clearTimeout(timer_id);
         }

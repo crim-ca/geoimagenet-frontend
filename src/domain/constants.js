@@ -1,9 +1,9 @@
+// @flow strict
 /**
  * We need a bing api key for the aerial base maps to be displayed.
  * @todo this was copied from other CRIM projects, at some point we need to actually have something that is not subject to stop working randomly.
  * @type {string}
  */
-import {AnnotationStatus} from './entities.js';
 
 export const BING_API_KEY = 'AtXX65CBBfZXBxm6oMyf_5idMAMI7W6a5GuZ5acVcrYi6lCQayiiBz7_aMHB7JR7';
 
@@ -53,7 +53,6 @@ export const ANNOTATION = {
         NEW: 'new',
         PRE_RELEASED: 'pre_released',
         RELEASED: 'released',
-        REVIEW: 'review',
         VALIDATED: 'validated',
         REJECTED: 'rejected',
         DELETED: 'deleted',
@@ -64,7 +63,6 @@ export const ANNOTATION_STATUS_AS_ARRAY = [
     'new',
     'pre_released',
     'released',
-    'review',
     'validated',
     'rejected',
     'deleted',

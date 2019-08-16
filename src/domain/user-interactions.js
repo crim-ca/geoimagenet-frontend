@@ -1,10 +1,24 @@
-import {notifier} from '../utils/notifications.js';
+// @flow strict
+
+import {DialogManager} from '../components/Dialogs';
 import {action} from 'mobx';
 import {InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionRepository, User} from './entities.js';
 import {AccessControlList} from './access-control-list.js';
 import {NotificationManager} from 'react-notifications';
 
-import {i18n} from '../utils/i18n';
+import {ANNOTATION} from "./constants";
+import {captureException} from "@sentry/browser";
+import {DataQueries} from "./data-queries";
+
+import i18n from 'i18next';
+import {typeof Event} from "ol/events";
+import {typeof GeoJSON} from "ol/format";
+import {StoreActions} from "../store";
+import {GeoImageNetStore} from "../store/GeoImageNetStore";
+import {typeof Feature} from "ol";
+import {Taxonomy, TaxonomyClass} from "./entities";
+import type {TaxonomyClassesDataFromAPI} from "../Types";
+
 
 /**
  * In a web app, we need top level handlers that react to specific user intentions, and interactions.
@@ -14,34 +28,159 @@ import {i18n} from '../utils/i18n';
 
 export class UserInteractions {
 
+    store_actions: StoreActions;
+    data_queries: DataQueries;
+    i18next_instance: i18n;
+    state_proxy: GeoImageNetStore;
+
     /**
      *
      * The user interactions have first-hand influence upon the application state,
      * we need the store actions as dependency
-     *
-     * @param {StoreActions} store_actions
-     * @param {DataQueries} data_queries
-     * @param {object} i18next_instance
      */
-    constructor(store_actions, data_queries, i18next_instance) {
-        /**
-         * @private
-         * @type {StoreActions}
-         */
+    constructor(store_actions: StoreActions, data_queries: DataQueries, i18next_instance: i18n, state_proxy: GeoImageNetStore) {
         this.store_actions = store_actions;
-        /**
-         * @private
-         * @type {DataQueries}
-         */
         this.data_queries = data_queries;
-        /**
-         * @private
-         * @type {object}
-         */
         this.i18next_instance = i18next_instance;
+        this.state_proxy = state_proxy;
 
         this.release_annotations = this.release_annotations.bind(this);
     }
+
+    /**
+     * Some actions need to redraw the annotations on the viewport. This method clears then refreshes the features on the specified layer.
+     */
+    refresh_source_by_status = (status: string) => {
+        this.state_proxy.annotations_sources[status].clear();
+        this.state_proxy.annotations_sources[status].refresh(true);
+    };
+
+    refresh_all_sources = () => {
+        const {annotation_status_list} = this.state_proxy;
+        Object.keys(this.state_proxy.annotation_status_list).forEach(k => {
+            const annotation_status = annotation_status_list[k];
+            if (annotation_status.activated) {
+                this.refresh_source_by_status(annotation_status.text);
+            }
+        });
+    };
+
+    switch_features_from_source_to_source(features: Array<Feature>, old_source: string, new_source: string) {
+        /**
+         * while it would seem tempting to move the features all at once and change the count with the features.length,
+         * the taxonomy class id changes for each feature, so we need to loop over the collection to know it anyway
+         * we could aggregate the counts then call the changes after the loop, maybe reducing the function calls,
+         * but there's no guarantee that the collection is not of all different classes, nor that it'd be any faster
+         */
+        features.forEach(feature => {
+            const taxonomy_class_id = feature.get('taxonomy_class_id');
+            this.state_proxy.annotations_sources[old_source].removeFeature(feature);
+            this.state_proxy.annotations_sources[new_source].addFeature(feature);
+            this.store_actions.change_annotation_status_count(taxonomy_class_id, old_source, -1);
+            this.store_actions.change_annotation_status_count(taxonomy_class_id, new_source, 1);
+        });
+    }
+
+    delete_annotation_under_click = async (features: Array<Feature>, feature_ids: Array<number>) => {
+        try {
+            await DialogManager.confirm(`Do you really want to delete the highlighted feature?`);
+        } catch (e) {
+            // if we catched it means user did not want to delete the annotation, simply return, nothing problematic here.
+            return;
+        }
+        try {
+            await this.data_queries.delete_annotations_request(feature_ids);
+            this.switch_features_from_source_to_source(features, ANNOTATION.STATUS.NEW, ANNOTATION.STATUS.DELETED);
+        } catch (error) {
+            const json = await error.json();
+            NotificationManager.error(json.detail);
+            captureException(error);
+        }
+    };
+
+    validate_features_under_click = async (features: Array<Feature>, feature_ids: Array<number>) => {
+        try {
+            await this.data_queries.validate_annotations_request(feature_ids);
+            this.switch_features_from_source_to_source(features, ANNOTATION.STATUS.RELEASED, ANNOTATION.STATUS.VALIDATED);
+        } catch (error) {
+            const json = await error.json();
+            NotificationManager.error(json.detail);
+            captureException(error);
+        }
+    };
+
+    reject_features_under_click = async (features: Array<Feature>, feature_ids: Array<number>) => {
+        try {
+            await this.data_queries.reject_annotations_request(feature_ids);
+            this.switch_features_from_source_to_source(features, ANNOTATION.STATUS.RELEASED, ANNOTATION.STATUS.REJECTED);
+        } catch (error) {
+            const json = await error.json();
+            NotificationManager.error(json.detail);
+            captureException(error);
+        }
+    };
+
+    validate_creation_event_has_features = async () => {
+        if (this.state_proxy.selected_taxonomy_class_id === -1) {
+            NotificationManager.warning('You must select a taxonomy class to begin annotating content.');
+        }
+    };
+
+    /**
+     * Launch the creation of a new annotation. This should also update the "new" annotations count of the relevant
+     * taxonomy class.
+     */
+    create_drawend_handler = (format_geojson: GeoJSON, annotation_layer: string, annotation_namespace: string) => async (event: Event) => {
+        const {feature}: { feature: Feature } = event;
+        feature.setProperties({
+            taxonomy_class_id: this.state_proxy.selected_taxonomy_class_id,
+            image_name: this.state_proxy.current_annotation.image_title,
+        });
+        const payload = format_geojson.writeFeature(feature);
+        try {
+            const [new_feature_id] = await this.data_queries.create_geojson_feature(payload);
+            feature.setId(`${annotation_layer}.${new_feature_id}`);
+            const typename = `${annotation_namespace}:${annotation_layer}`;
+            const feature_from_distant_api = await this.data_queries.get_annotation_by_id(new_feature_id, typename);
+            feature.set('name', feature_from_distant_api.properties.name);
+            this.store_actions.change_annotation_status_count(this.state_proxy.selected_taxonomy_class_id, ANNOTATION.STATUS.NEW, 1);
+        } catch (error) {
+            NotificationManager.error(error.message);
+        }
+        this.store_actions.end_annotation();
+    };
+
+    create_modifyend_handler = (format_geojson: GeoJSON) => async (event: Event) => {
+
+        const modifiedFeatures = [];
+        event.features.forEach((feature) => {
+            if (feature.revision_ >= 1) {
+                modifiedFeatures.push(feature);
+                feature.revision_ = 0;
+            }
+        });
+        const payload = format_geojson.writeFeatures(modifiedFeatures);
+
+        try {
+            await this.data_queries.modify_geojson_features(payload);
+        } catch (error) {
+            NotificationManager.error(error.message);
+        }
+
+    };
+
+    ask_expertise_for_features = async (feature_ids: number[], features: Feature[]) => {
+        try {
+            await this.data_queries.review_request(feature_ids, true);
+            features.forEach(feature => {
+                feature.set('review_requested', true);
+            });
+            NotificationManager.success('Features were marked for expertise.');
+        } catch (error) {
+            captureException(error);
+            NotificationManager.error(error.message);
+        }
+    };
 
     logout = async () => {
         try {
@@ -63,10 +202,11 @@ export class UserInteractions {
      */
     @action.bound
     async fetch_taxonomies() {
+
         try {
             const taxonomies = await this.data_queries.fetch_taxonomies();
             this.store_actions.set_taxonomy(taxonomies);
-            const root_taxonomy_classes = await this.data_queries.fetch_taxonomy_classes(1);
+            const root_taxonomy_classes: TaxonomyClassesDataFromAPI = await this.data_queries.fetch_taxonomy_classes();
             /**
              * the build_taxonomy_classes_structure has the nice side-effect of building a flat taxonomy classes structure as well!
              * so we will neatly ask it to generate language dictionaries for newly added taxonomy classes afterwards
@@ -92,26 +232,15 @@ export class UserInteractions {
     }
 
     /**
-     *
      * When the user selects a taxonomy, we decide to refresh the annotation counts, as they can change more often than the classes themselves.
-     *
-     * @param {object} version
-     * @param {string} taxonomy_name
-     * @returns {Promise<void>}
      */
     @action.bound
-    async select_taxonomy(version, taxonomy_name) {
-        this.store_actions.set_selected_taxonomy({
-            id: version['taxonomy_id'],
-            name: taxonomy_name,
-            version: version['version'],
-            root_taxonomy_class_id: version['root_taxonomy_class_id'],
-            elements: [],
-        });
+    async select_taxonomy(taxonomy: Taxonomy, root_taxonomy_class_id: number) {
+        this.store_actions.set_selected_taxonomy(taxonomy);
         try {
-            const counts = await this.data_queries.flat_taxonomy_classes_counts(version['root_taxonomy_class_id']);
+            const counts = await this.data_queries.flat_taxonomy_classes_counts(root_taxonomy_class_id);
             this.store_actions.set_annotation_counts(counts);
-            this.store_actions.toggle_taxonomy_class_tree_element(version['root_taxonomy_class_id'], true);
+            this.store_actions.toggle_taxonomy_class_tree_element(root_taxonomy_class_id, true);
         } catch (e) {
             NotificationManager.error('We were unable to fetch the taxonomy classes.');
         }
@@ -171,11 +300,9 @@ export class UserInteractions {
      * - Release annotations for the selected class
      * - Update counts for relevant annotations
      * - Update features in relevant layers
-     * @param {Number} taxonomy_class_id
-     * @returns {Promise<void>}
      */
-    async release_annotations(taxonomy_class_id) {
-        await notifier.confirm('Do you really want to release all the annotations of the selected class, as well as its children?');
+    release_annotations = async (taxonomy_class_id: number) => {
+        await DialogManager.confirm('Do you really want to release all the annotations of the selected class, as well as its children?');
         try {
             await this.data_queries.release_annotations_request(taxonomy_class_id);
             const counts = await this.data_queries.flat_taxonomy_classes_counts(taxonomy_class_id);
@@ -184,14 +311,14 @@ export class UserInteractions {
         } catch (error) {
             NotificationManager.error('We were unable to release the annotations.');
         }
-    }
+    };
 
     /**
      * Toggles the visibility of a taxonomy class's children in the taxonomy browser
      * @param {TaxonomyClass} taxonomy_class
      */
     @action.bound
-    toggle_taxonomy_class(taxonomy_class) {
+    toggle_taxonomy_class(taxonomy_class: TaxonomyClass) {
         const taxonomy_class_id = taxonomy_class.id;
         this.store_actions.toggle_taxonomy_class_tree_element(taxonomy_class_id);
     }
@@ -200,15 +327,13 @@ export class UserInteractions {
      * When submitting the login form, the user expects to login, or be presented with error about said login.
      * Send the credentials to magpie, then verify content to be sure user is logged in, then notify about sucessful login.
      * In case of error, notify of problem without leaking too much detail.
-     * @param {Object} form_data
-     * @returns {Promise<void>}
      */
-    async login_form_submission(form_data) {
+    async login_form_submission(form_data: {}) {
         try {
             await this.data_queries.login_request(form_data);
             window.location.href = '/platform';
         } catch (error) {
-            NotificationManager.error(i18n.t('login:forbidden'));
+            NotificationManager.error(this.i18next_instance.t('login:forbidden'));
         }
     }
 

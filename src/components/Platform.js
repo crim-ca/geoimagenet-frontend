@@ -1,6 +1,6 @@
+// @flow
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
-import PropTypes from 'prop-types';
 import {
     withStyles,
     ExpansionPanel,
@@ -11,15 +11,12 @@ import {
 import {ExpandMore} from '@material-ui/icons';
 
 import {Actions} from './Actions.js';
-import {TaxonomyClasses, TaxonomySelector} from './TaxonomyBrowser.js';
-import {MapManager} from '../MapManager.js';
-import {DataQueries} from '../domain/data-queries.js';
+import {Viewer} from './Taxonomy/Viewer';
+import {AnnotationStatusFilter} from './AnnotationStatusFilter.js';
+import {MapContainer} from './Map/MapContainer';
+import {GeoImageNetStore} from "../store/GeoImageNetStore";
 import {UserInteractions} from '../domain/user-interactions.js';
 import {StoreActions} from '../store';
-import {LayerSwitcher} from '../LayerSwitcher.js';
-import {AnnotationStatusFilter} from './AnnotationStatusFilter.js';
-
-import {withTranslation} from '../utils';
 
 const StyledPanelDetails = withStyles({
     root: {
@@ -35,13 +32,6 @@ const PlatformContainer = withStyles(({values}) => ({
         gridTemplateRows: '64px calc(100% - 64px)'
     }
 }))(({classes, children}) => (<div className={classes.root}>{children}</div>));
-
-const MapContainer = withStyles({
-    root: {
-        gridRow: '1/3',
-        gridColumn: '1/3',
-    }
-})(({classes}) => (<div id='map' className={classes.root}/>));
 
 const Coordinates = withStyles(({values, zIndex}) => ({
     root: {
@@ -75,7 +65,8 @@ const Sidebar = withStyles({
     root: {
         gridRow: '1/3',
         gridColumn: '3/4',
-    }
+        padding: 0,
+    },
 })(Paper);
 
 const SidebarBottom = withStyles(theme => {
@@ -91,138 +82,72 @@ const SidebarBottom = withStyles(theme => {
     return <div className={classes.root}>{children}</div>;
 });
 
+type Props = {
+    state_proxy: GeoImageNetStore,
+    store_actions: StoreActions,
+    user_interactions: UserInteractions,
+};
+type State = {
+    opened_panel_title: string,
+};
+
 /**
  * The Platform is the top level component for the annotation platform. It is responsible for managing the map, hence
  * the map manager is instantiated from here, after the component is mounted. We need to wait for the map elements to exist
  * or there would be nothing to mount the map onto.
  */
 @observer
-class PlatformWrapper extends Component {
-    /**
-     * @type {Object}
-     * @property {Object} state_proxy
-     * @property {StoreActions} store_actions
-     * @property {UserInteractions} user_interactions
-     * @property {DataQueries} data_queries
-     */
-    static propTypes = {
-        state_proxy: PropTypes.object.isRequired,
-        store_actions: PropTypes.instanceOf(StoreActions).isRequired,
-        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
-        data_queries: PropTypes.instanceOf(DataQueries).isRequired,
-        t: PropTypes.func.isRequired,
-    };
+class Platform extends Component<Props, State> {
 
-    /**
-     * @private
-     * @type {Object}
-     * @property {string|null} expanded Currently expanded tab identifier.
-     */
     state = {
-        expanded: null,
+        opened_panel_title: '',
     };
 
-    /**
-     * Instantiates the map manager as an empty object so we can pass it to the children elements that need it. Rendering will
-     * happen before componentDidMount, so we need to have a dummy value before the map manager is actually instantiated.
-     * @param {Object} props Attributes passed to the component by React.
-     */
-    constructor(props) {
-        super(props);
-        /**
-         * @private
-         * @type {MapManager|Object}
-         */
-        this.map_manager = {};
-    }
-
-    /**
-     * Since we need DOM elements to exist to create Open Layers maps, we hook onto React's componentDidMount lifecycle
-     * callback and create the map manager only when the dom is correctly created.
-     */
-    componentDidMount() {
-        const {state_proxy, store_actions, data_queries} = this.props;
-
-        /**
-         * The Layer Switcher is paramount to the map: it should allow easy access and toggling to the various displayed layers.
-         * @private
-         * @type {LayerSwitcher}
-         */
-        this.layer_switcher = new LayerSwitcher(
-            {target: 'layer-switcher'},
-            store_actions.toggle_annotation_status_visibility
-        );
-
-        this.map_manager = new MapManager(
-            GEOSERVER_URL,
-            ANNOTATION_NAMESPACE_URI,
-            ANNOTATION_NAMESPACE,
-            ANNOTATION_LAYER,
-            'map',
-            state_proxy,
-            store_actions,
-            data_queries,
-            this.layer_switcher
-        );
-    }
-
-    /**
-     * use double arrow function to actually create the callback for each panel.
-     * @param {string} panel
-     * @returns {Function}
-     */
-    handle_change = panel => (event, expanded) => {
+    create_open_panel_handler = (panel_title: string) => (event: Event, panel_should_open: boolean) => {
         this.setState({
-            expanded: expanded ? panel : false,
+            opened_panel_title: panel_should_open ? panel_title : '',
         });
     };
 
     render() {
 
-        const {t} = this.props;
-
-        const taxonomy_class = this.props.state_proxy.flat_taxonomy_classes[this.props.state_proxy.selected_taxonomy.root_taxonomy_class_id];
-        const classes = taxonomy_class ? [taxonomy_class] : [];
-        const {expanded} = this.state;
+        const {opened_panel_title} = this.state;
 
         return (
             <PlatformContainer>
-                <MapContainer/>
-                <Coordinates id='coordinates'/>
+                <MapContainer
+                    state_proxy={this.props.state_proxy}
+                    store_actions={this.props.store_actions}
+                    user_interactions={this.props.user_interactions} />
+                <Coordinates id='coordinates' />
                 <ActiveFiltersBox>
                     <AnnotationStatusFilter store_actions={this.props.store_actions}
-                                            state_proxy={this.props.state_proxy}/>
+                                            state_proxy={this.props.state_proxy} />
                 </ActiveFiltersBox>
                 <Sidebar>
                     <Actions state_proxy={this.props.state_proxy}
-                             store_actions={this.props.store_actions}/>
+                             store_actions={this.props.store_actions} />
                     <SidebarBottom>
-                        <ExpansionPanel expanded={expanded === 'taxonomies'}
-                                        onChange={this.handle_change('taxonomies')}>
-                            <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
+                        <ExpansionPanel expanded={opened_panel_title === 'taxonomies'}
+                                        onChange={this.create_open_panel_handler('taxonomies')}>
+                            <ExpansionPanelSummary expandIcon={<ExpandMore />}>
                                 Taxonomies and Classes
                             </ExpansionPanelSummary>
                             <StyledPanelDetails>
-                                <TaxonomySelector user_interactions={this.props.user_interactions}
-                                                  t={t}
-                                                  state_proxy={this.props.state_proxy}/>
-
-                                <TaxonomyClasses map_manager={this.map_manager}
-                                                 user_interactions={this.props.user_interactions}
-                                                 store_actions={this.props.store_actions}
-                                                 state_proxy={this.props.state_proxy}
-                                                 invert_taxonomy_class_visibility={this.props.store_actions.invert_taxonomy_class_visibility}
-                                                 toggle_taxonomy_class_tree_element={this.props.store_actions.toggle_taxonomy_class_tree_element}
-                                                 classes={classes}/>
+                                <Viewer
+                                    refresh_source_by_status={this.props.user_interactions.refresh_source_by_status}
+                                    state_proxy={this.props.state_proxy}
+                                    user_interactions={this.props.user_interactions}
+                                    store_actions={this.props.store_actions} />
                             </StyledPanelDetails>
                         </ExpansionPanel>
-                        <ExpansionPanel expanded={expanded === 'layers'}
-                                        onChange={this.handle_change('layers')}>
-                            <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
+                        <ExpansionPanel expanded={opened_panel_title === 'layers'}
+                                        onChange={this.create_open_panel_handler('layers')}>
+                            <ExpansionPanelSummary expandIcon={<ExpandMore />}>
                                 Basemaps, Images and Filters
                             </ExpansionPanelSummary>
                             <StyledPanelDetails>
-                                <div id='layer-switcher' className='layer-switcher-container'/>
+                                <div id='layer-switcher' className='layer-switcher-container' />
                             </StyledPanelDetails>
                         </ExpansionPanel>
                     </SidebarBottom>
@@ -231,8 +156,6 @@ class PlatformWrapper extends Component {
         );
     }
 }
-
-const Platform = withTranslation()(PlatformWrapper);
 
 export {
     Platform

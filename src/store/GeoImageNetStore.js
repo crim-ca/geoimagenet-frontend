@@ -1,7 +1,12 @@
+// @flow strict
 import {ANNOTATION, MODE} from '../domain/constants.js';
 import {AccessControlList} from '../domain/access-control-list.js';
 import {AnnotationStatus, ResourcePermissionRepository} from '../domain/entities.js';
 import {observable} from 'mobx';
+import {Taxonomy, User} from "../domain/entities";
+import typeof VectorLayer from "ol/layer/Vector.js";
+import typeof VectorSource from "ol/source/Vector";
+import {typeof Collection} from "ol";
 
 /**
  * The application state must, at each given time, fully represent what a user is seeing.
@@ -25,7 +30,6 @@ export class GeoImageNetStore {
         [ANNOTATION.STATUS.NEW]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.NEW, true)),
         [ANNOTATION.STATUS.PRE_RELEASED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.PRE_RELEASED)),
         [ANNOTATION.STATUS.RELEASED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.RELEASED, true)),
-        [ANNOTATION.STATUS.REVIEW]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.REVIEW, true)),
         [ANNOTATION.STATUS.VALIDATED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.VALIDATED, true)),
         [ANNOTATION.STATUS.REJECTED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.REJECTED)),
         [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.DELETED)),
@@ -54,13 +58,7 @@ export class GeoImageNetStore {
      */
     taxonomies = [];
 
-    selected_taxonomy = {
-        id: 0,
-        name: '',
-        version: 0,
-        elements: [],
-        root_taxonomy_class_id: 0,
-    };
+    selected_taxonomy: Taxonomy | null = null;
 
     /**
      * The flat taxonomy classes structure simplifies the acces to classes when we need to change one directly, without looping
@@ -73,28 +71,51 @@ export class GeoImageNetStore {
     visible_classes = [];
 
     /**
-     * The Open Layers collections currently used in the map.
-     * @type {Object}
+     * For the next three properties, we directly write the indexes because flojs does not support the use of the constants
+     * as keys. If that changes in the future maybe change it.
      */
-    annotations_collections = {};
+
+    /**
+     * The Open Layers collections currently used in the map.
+     */
+    annotations_collections: {
+        'new': Collection,
+        'pre_released': Collection,
+        'released': Collection,
+        'validated': Collection,
+        'rejected': Collection,
+        'deleted': Collection,
+    } = {};
 
     /**
      * The Open Layers sources currently used in the map.
-     * @type {Object}
      */
-    annotations_sources = {};
+    annotations_sources: {
+        'new': VectorSource,
+        'pre_released': VectorSource,
+        'released': VectorSource,
+        'validated': VectorSource,
+        'rejected': VectorSource,
+        'deleted': VectorSource,
+    } = {};
 
     /**
      * The Open Layers layers currently used in the map.
-     * @type {Object}
+     * We directly write
      */
-    annotations_layers = {};
+    annotations_layers: {
+        'new': VectorLayer,
+        'pre_released': VectorLayer,
+        'released': VectorLayer,
+        'validated': VectorLayer,
+        'rejected': VectorLayer,
+        'deleted': VectorLayer,
+    } = {};
 
     /**
      * An instance with the current user's information.
-     * @type {User|null}
      */
-    logged_user = null;
+    logged_user: User | null = null;
 
     /**
      * We need to be able to control how annotations are created. Once we begin adding points, we limit the adding of points

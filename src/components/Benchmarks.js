@@ -2,19 +2,9 @@ import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core';
 import PropTypes from 'prop-types';
 import MaterialTable from 'material-table';
-import gql from 'graphql-tag';
 import {tableIcons} from '../utils/react';
-import {features} from '../../features';
-import {NotificationManager} from 'react-notifications';
-
-const MODEL_TESTER_JOBS = gql`
-    subscription model_tester_jobs {
-        jobs(process_id: "model_tester") {
-            id
-            status
-        }
-    }
-`;
+import {PUBLIC_BENCHMARKS} from "../domain/graphql_queries";
+import {graphql} from "react-apollo";
 
 const Grid = withStyles({
     root: {
@@ -30,72 +20,15 @@ const Grid = withStyles({
     </div>
 ));
 
-export class Benchmarks extends Component {
-
-    state = {
-        benchmarks_jobs: []
-    };
+class BenchmarksComponent extends Component {
 
     static propTypes = {
-        client: PropTypes.object.isRequired
-    };
-
-    constructor(props) {
-        super(props);
-        if (features.subscriptions) {
-            this.subscribe_jobs();
-        } else {
-            this.query_jobs();
-        }
-    }
-
-    subscribe_jobs = async () => {
-        const {client} = this.props;
-        const observable = client.subscribe({
-            query: MODEL_TESTER_JOBS,
-        });
-        observable.subscribe(data => console.log(data));
-    };
-
-    query_jobs = async () => {
-        const {client} = this.props;
-        let result;
-        try {
-            result = await client.query({
-                query: gql`
-                    query fetch_jobs {
-                        public_benchmarks {
-                            owner
-                            model {
-                                id
-                                created
-                            }
-                            result {
-                                metrics {
-                                    top_1_accuracy
-                                    top_5_accuracy
-                                }
-                            }
-                            dataset {
-                                id
-                            }
-                            job {
-                                finished
-                            }
-                        }
-                    }
-                `,
-                fetchPolicy: 'no-cache'
-            });
-        } catch (e) {
-            NotificationManager.error('We were unable to fetch the model testing jobs.');
-            throw e;
-        }
-        const {data} = result;
-        this.setState({benchmarks_jobs: data.public_benchmarks});
+        data: PropTypes.object.isRequired,
     };
 
     render() {
+        const {data: {public_benchmarks}} = this.props;
+
         return (
             <Grid>
                 <MaterialTable
@@ -110,9 +43,11 @@ export class Benchmarks extends Component {
                         {title: 'Top 1 accuracy', field: 'result.metrics.top_1_accuracy'},
                         {title: 'Top 5 accuracy', field: 'result.metrics.top_5_accuracy'},
                     ]}
-                    data={this.state.benchmarks_jobs}
+                    data={public_benchmarks}
                 />
             </Grid>
         );
     }
 }
+
+export const Benchmarks = graphql(PUBLIC_BENCHMARKS)(BenchmarksComponent);

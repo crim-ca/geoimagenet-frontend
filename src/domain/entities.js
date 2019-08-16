@@ -1,23 +1,37 @@
+// @flow strict
+
 /**
  * This is the basic unit of annotation for machine learning: the class.
  * An class represents a thing that we want our model to recognize at some point.
  * We have properties stored in distant storage, as well as some other ones that represent the state of said taxonomy class within our application.
  */
 export class TaxonomyClass {
+
+    id: number;
+    name_fr: string;
+    name_en: string;
+    taxonomy_id: number;
+    parent_id: number | null;
+    children: TaxonomyClass[];
+    visible: boolean;
+    opened: boolean;
+    counts: Counts;
+
     /**
      * We only need four params from the api to make sure we have a class that will behave correctly in the application.
      * All others can be added after instantiation if they happen to exist.
-     * @param {Number} id
-     * @param {String} name_fr
-     * @param {String} name_en
-     * @param {Number} taxonomy_id
-     * @param {Number|null} [parent_id=null]
-     * @param {TaxonomyClass[]} [children=[]]
-     * @param {boolean} [visible=false]
-     * @param {boolean} [opened=false]
-     * @param {Object} [counts={}]
      */
-    constructor(id, name_fr, name_en, taxonomy_id, parent_id = null, children = [], visible = false, opened = false, counts = {}) {
+    constructor(
+        id: number,
+        name_fr: string,
+        name_en: string,
+        taxonomy_id: number,
+        parent_id: number | null = null,
+        children: TaxonomyClass[] = [],
+        visible: boolean = false,
+        opened: boolean = false,
+        counts: Counts = {}
+    ) {
         /**
          *
          * @type {Number}
@@ -74,32 +88,17 @@ export class AnnotationCounts {
  * A taxonomy is an ensemble of TaxonomyClass that represents a specific field or subset of a field.
  */
 export class Taxonomy {
-    /**
-     * @param {String} name_fr
-     * @param {String} name_en
-     * @param {String} slug a unique identifier for the taxonomy
-     * @param {TaxonomyVersion[]} versions
-     */
-    constructor(name_fr, name_en, slug, versions) {
-        /**
-         *
-         * @type {String}
-         */
-        this.name_fr = name;
-        /**
-         *
-         * @type {String}
-         */
-        this.name_en = name;
-        /**
-         *
-         * @type {String}
-         */
+
+    name_fr: string;
+    name_en: string;
+    slug: string;
+    versions: TaxonomyVersion[];
+
+    constructor(name_fr: string, name_en: string, slug: string, versions: TaxonomyVersion[]) {
+
+        this.name_fr = name_fr;
+        this.name_en = name_en;
         this.slug = slug;
-        /**
-         *
-         * @type {TaxonomyVersion[]}
-         */
         this.versions = versions;
     }
 }
@@ -108,27 +107,15 @@ export class Taxonomy {
  * Taxonomies evolve in time; a taxonomy version groups all classes that correspond to a taxonomy at a point in time.
  */
 export class TaxonomyVersion {
-    /**
-     *
-     * @param {Number} taxonomy_id
-     * @param {Number} root_taxonomy_class_id the topmost class of this version
-     * @param {String} version
-     */
-    constructor(taxonomy_id, root_taxonomy_class_id, version) {
-        /**
-         *
-         * @type {Number}
-         */
+
+    taxonomy_id: number;
+    root_taxonomy_class_id: number;
+    version: string;
+
+    constructor(taxonomy_id: number, root_taxonomy_class_id: number, version: string) {
+
         this.taxonomy_id = taxonomy_id;
-        /**
-         *
-         * @type {Number}
-         */
         this.root_taxonomy_class_id = root_taxonomy_class_id;
-        /**
-         *
-         * @type {String}
-         */
         this.version = version;
     }
 }
@@ -138,6 +125,17 @@ export class InvalidPermissions extends Error {
 
 export class ProbablyInvalidPermissions extends Error {
 }
+
+type MagpieResource = {
+    children: Object<number, MagpieResource>,
+    parent_id: number,
+    permission_names: string[],
+    resource_display_name: string,
+    resource_id: number,
+    resource_name: string,
+    resource_type: string,
+    root_service_id: number,
+};
 
 /**
  * Group permissions for a given magpie resource.
@@ -150,9 +148,9 @@ export class ResourcePermissionRepository {
     permissions = {};
 
     /**
-     * @param {Object} [resources=null] Expects the value of the resources property of the /users/current/services/{service}/resources Magpie route.
+     * Expects the value of the resources property of the /users/current/services/{service}/resources Magpie route.
      */
-    constructor(resources = null) {
+    constructor(resources: Object<number, MagpieResource> = null) {
         if (resources !== null) {
             if (Object.getOwnPropertyNames(resources).length === 0) {
                 throw new ProbablyInvalidPermissions('No permissions are defined in the resources for the frontend service. ' +
@@ -176,36 +174,22 @@ export class ResourcePermissionRepository {
  */
 export class Permission {
 
-    /**
-     * @type {Permission[]}
-     */
-    children = [];
+    resource_id: number;
+    resource_name: string;
+    resource_display_name: string;
+    permission_names: string[];
+    parent_id: number;
+    root_service_id: number;
+    resource_type: string;
+    children: Permission[] = [];
 
-    constructor(resource) {
+    constructor(resource: MagpieResource) {
 
-        /**
-         * @type {Number}
-         */
         this.resource_id = resource.resource_id;
-        /**
-         * @type {String}
-         */
         this.resource_name = resource.resource_name;
-        /**
-         * @type {String}
-         */
         this.resource_display_name = resource.resource_display_name;
-        /**
-         * @type {String[]}
-         */
         this.permission_names = resource.permission_names;
-        /**
-         * @type {Number}
-         */
         this.parent_id = resource.parent_id;
-        /**
-         * @type {Number}
-         */
         this.root_service_id = resource.root_service_id;
 
         if (resource.children && Object.getOwnPropertyNames(resource.children).length > 0) {
@@ -214,9 +198,6 @@ export class Permission {
                 this.children.push(new Permission(children));
             });
         }
-        /**
-         * @type {String}
-         */
         this.resource_type = resource.resource_type;
     }
 }
@@ -225,24 +206,13 @@ export class Permission {
  * User entity.
  */
 export class User {
-    /**
-     *
-     * @param {String} user_name
-     * @param {String} email
-     * @param {String[]} group_names
-     */
-    constructor(user_name, email, group_names) {
-        /**
-         * @type {String}
-         */
+    user_name: string;
+    email: string;
+    group_names: string[];
+
+    constructor(user_name: string, email: string, group_names: string[]) {
         this.user_name = user_name;
-        /**
-         * @type {String}
-         */
         this.email = email;
-        /**
-         * @type {String[]}
-         */
         this.group_names = group_names;
     }
 }
@@ -254,27 +224,18 @@ export class User {
 export class AnnotationStatus {
     /**
      * The status text, as seen from the api.
-     * @type {String}
      */
-    text;
+    text: string;
     /**
      * A human readable more beautiful text for the anotation status.
-     * @type {String}
      */
-    title;
+    title: string;
     /**
      * Wether this annotation status should be active all across the platfrom.
-     * @type {Boolean}
      */
-    activated;
+    activated: boolean;
 
-    /**
-     *
-     * @param {String} text
-     * @param {Boolean} [activated=false]
-     * @param {String} [title='']
-     */
-    constructor(text, activated=false, title = '') {
+    constructor(text: string, activated: boolean = false, title: string = '') {
         this.text = text;
         this.activated = activated;
         this.title = title;

@@ -71,6 +71,7 @@ ignore_regexps = [
     r'[Cc]hangelog for',
     r'^\d\.\d\.\d$',
     r'^[Bb]ump\.?$',
+    r'^[Vv]ersion \d\.\d\.\d$',
 ]
 
 

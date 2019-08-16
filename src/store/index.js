@@ -1,14 +1,14 @@
+// @flow strict
+
 import {observable, configure} from 'mobx';
 import {GeoImageNetStore} from './GeoImageNetStore.js';
 
 /**
  * We want to be able to either create a state proxy without parameters, for usage in the real time application,
  * or pass a custom GeoImageNetStore to the observable, when testing.
- * @param {GeoImageNetStore} [store_schematics=null]
- * @returns {GeoImageNetStore}
  */
 
-export const create_state_proxy = (store_schematics = null) => {
+export const create_state_proxy = (store_schematics: GeoImageNetStore | null = null) => {
 
     if (store_schematics === null) {
         return observable.object(new GeoImageNetStore());

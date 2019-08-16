@@ -1,3 +1,5 @@
+// @flow
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Sentry from '@sentry/browser';
@@ -6,7 +8,6 @@ import {CssBaseline, MuiThemeProvider} from '@material-ui/core';
 import {DataQueries} from './domain/data-queries.js';
 import {create_state_proxy, StoreActions} from './store';
 import {UserInteractions} from './domain/user-interactions.js';
-import {element, get_by_id} from './utils/dom.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
 import {Models} from './components/Models';
 import {theme} from './utils/react.js';
@@ -16,24 +17,30 @@ import {create_client} from './utils/apollo';
 import {ApolloProvider} from 'react-apollo';
 
 import './css/base.css';
-import './css/notifications.css';
+import 'react-notifications/lib/notifications.css';
 import './img/icons/favicon.ico';
+
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
 });
 
-addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', async () => {
 
     const state_proxy = create_state_proxy();
     const store_actions = new StoreActions(state_proxy);
-    const data_queries = new DataQueries(GEOIMAGENET_API_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
-    const user_interactions = new UserInteractions(store_actions, data_queries, i18n);
+    const data_queries = new DataQueries(GEOIMAGENET_API_URL, GEOSERVER_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
+    const user_interactions = new UserInteractions(store_actions, data_queries, i18n, state_proxy);
     const apollo_client = create_client(GRAPHQL_ENDPOINT);
 
-    const div = element('div');
+    const div = document.createElement('div');
     div.id = 'root';
     div.classList.add('root');
+
+    if (!document.body) {
+        return new Error("There doesn't seem to be an html document with which to work here. This is weird, and we can't show you anything.");
+    }
+
     document.body.appendChild(div);
 
     ReactDOM.render(
@@ -41,12 +48,12 @@ addEventListener('DOMContentLoaded', async () => {
             <CssBaseline />
             <ApolloProvider client={apollo_client}>
                 <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}>
-                    <Models client={apollo_client} model_upload_instructions_url={THELPER_MODEL_UPLOAD_INSTRUCTIONS} />
+                    <Models model_upload_instructions_url={THELPER_MODEL_UPLOAD_INSTRUCTIONS} />
                 </LoggedLayout>
             </ApolloProvider>
 
         </MuiThemeProvider>,
-        get_by_id('root')
+        div
     );
 
     await user_interactions.refresh_user_resources_permissions();

@@ -55,8 +55,8 @@ class Menu extends Component {
     menus = [
         {title: 'Home', href: '/'},
         {title: 'Platform', href: '/platform'},
-        {title: 'Dataset', href: '/datasets'},
-        {title: 'Model', href: '/models'},
+        {title: 'Datasets', href: '/datasets'},
+        {title: 'Models', href: '/models'},
         {title: 'Benchmarks', href: '/benchmarks'},
         //{title: 'Help', href: '/help'},
         {title: 'Contact', href: `mailto:${this.props.contact_email}`},
