@@ -11,11 +11,11 @@ import {captureException} from "@sentry/browser";
 import {DataQueries} from "./data-queries";
 
 import i18n from 'i18next';
-import {Event} from "ol/events";
-import {GeoJSON} from "ol/format";
+import {typeof Event} from "ol/events";
+import {typeof GeoJSON} from "ol/format";
 import {StoreActions} from "../store";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
-import {Feature} from "ol";
+import {typeof Feature} from "ol";
 import {Taxonomy, TaxonomyClass} from "./entities";
 import type {TaxonomyClassesDataFromAPI} from "../Types";
 
