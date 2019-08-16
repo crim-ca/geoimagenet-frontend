@@ -10,7 +10,7 @@ import {Platform} from './components/Platform.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
 import {i18n} from './utils';
 
-import {DialogContainer} from './utils/Dialogs';
+import {DialogContainer} from './components/Dialogs';
 
 import './css/base.css';
 import './css/style_platform.css';

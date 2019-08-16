@@ -1,6 +1,6 @@
 // @flow strict
 
-import {DialogManager} from '../utils/Dialogs';
+import {DialogManager} from '../components/Dialogs';
 import {action} from 'mobx';
 import {InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionRepository, User} from './entities.js';
 import {AccessControlList} from './access-control-list.js';
