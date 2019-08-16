@@ -337,7 +337,7 @@ export class MapManager {
                         font: '36px Calibri, sans-serif',
                         fill: new Fill({color: '#000'}),
                         stroke: new Stroke({color: '#FFF', width: 2}),
-                        text: '?',
+                        text: resolution > 100 ? '' : '?',
                         overflow: true,
                         offsetY: show_labels ? 36 : 0,
                     }),
