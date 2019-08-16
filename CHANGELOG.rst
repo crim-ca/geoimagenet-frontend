@@ -2,6 +2,87 @@ Changelog
 =========
 
 
+1.4.0 (2019-08-16)
+------------------
+
+New
+~~~
+- GIL-229 - adding flowjs to refactor dom wrapping. [Félix Gagnon-
+  Grenier]
+
+Changes
+~~~~~~~
+- GEOIM-230 - refactoring notifier in material-ui standalone component.
+  [Félix Gagnon-Grenier]
+
+Fix
+~~~
+- Correct label for annotations. [Félix Gagnon-Grenier]
+- GEOIM-72 - deleting an annotation should diminish the count by one.
+  [Félix Gagnon-Grenier]
+- Bring notifications styling back. [Félix Gagnon-Grenier]
+- Prevent eternal loading in case of error while fetching taxonomies.
+  [Félix Gagnon-Grenier]
+
+Other
+~~~~~
+- GEOIM-79 - only show expertise request after certain resolution.
+  [Félix Gagnon-Grenier]
+- GEOIM-79 - simply add flag for review instead of refreshing the
+  source. [Félix Gagnon-Grenier]
+- Moving Dialogs in components. [Félix Gagnon-Grenier]
+- Flow annotations. [Félix Gagnon-Grenier]
+- GEOIM-79 - moving map interactions into their own class. [Félix
+  Gagnon-Grenier]
+- GEOIM-79 - adding styles to features to show a question mark. [Félix
+  Gagnon-Grenier]
+- GEOIM-235 - moving map components closer together. [Félix Gagnon-
+  Grenier]
+- GEOIM-79 - refactoring event handlers towards user interactions and
+  flow annotations. [Félix Gagnon-Grenier]
+- GEOIM-79 - use correct POST route for review request. [Félix Gagnon-
+  Grenier]
+- GEOIM-111 - fix hiding layers when deselecting them. [Félix Gagnon-
+  Grenier]
+- GEOIM-111 - moving annotation from new to deleted layer on deletion
+  and tests. [Félix Gagnon-Grenier]
+- GEOIM-111 - grouping map click handling by function. [Félix Gagnon-
+  Grenier]
+- GEOIM-111 - activating all layers up front. [Félix Gagnon-Grenier]
+- GEOIM-111 - take taxonomy fetching out of selector for better testing.
+  [Félix Gagnon-Grenier]
+- GEOIM-211 - adding colors for all status chips. [Félix Gagnon-Grenier]
+- GEOIM-111 - refactor taxonomy to test annotation counts. [Félix
+  Gagnon-Grenier]
+- GEOIM-197 - removing padding on sidebar paper. [Félix Gagnon-Grenier]
+- GEOIM-240 - adding test to validate an error message. [Félix Gagnon-
+  Grenier]
+- GEOIM-175 - fixing status_message fields. [Félix Gagnon-Grenier]
+- GEOIM-175 - corrected status_location to status_message for job log.
+  [Félix Gagnon-Grenier]
+- GEOIM-175 - some padding to plan for verbose error messages. [Félix
+  Gagnon-Grenier]
+- GEOIM-189 - wrapping graphql link to notify of errors. [Félix Gagnon-
+  Grenier]
+- GEOIM-34 - testing file upload. [Félix Gagnon-Grenier]
+- GEOIM-34 - basic models page testing. [Félix Gagnon-Grenier]
+- GEOIM-155 - working towards updating cache after mutation. [Félix
+  Gagnon-Grenier]
+- GEOIM-155 - polling when there are pending jobs in data. [Félix
+  Gagnon-Grenier]
+- GEOIM-34 - flow annotations. [Félix Gagnon-Grenier]
+- GEOIM-72 - writing mobx action for annotion count decrement. [Félix
+  Gagnon-Grenier]
+- More documentation for dialog. [Félix Gagnon-Grenier]
+- Improving dialogs flow acceptance with improved tests. [Félix Gagnon-
+  Grenier]
+- GEOIM-237 - flowjs in esdoc integration. [Félix Gagnon-Grenier]
+- GEOIM-236 - types. [Félix Gagnon-Grenier]
+- GEOIM-233 - component rendering test. [Félix Gagnon-Grenier]
+- Refactor: using higher order components for graphql. [Félix Gagnon-
+  Grenier]
+
+
 1.3.3 (2019-07-15)
 ------------------
 
@@ -12,6 +93,9 @@ Fix
 
 Other
 ~~~~~
+- Forgot unnecessary path navigation after moving files around. [Félix
+  Gagnon-Grenier]
+- Bumped version to 1.3.3 + changelog. [Félix Gagnon-Grenier]
 - Test: GEOIM-221 - test for various filetypes. [Félix Gagnon-Grenier]
 - Merge branch 'release-1.3.2' into develop. [Félix Gagnon-Grenier]
 
