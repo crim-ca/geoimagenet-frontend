@@ -169,10 +169,12 @@ export class UserInteractions {
 
     };
 
-    ask_expertise_for_features = async (feature_ids: number[]) => {
+    ask_expertise_for_features = async (feature_ids: number[], features: Feature[]) => {
         try {
             await this.data_queries.review_request(feature_ids, true);
-            this.refresh_all_sources();
+            features.forEach(feature => {
+                feature.set('review_requested', true);
+            });
             NotificationManager.success('Features were marked for expertise.');
         } catch (error) {
             captureException(error);

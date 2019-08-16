@@ -439,7 +439,7 @@ export class MapManager {
                 if (!(features.length > 0)) {
                     return;
                 }
-                return this.user_interactions.ask_expertise_for_features(feature_ids);
+                return this.user_interactions.ask_expertise_for_features(feature_ids, features);
         }
     };
 
