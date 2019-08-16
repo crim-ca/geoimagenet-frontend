@@ -17,6 +17,8 @@ Changes
 
 Fix
 ~~~
+- GEOIM-257 - fix the tests not to import the actual op files. [Félix
+  Gagnon-Grenier]
 - Correct label for annotations. [Félix Gagnon-Grenier]
 - GEOIM-72 - deleting an annotation should diminish the count by one.
   [Félix Gagnon-Grenier]

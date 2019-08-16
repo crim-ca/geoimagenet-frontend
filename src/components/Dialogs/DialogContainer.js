@@ -12,15 +12,19 @@ type State = {
     handle_refuse: () => Promise<void>,
 };
 
-const default_handle_accept = () => { throw new Error('The default handle resolve was called, this means the dialog container was probably not correctly instantiated.'); };
-const default_handle_refuse = () => { throw new Error('The default handle reject was called, this means the dialog container was probably not correctly instantiated.'); };
+const default_handle_accept = () => {
+    throw new Error('The default handle resolve was called, this means the dialog container was probably not correctly instantiated.');
+};
+const default_handle_refuse = () => {
+    throw new Error('The default handle reject was called, this means the dialog container was probably not correctly instantiated.');
+};
 
-const default_state = {
-        open: false,
-        text: '',
-        handle_accept: default_handle_accept,
-        handle_refuse: default_handle_refuse,
-    };
+export const default_state = {
+    open: false,
+    text: '',
+    handle_accept: default_handle_accept,
+    handle_refuse: default_handle_refuse,
+};
 
 /**
  * There should be a single <DialogContainer /> in the app. Processes that want to obtain confirmation must import the DialogManager

@@ -1,19 +1,13 @@
 const React = require('react');
 const {shallow, configure} = require('enzyme');
-const {DialogManager} = require('./DialogManager');
-const {DialogContainer} = require('./DialogContainer');
-const {PromisifiedDialog} = require('./PromisifiedDialog');
+const {DialogManager} = require('../components/Dialogs/DialogManager');
+const {DialogContainer} = require('../components/Dialogs/DialogContainer');
+const {PromisifiedDialog} = require('../components/Dialogs/PromisifiedDialog');
 const {Dialog, DialogActions, Button} = require('@material-ui/core');
 const Adapter = require('enzyme-adapter-react-16');
+const {default_state} = require('../components/Dialogs/DialogContainer');
 
 configure({adapter: new Adapter()});
-
-const base_state = {
-    open: false,
-    text: '',
-    handle_accept: null,
-    handle_refuse: null,
-};
 
 describe('We should be able to instantiate the container and use it to display dialogs.', () => {
 
@@ -23,12 +17,7 @@ describe('We should be able to instantiate the container and use it to display d
 
         const wrapper = shallow(<DialogContainer />);
         expect(DialogManager.dialog_creation_callback).not.toBe(null);
-        expect(wrapper.state()).toEqual({
-            open: false,
-            text: '',
-            handle_accept: null,
-            handle_refuse: null,
-        });
+        expect(wrapper.state()).toEqual(default_state);
 
         /**
          * The dialog creation callback should be reset when the container is removed from the dom
@@ -74,14 +63,14 @@ describe('We should be able to instantiate the container and use it to display d
         buttons.first().simulate('click');
         expect(promise).resolves.toBe('test accept');
 
-        expect(wrapper.state()).toEqual(base_state);
+        expect(wrapper.state()).toEqual(default_state);
 
         promise = DialogManager.confirm('test reject');
         buttons = wrapper.find(PromisifiedDialog).dive().find(Dialog).dive().find(DialogActions).dive().find(Button);
         buttons.last().simulate('click');
         expect(promise).rejects.toBe('test reject');
 
-        expect(wrapper.state()).toEqual(base_state);
+        expect(wrapper.state()).toEqual(default_state);
 
         wrapper.unmount();
     });

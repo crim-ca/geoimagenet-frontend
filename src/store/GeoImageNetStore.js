@@ -4,9 +4,9 @@ import {AccessControlList} from '../domain/access-control-list.js';
 import {AnnotationStatus, ResourcePermissionRepository} from '../domain/entities.js';
 import {observable} from 'mobx';
 import {Taxonomy, User} from "../domain/entities";
-import VectorLayer from "ol/layer/Vector.js";
-import VectorSource from "ol/source/Vector";
-import {Collection} from "ol";
+import typeof VectorLayer from "ol/layer/Vector.js";
+import typeof VectorSource from "ol/source/Vector";
+import {typeof Collection} from "ol";
 
 /**
  * The application state must, at each given time, fully represent what a user is seeing.

@@ -16,11 +16,11 @@ configure({adapter: new Adapter()});
 
 describe('We should render results from a data structure', () => {
     test('a component renders', () => {
-        shallow(<Benchmarks />);
+        shallow(<ApolloProvider client={client}><Benchmarks /></ApolloProvider>);
         expect(true).toBe(true);
     });
     test('data from graphql query renders in a table', async () => {
-        const component = render(<Benchmarks />);
+        const component = render(<ApolloProvider client={client}><Benchmarks /></ApolloProvider>);
         expect(component.find('.MuiTableRow-root')).toHaveLength(3); // two rows plus a header
     });
 });

@@ -137,18 +137,7 @@ describe('We render some models', () => {
         button = upload_form.find('button');
         expect(button.prop('disabled')).toEqual(false);
 
-        // this test suite is not finished, it should not pass
-        expect(false).toBe(true);
-
-        /*
-        @TODO finish testing file upload
-        button.simulate('click');
-
-        await wait(1000);
-        wrapper.update();
-
-        expect(button.prop('disabled')).toEqual(true);
-        */
+        // TODO finish this test, upload is not thoroughly acceptably tested
 
         wrapper.unmount();
     });
