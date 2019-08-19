@@ -9,3 +9,5 @@ export type TaxonomyClassFromAPI = {
     taxonomy_id: number,
 };
 export type TaxonomyClassesDataFromAPI = TaxonomyClassFromAPI[];
+
+export type AnnotationStatus = 'new' | 'pre_released' | 'released' | 'validated' | 'rejected' | 'deleted';

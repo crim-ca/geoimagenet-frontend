@@ -6,6 +6,7 @@ import Map from 'ol/Map';
 import {Control} from 'ol/control';
 import {unByKey} from 'ol/Observable';
 import {Feature} from "ol";
+import type {AnnotationStatus} from './Types';
 
 /**
  * Somewhat dirty hack to know if the device supports touch events, but probably reliable. Might leak the touch event, but
@@ -21,6 +22,8 @@ function isTouchDevice() {
     }
 }
 
+type ToggleLayerCallback = AnnotationStatus => void;
+
 /**
  * Taken from https://github.com/walkermatt/ol-layerswitcher and modified as we don't need some of the things it initially does,
  * such as the OL control behaviour, hidden aspect, and to be able to actually integrate it to the platform.
@@ -30,12 +33,12 @@ function isTouchDevice() {
  */
 class LayerSwitcher extends Control {
 
-    toggle_layer_callback: (string) => void;
+    toggle_layer_callback: ToggleLayerCallback;
     mapListeners: (() => void)[];
     class_name: string;
     panel: HTMLElement;
 
-    constructor(opt_options: {target: string | HTMLElement}, toggle_layer_callback: string => void) {
+    constructor(opt_options: { target: string | HTMLElement }, toggle_layer_callback: ToggleLayerCallback) {
 
         const options = opt_options || {};
         const {target} = options;
@@ -148,8 +151,8 @@ class LayerSwitcher extends Control {
 
         const li = document.createElement('li');
 
-        const lyrTitle = layer.get('title');
-        const lyrId = this.uuid();
+        const layer_title = layer.get('title');
+        const layer_id = this.uuid();
 
         const label = document.createElement('label');
 
@@ -160,7 +163,7 @@ class LayerSwitcher extends Control {
         if (layer.getLayers && !layer.get('combine')) {
 
             li.className = 'group';
-            label.innerHTML = lyrTitle;
+            label.innerHTML = layer_title;
             li.appendChild(label);
             const ul = document.createElement('ul');
             li.appendChild(ul);
@@ -177,16 +180,18 @@ class LayerSwitcher extends Control {
             } else {
                 input.type = 'checkbox';
             }
-            input.id = lyrId;
+            input.id = layer_id;
             input.checked = layer.get('visible');
             input.onchange = (e) => {
                 this_.setVisible_(layer, e.target.checked);
-                this.toggle_layer_callback(layer.get('title'));
+                if (layer.type === 'VECTOR') {
+                    this.toggle_layer_callback(layer.get('title'));
+                }
             };
             li.appendChild(input);
 
-            label.htmlFor = lyrId;
-            label.innerHTML = lyrTitle;
+            label.htmlFor = layer_id;
+            label.innerHTML = layer_title;
 
             const rsl = this.getMap().getView().getResolution();
             if (rsl > layer.getMaxResolution() || rsl < layer.getMinResolution()) {

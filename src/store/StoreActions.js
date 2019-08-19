@@ -9,7 +9,7 @@ import {typeof Collection} from "ol";
 import {typeof Source} from "ol/source";
 import {typeof Vector} from "ol/layer";
 import {GeoImageNetStore} from "./GeoImageNetStore";
-import type {TaxonomyClassFromAPI} from "../Types";
+import type {TaxonomyClassFromAPI, AnnotationStatus} from "../Types";
 
 /**
  * The store actions are lower level action handlers, in the sense that they are not directly related to a user's actions,
@@ -46,7 +46,7 @@ export class StoreActions {
      * When user adds an annotation status to the visibility pool, we need to update the store.
      */
     @action.bound
-    toggle_annotation_status_visibility(annotation_status_text: string, override_activated: boolean|null = null) {
+    toggle_annotation_status_visibility(annotation_status_text: AnnotationStatus, override_activated: boolean|null = null) {
         const annotation_status_instance = this.state_proxy.annotation_status_list[annotation_status_text];
         if (override_activated !== null) {
             annotation_status_instance.activated = override_activated;
@@ -79,7 +79,7 @@ export class StoreActions {
 
     /**
      * Invert the opened property for specific taxonomy class id
-     * @param {boolean|null} opened we should allow to override the toggling to force open or closed
+     * the opened param should allow to override the toggling to force open or closed
      */
     @action.bound
     toggle_taxonomy_class_tree_element(taxonomy_class_id: number, opened: boolean | null = null) {
