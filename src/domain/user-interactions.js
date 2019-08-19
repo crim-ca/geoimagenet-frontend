@@ -11,6 +11,7 @@ import {captureException} from "@sentry/browser";
 import {DataQueries} from "./data-queries";
 
 import i18n from 'i18next';
+import {typeof Map} from "ol/Map";
 import {typeof Event} from "ol/events";
 import {typeof GeoJSON} from "ol/format";
 import {StoreActions} from "../store";
@@ -32,6 +33,10 @@ export class UserInteractions {
     data_queries: DataQueries;
     i18next_instance: i18n;
     state_proxy: GeoImageNetStore;
+    /**
+     * @TODO move the original coordinates in the store, possibly a store specific to open layers
+     */
+    original_coordinates: {} = {};
 
     /**
      *
@@ -150,23 +155,56 @@ export class UserInteractions {
         this.store_actions.end_annotation();
     };
 
-    create_modifyend_handler = (format_geojson: GeoJSON) => async (event: Event) => {
+    /**
+     * here we validate that a feature is completely over the same image
+     * for every point in the geometry
+     *   for every layer under the point
+     *     reject the modification if the layer does not correspond to either image name of the image id
+     */
+    feature_respects_its_original_image = (feature: Feature) => {
+        /**
+         * @TODO implement the check with values from api
+         */
+        return true;
+    };
 
-        const modifiedFeatures = [];
+    modifystart_handler = (event: Event) => {
+        event.features.forEach(feature => {
+            this.original_coordinates[feature.getId()] = feature.getGeometry().getCoordinates();
+        });
+    };
+
+    /**
+     * Create an event handler that OL will call when a modification is done
+     *
+     * the handler, when called, should verify that the geometry is over the same image as it was before.
+     */
+    create_modifyend_handler = (format_geojson: GeoJSON, map: Map) => async (event: Event) => {
+        const modified_features = [];
         event.features.forEach((feature) => {
             if (feature.revision_ >= 1) {
-                modifiedFeatures.push(feature);
+                modified_features.push(feature);
                 feature.revision_ = 0;
             }
         });
-        const payload = format_geojson.writeFeatures(modifiedFeatures);
 
-        try {
-            await this.data_queries.modify_geojson_features(payload);
-        } catch (error) {
-            NotificationManager.error(error.message);
+        modified_features.forEach((feature: Feature, index: number) => {
+            if (!this.feature_respects_its_original_image(feature)) {
+                // feature is not ok, reset it and remove it from the modified features
+                feature.getGeometry().setCoordinates(this.original_coordinates[feature.getId()]);
+                modified_features.splice(index, 1);
+            }
+
+        });
+
+        if (modified_features.length > 0) {
+            const payload = format_geojson.writeFeatures(modified_features);
+            try {
+                await this.data_queries.modify_geojson_features(payload);
+            } catch (error) {
+                NotificationManager.error(error.message);
+            }
         }
-
     };
 
     ask_expertise_for_features = async (feature_ids: number[], features: Feature[]) => {

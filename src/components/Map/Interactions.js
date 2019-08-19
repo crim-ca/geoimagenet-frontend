@@ -60,6 +60,7 @@ export class Interactions {
         });
 
         this.draw.on('drawend', this.user_interactions.create_drawend_handler(this.geojson_format, this.annotation_layer, this.annotation_namespace));
+        this.modify.on('modifystart', this.user_interactions.modifystart_handler);
         this.modify.on('modifyend', this.user_interactions.create_modifyend_handler(this.geojson_format));
 
         autorun(() => {
