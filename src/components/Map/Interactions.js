@@ -5,7 +5,7 @@
 
 import {autorun} from "mobx";
 import {ANNOTATION, CUSTOM_GEOIM_IMAGE_LAYER, MODE} from "../../domain/constants";
-import {Draw, Modify} from "ol/interaction";
+import {Draw, Modify, Select} from "ol/interaction";
 import {NotificationManager} from "react-notifications";
 
 import Map from 'ol/Map.js';
@@ -13,6 +13,7 @@ import GeoJSON from "ol/format/GeoJSON.js";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from "../../domain";
 import typeof Event from 'ol/events/Event.js';
+import {create_style_function} from "./utils";
 
 export class Interactions {
 
@@ -24,6 +25,7 @@ export class Interactions {
     annotation_namespace: string;
     draw: Draw;
     modify: Modify;
+    select: Select;
 
     constructor(
         map: Map,
@@ -40,18 +42,26 @@ export class Interactions {
         this.annotation_layer = annotation_layer;
         this.annotation_namespace = annotation_namespace;
 
+        const layers = Object.keys(this.state_proxy.annotations_layers).map(key => {
+            return this.state_proxy.annotations_layers[key];
+        });
+        /**
+         * We can select layers from any and all layers, so we activate it on all layers by default.
+         */
+        this.select = new Select({
+            layers: layers,
+            style: create_style_function('white', this.state_proxy, true),
+        });
+        this.map.addInteraction(this.select);
+
         /**
          * Map interaction to modify existing annotations. To be disabled when zoomed out too far.
-         * @private
-         * @type {Modify}
          */
         this.modify = new Modify({
             features: this.state_proxy.annotations_collections[ANNOTATION.STATUS.NEW],
         });
         /**
          * Map interaction to create new annotations. To be disabled when zoomed out too far.
-         * @private
-         * @type {Draw}
          */
         this.draw = new Draw({
             source: this.state_proxy.annotations_sources[ANNOTATION.STATUS.NEW],

@@ -44,6 +44,7 @@ import {LayerSwitcher} from "../../LayerSwitcher";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {make_http_request} from "../../utils/http";
 import {UserInteractions} from "../../domain";
+import {create_style_function} from "./utils";
 
 async function geoserver_capabilities(url) {
     let parser = new WMSCapabilities();
@@ -299,57 +300,10 @@ export class MapManager {
      * Convenience factory function to create layers.
      */
     create_vector_layer(title: string, source: VectorSource, color: string, visible: boolean = true, zIndex: number = 99999999) {
-
-        const style_function = (feature, resolution) => {
-            const {show_labels} = this.state_proxy;
-            const label = feature.get('name');
-            const styles = [
-                new Style({
-                    fill: new Fill({
-                        color: 'rgba(255, 255, 255, 0.25)',
-                    }),
-                    stroke: new Stroke({
-                        color: color,
-                        width: 2
-                    }),
-                    image: new Circle({
-                        radius: 7,
-                        fill: new Fill({
-                            color: color,
-                        })
-                    }),
-                }),
-            ];
-            if (show_labels) {
-                styles.push(new Style({
-                    text: new Text({
-                        font: '16px Calibri, sans-serif',
-                        fill: new Fill({color: '#000'}),
-                        stroke: new Stroke({color: '#FFF', width: 2}),
-                        text: resolution > 100 ? '' : label,
-                        overflow: true,
-                    }),
-                }));
-            }
-            if (feature.get('review_requested')) {
-                styles.push(new Style({
-                    text: new Text({
-                        font: '36px Calibri, sans-serif',
-                        fill: new Fill({color: '#000'}),
-                        stroke: new Stroke({color: '#FFF', width: 2}),
-                        text: resolution > 100 ? '' : '?',
-                        overflow: true,
-                        offsetY: show_labels ? 36 : 0,
-                    }),
-                }));
-            }
-            return styles;
-        };
-
         return new Vector({
             title: title,
             source: source,
-            style: style_function,
+            style: create_style_function(color, this.state_proxy),
             visible: visible,
             zIndex: zIndex
         });
