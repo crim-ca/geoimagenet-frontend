@@ -182,6 +182,10 @@ export class UserInteractions {
         }
     };
 
+    start_annotation(image_title: string) {
+        this.store_actions.set_current_annotation_image_title(image_title);
+    }
+
     logout = async () => {
         try {
             await this.data_queries.logout_request();

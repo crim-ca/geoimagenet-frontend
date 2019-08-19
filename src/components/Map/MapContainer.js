@@ -56,7 +56,7 @@ class MapContainer extends React.Component<Props> {
             user_interactions
         );
 
-        new Interactions(this.map_manager.map, state_proxy, user_interactions, store_actions, this.map_manager.formatGeoJson, ANNOTATION_LAYER, ANNOTATION_NAMESPACE);
+        new Interactions(this.map_manager.map, state_proxy, user_interactions, this.map_manager.formatGeoJson, ANNOTATION_LAYER, ANNOTATION_NAMESPACE);
     }
 
     render() {

@@ -195,7 +195,7 @@ export class StoreActions {
     }
 
     @action.bound
-    start_annotation(image_title: string) {
+    set_current_annotation_image_title(image_title: string) {
         this.state_proxy.current_annotation.initialized = true;
         this.state_proxy.current_annotation.image_title = image_title;
     }

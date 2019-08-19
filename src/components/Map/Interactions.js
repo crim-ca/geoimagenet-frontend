@@ -12,7 +12,6 @@ import Map from 'ol/Map.js';
 import GeoJSON from "ol/format/GeoJSON.js";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from "../../domain";
-import {StoreActions} from "../../store";
 import typeof Event from 'ol/events/Event.js';
 
 export class Interactions {
@@ -20,7 +19,6 @@ export class Interactions {
     map: Map;
     state_proxy: GeoImageNetStore;
     user_interactions: UserInteractions;
-    store_actions: StoreActions;
     geojson_format: GeoJSON;
     annotation_layer: string;
     annotation_namespace: string;
@@ -31,7 +29,6 @@ export class Interactions {
         map: Map,
         state_proxy:GeoImageNetStore,
         user_interactions: UserInteractions,
-        store_actions: StoreActions,
         geojson_format: GeoJSON,
         annotation_layer: string,
         annotation_namespace: string,
@@ -39,7 +36,6 @@ export class Interactions {
         this.map = map;
         this.state_proxy = state_proxy;
         this.user_interactions = user_interactions;
-        this.store_actions = store_actions;
         this.geojson_format = geojson_format;
         this.annotation_layer = annotation_layer;
         this.annotation_namespace = annotation_namespace;
@@ -135,8 +131,7 @@ export class Interactions {
             return false;
         }
 
-        // TODO move start_annotation in user interactions
-        this.store_actions.start_annotation(first_layer.get('title'));
+        this.user_interactions.start_annotation(first_layer.get('title'));
 
         return true;
     };
