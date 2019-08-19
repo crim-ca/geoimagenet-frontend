@@ -57,7 +57,7 @@ test('accessing flat classes changes nested ones', () => {
     });
 });
 
-describe('Managing annotation counts', () => {
+describe('Annotation counts', () => {
     test('changing annotation counts actually changes annotation counts', () => {
         const store = create_state_proxy();
         const store_actions = new StoreActions(store);
@@ -89,5 +89,22 @@ describe('Managing annotation counts', () => {
             store_actions.change_annotation_status_count(-10, ANNOTATION.STATUS.NEW, 1);
         }).toThrow('Trying to change the counts of a non-existent taxonomy class.');
 
+    });
+});
+
+describe('Annotation visibility toggling.', () => {
+    test('toggle_annotation_status_visibility refuses incorrect input.', () => {
+        const store_actions = new StoreActions(create_state_proxy());
+        expect(() => {
+            store_actions.toggle_annotation_status_visibility('not_a_real_status');
+        }).toThrow('Invalid annotation status: [not_a_real_status]');
+    });
+    test('toggle_annotation_status_visibility toggles existent annotation status visibility', () => {
+        const state_proxy = create_state_proxy();
+        const store_actions = new StoreActions(state_proxy);
+        const status = 'new';
+        expect(state_proxy.annotation_status_list[status].activated).toBe(true);
+        store_actions.toggle_annotation_status_visibility(status);
+        expect(state_proxy.annotation_status_list[status].activated).toBe(false);
     });
 });

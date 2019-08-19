@@ -47,6 +47,9 @@ export class StoreActions {
      */
     @action.bound
     toggle_annotation_status_visibility(annotation_status_text: AnnotationStatus, override_activated: boolean|null = null) {
+        if (!(annotation_status_text in this.state_proxy.annotation_status_list)) {
+            throw new TypeError(`Invalid annotation status: [${annotation_status_text}]`);
+        }
         const annotation_status_instance = this.state_proxy.annotation_status_list[annotation_status_text];
         if (override_activated !== null) {
             annotation_status_instance.activated = override_activated;
