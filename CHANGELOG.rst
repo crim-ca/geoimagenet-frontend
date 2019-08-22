@@ -2,12 +2,20 @@ Changelog
 =========
 
 
+1.4.2 (2019-08-21)
+------------------
+
+Fix
+~~~
+- Fix loading taxonomies on the main page [David Caron]
+
+
 1.4.1 (2019-08-21)
 ------------------
 
 Fix
 ~~~
-- Fix loading taxonomies on the main page [David Caron}
+- Fix loading taxonomies on the main page [David Caron]
 
 
 1.4.0 (2019-08-16)
