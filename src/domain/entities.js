@@ -1,5 +1,7 @@
 // @flow strict
 
+import type {Counts} from '../Types';
+
 /**
  * This is the basic unit of annotation for machine learning: the class.
  * An class represents a thing that we want our model to recognize at some point.
@@ -221,7 +223,7 @@ export class User {
  * While an annotation status is only a string and represents a status (yes), we need the actual state of that status across the platform.
  * This will in turn influence wether or not we see the counts, annotations, and actions (?) related to these annotation statuses.
  */
-export class AnnotationStatus {
+export class AnnotationStatusFilter {
     /**
      * The status text, as seen from the api.
      */

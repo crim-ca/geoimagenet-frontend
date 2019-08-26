@@ -1,12 +1,13 @@
 // @flow strict
 import {ANNOTATION, MODE} from '../domain/constants.js';
 import {AccessControlList} from '../domain/access-control-list.js';
-import {AnnotationStatus, ResourcePermissionRepository} from '../domain/entities.js';
+import {AnnotationStatusFilter, ResourcePermissionRepository} from '../domain/entities.js';
 import {observable} from 'mobx';
 import {Taxonomy, User} from "../domain/entities";
 import typeof VectorLayer from "ol/layer/Vector.js";
 import typeof VectorSource from "ol/source/Vector";
 import {typeof Collection} from "ol";
+import type {AnnotationStatusList} from "../Types";
 
 /**
  * The application state must, at each given time, fully represent what a user is seeing.
@@ -24,15 +25,14 @@ export class GeoImageNetStore {
     /**
      * The visible annotations types should federate every part of the platform that manages annotations, from the counts
      * in the classes hierarchies to the visible annotations on the map, and every future annotations interactions.
-     * @type {Object<String, AnnotationStatus>}
      */
-    annotation_status_list = {
-        [ANNOTATION.STATUS.NEW]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.NEW, true)),
-        [ANNOTATION.STATUS.PRE_RELEASED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.PRE_RELEASED)),
-        [ANNOTATION.STATUS.RELEASED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.RELEASED, true)),
-        [ANNOTATION.STATUS.VALIDATED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.VALIDATED, true)),
-        [ANNOTATION.STATUS.REJECTED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.REJECTED)),
-        [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.DELETED)),
+    annotation_status_list: AnnotationStatusList = {
+        [ANNOTATION.STATUS.NEW]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.NEW, true)),
+        [ANNOTATION.STATUS.PRE_RELEASED]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.PRE_RELEASED)),
+        [ANNOTATION.STATUS.RELEASED]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.RELEASED, true)),
+        [ANNOTATION.STATUS.VALIDATED]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.VALIDATED, true)),
+        [ANNOTATION.STATUS.REJECTED]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.REJECTED)),
+        [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.DELETED)),
     };
 
     /**

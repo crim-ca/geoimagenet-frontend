@@ -63,7 +63,10 @@ class PresentationListElement extends Component<Props> {
                                 button>
                     <StyledLabelAndCountSpan>
                         <TaxonomyClassLabel label={label}/>
-                        <AnnotationCounts name_en={taxonomy_class.name_en} counts={taxonomy_class.counts} state_proxy={state_proxy}/>
+                        <AnnotationCounts
+                            name_en={taxonomy_class.name_en}
+                            counts={taxonomy_class.counts}
+                            annotation_status_list={state_proxy.annotation_status_list}/>
                     </StyledLabelAndCountSpan>
                 </StyledListItem>
                 {children
