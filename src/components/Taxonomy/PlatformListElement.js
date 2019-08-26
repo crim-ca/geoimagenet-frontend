@@ -52,11 +52,11 @@ type Props = {
 };
 
 /**
- * The TaxonomyClassListElement element is an entry in the taxonomy classes list, as well as any children the class might have.
+ * The PlatformListElement element is an entry in the taxonomy classes list, as well as any children the class might have.
  * It should allow for toggling of visibility for its classes, as well as releasing new annotations that are currently pending for that class.
  */
 @observer
-class TaxonomyClassListElement extends Component<Props> {
+class PlatformListElement extends Component<Props> {
 
     /**
      * Create the click handler with the relevant class entity
@@ -121,4 +121,4 @@ class TaxonomyClassListElement extends Component<Props> {
     }
 }
 
-export {TaxonomyClassListElement};
+export {PlatformListElement};

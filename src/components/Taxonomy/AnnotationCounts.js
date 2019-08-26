@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 import React from 'react';
 import {observer} from "mobx-react";
 import {Chip, Tooltip, withStyles} from "@material-ui/core";
