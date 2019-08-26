@@ -2,7 +2,6 @@
 
 import {Feature} from 'ol/Feature';
 import {Circle, Fill, Stroke, Style, Text} from "ol/style";
-import {createEditingStyle} from 'ol/style/Style';
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 
 type StyleFunction = (Feature, number) => Style | Style[];
@@ -40,7 +39,8 @@ function select_style(): Style {
 export function create_style_function(color: string, state_proxy: GeoImageNetStore, create_for_select_interaction: boolean = false): StyleFunction {
     return (feature, resolution) => {
         const {show_labels} = state_proxy;
-        const label = feature.get('name');
+        const taxonomy_class = state_proxy.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
+        const label = taxonomy_class.name_en || taxonomy_class.name_fr;
         const styles = [
             create_for_select_interaction ? select_style() : base_style(color),
         ];
