@@ -8,19 +8,19 @@ import {ANNOTATION} from "../domain/constants";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 
 const React = require('react');
-const {shallow, mount, configure} = require('enzyme');
+const {mount, configure} = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
 const {Viewer} = require('../components/Taxonomy/Viewer');
 const {Selector} = require('../components/Taxonomy/Selector');
 const {Classes} = require('../components/Taxonomy/Classes');
 const {SpacedChip} = require('../components/Taxonomy/AnnotationCounts');
-const {Tree} = require('../components/Taxonomy/Tree');
 const {PresentationListElement} = require('../components/Taxonomy/PresentationListElement');
 const {JSDOM} = require('jsdom');
 const {window} = new JSDOM(`<!doctype html>`);
 const {i18n} = require('../utils');
 const wait = require('waait');
 const {Tab} = require('@material-ui/core');
+const {TaxonomyPresentation} = require('../components/Presentation/TaxonomyPresentation');
 
 function copyProps(src, target) {
     Object.defineProperties(target, {
@@ -40,6 +40,7 @@ global.requestAnimationFrame = function (callback) {
 global.cancelAnimationFrame = function (id) {
     clearTimeout(id);
 };
+global.GEOIMAGENET_API_URL = '';
 copyProps(window, global);
 
 configure({adapter: new Adapter()});
@@ -89,18 +90,12 @@ describe('Taxonomy viewer', () => {
     });
 
     test('Taxonomy viewer from presentation page shows taxonomy.', async () => {
-        const taxonomy_class = state_proxy.flat_taxonomy_classes[state_proxy.root_taxonomy_class_id];
-        const wrapper = shallow(
-            <Tree
+        const wrapper = mount(
+            <TaxonomyPresentation
                 state_proxy={state_proxy}
-                t={key => key}
-                user_interactions={user_interactions}
-                taxonomy_classes={[taxonomy_class]} />
+                user_interactions={user_interactions} />
         );
-        expect(wrapper.find(PresentationListElement).length).toBe(1);
-        await wait(0);
-        wrapper.update();
-        expect(wrapper.find(PresentationListElement).length).toBeGreaterThan(1);
+        expect(wrapper.find(PresentationListElement).length).toBeGreaterThan(0);
     });
 
     test('Toggling filters shows and hides annotation counts', async () => {

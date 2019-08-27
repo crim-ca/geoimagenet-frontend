@@ -19,7 +19,6 @@ type State = {
 
 @observer
 class Selector extends Component<Props, State> {
-    static propTypes = {};
 
     state = {
         value: 0,

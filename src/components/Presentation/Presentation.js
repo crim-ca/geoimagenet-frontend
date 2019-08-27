@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {withStyles, Link, Typography, Paper, Select, MenuItem, Dialog} from '@material-ui/core';
 import Clear from '@material-ui/icons/Clear';
 import {useTranslation} from '../../utils';
+import {TaxonomyPresentation} from './TaxonomyPresentation';
 
 
 import {Logos} from '../Logos.js';
@@ -379,7 +380,7 @@ export const PresentationContainer = withStyles(({values}) => ({
             </div>
             <div className={classes.taxonomy}>
                 <LessOpaquePaper title={t('title:taxonomy')} content={
-                    <TranslatedTaxonomy state_proxy={state_proxy} user_interactions={user_interactions} />
+                    <TaxonomyPresentation state_proxy={state_proxy} user_interactions={user_interactions} />
                 } />
             </div>
         </div>

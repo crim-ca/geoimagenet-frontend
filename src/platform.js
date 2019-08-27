@@ -24,7 +24,6 @@ import {NotificationContainer} from "react-notifications";
 import {captureException} from "@sentry/browser";
 import {GeoImageNetStore} from "./store/GeoImageNetStore";
 import {LoadingSplashCircle} from "./components/LoadingSplashCircle";
-import {Taxonomy} from "./domain/entities";
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
