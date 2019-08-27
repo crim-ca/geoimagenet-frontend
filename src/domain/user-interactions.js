@@ -16,7 +16,7 @@ import {typeof Event} from "ol/events";
 import {typeof GeoJSON} from "ol/format";
 import {StoreActions} from "../store/StoreActions";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
-import {typeof Feature} from "ol";
+import {typeof Feature, ModifyEvent} from "ol";
 import {Taxonomy, TaxonomyClass} from "./entities";
 import type {TaxonomyClassesDataFromAPI} from "../Types";
 
@@ -26,6 +26,9 @@ import type {TaxonomyClassesDataFromAPI} from "../Types";
  * These are not event handlers per se, they should receive everything needed to execute everything intended by the user,
  * from confirmation to store alterations.
  */
+type Coordinate = [number, number];
+type Coordinates = Coordinate[];
+type CoordinatesSet = Coordinates[];
 
 export class UserInteractions {
 
@@ -155,17 +158,39 @@ export class UserInteractions {
         this.store_actions.end_annotation();
     };
 
+    populate_image_dictionary = async () => {
+        const images_dictionary = await this.data_queries.fetch_images_dictionary();
+        this.store_actions.set_images_dictionary(images_dictionary);
+    };
+
     /**
      * here we validate that a feature is completely over the same image
      * for every point in the geometry
      *   for every layer under the point
      *     reject the modification if the layer does not correspond to either image name of the image id
      */
-    feature_respects_its_original_image = (feature: Feature) => {
-        /**
-         * @TODO implement the check with values from api
-         */
-        return true;
+    feature_respects_its_original_image = (feature: Feature, map: Map) => {
+        const image_id = feature.get('image_id');
+        const this_satellite_image = this.state_proxy.images_dictionary.find(image => {
+            return image.id === image_id;
+        });
+        const correct_image_layer = this_satellite_image.layer_name;
+        const coordinates_set: CoordinatesSet = feature.getGeometry().getCoordinates();
+        let passes_validation: boolean = true;
+        coordinates_set.forEach((coordinates: Coordinates) => {
+            coordinates.forEach(coordinate => {
+                const pixel = map.getPixelFromCoordinate(coordinate);
+                const layer_titles_under_this_pixel = [];
+                map.forEachLayerAtPixel(pixel, layer => {
+                    const title = layer.get('title');
+                    layer_titles_under_this_pixel.push(title);
+                });
+                if (!layer_titles_under_this_pixel.some(title => title === correct_image_layer)) {
+                    passes_validation = false;
+                }
+            });
+        });
+        return passes_validation;
     };
 
     modifystart_handler = (event: Event) => {
@@ -179,7 +204,7 @@ export class UserInteractions {
      *
      * the handler, when called, should verify that the geometry is over the same image as it was before.
      */
-    create_modifyend_handler = (format_geojson: GeoJSON, map: Map) => async (event: Event) => {
+    create_modifyend_handler = (format_geojson: GeoJSON, map: Map) => async (event: ModifyEvent) => {
         const modified_features = [];
         event.features.forEach((feature) => {
             if (feature.revision_ >= 1) {
@@ -189,7 +214,7 @@ export class UserInteractions {
         });
 
         modified_features.forEach((feature: Feature, index: number) => {
-            if (!this.feature_respects_its_original_image(feature)) {
+            if (!this.feature_respects_its_original_image(feature, map)) {
                 // feature is not ok, reset it and remove it from the modified features
                 feature.getGeometry().setCoordinates(this.original_coordinates[feature.getId()]);
                 modified_features.splice(index, 1);

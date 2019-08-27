@@ -3,7 +3,7 @@ import {ANNOTATION, MODE} from '../domain/constants.js';
 import {AccessControlList} from '../domain/access-control-list.js';
 import {AnnotationStatusFilter, ResourcePermissionRepository} from '../domain/entities.js';
 import {observable, computed} from 'mobx';
-import {Taxonomy, User} from "../domain/entities";
+import {SatelliteImage, Taxonomy, User} from "../domain/entities";
 import typeof VectorLayer from "ol/layer/Vector.js";
 import typeof VectorSource from "ol/source/Vector";
 import {typeof Collection} from "ol";
@@ -73,6 +73,8 @@ export class GeoImageNetStore {
         }
         return this.selected_taxonomy.versions[0].root_taxonomy_class_id || -1;
     }
+
+    @observable images_dictionary: SatelliteImage[];
 
     @observable selected_taxonomy: Taxonomy | null = null;
 

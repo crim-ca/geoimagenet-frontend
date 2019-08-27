@@ -244,3 +244,18 @@ export class AnnotationStatusFilter {
     }
 
 }
+
+type Sensor = 'PLEIADES';
+type ImageExtension = '.tif' | '.png';
+type Bits = 8 | 16;
+type Bands = 'RGB' | 'NRG' | 'RGBN';
+
+export class SatelliteImage {
+    bands: Bands;
+    bits: Bits;
+    extension: ImageExtension;
+    filename: string;
+    id: number;
+    layer_name: string;
+    sensor_name: Sensor;
+}

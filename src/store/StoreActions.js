@@ -4,7 +4,7 @@ import {TaxonomyClass} from '../domain/entities.js';
 import {ANNOTATION, MODE} from '../domain/constants.js';
 import {observable, action, runInAction} from 'mobx';
 import {AccessControlList} from "../domain/access-control-list";
-import {Taxonomy, User} from "../domain/entities";
+import {SatelliteImage, Taxonomy, User} from "../domain/entities";
 import {typeof Collection} from "ol";
 import {typeof Source} from "ol/source";
 import {typeof Vector} from "ol/layer";
@@ -192,6 +192,11 @@ export class StoreActions {
             ({counts} = instance);
             counts[status] = quantity < 0 ? Math.max(counts[status] + quantity, 0) : (counts[status] + quantity) || quantity;
         }
+    }
+
+    @action.bound
+    set_images_dictionary(images_dictionary: SatelliteImage[]) {
+        this.state_proxy.images_dictionary = images_dictionary;
     }
 
     @action.bound

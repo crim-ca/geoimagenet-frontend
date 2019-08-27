@@ -35,6 +35,8 @@ class MapContainer extends React.Component<Props> {
     componentDidMount(): void {
         const {state_proxy, store_actions, user_interactions} = this.props;
 
+        user_interactions.populate_image_dictionary();
+
         /**
          * The Layer Switcher is paramount to the map: it should allow easy access and toggling to the various displayed layers.
          * @private

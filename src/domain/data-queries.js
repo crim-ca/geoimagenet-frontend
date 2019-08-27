@@ -1,6 +1,7 @@
 // @flow strict
 
 import {make_http_request, post_json, put_json} from '../utils/http.js';
+import {SatelliteImage} from "./entities";
 
 type MergedSessionInformation = {
     authenticated: boolean,
@@ -32,6 +33,14 @@ export class DataQueries {
         this.magpie_endpoint = magpie_endpoint;
         this.ml_endpoint = ml_endpoint;
     }
+
+    fetch_images_dictionary = async() => {
+        const response = await make_http_request(`${this.geoimagenet_api_endpoint}/images`);
+        const images = await response.json();
+        return images.map(raw => {
+            return Object.assign(new SatelliteImage(), raw);
+        });
+    };
 
     /**
      * we overwrite the return for the first element because this method is called get by id, we only ever want one element
