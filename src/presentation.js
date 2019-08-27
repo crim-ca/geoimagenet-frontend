@@ -40,14 +40,17 @@ addEventListener('DOMContentLoaded', async () => {
         <ThemedComponent>
             <ApolloProvider client={client}>
                 <div style={{height: '100%'}}>
-                <PresentationContainer
-                    state_proxy={state_proxy}
-                    contact_email={CONTACT_EMAIL}
-                    user_interactions={user_interactions} />
-                <NotificationContainer />
-            </div>
+                    <PresentationContainer
+                        state_proxy={state_proxy}
+                        contact_email={CONTACT_EMAIL}
+                        user_interactions={user_interactions} />
+                    <NotificationContainer />
+                </div>
             </ApolloProvider>
         </ThemedComponent>,
         div
     );
+
+    await user_interactions.fetch_taxonomies();
+    await user_interactions.select_taxonomy(state_proxy.taxonomies[1]);
 });
