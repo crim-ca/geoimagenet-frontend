@@ -8,6 +8,15 @@ import typeof VectorLayer from "ol/layer/Vector.js";
 import typeof VectorSource from "ol/source/Vector";
 import {typeof Collection} from "ol";
 import type {AnnotationStatusList} from "../Types";
+import {configure} from 'mobx';
+
+/**
+ * this is relatively important in the sense that it constraints us to mutate the store only in actions
+ * otherwise, changing the store, affecting the state each time, can be compared to an open heart hemorrhage
+ */
+configure({
+    enforceActions: 'always',
+});
 
 /**
  * The application state must, at each given time, fully represent what a user is seeing.

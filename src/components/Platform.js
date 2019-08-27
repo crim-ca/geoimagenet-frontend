@@ -16,7 +16,7 @@ import {AnnotationStatusFilter} from './AnnotationStatusFilter.js';
 import {MapContainer} from './Map/MapContainer';
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 import {UserInteractions} from '../domain/user-interactions.js';
-import {StoreActions} from '../store';
+import {StoreActions} from '../store/StoreActions';
 
 const StyledPanelDetails = withStyles({
     root: {

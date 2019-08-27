@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/browser';
 import {CssBaseline, MuiThemeProvider} from '@material-ui/core';
 
 import {DataQueries} from './domain/data-queries.js';
-import {create_state_proxy, StoreActions} from './store';
+import {StoreActions} from './store/StoreActions';
 import {UserInteractions} from './domain/user-interactions.js';
 import {Platform} from './components/Platform.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
@@ -49,7 +49,7 @@ export class PlatformLoader {
 
     constructor(geoimagenet_api_endpoint: string, geoserver_endpoint: string, magpie_endpoint: string, ml_endpoint: string, i18next_instance) {
 
-        this.state_proxy = create_state_proxy();
+        this.state_proxy = new GeoImageNetStore();
         this.store_actions = new StoreActions(this.state_proxy);
         this.data_queries = new DataQueries(geoimagenet_api_endpoint, geoserver_endpoint, magpie_endpoint, ml_endpoint);
         this.user_interactions = new UserInteractions(this.store_actions, this.data_queries, i18next_instance, this.state_proxy);

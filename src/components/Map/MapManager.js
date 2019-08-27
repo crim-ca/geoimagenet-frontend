@@ -39,7 +39,7 @@ import {
 } from '../../domain/constants.js';
 import {debounced} from '../../utils/event_handling.js';
 import {NotificationManager} from 'react-notifications';
-import {StoreActions} from "../../store";
+import {StoreActions} from "../../store/StoreActions";
 import {LayerSwitcher} from "../../LayerSwitcher";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {make_http_request} from "../../utils/http";

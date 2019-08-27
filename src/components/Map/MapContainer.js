@@ -5,7 +5,7 @@ import React from "react";
 import {LayerSwitcher} from "../../LayerSwitcher";
 import {MapManager} from "./MapManager";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import {StoreActions} from "../../store";
+import {StoreActions} from "../../store/StoreActions";
 import {UserInteractions} from "../../domain";
 import {Interactions} from "./Interactions";
 

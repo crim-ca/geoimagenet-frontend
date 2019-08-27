@@ -1,18 +1,21 @@
 //@flow
 
-import {create_state_proxy, StoreActions} from "../store";
+import {StoreActions} from "../store/StoreActions";
 import {DataQueries} from "../domain/data-queries";
 import {UserInteractions} from "../domain";
 import {ANNOTATIONS_COUNTS_RESPONSE, TAXONOMY_CLASSES_RESPONSE, TAXONOMY_RESPONSE} from "./api_responses";
 import {ANNOTATION} from "../domain/constants";
+import {GeoImageNetStore} from "../store/GeoImageNetStore";
 
 const React = require('react');
-const {mount, configure} = require('enzyme');
+const {shallow, mount, configure} = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
 const {Viewer} = require('../components/Taxonomy/Viewer');
 const {Selector} = require('../components/Taxonomy/Selector');
 const {Classes} = require('../components/Taxonomy/Classes');
 const {SpacedChip} = require('../components/Taxonomy/AnnotationCounts');
+const {Tree} = require('../components/Taxonomy/Tree');
+const {PresentationListElement} = require('../components/Taxonomy/PresentationListElement');
 const {JSDOM} = require('jsdom');
 const {window} = new JSDOM(`<!doctype html>`);
 const {i18n} = require('../utils');
@@ -43,7 +46,7 @@ configure({adapter: new Adapter()});
 type Props = {};
 
 const data_queries = new DataQueries('', '', '', '');
-const state_proxy = create_state_proxy();
+const state_proxy = new GeoImageNetStore();
 const store_actions = new StoreActions(state_proxy);
 const user_interactions = new UserInteractions(store_actions, data_queries, i18n, state_proxy);
 
@@ -51,7 +54,8 @@ data_queries.fetch_taxonomies = jest.fn(() => TAXONOMY_RESPONSE);
 data_queries.fetch_taxonomy_classes = jest.fn(() => TAXONOMY_CLASSES_RESPONSE);
 data_queries.flat_taxonomy_classes_counts = jest.fn(() => ANNOTATIONS_COUNTS_RESPONSE);
 
-const refresh_source_callback_mock = () => {};
+const refresh_source_callback_mock = () => {
+};
 
 class TestableTaxonomyViewer extends React.Component<Props> {
 
@@ -70,7 +74,7 @@ describe('Taxonomy viewer', () => {
 
     beforeEach(async () => {
         await user_interactions.fetch_taxonomies();
-        await user_interactions.select_taxonomy(state_proxy.taxonomies[1], state_proxy.taxonomies[1].versions[0].root_taxonomy_class_id);
+        await user_interactions.select_taxonomy(state_proxy.taxonomies[1]);
     });
 
     test('Building the taxonomy from real data shows annotations', async () => {
@@ -82,6 +86,21 @@ describe('Taxonomy viewer', () => {
         await wait(0);
         wrapper.update();
         expect(wrapper.find(SpacedChip).length).toBeGreaterThan(0);
+    });
+
+    test('Taxonomy viewer from presentation page shows taxonomy.', async () => {
+        const taxonomy_class = state_proxy.flat_taxonomy_classes[state_proxy.root_taxonomy_class_id];
+        const wrapper = shallow(
+            <Tree
+                state_proxy={state_proxy}
+                t={key => key}
+                user_interactions={user_interactions}
+                taxonomy_classes={[taxonomy_class]} />
+        );
+        expect(wrapper.find(PresentationListElement).length).toBe(1);
+        await wait(0);
+        wrapper.update();
+        expect(wrapper.find(PresentationListElement).length).toBeGreaterThan(1);
     });
 
     test('Toggling filters shows and hides annotation counts', async () => {

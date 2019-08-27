@@ -1,9 +1,11 @@
+import {GeoImageNetStore} from "../store/GeoImageNetStore";
+
 const {MODE, ANNOTATION} = require('../domain/constants');
-const {create_state_proxy, StoreActions} = require('../store');
+const {StoreActions} = require('../store');
 const {action} = require('mobx');
 const {TaxonomyClass} = require('../domain/entities');
 
-const state_proxy = create_state_proxy();
+const state_proxy = new GeoImageNetStore();
 const store_actions = new StoreActions(state_proxy);
 
 test('injects a state_proxy and keeps track', () => {
@@ -59,7 +61,7 @@ test('accessing flat classes changes nested ones', () => {
 
 describe('Annotation counts', () => {
     test('changing annotation counts actually changes annotation counts', () => {
-        const store = create_state_proxy();
+        const store = new GeoImageNetStore();
         const store_actions = new StoreActions(store);
 
         expect(store.flat_taxonomy_classes[1]).toBe(undefined);
@@ -94,13 +96,13 @@ describe('Annotation counts', () => {
 
 describe('Annotation visibility toggling.', () => {
     test('toggle_annotation_status_visibility refuses incorrect input.', () => {
-        const store_actions = new StoreActions(create_state_proxy());
+        const store_actions = new StoreActions(new GeoImageNetStore());
         expect(() => {
             store_actions.toggle_annotation_status_visibility('not_a_real_status');
         }).toThrow('Invalid annotation status: [not_a_real_status]');
     });
     test('toggle_annotation_status_visibility toggles existent annotation status visibility', () => {
-        const state_proxy = create_state_proxy();
+        const state_proxy = new GeoImageNetStore();
         const store_actions = new StoreActions(state_proxy);
         const status = 'new';
         expect(state_proxy.annotation_status_list[status].activated).toBe(true);

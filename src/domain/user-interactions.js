@@ -14,7 +14,7 @@ import i18n from 'i18next';
 import {typeof Map} from "ol/Map";
 import {typeof Event} from "ol/events";
 import {typeof GeoJSON} from "ol/format";
-import {StoreActions} from "../store";
+import {StoreActions} from "../store/StoreActions";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 import {typeof Feature} from "ol";
 import {Taxonomy, TaxonomyClass} from "./entities";

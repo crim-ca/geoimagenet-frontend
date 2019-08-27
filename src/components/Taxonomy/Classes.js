@@ -4,7 +4,7 @@ import {observer} from 'mobx-react';
 import {PlatformListElement} from './PlatformListElement.js';
 import {TaxonomyClass} from "../../domain/entities";
 import {UserInteractions} from "../../domain";
-import {StoreActions} from "../../store";
+import {StoreActions} from "../../store/StoreActions";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 
 type Props = {

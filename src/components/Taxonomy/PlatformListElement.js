@@ -14,7 +14,7 @@ import {Classes} from './Classes';
 import {ANNOTATION} from '../../domain/constants.js';
 import {TaxonomyClass} from "../../domain/entities";
 import {UserInteractions} from "../../domain";
-import {StoreActions} from "../../store";
+import {StoreActions} from "../../store/StoreActions";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 
 const StyledListItem = withStyles({

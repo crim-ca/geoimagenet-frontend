@@ -6,7 +6,7 @@ import {Classes} from "./Classes";
 import {withTranslation} from "../../utils";
 import {UserInteractions} from "../../domain";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import {StoreActions} from "../../store";
+import {StoreActions} from "../../store/StoreActions";
 import {observer} from "mobx-react";
 
 type Props = {
