@@ -43,5 +43,4 @@ class Taxonomy extends React.Component<Props> {
 }
 
 const TaxonomyPresentation = withTranslation()(Taxonomy);
-
 export {TaxonomyPresentation};

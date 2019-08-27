@@ -52,5 +52,5 @@ addEventListener('DOMContentLoaded', async () => {
     );
 
     await user_interactions.fetch_taxonomies();
-    await user_interactions.select_taxonomy(state_proxy.taxonomies[1]);
+    await user_interactions.select_taxonomy(state_proxy.taxonomies[0]);
 });
