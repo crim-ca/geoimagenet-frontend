@@ -6,6 +6,7 @@ import {UserInteractions} from "../../domain";
 import {Tab, Tabs} from "@material-ui/core";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {TFunction} from "react-i18next";
+import {withTranslation} from '../../utils';
 
 type Props = {
     state_proxy: GeoImageNetStore,
@@ -59,4 +60,5 @@ class Selector extends Component<Props, State> {
     }
 }
 
-export {Selector};
+const TranslatedSelector = withTranslation()(Selector);
+export {TranslatedSelector as Selector};

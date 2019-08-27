@@ -10,6 +10,7 @@ import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from "../../domain";
 import type {TFunction} from "react-i18next";
 import {AnnotationCounts} from "./AnnotationCounts";
+import {withTranslation} from '../../utils';
 
 const StyledList = withStyles({
     padding: {
@@ -87,4 +88,5 @@ class PresentationListElement extends Component<Props> {
     }
 }
 
-export {PresentationListElement};
+const TranslatedPresentationListElement = withTranslation()(PresentationListElement);
+export {TranslatedPresentationListElement as PresentationListElement};

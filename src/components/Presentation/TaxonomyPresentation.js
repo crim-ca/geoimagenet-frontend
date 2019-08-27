@@ -29,11 +29,9 @@ class Taxonomy extends React.Component<Props> {
                 <Link download href={`${GEOIMAGENET_API_URL}/taxonomy_classes`}>{t('intro:taxonomy.download')}</Link>
                 <Paper style={{marginTop: '12px'}}>
                     <Selector user_interactions={user_interactions}
-                              t={t}
                               state_proxy={state_proxy} />
                     {classes.length > 0
                         ? <Tree
-                            t={t}
                             state_proxy={state_proxy}
                             user_interactions={user_interactions}
                             taxonomy_classes={classes} />
@@ -44,4 +42,6 @@ class Taxonomy extends React.Component<Props> {
     }
 }
 
-export const TaxonomyPresentation = withTranslation()(Taxonomy);
+const TaxonomyPresentation = withTranslation()(Taxonomy);
+
+export {TaxonomyPresentation};
