@@ -182,8 +182,10 @@ export class UserInteractions {
                 const pixel = map.getPixelFromCoordinate(coordinate);
                 const layer_titles_under_this_pixel = [];
                 map.forEachLayerAtPixel(pixel, layer => {
-                    const title = layer.get('title');
-                    layer_titles_under_this_pixel.push(title);
+                    if (layer.type === 'TILE') {
+                        const title = layer.get('title');
+                        layer_titles_under_this_pixel.push(title);
+                    }
                 });
                 if (!layer_titles_under_this_pixel.some(title => title === correct_image_layer)) {
                     passes_validation = false;
@@ -218,6 +220,8 @@ export class UserInteractions {
                 // feature is not ok, reset it and remove it from the modified features
                 feature.getGeometry().setCoordinates(this.original_coordinates[feature.getId()]);
                 modified_features.splice(index, 1);
+                NotificationManager.warning('An annotation must be wholly contained in a single image, ' +
+                    'you are trying to make a coordinate go outside of the original image.');
             }
 
         });
