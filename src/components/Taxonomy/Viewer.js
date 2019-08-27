@@ -28,7 +28,7 @@ class Viewer extends React.Component<Props> {
         }
 
         // TODO when versions are actually implemented in the system this will need to be reviewed
-        const taxonomy_class = state_proxy.flat_taxonomy_classes[state_proxy.selected_taxonomy.versions[0].root_taxonomy_class_id];
+        const taxonomy_class = state_proxy.flat_taxonomy_classes[state_proxy.root_taxonomy_class_id];
         const classes = taxonomy_class ? [taxonomy_class] : [];
 
         return (

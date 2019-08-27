@@ -277,12 +277,12 @@ export class UserInteractions {
      * When the user selects a taxonomy, we decide to refresh the annotation counts, as they can change more often than the classes themselves.
      */
     @action.bound
-    async select_taxonomy(taxonomy: Taxonomy, root_taxonomy_class_id: number) {
+    async select_taxonomy(taxonomy: Taxonomy) {
         this.store_actions.set_selected_taxonomy(taxonomy);
         try {
-            const counts = await this.data_queries.flat_taxonomy_classes_counts(root_taxonomy_class_id);
+            const counts = await this.data_queries.flat_taxonomy_classes_counts(this.state_proxy.root_taxonomy_class_id);
             this.store_actions.set_annotation_counts(counts);
-            this.store_actions.toggle_taxonomy_class_tree_element(root_taxonomy_class_id, true);
+            this.store_actions.toggle_taxonomy_class_tree_element(this.state_proxy.root_taxonomy_class_id, true);
         } catch (e) {
             NotificationManager.error('We were unable to fetch the taxonomy classes.');
         }

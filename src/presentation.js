@@ -10,7 +10,7 @@ import './img/background.hack.jpg';
 
 import * as Sentry from '@sentry/browser';
 import {ThemedComponent} from './utils/react.js';
-import {PresentationContainer} from './components/Presentation.js';
+import {PresentationContainer} from './components/Presentation/Presentation.js';
 import {UserInteractions} from './domain/user-interactions.js';
 import {create_state_proxy, StoreActions} from './store';
 import {DataQueries} from './domain/data-queries.js';
@@ -34,7 +34,6 @@ addEventListener('DOMContentLoaded', async () => {
     const store_actions = new StoreActions(state_proxy);
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, GEOSERVER_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
     const user_interactions = new UserInteractions(store_actions, data_queries, i18n, state_proxy);
-    await user_interactions.fetch_taxonomies();
 
     ReactDOM.render(
         <ThemedComponent>

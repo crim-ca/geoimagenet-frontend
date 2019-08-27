@@ -240,7 +240,6 @@ export class StoreActions {
     @action.bound
     set_taxonomy(t: Array<Taxonomy>) {
         this.state_proxy.taxonomies = t;
-        this.state_proxy.selected_taxonomy = t[0];
     }
 
     @action.bound

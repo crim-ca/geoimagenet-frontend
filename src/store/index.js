@@ -1,6 +1,6 @@
 // @flow strict
 
-import {observable, configure} from 'mobx';
+import {configure} from 'mobx';
 import {GeoImageNetStore} from './GeoImageNetStore.js';
 
 /**
@@ -11,10 +11,10 @@ import {GeoImageNetStore} from './GeoImageNetStore.js';
 export const create_state_proxy = (store_schematics: GeoImageNetStore | null = null) => {
 
     if (store_schematics === null) {
-        return observable.object(new GeoImageNetStore());
+        return new GeoImageNetStore();
     }
 
-    return observable.object(store_schematics);
+    return store_schematics;
 
 };
 

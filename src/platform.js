@@ -100,7 +100,7 @@ export class PlatformLoader {
         try {
             // dirtily select the first taxonomy in the list.
             await user_interactions.fetch_taxonomies();
-            await user_interactions.select_taxonomy(state_proxy.taxonomies[0], state_proxy.taxonomies[0].versions[0].root_taxonomy_class_id);
+            await user_interactions.select_taxonomy(state_proxy.taxonomies[0]);
         } catch (e) {
             captureException(e);
         }

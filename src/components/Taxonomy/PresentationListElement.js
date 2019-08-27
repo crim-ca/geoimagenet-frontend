@@ -8,7 +8,7 @@ import {TaxonomyClassLabel} from './TaxonomyClassLabel';
 import {TaxonomyClass} from "../../domain/entities";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from "../../domain";
-import {TFunction} from "react-i18next";
+import type {TFunction} from "react-i18next";
 import {AnnotationCounts} from "./AnnotationCounts";
 
 const StyledList = withStyles({
@@ -45,6 +45,9 @@ type Props = {
 class PresentationListElement extends Component<Props> {
     render() {
         const {taxonomy_class, state_proxy, user_interactions, t} = this.props;
+        if (taxonomy_class === undefined) {
+            return null;
+        }
         const {children} = taxonomy_class;
         const {toggle_taxonomy_class} = user_interactions;
         const make_toggle_callback = elem => () => {
