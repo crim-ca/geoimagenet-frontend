@@ -15,6 +15,9 @@ import {UserInteractions} from "../../domain";
 import typeof Event from 'ol/events/Event.js';
 import {create_style_function} from "./utils";
 import {MapBrowserEvent} from "ol/events";
+import {Collection} from "ol";
+
+const selected_features_collection = new Collection();
 
 const make_feature_selection_condition = (map: Map) => (event: MapBrowserEvent) => {
     if (event.type !== 'click') {
@@ -22,10 +25,20 @@ const make_feature_selection_condition = (map: Map) => (event: MapBrowserEvent) 
     }
     const pixel = event.pixel;
     const features = map.getFeaturesAtPixel(pixel);
-    // if we're slicking on a single feature, or clicking in empty space (that is, features is null), we want the event to be handled normally
+    /**
+     * if we're slicking on a single feature, or clicking in empty space (that is, features is null), we want the event to be handled normally
+     */
     if (features === null || features.length === 1) {
         return true;
     }
+    /**
+     * if we got here, technically there are multiple features under the click, so we want to ask user what feature they want to select,
+     * and then add that feature to the selected features collection.
+     */
+    selected_features_collection.clear();
+    features.forEach(feature => {
+        selected_features_collection.push(feature);
+    });
     return false;
 };
 
@@ -66,6 +79,7 @@ export class Interactions {
             condition: make_feature_selection_condition(map),
             layers: layers,
             style: create_style_function('white', this.state_proxy, true),
+            features: selected_features_collection,
         });
         this.map.addInteraction(this.select);
 
