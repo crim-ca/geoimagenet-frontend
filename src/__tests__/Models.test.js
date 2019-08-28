@@ -11,7 +11,7 @@ const {BenchmarksTable} = require('../components/Models/BenchmarksTable');
 const {UploadForm} = require('../components/Models/UploadForm');
 const {MODELS, LAUNCH_TEST_JOB, BENCHMARKS_JOBS, UPLOAD_MODEL} = require('../domain/graphql_queries');
 const {NotificationContainer} = require('react-notifications');
-const wait = require('waait');
+const {wait} = require('./utils');
 const {JSDOM} = require('jsdom');
 const {window} = new JSDOM(`<!doctype html>`);
 

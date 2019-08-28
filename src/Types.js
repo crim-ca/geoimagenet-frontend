@@ -31,3 +31,9 @@ export type Counts = {
     'rejected': number,
     'deleted': number,
 };
+
+export type ContextualMenuItem = {
+    text: string,
+    value: string,
+};
+export type PopulateContextualMenuCallback = (ContextualMenuItem[], HTMLElement, () => void, () => void) => Promise<void>;

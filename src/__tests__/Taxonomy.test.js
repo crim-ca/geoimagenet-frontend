@@ -18,7 +18,7 @@ const {PresentationListElement} = require('../components/Taxonomy/PresentationLi
 const {JSDOM} = require('jsdom');
 const {window} = new JSDOM(`<!doctype html>`);
 const {i18n} = require('../utils');
-const wait = require('waait');
+const {wait} = require('./utils');
 const {Tab} = require('@material-ui/core');
 const {TaxonomyPresentation} = require('../components/Presentation/TaxonomyPresentation');
 

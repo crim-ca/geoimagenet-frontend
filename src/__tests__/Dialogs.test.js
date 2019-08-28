@@ -87,10 +87,14 @@ describe('We should be able to instantiate the container and use it to display d
     test('Calling the confirm method without container correctly throws', async () => {
         await expect(DialogManager.confirm('test throw because no container')).rejects.toEqual('There is no dialog creation callback registered. Did you instantiate a DialogContainer?');
 
-        DialogManager.register_dialog_creation_callback('invalid function');
+        expect(() => {
+            DialogManager.register_dialog_creation_callback('invalid function');
+        }).toThrow('The dialog creation callback should be a function.');
 
+        DialogManager.dialog_creation_callback = 'invalid function';
         await expect(DialogManager.confirm('test throw because invalid callback')).rejects.toEqual('The dialog creation callback registered is not a function. ' +
             'Did you instantiate a DialogContainer?');
+        DialogManager.dialog_creation_callback = null;
     });
 
 });
