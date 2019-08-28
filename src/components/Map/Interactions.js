@@ -8,12 +8,26 @@ import {ANNOTATION, CUSTOM_GEOIM_IMAGE_LAYER, MODE} from "../../domain/constants
 import {Draw, Modify, Select} from "ol/interaction";
 import {NotificationManager} from "react-notifications";
 
-import Map from 'ol/Map.js';
+import typeof Map from 'ol/Map.js';
 import GeoJSON from "ol/format/GeoJSON.js";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from "../../domain";
 import typeof Event from 'ol/events/Event.js';
 import {create_style_function} from "./utils";
+import {MapBrowserEvent} from "ol/events";
+
+const make_feature_selection_condition = (map: Map) => (event: MapBrowserEvent) => {
+    if (event.type !== 'click') {
+        return false;
+    }
+    const pixel = event.pixel;
+    const features = map.getFeaturesAtPixel(pixel);
+    // if we're slicking on a single feature, or clicking in empty space (that is, features is null), we want the event to be handled normally
+    if (features === null || features.length === 1) {
+        return true;
+    }
+    return false;
+};
 
 export class Interactions {
 
@@ -49,6 +63,7 @@ export class Interactions {
          * We can select layers from any and all layers, so we activate it on all layers by default.
          */
         this.select = new Select({
+            condition: make_feature_selection_condition(map),
             layers: layers,
             style: create_style_function('white', this.state_proxy, true),
         });
