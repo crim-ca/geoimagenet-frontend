@@ -16,10 +16,11 @@ import typeof Event from 'ol/events/Event.js';
 import {create_style_function} from "./utils";
 import {MapBrowserEvent} from "ol/events";
 import {Collection} from "ol";
+import {ContextualMenuManager} from "../ContextualMenu/ContextualMenuManager";
 
 const selected_features_collection = new Collection();
 
-const make_feature_selection_condition = (map: Map) => (event: MapBrowserEvent) => {
+const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStore) => (event: MapBrowserEvent) => {
     if (event.type !== 'click') {
         return false;
     }
@@ -35,10 +36,28 @@ const make_feature_selection_condition = (map: Map) => (event: MapBrowserEvent) 
      * if we got here, technically there are multiple features under the click, so we want to ask user what feature they want to select,
      * and then add that feature to the selected features collection.
      */
-    selected_features_collection.clear();
+    const menu_items = [];
+
     features.forEach(feature => {
-        selected_features_collection.push(feature);
+        const taxonomy_class_id = feature.get('taxonomy_class_id');
+        menu_items.push({
+            text: state_proxy.flat_taxonomy_classes[taxonomy_class_id].name_en,
+            value: feature,
+        });
     });
+
+    ContextualMenuManager.choose_option(menu_items, event.originalEvent.target).then(
+        choice => {
+            selected_features_collection.clear();
+            selected_features_collection.push(choice);
+        },
+        error => {
+            console.log(error);
+            selected_features_collection.clear();
+            NotificationManager.info("That wasn't a valid feature choice, we unselected everything.");
+        },
+    );
+
     return false;
 };
 
@@ -56,7 +75,7 @@ export class Interactions {
 
     constructor(
         map: Map,
-        state_proxy:GeoImageNetStore,
+        state_proxy: GeoImageNetStore,
         user_interactions: UserInteractions,
         geojson_format: GeoJSON,
         annotation_layer: string,
@@ -76,7 +95,7 @@ export class Interactions {
          * We can select layers from any and all layers, so we activate it on all layers by default.
          */
         this.select = new Select({
-            condition: make_feature_selection_condition(map),
+            condition: make_feature_selection_condition(map, this.state_proxy),
             layers: layers,
             style: create_style_function('white', this.state_proxy, true),
             features: selected_features_collection,
