@@ -140,8 +140,9 @@ export class UserInteractions {
      */
     create_drawend_handler = (format_geojson: GeoJSON, annotation_layer: string, annotation_namespace: string) => async (event: Event) => {
         const {feature}: { feature: Feature } = event;
+        const {selected_taxonomy_class_id} = this.state_proxy;
         feature.setProperties({
-            taxonomy_class_id: this.state_proxy.selected_taxonomy_class_id,
+            taxonomy_class_id: selected_taxonomy_class_id,
             image_name: this.state_proxy.current_annotation.image_title,
         });
         const payload = format_geojson.writeFeature(feature);
@@ -152,6 +153,7 @@ export class UserInteractions {
             const feature_from_distant_api = await this.data_queries.get_annotation_by_id(new_feature_id, typename);
             feature.set('name', feature_from_distant_api.properties.name);
             this.store_actions.change_annotation_status_count(this.state_proxy.selected_taxonomy_class_id, ANNOTATION.STATUS.NEW, 1);
+            this.store_actions.invert_taxonomy_class_visibility(this.state_proxy.flat_taxonomy_classes[selected_taxonomy_class_id], true);
         } catch (error) {
             NotificationManager.error(error.message);
         }

@@ -27,9 +27,8 @@ configure({
 export class GeoImageNetStore {
     /**
      * Labels can be overwhelming when there are too much objects on the screen, this property should allow user to show them or not.
-     * @type {boolean}
      */
-    @observable show_labels = true;
+    @observable show_labels: boolean = true;
 
     /**
      * The visible annotations types should federate every part of the platform that manages annotations, from the counts
@@ -37,30 +36,27 @@ export class GeoImageNetStore {
      */
     @observable annotation_status_list: AnnotationStatusList = {
         [ANNOTATION.STATUS.NEW]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.NEW, true)),
-        [ANNOTATION.STATUS.PRE_RELEASED]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.PRE_RELEASED)),
+        [ANNOTATION.STATUS.PRE_RELEASED]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.PRE_RELEASED, true)),
         [ANNOTATION.STATUS.RELEASED]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.RELEASED, true)),
         [ANNOTATION.STATUS.VALIDATED]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.VALIDATED, true)),
-        [ANNOTATION.STATUS.REJECTED]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.REJECTED)),
-        [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.DELETED)),
+        [ANNOTATION.STATUS.REJECTED]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.REJECTED, true)),
+        [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationStatusFilter(ANNOTATION.STATUS.DELETED, true)),
     };
 
     /**
      * When loading the platform, we by default put the user in a state of visualization.
      * @type {String}
      */
-    @observable mode = MODE.VISUALIZE;
+    @observable mode: string = MODE.VISUALIZE;
 
     /**
      * An user is able to act on the annotations based on wether or not they are at a suitable zoom level.
      * @todo make this a computed mobx value
      * @type {boolean}
      */
-    @observable actions_activated = false;
+    @observable actions_activated: boolean = false;
 
-    /**
-     * @type {AccessControlList}
-     */
-    @observable acl = new AccessControlList(new ResourcePermissionRepository());
+    @observable acl: AccessControlList = new AccessControlList(new ResourcePermissionRepository());
 
     @observable taxonomies: Taxonomy[] = [];
 
@@ -81,12 +77,11 @@ export class GeoImageNetStore {
     /**
      * The flat taxonomy classes structure simplifies the acces to classes when we need to change one directly, without looping
      * over the whole taxnomy structure to find the one we want.
-     * @type {Object<Number, TaxonomyClass>}
      */
     @observable flat_taxonomy_classes = {};
 
-    @observable selected_taxonomy_class_id = -1;
-    @observable visible_classes = [];
+    @observable selected_taxonomy_class_id: number = -1;
+    @observable visible_classes: number[] = [];
 
     /**
      * For the next three properties, we directly write the indexes because flojs does not support the use of the constants
@@ -138,9 +133,6 @@ export class GeoImageNetStore {
     /**
      * We need to be able to control how annotations are created. Once we begin adding points, we limit the adding of points
      * that are outside of an image, or on another image (maybe). This represents an ongoing annotation.
-     * @type {Object}
-     * @property {boolean} initialized Wether or not an annotation have started.
-     * @property {String} image_title The image title that was associated with the first click.
      */
     @observable current_annotation = {
         initialized: false,
