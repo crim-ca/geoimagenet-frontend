@@ -10,22 +10,22 @@ type Props = {};
 type State = {
     menu_items: ContextualMenuItem[],
     anchor_element: HTMLElement | null,
-    handle_resolve: () => Promise<void>,
-    handle_reject: () => Promise<void>,
+    resolve: () => Promise<void>,
+    reject: () => Promise<void>,
 };
 
-const default_handle_accept = () => {
-    throw new Error('The default handle resolve was called, this means the dialog container was probably not correctly instantiated.');
+const default_resolve = () => {
+    throw new Error('The default resolve was called, this means the dialog container was probably not correctly instantiated.');
 };
-const default_handle_refuse = () => {
-    throw new Error('The default handle reject was called, this means the dialog container was probably not correctly instantiated.');
+const default_reject = () => {
+    throw new Error('The default reject was called, this means the dialog container was probably not correctly instantiated.');
 };
 
 export const default_state = {
     menu_items: [],
     anchor_element: null,
-    handle_resolve: default_handle_accept,
-    handle_reject: default_handle_refuse,
+    resolve: default_resolve,
+    reject: default_reject,
 };
 
 export class ContextualMenuContainer extends React.Component<Props, State> {
@@ -49,14 +49,14 @@ export class ContextualMenuContainer extends React.Component<Props, State> {
         this.setState({
             anchor_element: anchor_element,
             menu_items: menu_items,
-            handle_resolve: resolve,
-            handle_reject: reject,
+            resolve: resolve,
+            reject: reject,
         });
     };
 
 
     create_onclick_handler = (item: ContextualMenuItem) => () => {
-        this.state.handle_resolve(item.value);
+        this.state.resolve(item.value);
         this.setState(Object.assign({}, default_state));
     };
 
