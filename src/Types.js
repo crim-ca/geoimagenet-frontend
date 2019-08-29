@@ -1,6 +1,6 @@
 // @flow strict
 
-import {AnnotationStatusFilter} from "./domain/entities";
+import {AnnotationStatusFilter, TaxonomyClass} from "./domain/entities";
 
 export type TaxonomyClassFromAPI = {
     children: TaxonomyClassFromAPI[],
@@ -37,3 +37,5 @@ export type ContextualMenuItem = {
     value: string,
 };
 export type PopulateContextualMenuCallback = (ContextualMenuItem[], () => void, () => void) => Promise<void>;
+
+export type TaxonomyClassToggleFunction = (TaxonomyClass, ?boolean) => void;

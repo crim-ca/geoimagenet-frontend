@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 import {observer} from "mobx-react";
 import React, {Component} from "react";
@@ -8,8 +8,8 @@ import {TaxonomyClass} from "../../domain/entities";
 
 type Props = {
     taxonomy_class: TaxonomyClass,
-    invert_taxonomy_class_visibility: Function,
-    release_handler: Function,
+    invert_taxonomy_class_visibility: (TaxonomyClass) => void,
+    release_handler: (Event) => Promise<void>,
 };
 
 @observer

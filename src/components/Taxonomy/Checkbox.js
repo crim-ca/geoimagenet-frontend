@@ -1,12 +1,12 @@
-// @flow
+// @flow strict
 
 import {observer} from "mobx-react";
 import React, {Component} from "react";
 
 type Props = {
-    value: any,
+    value: number,
     checked: boolean,
-    change_handler: Function,
+    change_handler: () => void,
 };
 
 @observer

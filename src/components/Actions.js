@@ -1,3 +1,4 @@
+// @flow strict
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import {withStyles} from '@material-ui/core';

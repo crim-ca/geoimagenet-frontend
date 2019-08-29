@@ -1,5 +1,4 @@
-// @flow
-
+// @flow strict
 import React from 'react';
 import {Selector} from "./Selector";
 import {Classes} from "./Classes";
@@ -8,13 +7,14 @@ import {UserInteractions} from "../../domain";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {StoreActions} from "../../store/StoreActions";
 import {observer} from "mobx-react";
+import type {TFunction} from "react-i18next";
 
 type Props = {
-    t: Function,
+    t: TFunction,
     state_proxy: GeoImageNetStore,
     user_interactions: UserInteractions,
     store_actions: StoreActions,
-    refresh_source_by_status: Function,
+    refresh_source_by_status: (string) => void,
 };
 
 @observer

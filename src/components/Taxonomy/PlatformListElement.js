@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 import {observer} from 'mobx-react';
 import {Component} from 'react';
@@ -16,6 +16,7 @@ import {TaxonomyClass} from "../../domain/entities";
 import {UserInteractions} from "../../domain";
 import {StoreActions} from "../../store/StoreActions";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import type {TaxonomyClassToggleFunction} from "../../Types";
 
 const StyledListItem = withStyles({
     root: {
@@ -42,9 +43,9 @@ const StyledLabelAndCountSpan = withStyles({
 });
 
 type Props = {
-    toggle_taxonomy_class_tree_element: Function,
-    invert_taxonomy_class_visibility: Function,
-    refresh_source_by_status: Function,
+    toggle_taxonomy_class_tree_element: (number) => void,
+    invert_taxonomy_class_visibility: TaxonomyClassToggleFunction,
+    refresh_source_by_status: (string) => void,
     taxonomy_class: TaxonomyClass,
     user_interactions: UserInteractions,
     store_actions: StoreActions,

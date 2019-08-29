@@ -6,7 +6,7 @@ import {CssBaseline, MuiThemeProvider} from '@material-ui/core';
 import {DataQueries} from './domain/data-queries.js';
 import {StoreActions} from './store/StoreActions';
 import {UserInteractions} from './domain/user-interactions.js';
-import {Platform} from './components/Platform.js';
+import {Platform} from './components/Platform/Platform.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
 import {i18n} from './utils';
 
