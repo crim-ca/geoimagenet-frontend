@@ -9,14 +9,16 @@ import {debounced} from "../../utils/event_handling";
 
 
 type Props = {
-    classes: {}
+    classes: {
+        anchor_element: {},
+    }
 };
 type State = {
     menu_items: ContextualMenuItem[],
-    anchor_element: HTMLElement | null,
+    anchor_element: HTMLElement,
     open: boolean,
-    resolve: () => Promise<void>,
-    reject: () => Promise<void>,
+    resolve: (?string) => void,
+    reject: (?string) => void,
     mouse_x: number,
     mouse_y: number,
 };

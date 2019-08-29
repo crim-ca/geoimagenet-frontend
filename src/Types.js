@@ -36,4 +36,4 @@ export type ContextualMenuItem = {
     text: string,
     value: string,
 };
-export type PopulateContextualMenuCallback = (ContextualMenuItem[], HTMLElement, () => void, () => void) => Promise<void>;
+export type PopulateContextualMenuCallback = (ContextualMenuItem[], () => void, () => void) => Promise<void>;
