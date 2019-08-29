@@ -45,6 +45,35 @@ type State = {
     opened_panel_title: string,
 };
 
+type SidebarSectionData = {
+    title: string,
+    slug: string,
+    content: {},
+};
+
+const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions) => SidebarSectionData[] = (
+    user_interactions,
+    state_proxy,
+    store_actions,
+) => ([
+    {
+        title: 'Taxonomies and Classes',
+        slug: 'taxonomies',
+        content: (
+            <Viewer
+                refresh_source_by_status={user_interactions.refresh_source_by_status}
+                state_proxy={state_proxy}
+                user_interactions={user_interactions}
+                store_actions={store_actions} />
+        ),
+    },
+    {
+        title: 'Basemaps, Images and Filters',
+        slug: 'layers',
+        content: (<div id='layer-switcher' className='layer-switcher-container' />),
+    },
+]);
+
 export class Sidebar extends React.Component<Props, State> {
 
     state = {
@@ -59,33 +88,22 @@ export class Sidebar extends React.Component<Props, State> {
 
     render() {
         const {opened_panel_title} = this.state;
+        const sidebar_sections = make_sidebar_sections(this.props.user_interactions, this.props.state_proxy, this.props.store_actions);
         return (
             <SidebarSection>
                 <Actions state_proxy={this.props.state_proxy}
                          store_actions={this.props.store_actions} />
                 <SidebarBottom>
-                    <ExpansionPanel expanded={opened_panel_title === 'taxonomies'}
-                                    onChange={this.create_open_panel_handler('taxonomies')}>
-                        <ExpansionPanelSummary expandIcon={<ExpandMore />}>
-                            Taxonomies and Classes
-                        </ExpansionPanelSummary>
-                        <StyledPanelDetails>
-                            <Viewer
-                                refresh_source_by_status={this.props.user_interactions.refresh_source_by_status}
-                                state_proxy={this.props.state_proxy}
-                                user_interactions={this.props.user_interactions}
-                                store_actions={this.props.store_actions} />
-                        </StyledPanelDetails>
-                    </ExpansionPanel>
-                    <ExpansionPanel expanded={opened_panel_title === 'layers'}
-                                    onChange={this.create_open_panel_handler('layers')}>
-                        <ExpansionPanelSummary expandIcon={<ExpandMore />}>
-                            Basemaps, Images and Filters
-                        </ExpansionPanelSummary>
-                        <StyledPanelDetails>
-                            <div id='layer-switcher' className='layer-switcher-container' />
-                        </StyledPanelDetails>
-                    </ExpansionPanel>
+                    {
+                        sidebar_sections.map((section, i) => (
+                            <ExpansionPanel key={i}
+                                            expanded={opened_panel_title === section.slug}
+                                            onChange={this.create_open_panel_handler(section.slug)}>
+                                <ExpansionPanelSummary expandIcon={<ExpandMore />}>{section.title}</ExpansionPanelSummary>
+                                <StyledPanelDetails>{section.content}</StyledPanelDetails>
+                            </ExpansionPanel>
+                        ))
+                    }
                 </SidebarBottom>
             </SidebarSection>
         );
