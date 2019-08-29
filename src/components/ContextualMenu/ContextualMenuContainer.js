@@ -4,6 +4,7 @@ import React from 'react';
 import {Menu, MenuItem} from '@material-ui/core';
 import type {ContextualMenuItem} from '../../Types';
 import {ContextualMenuManager} from './ContextualMenuManager';
+import {ACTION_EXIT_CONTEXTUAL_MENU} from "./utils";
 
 
 type Props = {};
@@ -54,6 +55,11 @@ export class ContextualMenuContainer extends React.Component<Props, State> {
         });
     };
 
+    handle_outside_click = () => {
+        this.state.reject(ACTION_EXIT_CONTEXTUAL_MENU);
+        this.setState(Object.assign({}, default_state));
+    };
+
 
     create_onclick_handler = (item: ContextualMenuItem) => () => {
         this.state.resolve(item.value);
@@ -62,7 +68,10 @@ export class ContextualMenuContainer extends React.Component<Props, State> {
 
     render() {
         return (
-            <Menu open={Boolean(this.state.anchor_element)} anchorEl={this.state.anchor_element}>
+            <Menu
+                onClose={this.handle_outside_click}
+                open={Boolean(this.state.anchor_element)}
+                anchorEl={this.state.anchor_element}>
                 {
                     this.state.menu_items.map((item, i) => (
                         <MenuItem key={i} onClick={this.create_onclick_handler(item)}>{item.text}</MenuItem>

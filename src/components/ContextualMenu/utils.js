@@ -1,0 +1,3 @@
+// @flow strict
+
+export const ACTION_EXIT_CONTEXTUAL_MENU = 'ACTION_EXIT_CONTEXTUAL_MENU';
