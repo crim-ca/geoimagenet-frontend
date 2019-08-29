@@ -1,18 +1,24 @@
 // @flow strict
 
 import React from 'react';
-import {Menu, MenuItem} from '@material-ui/core';
+import {Menu, MenuItem, withStyles} from '@material-ui/core';
 import type {ContextualMenuItem} from '../../Types';
 import {ContextualMenuManager} from './ContextualMenuManager';
 import {ACTION_EXIT_CONTEXTUAL_MENU} from "./utils";
+import {debounced} from "../../utils/event_handling";
 
 
-type Props = {};
+type Props = {
+    classes: {}
+};
 type State = {
     menu_items: ContextualMenuItem[],
     anchor_element: HTMLElement | null,
+    open: boolean,
     resolve: () => Promise<void>,
     reject: () => Promise<void>,
+    mouse_x: number,
+    mouse_y: number,
 };
 
 const default_resolve = () => {
@@ -24,12 +30,20 @@ const default_reject = () => {
 
 export const default_state = {
     menu_items: [],
-    anchor_element: null,
+    open: false,
     resolve: default_resolve,
     reject: default_reject,
 };
 
-export class ContextualMenuContainer extends React.Component<Props, State> {
+const style = {
+    anchor_element: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+    }
+};
+
+class ContextualMenuContainer extends React.Component<Props, State> {
 
     state = Object.assign({}, default_state);
 
@@ -37,6 +51,18 @@ export class ContextualMenuContainer extends React.Component<Props, State> {
         super();
         ContextualMenuManager.register_populate_menu_callback(this.handle_populate_menu_request);
     }
+
+    componentDidMount(): void {
+        this.setState({anchor_element: document.getElementById('anchor_element')});
+        addEventListener('mousemove', debounced(50, this.set_mouse_position));
+    }
+
+    set_mouse_position = (event) => {
+        this.setState({
+            mouse_x: event.clientX,
+            mouse_y: event.clientY,
+        });
+    };
 
     /**
      * When destroying this component, we need to unregister our dialog creation callback from the manager.
@@ -46,9 +72,11 @@ export class ContextualMenuContainer extends React.Component<Props, State> {
         ContextualMenuManager.remove_populate_menu_callback();
     }
 
-    handle_populate_menu_request = async (menu_items: ContextualMenuItem[], anchor_element: HTMLElement, resolve, reject) => {
+    handle_populate_menu_request = async (menu_items: ContextualMenuItem[], resolve, reject) => {
+        this.state.anchor_element.style.left = `${this.state.mouse_x}px`;
+        this.state.anchor_element.style.top = `${this.state.mouse_y}px`;
         this.setState({
-            anchor_element: anchor_element,
+            open: true,
             menu_items: menu_items,
             resolve: resolve,
             reject: reject,
@@ -67,17 +95,27 @@ export class ContextualMenuContainer extends React.Component<Props, State> {
     };
 
     render() {
+        const {classes} = this.props;
         return (
-            <Menu
-                onClose={this.handle_outside_click}
-                open={Boolean(this.state.anchor_element)}
-                anchorEl={this.state.anchor_element}>
-                {
-                    this.state.menu_items.map((item, i) => (
-                        <MenuItem key={i} onClick={this.create_onclick_handler(item)}>{item.text}</MenuItem>
-                    ))
-                }
-            </Menu>
+            <>
+                <div id='anchor_element' className={classes.anchor_element} />
+                <Menu
+                    onClose={this.handle_outside_click}
+                    open={this.state.open}
+                    anchorEl={this.state.anchor_element}>
+                    {
+                        this.state.menu_items.map((item, i) => (
+                            <MenuItem key={i} onClick={this.create_onclick_handler(item)}>{item.text}</MenuItem>
+                        ))
+                    }
+                </Menu>
+            </>
         );
     }
 }
+
+const styled = withStyles(style)(ContextualMenuContainer);
+
+export {
+    styled as ContextualMenuContainer,
+};

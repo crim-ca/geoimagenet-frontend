@@ -20,7 +20,7 @@ class ContextualMenuManager {
         this.populate_menu_callback = null;
     };
 
-    choose_option = (menu_items: ContextualMenuItem[], anchor_element: HTMLElement) => {
+    choose_option = (menu_items: ContextualMenuItem[]) => {
         return new Promise((resolve, reject) => {
 
             if (menu_items.length < 2) {
@@ -28,7 +28,7 @@ class ContextualMenuManager {
             }
 
             if (typeof this.populate_menu_callback === 'function') {
-                return this.populate_menu_callback(menu_items, anchor_element, resolve, reject);
+                return this.populate_menu_callback(menu_items, resolve, reject);
             }
             if (this.populate_menu_callback === null) {
                 reject('There is no populate menu callback registered. Did you instantiate a ContextualMenuContainer?');

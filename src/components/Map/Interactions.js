@@ -46,7 +46,7 @@ const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStor
         });
     });
 
-    ContextualMenuManager.choose_option(menu_items, event.originalEvent.target).then(
+    ContextualMenuManager.choose_option(menu_items).then(
         choice => {
             selected_features_collection.clear();
             selected_features_collection.push(choice);

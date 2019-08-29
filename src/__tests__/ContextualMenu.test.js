@@ -84,8 +84,7 @@ describe('We should be able to instantiate the contextual menu container and use
 
     test('We can choose a specific option from the contextual menu', async (done) => {
         const wrapper = mount(<ContextualMenuContainer />);
-        const root_div = document.getElementById('contextual-menu-root');
-        const promise = ContextualMenuManager.choose_option(default_options, root_div);
+        const promise = ContextualMenuManager.choose_option(default_options);
         promise.then(value => {
             expect(value).toBe('option_1_value');
             wrapper.unmount();
