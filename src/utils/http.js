@@ -1,5 +1,5 @@
 // @flow strict
-export const make_http_request = async (url: string, options: RequestOptions = {}) => {
+export const make_http_request = async (url: string, options: RequestOptions = {}): Promise<Response> => {
     try {
         const res = await fetch(url, options);
         if (res.ok) {

@@ -160,6 +160,18 @@ export class UserInteractions {
         this.store_actions.end_annotation();
     };
 
+    save_followed_user = (form_data: {id: number | string, nickname: string}): void => {
+        this.data_queries.save_followed_user(form_data).then(
+            () => {
+                NotificationManager.success('We were able to save your followed user.');
+            },
+            error => {
+                captureException(error);
+                NotificationManager.error('We were unable to save your followed user.');
+            },
+        );
+    };
+
     populate_image_dictionary = async () => {
         const images_dictionary = await this.data_queries.fetch_images_dictionary();
         this.store_actions.set_images_dictionary(images_dictionary);

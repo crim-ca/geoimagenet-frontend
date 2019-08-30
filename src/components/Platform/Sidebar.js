@@ -79,7 +79,7 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions) 
         sections.push({
             title: 'Settings',
             slug: 'settings',
-            content: (<SettingsContainer user={state_proxy.logged_user} />),
+            content: (<SettingsContainer user={state_proxy.logged_user} user_interactions={user_interactions} />),
         });
     }
     return sections;

@@ -30,6 +30,10 @@ export class DataQueries {
         });
     };
 
+    save_followed_user = async (form_data: {id: number | string, nickname: string}): Promise<void> => {
+        return await post_json(`${this.geoimagenet_api_endpoint}/users/current/followers`, JSON.stringify(form_data));
+    };
+
     /**
      * we overwrite the return for the first element because this method is called get by id, we only ever want one element
      */

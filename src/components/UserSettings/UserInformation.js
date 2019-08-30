@@ -12,6 +12,7 @@ export class UserInformation extends React.Component<Props> {
         const {user} = this.props;
         return (
             <table>
+                <tbody>
                 <tr>
                     <th>Username:</th>
                     <td>{user.user_name}</td>
@@ -24,6 +25,7 @@ export class UserInformation extends React.Component<Props> {
                     <th>Unique id:</th>
                     <td>{user.id}</td>
                 </tr>
+                </tbody>
             </table>
         );
     }
