@@ -17,7 +17,7 @@ import {typeof GeoJSON} from "ol/format";
 import {StoreActions} from "../store/StoreActions";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 import {typeof Feature, ModifyEvent} from "ol";
-import {Taxonomy, TaxonomyClass} from "./entities";
+import {SatelliteImage, Taxonomy, TaxonomyClass} from "./entities";
 import type {MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI} from "../Types";
 
 
@@ -173,9 +173,15 @@ export class UserInteractions {
      */
     feature_respects_its_original_image = (feature: Feature, map: Map) => {
         const image_id = feature.get('image_id');
-        const this_satellite_image = this.state_proxy.images_dictionary.find(image => {
+        const this_satellite_image: SatelliteImage | typeof undefined = this.state_proxy.images_dictionary.find(image => {
             return image.id === image_id;
         });
+        if (this_satellite_image === undefined) {
+            NotificationManager.error('The image you are trying to annotate does not seem to be referenced by the aip. ' +
+                'You may try to reload the platform but this seem to be an internal error, you may want to contact ' +
+                'your platform administrator.');
+            return false;
+        }
         const correct_image_layer = this_satellite_image.layer_name;
         const coordinates_set: CoordinatesSet = feature.getGeometry().getCoordinates();
         let passes_validation: boolean = true;
