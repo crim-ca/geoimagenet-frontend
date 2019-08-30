@@ -39,3 +39,16 @@ export type ContextualMenuItem = {
 export type PopulateContextualMenuCallback = (ContextualMenuItem[], () => void, () => void) => Promise<void>;
 
 export type TaxonomyClassToggleFunction = (TaxonomyClass, ?boolean) => void;
+
+export type MagpieMergedSessionInformation = {
+    authenticated: boolean,
+    code: number,
+    detail: string,
+    type: string,
+    user: {
+        email: string,
+        group_names: string[],
+        user_id: number,
+        user_name: string
+    },
+};

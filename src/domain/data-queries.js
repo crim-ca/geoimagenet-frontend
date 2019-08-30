@@ -2,19 +2,7 @@
 
 import {make_http_request, post_json, put_json} from '../utils/http.js';
 import {SatelliteImage} from "./entities";
-
-type MergedSessionInformation = {
-    authenticated: boolean,
-    code: number,
-    detail: string,
-    type: string,
-    user: {
-        email: string,
-        group_names: string[],
-        user_id: number,
-        user_name: string
-    },
-};
+import type {MagpieMergedSessionInformation} from "../Types";
 
 /**
  * Here we find all the actual requests for data from the api.
@@ -80,7 +68,7 @@ export class DataQueries {
      * but users/current will happily return an user object even for not-logged users (the famed anonymous user).
      * @todo as we are coupled to the idea that there is an actual user that is anonymous, we could add test around this boundary
      */
-    current_user_session = async (): Promise<MergedSessionInformation> => {
+    current_user_session = async (): Promise<MagpieMergedSessionInformation> => {
         const responses = await Promise.all([
             make_http_request(`${this.magpie_endpoint}/users/current`),
             make_http_request(`${this.magpie_endpoint}/session`),

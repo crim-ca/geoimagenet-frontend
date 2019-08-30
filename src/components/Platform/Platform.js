@@ -9,8 +9,6 @@ import {UserInteractions} from '../../domain/user-interactions.js';
 import {StoreActions} from '../../store/StoreActions';
 import {Sidebar} from './Sidebar';
 
-
-
 const PlatformContainer = withStyles(({values}) => ({
     root: {
         display: 'grid',
@@ -53,9 +51,6 @@ type Props = {
     store_actions: StoreActions,
     user_interactions: UserInteractions,
 };
-type State = {
-    opened_panel_title: string,
-};
 
 /**
  * The Platform is the top level component for the annotation platform. It is responsible for managing the map, hence
@@ -63,7 +58,7 @@ type State = {
  * or there would be nothing to mount the map onto.
  */
 @observer
-class Platform extends Component<Props, State> {
+class Platform extends Component<Props> {
 
     render() {
         return (

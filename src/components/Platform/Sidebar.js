@@ -8,6 +8,7 @@ import React from "react";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {StoreActions} from "../../store/StoreActions";
 import {UserInteractions} from "../../domain";
+import {Container as SettingsContainer} from '../UserSettings/Container';
 
 const SidebarSection = withStyles({
     root: {
@@ -72,6 +73,11 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions) 
         slug: 'layers',
         content: (<div id='layer-switcher' className='layer-switcher-container' />),
     },
+    {
+        title: 'Settings',
+        slug: 'settings',
+        content: (<SettingsContainer user={state_proxy.logged_user} />),
+    },
 ]);
 
 export class Sidebar extends React.Component<Props, State> {
@@ -99,7 +105,8 @@ export class Sidebar extends React.Component<Props, State> {
                             <ExpansionPanel key={i}
                                             expanded={opened_panel_title === section.slug}
                                             onChange={this.create_open_panel_handler(section.slug)}>
-                                <ExpansionPanelSummary expandIcon={<ExpandMore />}>{section.title}</ExpansionPanelSummary>
+                                <ExpansionPanelSummary
+                                    expandIcon={<ExpandMore />}>{section.title}</ExpansionPanelSummary>
                                 <StyledPanelDetails>{section.content}</StyledPanelDetails>
                             </ExpansionPanel>
                         ))

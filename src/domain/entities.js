@@ -204,18 +204,17 @@ export class Permission {
     }
 }
 
-/**
- * User entity.
- */
 export class User {
     user_name: string;
     email: string;
     group_names: string[];
+    id: number;
 
-    constructor(user_name: string, email: string, group_names: string[]) {
+    constructor(user_name: string, email: string, group_names: string[], id: number) {
         this.user_name = user_name;
         this.email = email;
         this.group_names = group_names;
+        this.id = id;
     }
 }
 

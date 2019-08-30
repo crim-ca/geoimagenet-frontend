@@ -18,7 +18,7 @@ import {StoreActions} from "../store/StoreActions";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 import {typeof Feature, ModifyEvent} from "ol";
 import {Taxonomy, TaxonomyClass} from "./entities";
-import type {TaxonomyClassesDataFromAPI} from "../Types";
+import type {MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI} from "../Types";
 
 
 /**
@@ -329,9 +329,9 @@ export class UserInteractions {
          *
          * @type {Object}
          */
-        const magpie_session_json = await this.data_queries.current_user_session();
+        const magpie_session_json: MagpieMergedSessionInformation = await this.data_queries.current_user_session();
         const {user, authenticated} = magpie_session_json;
-        const user_instance = new User(user.user_name, user.email, user.group_names);
+        const user_instance = new User(user.user_name, user.email, user.group_names, user.user_id);
         this.store_actions.set_session_user(user_instance);
         let json_response;
         try {
