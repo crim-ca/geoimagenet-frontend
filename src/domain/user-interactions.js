@@ -160,7 +160,7 @@ export class UserInteractions {
         this.store_actions.end_annotation();
     };
 
-    save_followed_user = (form_data: {id: number | string, nickname: string}): void => {
+    save_followed_user = (form_data: {id: number | string, nickname: string}[]): void => {
         this.data_queries.save_followed_user(form_data).then(
             () => {
                 NotificationManager.success('We were able to save your followed user.');

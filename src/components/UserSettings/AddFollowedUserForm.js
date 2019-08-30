@@ -2,6 +2,7 @@
 
 import React from 'react';
 import {UserInteractions} from "../../domain";
+import {withStyles} from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import {withTranslation} from '../../utils';
@@ -10,10 +11,23 @@ import {TFunction} from 'react-i18next';
 type Props = {
     user_interactions: UserInteractions,
     t: TFunction,
+    classes: {
+        form: {},
+    }
 };
 type State = {
     id: number | string,
     nickname: string,
+};
+
+const styles = {
+    form: {
+        display: 'flex',
+        flexDirection: 'row',
+        '& > *': {
+            margin: '5px',
+        }
+    }
 };
 
 class AddFollowedUserForm extends React.Component<Props, State> {
@@ -25,7 +39,7 @@ class AddFollowedUserForm extends React.Component<Props, State> {
 
     save = () => {
         const {user_interactions} = this.props;
-        user_interactions.save_followed_user(this.state);
+        user_interactions.save_followed_user([this.state]);
     };
 
     change = (field: string) => (event: Event & { target: HTMLInputElement }) => {
@@ -33,18 +47,20 @@ class AddFollowedUserForm extends React.Component<Props, State> {
     };
 
     render() {
-        const {t} = this.props;
+        const {t, classes} = this.props;
         return (
             <>
-                <Typography variant='h3'>{t('settings:add_followed_user')}</Typography>
-                <form>
-                    <TextField id='id' label='User id' value={this.state.id} onChange={this.change('id')} />
-                    <button type="button" onClick={this.save}>Save</button>
+                <Typography variant='h5'>{t('settings:followed_users')}</Typography>
+                <form className={classes.form}>
+                    <TextField id='id' label={t('settings:followed_user_id')} value={this.state.id} onChange={this.change('id')} />
+                    <TextField id='nickname' label={t('settings:followed_user_nickname')} value={this.state.nickname} onChange={this.change('nickname')} />
+                    <button type="button" onClick={this.save}>{t('settings:save')}</button>
                 </form>
             </>
         );
     }
 }
 
-const TranslatedComponent = withTranslation()(AddFollowedUserForm);
+const StyledComponent = withStyles(styles)(AddFollowedUserForm);
+const TranslatedComponent = withTranslation()(StyledComponent);
 export {TranslatedComponent as AddFollowedUserForm};

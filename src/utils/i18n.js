@@ -177,6 +177,15 @@ const resources = {
         },
     },
     fr: {
+        settings: {
+            username: "Nom d'utilisateur/trice",
+            password: 'Mot de passe',
+            unique_id: 'ID unique',
+            followed_users: 'Utilisateurs/trices suiviEs.',
+            followed_user_id: 'ID unique voulu',
+            followed_user_nickname: 'Surnom choisi',
+            save: 'Sauver',
+        },
         title: {
             benchmarks: 'Benchmark/Test',
             mission: 'Mission',

@@ -30,8 +30,8 @@ export class DataQueries {
         });
     };
 
-    save_followed_user = async (form_data: {id: number | string, nickname: string}): Promise<void> => {
-        return await post_json(`${this.geoimagenet_api_endpoint}/users/current/followers`, JSON.stringify(form_data));
+    save_followed_user = async (form_data: {id: number | string, nickname: string}[]): Promise<void> => {
+        return await post_json(`${this.geoimagenet_api_endpoint}/users/current/followed_users`, JSON.stringify(form_data));
     };
 
     /**
