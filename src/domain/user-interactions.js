@@ -10,7 +10,6 @@ import {ANNOTATION} from "./constants";
 import {captureException} from "@sentry/browser";
 import {DataQueries} from "./data-queries";
 
-import i18n from 'i18next';
 import {typeof Map} from "ol/Map";
 import {typeof Event} from "ol/events";
 import {typeof GeoJSON} from "ol/format";
@@ -18,7 +17,10 @@ import {StoreActions} from "../store/StoreActions";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 import {typeof Feature, ModifyEvent} from "ol";
 import {SatelliteImage, Taxonomy, TaxonomyClass} from "./entities";
-import type {MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI} from "../Types";
+import type {FollowedUser, MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI} from "../Types";
+import {i18n} from '../utils';
+
+const {t} = i18n;
 
 
 /**
@@ -163,13 +165,22 @@ export class UserInteractions {
     save_followed_user = (form_data: {id: number | string, nickname: string}[]): void => {
         this.data_queries.save_followed_user(form_data).then(
             () => {
-                NotificationManager.success('We were able to save your followed user.');
+                NotificationManager.success(t('settings.save_followed_users_success'));
             },
             error => {
                 captureException(error);
-                NotificationManager.error('We were unable to save your followed user.');
+                NotificationManager.error(t('settings.save_followed_users_failure'));
             },
         );
+    };
+
+    get_followed_users_collection = async (): Promise<FollowedUser[]> => {
+        try {
+            return await this.data_queries.fetch_followed_users();
+        } catch (e) {
+            captureException(e);
+            NotificationManager.error(t('settings.fetch_followed_users_failure'));
+        }
     };
 
     populate_image_dictionary = async () => {

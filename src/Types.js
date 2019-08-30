@@ -82,3 +82,8 @@ export type MagpiePermissionsData = {
         service_type: string,
     },
 };
+
+export type FollowedUser = {
+    id: number,
+    nickname: string,
+};

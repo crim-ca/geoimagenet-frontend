@@ -4,7 +4,6 @@ import React from 'react';
 import {UserInteractions} from "../../domain";
 import {withStyles} from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 import {withTranslation} from '../../utils';
 import {TFunction} from 'react-i18next';
 
@@ -49,14 +48,17 @@ class AddFollowedUserForm extends React.Component<Props, State> {
     render() {
         const {t, classes} = this.props;
         return (
-            <>
-                <Typography variant='h5'>{t('settings:followed_users')}</Typography>
-                <form className={classes.form}>
-                    <TextField id='id' label={t('settings:followed_user_id')} value={this.state.id} onChange={this.change('id')} />
-                    <TextField id='nickname' label={t('settings:followed_user_nickname')} value={this.state.nickname} onChange={this.change('nickname')} />
-                    <button type="button" onClick={this.save}>{t('settings:save')}</button>
-                </form>
-            </>
+            <form className={classes.form}>
+                <TextField id='id'
+                           label={t('settings:followed_user_id')}
+                           value={this.state.id}
+                           onChange={this.change('id')} />
+                <TextField id='nickname'
+                           label={t('settings:followed_user_nickname')}
+                           value={this.state.nickname}
+                           onChange={this.change('nickname')} />
+                <button type="button" onClick={this.save}>{t('settings:save')}</button>
+            </form>
         );
     }
 }

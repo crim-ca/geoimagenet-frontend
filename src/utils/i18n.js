@@ -180,11 +180,15 @@ const resources = {
         settings: {
             username: "Nom d'utilisateur/trice",
             password: 'Mot de passe',
-            unique_id: 'ID unique',
+            unique_id: 'Id unique',
+            id: 'Id',
             followed_users: 'Utilisateurs/trices suiviEs.',
-            followed_user_id: 'ID unique voulu',
+            followed_user_id: 'Id unique voulu',
             followed_user_nickname: 'Surnom choisi',
             save: 'Sauver',
+            fetch_followed_users_failure: "Nous n'avons pu générer la liste de vos utilisateurs/trices suiviEs.",
+            save_followed_users_success: "Nous avons ajouté l'utilisateur/trice à votre compte.",
+            save_followed_users_failure: "Nous n'avons pu ajouter l'utilisateur/trice à votre compte.",
         },
         title: {
             benchmarks: 'Benchmark/Test',

@@ -2,7 +2,7 @@
 
 import {make_http_request, post_json, put_json} from '../utils/http.js';
 import {SatelliteImage} from "./entities";
-import type {MagpieMergedSessionInformation} from "../Types";
+import type {FollowedUser, MagpieMergedSessionInformation} from "../Types";
 
 /**
  * Here we find all the actual requests for data from the api.
@@ -32,6 +32,11 @@ export class DataQueries {
 
     save_followed_user = async (form_data: {id: number | string, nickname: string}[]): Promise<void> => {
         return await post_json(`${this.geoimagenet_api_endpoint}/users/current/followed_users`, JSON.stringify(form_data));
+    };
+
+    fetch_followed_users = async (): Promise<FollowedUser[]> => {
+        const response = await make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users`);
+        return await response.json();
     };
 
     /**
