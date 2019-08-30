@@ -162,7 +162,7 @@ export class UserInteractions {
         this.store_actions.end_annotation();
     };
 
-    save_followed_user = (form_data: {id: number | string, nickname: string}[]): void => {
+    save_followed_user = (form_data: { id: number | string, nickname: string }[]): void => {
         this.data_queries.save_followed_user(form_data).then(
             () => {
                 NotificationManager.success(t('settings.save_followed_users_success'));
@@ -174,12 +174,26 @@ export class UserInteractions {
         );
     };
 
-    get_followed_users_collection = async (): Promise<FollowedUser[]> => {
+    get_followed_users_collection = (): Promise<FollowedUser[]> => {
+        return new Promise((resolve, reject) => {
+            this.data_queries.fetch_followed_users().then(
+                response => resolve(response),
+                error => {
+                    captureException(error);
+                    NotificationManager.error(t('settings.fetch_followed_users_failure'));
+                    reject(error);
+                },
+            );
+        });
+    };
+
+    remove_followed_user = async (id: number): Promise<void> => {
         try {
-            return await this.data_queries.fetch_followed_users();
+            await this.data_queries.remove_followed_user(id);
+            NotificationManager.success(t('settings:remove_followed_user_success'));
         } catch (e) {
             captureException(e);
-            NotificationManager.error(t('settings.fetch_followed_users_failure'));
+            throw(e);
         }
     };
 

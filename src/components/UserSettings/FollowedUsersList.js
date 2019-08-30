@@ -6,11 +6,15 @@ import MaterialTable from "material-table";
 import {TFunction} from 'react-i18next';
 import {withTranslation} from '../../utils';
 import {tableIcons} from "../../utils/react";
+import ClearIcon from '@material-ui/icons/Clear';
 
 type Props = {
     followed_users: FollowedUser[],
+    delete_user: (number) => void,
     t: TFunction,
 };
+
+const clear_icon = () => <ClearIcon />;
 
 class FollowedUsersList extends React.Component<Props> {
     render() {
@@ -22,8 +26,16 @@ class FollowedUsersList extends React.Component<Props> {
                     columns={[
                         {title: t('settings:id'), field: 'id'},
                         {title: t('settings:nickname'), field: 'nickname'},
+                        {title: t('settings:delete'), field: 'nickname'},
                     ]}
                     data={this.props.followed_users}
+                    actions={[
+                        {
+                            icon: clear_icon,
+                            tooltip: t('settings:delete_user'),
+                            onClick: (event, rowData) => this.props.delete_user(rowData.id),
+                        }
+                    ]}
                     title={t('settings:followed_users')} />
             </div>
         );

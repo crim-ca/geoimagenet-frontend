@@ -1,14 +1,17 @@
 // @flow strict
 export const make_http_request = async (url: string, options: RequestOptions = {}): Promise<Response> => {
-    try {
-        const res = await fetch(url, options);
-        if (res.ok) {
-            return res;
-        }
-        return Promise.reject(res);
-    } catch (e) {
-        return Promise.reject(e);
-    }
+    return new Promise((resolve, reject) => {
+        fetch(url, options).then(
+            response => {
+                if (response.ok) {
+                    resolve(response);
+                } else {
+                    reject(response);
+                }
+            },
+            error => reject(error),
+        );
+    });
 };
 
 export const post_json = (url: string, payload: string) => {

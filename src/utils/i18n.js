@@ -186,9 +186,12 @@ const resources = {
             followed_user_id: 'Id unique voulu',
             followed_user_nickname: 'Surnom choisi',
             save: 'Sauver',
+            delete_user: 'Retirer utilisateur/trice de la liste.',
             fetch_followed_users_failure: "Nous n'avons pu générer la liste de vos utilisateurs/trices suiviEs.",
             save_followed_users_success: "Nous avons ajouté l'utilisateur/trice à votre compte.",
             save_followed_users_failure: "Nous n'avons pu ajouter l'utilisateur/trice à votre compte.",
+            remove_followed_user_success: "Nous avons retiré l'utilisateur/trice de votre compte.",
+            remove_followed_user_failure: "Nous n'avons pu retirer l'utilisateur/trice de votre compte.",
         },
         title: {
             benchmarks: 'Benchmark/Test',

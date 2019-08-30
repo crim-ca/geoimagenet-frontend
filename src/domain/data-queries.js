@@ -3,6 +3,11 @@
 import {make_http_request, post_json, put_json} from '../utils/http.js';
 import {SatelliteImage} from "./entities";
 import type {FollowedUser, MagpieMergedSessionInformation} from "../Types";
+import Sentry from '@sentry/browser';
+import {i18n} from '../utils';
+import {NotificationManager} from "react-notifications";
+
+const {t} = i18n;
 
 /**
  * Here we find all the actual requests for data from the api.
@@ -22,7 +27,7 @@ export class DataQueries {
         this.ml_endpoint = ml_endpoint;
     }
 
-    fetch_images_dictionary = async() => {
+    fetch_images_dictionary = async () => {
         const response = await make_http_request(`${this.geoimagenet_api_endpoint}/images`);
         const images = await response.json();
         return images.map(raw => {
@@ -30,13 +35,32 @@ export class DataQueries {
         });
     };
 
-    save_followed_user = async (form_data: {id: number | string, nickname: string}[]): Promise<void> => {
-        return await post_json(`${this.geoimagenet_api_endpoint}/users/current/followed_users`, JSON.stringify(form_data));
+    save_followed_user = (form_data: { id: number | string, nickname: string }[]): Promise<void> => {
+        return post_json(`${this.geoimagenet_api_endpoint}/users/current/followed_users`, JSON.stringify(form_data));
     };
 
-    fetch_followed_users = async (): Promise<FollowedUser[]> => {
-        const response = await make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users`);
-        return await response.json();
+    fetch_followed_users = (): Promise<FollowedUser[]> => {
+        return new Promise((resolve, reject) => {
+            make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users`)
+                .then(
+                    response => response.json(),
+                    error => reject(error),
+                )
+                .then(
+                    json => resolve(json),
+                    error => {
+                        Sentry.captureException(error);
+                        NotificationManager.error(t('network:malformed_response'));
+                        reject(error);
+                    }
+                );
+        });
+    };
+
+    remove_followed_user = async (id: number): Promise<void> => {
+        return make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users/${id}`, {
+            method: 'delete',
+        });
     };
 
     /**
