@@ -400,6 +400,7 @@ export class UserInteractions {
             this.store_actions.set_annotation_counts(counts);
             NotificationManager.success('Annotations were released.');
         } catch (error) {
+            captureException(error);
             NotificationManager.error('We were unable to release the annotations.');
         }
     };
