@@ -73,9 +73,17 @@ describe('We should be able to instantiate the contextual menu container and use
         await expect(ContextualMenuManager.choose_option(default_options)).rejects.toEqual('There is no populate menu callback registered. Did you instantiate a ContextualMenuContainer?');
 
         expect(() => {
+            /**
+             * $FlowFixMe
+             * here we want to specifically test calling the function with an invalid type
+             */
             ContextualMenuManager.register_populate_menu_callback('invalid function');
         }).toThrow('The populate menu callback should be a function.');
 
+        /**
+         * $FlowFixMe
+         * here we want to specifically test what happens if someone directly assigns to the property
+         */
         ContextualMenuManager.populate_menu_callback = 'invalid function';
         await expect(ContextualMenuManager.choose_option(default_options)).rejects.toEqual('The populate menu callback registered is not a function. ' +
             'Did you instantiate a ContextualMenuContainer?');

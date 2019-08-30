@@ -17,6 +17,8 @@ import {
     faTimes
 } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
+import {StoreActions} from "../store/StoreActions";
+import {GeoImageNetStore} from "../store/GeoImageNetStore";
 
 const ACTIONS = [
     {name: 'eye', icon: faEye, mode: MODE.VISUALIZE, permission_name: READ, resource: ANNOTATIONS},
@@ -43,31 +45,23 @@ const ActionsContainer = withStyles(theme => {
     return <div className={`${classes.root} actions`}>{children}</div>;
 });
 
+type Props = {
+    store_actions: StoreActions,
+    state_proxy: GeoImageNetStore,
+};
+
 /**
  * This component renders the different buttons that represent the modes in which an user can do actions upon the annotations.
  * It should filter the actions based on the access control list.
  */
 
 @observer
-class Actions extends Component {
-
-    /**
-     * @property {StoreActions} store_actions
-     * @property {Object} state_proxy
-     */
-
-    static propTypes = {
-        store_actions: PropTypes.object.isRequired,
-        state_proxy: PropTypes.object.isRequired
-    };
+class Actions extends Component<Props> {
 
     /**
      * Create specific callback for a mode. Each button should have its own callback such as these.
-     * @private
-     * @param {MODE} mode
-     * @returns {Function}
      */
-    make_set_mode_callback = mode => () => {
+    make_set_mode_callback = (mode: $Values<typeof MODE>) => () => {
         this.props.store_actions.set_mode(mode);
     };
 

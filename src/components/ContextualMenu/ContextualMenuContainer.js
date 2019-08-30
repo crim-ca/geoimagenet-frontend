@@ -7,7 +7,7 @@ import {ContextualMenuManager} from './ContextualMenuManager';
 import {ACTION_EXIT_CONTEXTUAL_MENU} from "./utils";
 import {debounced} from "../../utils/event_handling";
 
-
+type PromiseResolutionCallback = (?string) => void;
 type Props = {
     classes: {
         anchor_element: {},
@@ -17,16 +17,16 @@ type State = {
     menu_items: ContextualMenuItem[],
     anchor_element: HTMLElement,
     open: boolean,
-    resolve: (?string) => void,
-    reject: (?string) => void,
+    resolve: PromiseResolutionCallback,
+    reject: PromiseResolutionCallback,
     mouse_x: number,
     mouse_y: number,
 };
 
-const default_resolve = () => {
+const default_resolve: PromiseResolutionCallback = () => {
     throw new Error('The default resolve was called, this means the dialog container was probably not correctly instantiated.');
 };
-const default_reject = () => {
+const default_reject: PromiseResolutionCallback = () => {
     throw new Error('The default reject was called, this means the dialog container was probably not correctly instantiated.');
 };
 
@@ -55,11 +55,21 @@ class ContextualMenuContainer extends React.Component<Props, State> {
     }
 
     componentDidMount(): void {
-        this.setState({anchor_element: document.getElementById('anchor_element')});
-        addEventListener('mousemove', debounced(50, this.set_mouse_position));
+        const anchor_element = document.getElementById('anchor_element');
+        if (anchor_element === null) {
+            throw new TypeError('There should be an anchor element for the contextual menu container. ' +
+                'It appears the DOM was not correctly constructed.');
+        }
+        this.setState({anchor_element: anchor_element});
+        /**
+         * $FlowFixMe
+         * We can't possibly know all the type of every handler we'll want to debounce
+         * ignore flow validation here
+         */
+        window.addEventListener('mousemove', debounced(50, this.set_mouse_position));
     }
 
-    set_mouse_position = (event) => {
+    set_mouse_position = (event: MouseEvent) => {
         this.setState({
             mouse_x: event.clientX,
             mouse_y: event.clientY,

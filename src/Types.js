@@ -40,15 +40,45 @@ export type PopulateContextualMenuCallback = (ContextualMenuItem[], () => void, 
 
 export type TaxonomyClassToggleFunction = (TaxonomyClass, ?boolean) => void;
 
+type MimeType = string;
+
 export type MagpieMergedSessionInformation = {
     authenticated: boolean,
     code: number,
     detail: string,
-    type: string,
+    type: MimeType,
     user: {
         email: string,
         group_names: string[],
         user_id: number,
         user_name: string
+    },
+};
+
+export type MagpieResourceDictionary = {[number]: MagpieResourceData};
+
+export type MagpieResourceData = {
+    children: MagpieResourceDictionary,
+    parent_id: number,
+    permission_names: string[],
+    resource_display_name: string,
+    resource_id: number,
+    resource_name: string,
+    resource_type: string,
+    root_service_id: number
+};
+
+export type MagpiePermissionsData = {
+    code: number,
+    detail: string,
+    type: MimeType,
+    service: {
+        permission_name: string[],
+        public_url: string,
+        resource_id: number,
+        resources: MagpieResourceData[],
+        service_name: string,
+        service_sync_type: string | null,
+        service_type: string,
     },
 };

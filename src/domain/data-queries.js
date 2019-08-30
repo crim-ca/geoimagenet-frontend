@@ -26,7 +26,7 @@ export class DataQueries {
         const response = await make_http_request(`${this.geoimagenet_api_endpoint}/images`);
         const images = await response.json();
         return images.map(raw => {
-            return Object.assign(new SatelliteImage(), raw);
+            return new SatelliteImage(raw.bands, raw.bits, raw.extension, raw.filename, raw.id, raw.layer_name, raw.sensor_name);
         });
     };
 

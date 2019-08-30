@@ -1,3 +1,3 @@
 // @flow strict
 
-export const wait = (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));
+export const wait: (number) => Promise<void> = (timeout: number) => new Promise(resolve => setTimeout(resolve, timeout));

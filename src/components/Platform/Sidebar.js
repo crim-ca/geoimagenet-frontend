@@ -56,29 +56,34 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions) 
     user_interactions,
     state_proxy,
     store_actions,
-) => ([
-    {
-        title: 'Taxonomies and Classes',
-        slug: 'taxonomies',
-        content: (
-            <Viewer
-                refresh_source_by_status={user_interactions.refresh_source_by_status}
-                state_proxy={state_proxy}
-                user_interactions={user_interactions}
-                store_actions={store_actions} />
-        ),
-    },
-    {
-        title: 'Basemaps, Images and Filters',
-        slug: 'layers',
-        content: (<div id='layer-switcher' className='layer-switcher-container' />),
-    },
-    {
-        title: 'Settings',
-        slug: 'settings',
-        content: (<SettingsContainer user={state_proxy.logged_user} />),
-    },
-]);
+) => {
+    const sections = [
+        {
+            title: 'Taxonomies and Classes',
+            slug: 'taxonomies',
+            content: (
+                <Viewer
+                    refresh_source_by_status={user_interactions.refresh_source_by_status}
+                    state_proxy={state_proxy}
+                    user_interactions={user_interactions}
+                    store_actions={store_actions} />
+            ),
+        },
+        {
+            title: 'Basemaps, Images and Filters',
+            slug: 'layers',
+            content: (<div id='layer-switcher' className='layer-switcher-container' />),
+        },
+    ];
+    if (state_proxy.logged_user !== null) {
+        sections.push({
+            title: 'Settings',
+            slug: 'settings',
+            content: (<SettingsContainer user={state_proxy.logged_user} />),
+        });
+    }
+    return sections;
+};
 
 export class Sidebar extends React.Component<Props, State> {
 

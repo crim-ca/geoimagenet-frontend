@@ -260,10 +260,10 @@ class LayerSwitcher extends Control {
     enableTouchScroll_ = function (elm: HTMLElement) {
         if (isTouchDevice()) {
             let scrollStartPos = 0;
-            elm.addEventListener("touchstart", function (event) {
+            elm.addEventListener("touchstart", function (event: TouchEvent) {
                 scrollStartPos = this.scrollTop + event.touches[0].pageY;
             }, false);
-            elm.addEventListener("touchmove", function (event) {
+            elm.addEventListener("touchmove", function (event: TouchEvent) {
                 this.scrollTop = scrollStartPos - event.touches[0].pageY;
             }, false);
         }

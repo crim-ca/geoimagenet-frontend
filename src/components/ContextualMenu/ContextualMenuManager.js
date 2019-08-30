@@ -20,7 +20,7 @@ class ContextualMenuManager {
         this.populate_menu_callback = null;
     };
 
-    choose_option = (menu_items: ContextualMenuItem[]) => {
+    choose_option: (ContextualMenuItem[]) => Promise<void> = (menu_items: ContextualMenuItem[]) => {
         return new Promise((resolve, reject) => {
 
             if (menu_items.length < 2) {
