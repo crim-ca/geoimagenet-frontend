@@ -2,7 +2,7 @@
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import {withStyles, Paper} from '@material-ui/core';
-import {AnnotationStatusFilter} from '../AnnotationStatusFilter.js';
+import {AnnotationStatusFilter} from './AnnotationStatusFilter.js';
 import {MapContainer} from '../Map/MapContainer';
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from '../../domain/user-interactions.js';

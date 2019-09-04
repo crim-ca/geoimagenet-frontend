@@ -1,28 +1,31 @@
 // @flow strict
 
 import React from 'react';
-import {User} from "../../domain/entities";
+import {User} from '../../domain/entities';
+import {withTranslation} from '../../utils';
+import {TFunction} from 'react-i18next';
 
 type Props = {
     user: User,
+    t: TFunction,
 };
 
-export class UserInformation extends React.Component<Props> {
+class UserInformation extends React.Component<Props> {
     render() {
-        const {user} = this.props;
+        const {user, t} = this.props;
         return (
             <table>
                 <tbody>
                 <tr>
-                    <th>Username:</th>
+                    <th>{t('settings:username')}:</th>
                     <td>{user.user_name}</td>
                 </tr>
                 <tr>
-                    <th>Password:</th>
+                    <th>{t('settings:password')}:</th>
                     <td>********</td>
                 </tr>
                 <tr>
-                    <th>Unique id:</th>
+                    <th>{t('settings:unique_password')}:</th>
                     <td>{user.id}</td>
                 </tr>
                 </tbody>
@@ -30,3 +33,7 @@ export class UserInformation extends React.Component<Props> {
         );
     }
 }
+
+const TranslatedUserInformation = withTranslation()(UserInformation);
+
+export {TranslatedUserInformation as UserInformation};

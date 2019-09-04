@@ -3,7 +3,7 @@ import {observer} from 'mobx-react';
 import PropTypes from 'prop-types';
 import {withStyles, Chip} from '@material-ui/core';
 import DoneIcon from '@material-ui/icons/Done';
-import {StoreActions} from '../store/StoreActions';
+import {StoreActions} from '../../store/StoreActions';
 
 const make_colored_filter_chip = color => {
     return withStyles(theme => {
