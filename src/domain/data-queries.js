@@ -35,7 +35,7 @@ export class DataQueries {
         });
     };
 
-    save_followed_user = (form_data: { id: number | string, nickname: string }[]): Promise<void> => {
+    save_followed_user = (form_data: { id: number | string, nickname: string }[]): Promise<Response> => {
         return post_json(`${this.geoimagenet_api_endpoint}/users/current/followed_users`, JSON.stringify(form_data));
     };
 
@@ -57,7 +57,7 @@ export class DataQueries {
         });
     };
 
-    remove_followed_user = async (id: number): Promise<void> => {
+    remove_followed_user = async (id: number): Promise<Response> => {
         return make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users/${id}`, {
             method: 'delete',
         });

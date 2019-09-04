@@ -1,22 +1,22 @@
 // @flow strict
 
 import React from 'react';
-import {UserInteractions} from "../../domain";
 import {withStyles} from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import {withTranslation} from '../../utils';
 import {TFunction} from 'react-i18next';
+import type {FollowedUser} from "../../Types";
 
 type Props = {
-    user_interactions: UserInteractions,
+    save_user: (FollowedUser[]) => void,
     t: TFunction,
     classes: {
         form: {},
     }
 };
 type State = {
-    id: number | string,
-    nickname: string,
+    id: $PropertyType<FollowedUser, 'id'>,
+    nickname: $PropertyType<FollowedUser, 'nickname'>,
 };
 
 const styles = {
@@ -36,13 +36,18 @@ class AddFollowedUserForm extends React.Component<Props, State> {
         nickname: ''
     };
 
-    save = () => {
-        const {user_interactions} = this.props;
-        user_interactions.save_followed_user([this.state]);
+    save = async () => {
+        const saved = await this.props.save_user([this.state]);
+        if (saved) {
+            this.setState({
+                id: '',
+                nickname: '',
+            });
+        }
     };
 
-    change = (field: string) => (event: Event & { target: HTMLInputElement }) => {
-        this.setState({[field]: event.target.value});
+    change = (field: string) => (event: Event) => {
+        this.setState({[field]: (event.target: window.HTMLInputElement).value});
     };
 
     render() {

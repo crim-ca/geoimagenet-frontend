@@ -162,16 +162,8 @@ export class UserInteractions {
         this.store_actions.end_annotation();
     };
 
-    save_followed_user = (form_data: { id: number | string, nickname: string }[]): void => {
-        this.data_queries.save_followed_user(form_data).then(
-            () => {
-                NotificationManager.success(t('settings.save_followed_users_success'));
-            },
-            error => {
-                captureException(error);
-                NotificationManager.error(t('settings.save_followed_users_failure'));
-            },
-        );
+    save_followed_user = (form_data: FollowedUser[]): Promise<void> => {
+        return this.data_queries.save_followed_user(form_data);
     };
 
     get_followed_users_collection = (): Promise<FollowedUser[]> => {

@@ -84,6 +84,6 @@ export type MagpiePermissionsData = {
 };
 
 export type FollowedUser = {
-    id: number,
+    id: number | string,
     nickname: string,
 };

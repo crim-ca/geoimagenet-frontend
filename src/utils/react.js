@@ -1,3 +1,5 @@
+// @flow strict
+
 import {createMuiTheme, MuiThemeProvider} from '@material-ui/core';
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -93,7 +95,7 @@ export const theme = createMuiTheme({
     },
 });
 
-export const ThemedComponent = props => {
+export const ThemedComponent = (props: {children: {}}) => {
     const {children} = props;
     return (
         <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
