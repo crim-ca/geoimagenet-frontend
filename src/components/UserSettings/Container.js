@@ -37,30 +37,42 @@ class Container extends React.Component<Props, State> {
         const {t, user_interactions} = this.props;
         return new Promise((resolve) => {
             user_interactions.save_followed_user(form_data).then(
-            async () => {
-                NotificationManager.success(t('settings.save_followed_users_success'));
-                const followed_users = this.state.followed_users.concat(form_data);
-                this.setState({followed_users: followed_users});
-                resolve(true);
-            },
-            error => {
-                captureException(error);
-                NotificationManager.error(t('settings.save_followed_users_failure'));
-                /**
-                 * We use resolve in the error handler (instead of reject) because the caller, AddFollowedUserForm, does not care about error handling.
-                 * It only wants to know whether or not to reload its form.
-                 * Maybe even the form state should come from the container, but that'll be left for you.
-                 */
-                resolve(false);
-            },
-        );
+                async () => {
+                    NotificationManager.success(t('settings.save_followed_users_success'));
+                    const followed_users = this.state.followed_users.concat(form_data);
+                    this.setState({followed_users: followed_users});
+                    resolve(true);
+                },
+                error => {
+                    captureException(error);
+                    NotificationManager.error(t('settings.save_followed_users_failure'));
+                    /**
+                     * We use resolve in the error handler (instead of reject) because the caller, AddFollowedUserForm, does not care about error handling.
+                     * It only wants to know whether or not to reload its form.
+                     * Maybe even the form state should come from the container, but that'll be left for you.
+                     */
+                    resolve(false);
+                },
+            );
         });
     };
 
-    remove_followed_user = async (id: number): Promise<void> => {
-        await this.props.user_interactions.remove_followed_user(id);
-        const followed_users = await this.props.user_interactions.get_followed_users_collection();
-        this.setState({followed_users: followed_users});
+    remove_followed_user = async (id: number): void => {
+        const {t} = this.props;
+        this.props.user_interactions.remove_followed_user(id)
+            .then(
+                () => {
+                    NotificationManager.success(t('settings:remove_followed_user_success'));
+                    const followed_users = this.state.followed_users;
+                    const list_element_index = followed_users.findIndex((element: FollowedUser) => element.id === id);
+                    followed_users.splice(list_element_index, 1);
+                    this.setState({followed_users: followed_users});
+                },
+                error => {
+                    captureException(error);
+                    NotificationManager.error(t('settings:remove_followed_user_failure'));
+                },
+            );
     };
 
     render() {

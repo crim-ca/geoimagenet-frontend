@@ -27,6 +27,15 @@ const {t} = i18n;
  * In a web app, we need top level handlers that react to specific user intentions, and interactions.
  * These are not event handlers per se, they should receive everything needed to execute everything intended by the user,
  * from confirmation to store alterations.
+ *
+ * However, it starts to be apparent (with the latest remove_followed_users and others handlers) that possibly this layer is
+ * a superfluous proxy between presentation and data queries. Both user_interaction and data_queries represent the Data Access Layer.
+ * They could be the same, as the added responsibility of "error handling" (notifications to the user) could be actually done
+ * in the presentation. Which is possibly more relevant.
+ *
+ * In some cases an actual "data modification" needs multiples data queries to be made in succession, which I've tried to avoid in the
+ * data queries, but I now feel this separation is artificial. All of that concerns the data access layer, and it could be made from the
+ * same entity/layer, instead of the current separation between UserInteractions and DataQueries
  */
 type Coordinate = [number, number];
 type Coordinates = Coordinate[];
@@ -63,16 +72,6 @@ export class UserInteractions {
     refresh_source_by_status = (status: string) => {
         this.state_proxy.annotations_sources[status].clear();
         this.state_proxy.annotations_sources[status].refresh(true);
-    };
-
-    refresh_all_sources = () => {
-        const {annotation_status_list} = this.state_proxy;
-        Object.keys(this.state_proxy.annotation_status_list).forEach(k => {
-            const annotation_status = annotation_status_list[k];
-            if (annotation_status.activated) {
-                this.refresh_source_by_status(annotation_status.text);
-            }
-        });
     };
 
     switch_features_from_source_to_source(features: Array<Feature>, old_source: string, new_source: string) {
@@ -179,14 +178,8 @@ export class UserInteractions {
         });
     };
 
-    remove_followed_user = async (id: number): Promise<void> => {
-        try {
-            await this.data_queries.remove_followed_user(id);
-            NotificationManager.success(t('settings:remove_followed_user_success'));
-        } catch (e) {
-            captureException(e);
-            throw(e);
-        }
+    remove_followed_user = (id: number): Promise<Response> => {
+        return this.data_queries.remove_followed_user(id);
     };
 
     populate_image_dictionary = async () => {

@@ -26,7 +26,6 @@ class FollowedUsersList extends React.Component<Props> {
                     columns={[
                         {title: t('settings:id'), field: 'id'},
                         {title: t('settings:nickname'), field: 'nickname'},
-                        {title: t('settings:delete'), field: 'nickname'},
                     ]}
                     data={this.props.followed_users}
                     actions={[
@@ -36,6 +35,9 @@ class FollowedUsersList extends React.Component<Props> {
                             onClick: (event, rowData) => this.props.delete_user(rowData.id),
                         }
                     ]}
+                    options={{
+                        actionsColumnIndex: -1
+                    }}
                     title={t('settings:followed_users')} />
             </div>
         );
