@@ -7,6 +7,7 @@ import {Control} from 'ol/control';
 import {unByKey} from 'ol/Observable';
 import {Feature} from "ol";
 import type {AnnotationStatus} from './Types';
+import Layer from "ol/layer/Layer";
 
 /**
  * Somewhat dirty hack to know if the device supports touch events, but probably reliable. Might leak the touch event, but
@@ -85,7 +86,8 @@ class LayerSwitcher extends Control {
 
         const ul = document.createElement('ul');
         this.panel.appendChild(ul);
-        this.renderLayers_(this.getMap(), ul);
+        const layers = this.getMap().getLayers().getArray().slice().reverse();
+        this.renderLayers_(layers, ul);
 
     }
 
@@ -145,12 +147,11 @@ class LayerSwitcher extends Control {
     /**
      * Render all layers that are children of a group.
      */
-    renderLayer_(layer: Base, idx: number) {
+    renderLayer_(layer: Base, layer_index: number) {
 
         const this_ = this;
 
         const li = document.createElement('li');
-
         const layer_title = layer.get('title');
         const layer_id = this.uuid();
 
@@ -167,8 +168,8 @@ class LayerSwitcher extends Control {
             li.appendChild(label);
             const ul = document.createElement('ul');
             li.appendChild(ul);
-
-            this.renderLayers_(layer, ul);
+            const layers = layer.getLayers().getArray().slice().reverse();
+            this.renderLayers_(layers, ul);
 
         } else {
 
@@ -208,12 +209,10 @@ class LayerSwitcher extends Control {
 
     /**
      * Render all layers that are children of a group.
-     * @private
-     * @param layer_group Group layer whose children will be rendered.
-     * @param element DOM element that children will be appended to.
+     * layer_group Group layer whose children will be rendered.
+     * element DOM element that children will be appended to.
      */
-    renderLayers_(layer_group: Group, element: HTMLElement) {
-        const layers = layer_group.getLayers().getArray().slice().reverse();
+    renderLayers_(layers: Layer[], element: HTMLElement) {
         for (var i = 0, l; i < layers.length; i++) {
             l = layers[i];
             if (l.get('title')) {
@@ -224,7 +223,7 @@ class LayerSwitcher extends Control {
 
     /**
      * **Static** Call the supplied function for each layer in the passed layer group
-     * recursing nested groups.
+     * recursively nesting groups.
      * @param layer_group The layer group to start iterating from.
      * @param callback Callback which will be called for each `ol.layer.Base`
      * found under `lyr`. The signature for `fn` is the same as `ol.Collection#forEach`

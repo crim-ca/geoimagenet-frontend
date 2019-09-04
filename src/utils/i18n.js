@@ -201,7 +201,7 @@ const resources = {
             unique_id: 'Id unique',
             id: 'Id',
             followed_users: 'Utilisateurs/trices suiviEs',
-            followed_user_id: 'Id unique voulu',
+            followed_user_id: 'Id unique',
             followed_user_nickname: 'Surnom voulu',
             save: 'Ajouter',
             delete_user: 'Retirer utilisateur/trice de la liste.',
