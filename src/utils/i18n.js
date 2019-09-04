@@ -6,6 +6,23 @@ import {initReactI18next} from "react-i18next";
 
 const resources = {
     en: {
+        settings: {
+            username: "Username",
+            nickname: "Nickname",
+            password: 'Password',
+            unique_id: 'Unique ID',
+            id: 'Id',
+            followed_users: 'Followed users',
+            followed_user_id: "Other user's unique id",
+            followed_user_nickname: 'Choose a nickname',
+            save: 'Save',
+            delete_user: 'Remove user from the list',
+            fetch_followed_users_failure: "We were unable to get your followed users list.",
+            save_followed_users_success: "We added the user to your followed users list.",
+            save_followed_users_failure: "We were unable to add the user to your followed users list.",
+            remove_followed_user_success: "We removed the user from your followed users list.",
+            remove_followed_user_failure: "We were unable to remove the user from your followed users list.",
+        },
         title: {
             benchmarks: 'Benchmark',
             mission: 'Mission',
@@ -179,12 +196,13 @@ const resources = {
     fr: {
         settings: {
             username: "Nom d'utilisateur/trice",
+            nickname: "Surnom",
             password: 'Mot de passe',
             unique_id: 'Id unique',
             id: 'Id',
-            followed_users: 'Utilisateurs/trices suiviEs.',
+            followed_users: 'Utilisateurs/trices suiviEs',
             followed_user_id: 'Id unique voulu',
-            followed_user_nickname: 'Surnom choisi',
+            followed_user_nickname: 'Surnom voulu',
             save: 'Sauver',
             delete_user: 'Retirer utilisateur/trice de la liste.',
             fetch_followed_users_failure: "Nous n'avons pu générer la liste de vos utilisateurs/trices suiviEs.",
