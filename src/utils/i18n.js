@@ -6,6 +6,16 @@ import {initReactI18next} from "react-i18next";
 
 const resources = {
     en: {
+        annotations: {
+            status: {
+                new: 'New',
+                pre_released: 'Pre released',
+                released: 'Released',
+                validated: 'Validated',
+                rejected: 'Rejected',
+                deleted: 'Deleted',
+            }
+        },
         settings: {
             username: "Username",
             nickname: "Nickname",
@@ -194,6 +204,16 @@ const resources = {
         },
     },
     fr: {
+        annotations: {
+            status: {
+                new: 'Nouvelles',
+                pre_released: 'Pré-relâchées',
+                released: 'Relâchées',
+                validated: 'Validées',
+                rejected: 'Rejetées',
+                deleted: 'Supprimées',
+            }
+        },
         settings: {
             username: "Nom d'utilisateur/trice",
             nickname: "Surnom",

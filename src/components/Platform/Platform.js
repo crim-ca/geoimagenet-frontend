@@ -2,13 +2,11 @@
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import {withStyles, Paper} from '@material-ui/core';
-import {AnnotationStatusFilter} from './AnnotationStatusFilter.js';
 import {MapContainer} from '../Map/MapContainer';
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from '../../domain/user-interactions.js';
 import {StoreActions} from '../../store/StoreActions';
 import {Sidebar} from './Sidebar';
-import {LayerSwitcher} from "../../LayerSwitcher";
 import {UserFilters} from "./UserFilters";
 
 const PlatformContainer = withStyles(({values}) => ({
@@ -71,7 +69,7 @@ class Platform extends Component<Props> {
                     user_interactions={this.props.user_interactions} />
                 <Coordinates id='coordinates' />
                 <ActiveFiltersBox>
-                    <UserFilters />
+                    <UserFilters state_proxy={this.props.state_proxy} store_actions={this.props.store_actions} />
                 </ActiveFiltersBox>
                 <Sidebar
                     state_proxy={this.props.state_proxy}
