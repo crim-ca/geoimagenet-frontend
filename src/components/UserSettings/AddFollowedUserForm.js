@@ -3,12 +3,15 @@
 import React from 'react';
 import {withStyles} from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 import {withTranslation} from '../../utils';
 import {TFunction} from 'react-i18next';
 import type {FollowedUser} from "../../Types";
+import {NotificationManager} from "react-notifications";
 
 type Props = {
     save_user: (FollowedUser) => void,
+    id_already_exists: (number) => boolean,
     t: TFunction,
     classes: {
         form: {},
@@ -17,6 +20,7 @@ type Props = {
 type State = {
     id: $PropertyType<FollowedUser, 'id'>,
     nickname: $PropertyType<FollowedUser, 'nickname'>,
+    valid: boolean,
 };
 
 const styles = {
@@ -33,7 +37,8 @@ class AddFollowedUserForm extends React.Component<Props, State> {
 
     state = {
         id: '',
-        nickname: ''
+        nickname: '',
+        valid: false,
     };
 
     save = async () => {
@@ -46,8 +51,23 @@ class AddFollowedUserForm extends React.Component<Props, State> {
         }
     };
 
+    form_data_is_valid = (id: string, nickname: string) => {
+        if (isNaN(id)) {
+            NotificationManager.warning(this.props.t('settings:error.id_must_be_integer'));
+            return false;
+        }
+        if (this.props.id_already_exists(id)) {
+            NotificationManager.warning(this.props.t('settings:error.id_must_be_unique'));
+            return false;
+        }
+        return id.length > 0 && nickname.length > 0;
+    };
+
     change = (field: string) => (event: Event) => {
-        this.setState({[field]: (event.target: window.HTMLInputElement).value});
+        this.setState({[field]: (event.target: window.HTMLInputElement).value}, () => {
+            const valid = this.form_data_is_valid(this.state.id, this.state.nickname);
+            this.setState({valid: valid});
+        });
     };
 
     render() {
@@ -62,7 +82,10 @@ class AddFollowedUserForm extends React.Component<Props, State> {
                            label={t('settings:followed_user_nickname')}
                            value={this.state.nickname}
                            onChange={this.change('nickname')} />
-                <button type="button" onClick={this.save}>{t('settings:save')}</button>
+                <Button variant='contained'
+                        color='primary'
+                        onClick={this.save}
+                        disabled={!this.state.valid}>{t('settings:save')}</Button>
             </form>
         );
     }

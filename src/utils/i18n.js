@@ -38,6 +38,10 @@ const resources = {
             save_followed_users_failure: "We were unable to add the user to your followed users list.",
             remove_followed_user_success: "We removed the user from your followed users list.",
             remove_followed_user_failure: "We were unable to remove the user from your followed users list.",
+            error: {
+                id_must_be_integer: "The id must be an integer.",
+                id_must_be_unique: "The id must be unique.",
+            },
         },
         title: {
             benchmarks: 'Benchmark',
@@ -242,6 +246,10 @@ const resources = {
             save_followed_users_failure: "Nous n'avons pu ajouter l'utilisateur/trice à votre compte.",
             remove_followed_user_success: "Nous avons retiré l'utilisateur/trice de votre compte.",
             remove_followed_user_failure: "Nous n'avons pu retirer l'utilisateur/trice de votre compte.",
+            error: {
+                id_must_be_integer: "L'id voulu doit être un nombre entier.",
+                id_must_be_unique: "L'id voulu doit être unique.",
+            },
         },
         title: {
             benchmarks: 'Benchmark/Test',

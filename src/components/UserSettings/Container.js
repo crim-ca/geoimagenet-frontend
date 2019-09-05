@@ -58,13 +58,18 @@ class Container extends React.Component<Props> {
             );
     };
 
+    verify_duplicate_id = (id: number): boolean => {
+        return this.props.user.followed_users.some(followed_user => parseInt(followed_user.id) === parseInt(id));
+    };
+
     render() {
         const {user} = this.props;
         return (
             <>
                 <UserInformation user={user} />
-                <AddFollowedUserForm save_user={this.save_followed_user_callback} />
-                <FollowedUsersList followed_users={user.followed_users} delete_user={this.remove_followed_user} />
+                <AddFollowedUserForm save_user={this.save_followed_user_callback} id_already_exists={this.verify_duplicate_id}  />
+                <FollowedUsersList followed_users={user.followed_users}
+                                   delete_user={this.remove_followed_user} />
             </>
         );
     }
