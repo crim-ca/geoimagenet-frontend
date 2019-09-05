@@ -36,6 +36,9 @@ export function make_annotation_ownership_cql_filter(ownership_filters: Annotati
                 cql_bits.push(`annotator_id IN (${logged_user.id})`);
                 break;
             case ANNOTATION.OWNERSHIP.FOLLOWED_USERS: {
+                if (logged_user.followed_users.length === 0) {
+                    return;
+                }
                 const followed_users_ids = logged_user.followed_users.map(user => user.id);
                 cql_bits.push(`annotator_id IN (${followed_users_ids.join(',')})`);
                 break;

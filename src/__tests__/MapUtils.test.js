@@ -25,10 +25,15 @@ describe('CQL filter generation', () => {
         followed_users_filter.activated = true;
         expect(make_annotation_ownership_cql_filter(filters, logged_user)).toBe('annotator_id IN (2,3)');
 
-        filters.push(new AnnotationFilter('invalid', true));
         expect(() => {
-            make_annotation_ownership_cql_filter(filters, logged_user);
+            make_annotation_ownership_cql_filter(filters.concat([new AnnotationFilter('invalid', true)]), logged_user);
         }).toThrow('This annotation ownership filter is corrupted, we have an unrecognized type: [invalid]');
+
+        const logged_user_without_followed_users = new User('', '', [], 1, []);
+        others_filter.activated = false;
+        mine_filter.activated = false;
+        followed_users_filter.activated = true;
+        expect(make_annotation_ownership_cql_filter(filters, logged_user_without_followed_users)).toBe('');
     });
 
     test('multiple filters generate correct cql', () => {
@@ -53,6 +58,8 @@ describe('CQL filter generation', () => {
         mine_filter.activated = false;
         followed_users_filter.activated = true;
         expect(make_annotation_ownership_cql_filter(filters, logged_user)).toBe('annotator_id NOT IN (2,3,1) OR annotator_id IN (2,3)');
+        const logged_user_without_followed_users = new User('', '', [], 1, []);
+        expect(make_annotation_ownership_cql_filter(filters, logged_user_without_followed_users)).toBe('annotator_id NOT IN (1)');
 
         others_filter.activated = true;
         mine_filter.activated = true;
