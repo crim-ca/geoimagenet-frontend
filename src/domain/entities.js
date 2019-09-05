@@ -1,6 +1,6 @@
 // @flow strict
 
-import type {Counts, MagpieResourceData, MagpieResourceDictionary} from '../Types';
+import type {Counts, FollowedUser, MagpieResourceData, MagpieResourceDictionary} from '../Types';
 
 /**
  * This is the basic unit of annotation for machine learning: the class.
@@ -195,12 +195,14 @@ export class User {
     email: string;
     group_names: string[];
     id: number;
+    followed_users: FollowedUser[];
 
-    constructor(user_name: string, email: string, group_names: string[], id: number) {
+    constructor(user_name: string, email: string, group_names: string[], id: number, followed_users: FollowedUser[]) {
         this.user_name = user_name;
         this.email = email;
         this.group_names = group_names;
         this.id = id;
+        this.followed_users = followed_users;
     }
 }
 

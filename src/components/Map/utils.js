@@ -1,72 +1,48 @@
 // @flow strict
 
-import {Feature} from 'ol/Feature';
-import {Circle, Fill, Stroke, Style, Text} from "ol/style";
-import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import {AnnotationFilter, User} from "../../domain/entities";
+import {ANNOTATION} from "../../domain/constants";
 
-type StyleFunction = (Feature, number) => Style | Style[];
+export function make_annotation_ownership_cql_filter(ownership_filters: AnnotationFilter[], logged_user: User): string {
+    /**
+     * if none or all of the ownership filters are activated, we want the same behaviour, that is show all annotations
+     * but if there's one or two, then we need to filter based on user ids
+     *
+     * for the different filters we need different behaviour:
+     *  - others: exclude annotations by logged user id and followed users id - NOT IN (id, id1, id2, id3)
+     *  - mine: include annotations by logged user id - IN (id)
+     *  - followed users: include annotations by followed users - IN (id1, id2, id3)
+     *  those need to be added with OR glue, for instance - ( id NOT IN (1) OR id IN (3,4,5) )
+     */
 
-function base_style(color: string): Style {
-    return new Style({
-        fill: new Fill({
-            color: 'rgba(255, 255, 255, 0.25)',
-        }),
-        stroke: new Stroke({
-            color: color,
-            width: 2
-        }),
-        image: new Circle({
-            radius: 7,
-            fill: new Fill({
-                color: color,
-            })
-        }),
-    });
-}
+    const activated_filters = ownership_filters.filter(filter => filter.activated);
+    if (activated_filters.length === 0 || ownership_filters.every(filter => filter.activated)) {
+        return '';
+    }
 
-function select_style(): Style {
-    return new Style({
-        fill: new Fill({
-            color: 'rgba(255, 255, 255, 0.4)',
-        }),
-        stroke: new Stroke({
-            color: 'blue',
-            width: 4
-        }),
-    });
-}
-
-export function create_style_function(color: string, state_proxy: GeoImageNetStore, create_for_select_interaction: boolean = false): StyleFunction {
-    return (feature, resolution) => {
-        const {show_labels} = state_proxy;
-        const taxonomy_class = state_proxy.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
-        const label = taxonomy_class.name_en || taxonomy_class.name_fr;
-        const styles = [
-            create_for_select_interaction ? select_style() : base_style(color),
-        ];
-        if (show_labels) {
-            styles.push(new Style({
-                text: new Text({
-                    font: '16px Calibri, sans-serif',
-                    fill: new Fill({color: '#000'}),
-                    stroke: new Stroke({color: '#FFF', width: 2}),
-                    text: resolution > 100 ? '' : label,
-                    overflow: true,
-                }),
-            }));
+    const cql_bits = [];
+    ownership_filters.forEach(filter => {
+        if (!filter.activated) {
+            return;
         }
-        if (feature.get('review_requested')) {
-            styles.push(new Style({
-                text: new Text({
-                    font: '36px Calibri, sans-serif',
-                    fill: new Fill({color: '#000'}),
-                    stroke: new Stroke({color: '#FFF', width: 2}),
-                    text: resolution > 100 ? '' : '?',
-                    overflow: true,
-                    offsetY: show_labels ? 36 : 0,
-                }),
-            }));
+        switch (filter.text) {
+            case ANNOTATION.OWNERSHIP.OTHERS: {
+                const user_ids = logged_user.followed_users.map(user => user.id);
+                user_ids.push(logged_user.id);
+                cql_bits.push(`annotator_id NOT IN (${user_ids.join(',')})`);
+                break;
+            }
+            case ANNOTATION.OWNERSHIP.MINE:
+                cql_bits.push(`annotator_id IN (${logged_user.id})`);
+                break;
+            case ANNOTATION.OWNERSHIP.FOLLOWED_USERS: {
+                const followed_users_ids = logged_user.followed_users.map(user => user.id);
+                cql_bits.push(`annotator_id IN (${followed_users_ids.join(',')})`);
+                break;
+            }
+            default:
+                throw new TypeError(`This annotation ownership filter is corrupted, we have an unrecognized type: [${filter.text}]`);
         }
-        return styles;
-    };
+    });
+    return cql_bits.join(' OR ');
 }

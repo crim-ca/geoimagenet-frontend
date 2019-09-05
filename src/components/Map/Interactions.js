@@ -13,7 +13,7 @@ import GeoJSON from "ol/format/GeoJSON.js";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from "../../domain";
 import typeof Event from 'ol/events/Event.js';
-import {create_style_function} from "./utils";
+import {create_style_function} from "./ol_dependant_utils";
 import {MapBrowserEvent} from "ol/events";
 import {Collection} from "ol";
 import {ContextualMenuManager} from "../ContextualMenu/ContextualMenuManager";

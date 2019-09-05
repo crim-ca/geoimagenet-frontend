@@ -44,7 +44,8 @@ import {LayerSwitcher} from "../../LayerSwitcher";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {make_http_request} from "../../utils/http";
 import {UserInteractions} from "../../domain";
-import {create_style_function} from "./utils";
+import {make_annotation_ownership_cql_filter} from "./utils";
+import {create_style_function} from './ol_dependant_utils';
 
 async function geoserver_capabilities(url) {
     let parser = new WMSCapabilities();
@@ -117,7 +118,12 @@ export class MapManager {
     /**
      * @private
      */
-    cql_filter: string;
+    cql_taxonomy_class_id: string = '';
+
+    /**
+     * @private
+     */
+    cql_ownership: string = '';
 
     /**
      * @private
@@ -237,7 +243,7 @@ export class MapManager {
          * We need to show the layers that are activated in the filters, and refresh them when we change the visible classes selection
          */
         autorun(() => {
-            const {annotation_status_filters} = this.state_proxy;
+            const {annotation_status_filters, annotation_ownership_filters} = this.state_proxy;
 
             const visible = [];
             Object.keys(this.state_proxy.flat_taxonomy_classes).forEach(k => {
@@ -248,10 +254,13 @@ export class MapManager {
                 }
             });
             if (visible.length > 0) {
-                this.cql_filter = `taxonomy_class_id IN (${visible.join(',')})`;
+                this.cql_taxonomy_class_id = `taxonomy_class_id IN (${visible.join(',')})`;
             } else {
-                this.cql_filter = '';
+                this.cql_taxonomy_class_id = '';
             }
+
+            const ownership_filters_array = Object.values(annotation_ownership_filters);
+            this.cql_ownership = make_annotation_ownership_cql_filter(ownership_filters_array, state_proxy.logged_user);
 
             Object.keys(annotation_status_filters).forEach(k => {
                 const {activated, text} = annotation_status_filters[k];
@@ -261,8 +270,6 @@ export class MapManager {
                 }
             });
         });
-
-        this.cql_filter = '';
 
         // We set the layers and the layer switcher here
         this.make_layers();
@@ -406,8 +413,8 @@ export class MapManager {
                     `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
                     `outputFormat=application/json&srsname=EPSG:3857&` +
                     `cql_filter=status='${status}' AND BBOX(geometry, ${extent.join(',')})`;
-                if (this.cql_filter.length > 0) {
-                    baseUrl += ` AND ${this.cql_filter}`;
+                if (this.cql_taxonomy_class_id.length > 0) {
+                    baseUrl += ` AND ${this.cql_taxonomy_class_id}`;
                 } else {
                     baseUrl += ` AND taxonomy_class_id IN (-1)`;
                 }
