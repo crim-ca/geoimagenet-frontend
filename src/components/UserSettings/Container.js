@@ -25,13 +25,13 @@ class Container extends React.Component<Props> {
         return new Promise((resolve) => {
             user_interactions.save_followed_user(form_data).then(
                 async () => {
-                    NotificationManager.success(t('settings.save_followed_users_success'));
+                    NotificationManager.success(t('settings:save_followed_users_success'));
                     user_interactions.refresh_all_sources();
                     resolve(true);
                 },
                 error => {
                     captureException(error);
-                    NotificationManager.error(t('settings.save_followed_users_failure'));
+                    NotificationManager.error(t('settings:save_followed_users_failure'));
                     /**
                      * We use resolve in the error handler (instead of reject) because the caller, AddFollowedUserForm, does not care about error handling.
                      * It only wants to know whether or not to reload its form.
