@@ -208,7 +208,7 @@ export class User {
  * While an annotation status is only a string and represents a status (yes), we need the actual state of that status across the platform.
  * This will in turn influence wether or not we see the counts, annotations, and actions (?) related to these annotation statuses.
  */
-export class AnnotationStatusFilter {
+export class AnnotationFilter {
     /**
      * The status text, as seen from the api.
      */

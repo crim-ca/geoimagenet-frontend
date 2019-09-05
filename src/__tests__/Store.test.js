@@ -105,8 +105,8 @@ describe('Annotation visibility toggling.', () => {
         const state_proxy = new GeoImageNetStore();
         const store_actions = new StoreActions(state_proxy);
         const status = 'new';
-        expect(state_proxy.annotation_status_list[status].activated).toBe(true);
+        expect(state_proxy.annotation_status_filters[status].activated).toBe(true);
         store_actions.toggle_annotation_status_visibility(status);
-        expect(state_proxy.annotation_status_list[status].activated).toBe(false);
+        expect(state_proxy.annotation_status_filters[status].activated).toBe(false);
     });
 });

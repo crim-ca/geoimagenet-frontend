@@ -1,6 +1,6 @@
 // @flow strict
 
-import {AnnotationStatusFilter, TaxonomyClass} from "./domain/entities";
+import {AnnotationFilter, TaxonomyClass} from "./domain/entities";
 
 export type TaxonomyClassFromAPI = {
     children: TaxonomyClassFromAPI[],
@@ -14,13 +14,19 @@ export type TaxonomyClassesDataFromAPI = TaxonomyClassFromAPI[];
 
 export type AnnotationStatus = 'new' | 'pre_released' | 'released' | 'validated' | 'rejected' | 'deleted';
 
-export type AnnotationStatusList = {
-    'new': AnnotationStatusFilter,
-    'pre_released': AnnotationStatusFilter,
-    'released': AnnotationStatusFilter,
-    'validated': AnnotationStatusFilter,
-    'rejected': AnnotationStatusFilter,
-    'deleted': AnnotationStatusFilter,
+export type AnnotationStatusFilters = {
+    'new': AnnotationFilter,
+    'pre_released': AnnotationFilter,
+    'released': AnnotationFilter,
+    'validated': AnnotationFilter,
+    'rejected': AnnotationFilter,
+    'deleted': AnnotationFilter,
+};
+
+export type AnnotationOwnershipFilters = {
+    'others': AnnotationFilter,
+    'mine': AnnotationFilter,
+    'followed_users': AnnotationFilter,
 };
 
 export type Counts = {

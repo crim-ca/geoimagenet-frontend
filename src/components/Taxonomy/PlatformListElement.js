@@ -101,7 +101,7 @@ class PlatformListElement extends Component<Props> {
                         <AnnotationCounts
                             name_en={taxonomy_class.name_en}
                             counts={taxonomy_class.counts}
-                            annotation_status_list={state_proxy.annotation_status_list}/>
+                            annotation_status_filters={state_proxy.annotation_status_filters}/>
                     </StyledLabelAndCountSpan>
                     <TaxonomyClassActions taxonomy_class={taxonomy_class}
                                           release_handler={this.make_release_handler(taxonomy_class)}

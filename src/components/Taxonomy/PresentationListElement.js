@@ -70,7 +70,7 @@ class PresentationListElement extends Component<Props> {
                         <AnnotationCounts
                             name_en={taxonomy_class.name_en}
                             counts={taxonomy_class.counts}
-                            annotation_status_list={state_proxy.annotation_status_list}/>
+                            annotation_status_filters={state_proxy.annotation_status_filters}/>
                     </StyledLabelAndCountSpan>
                 </StyledListItem>
                 {children

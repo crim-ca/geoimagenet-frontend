@@ -83,8 +83,8 @@ class UserFilters extends React.Component<Props, State> {
                         <FiltersPaper>
                             <ul>
                                 {
-                                    Object.keys(state_proxy.annotation_status_list).map((status_text: string, i: number) => {
-                                        const status = state_proxy.annotation_status_list[status_text];
+                                    Object.keys(state_proxy.annotation_status_filters).map((status_text: string, i: number) => {
+                                        const status = state_proxy.annotation_status_filters[status_text];
                                         return (
                                             <li key={i}>
                                                 <input type='checkbox'

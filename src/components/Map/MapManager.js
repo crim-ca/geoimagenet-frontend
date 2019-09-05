@@ -237,7 +237,7 @@ export class MapManager {
          * We need to show the layers that are activated in the filters, and refresh them when we change the visible classes selection
          */
         autorun(() => {
-            const {annotation_status_list} = this.state_proxy;
+            const {annotation_status_filters} = this.state_proxy;
 
             const visible = [];
             Object.keys(this.state_proxy.flat_taxonomy_classes).forEach(k => {
@@ -253,8 +253,8 @@ export class MapManager {
                 this.cql_filter = '';
             }
 
-            Object.keys(annotation_status_list).forEach(k => {
-                const {activated, text} = annotation_status_list[k];
+            Object.keys(annotation_status_filters).forEach(k => {
+                const {activated, text} = annotation_status_filters[k];
                 this.state_proxy.annotations_layers[text].setVisible(activated);
                 if (activated) {
                     this.user_interactions.refresh_source_by_status(text);
@@ -278,15 +278,15 @@ export class MapManager {
         this.map.addEventListener('click', this.receive_map_viewport_click_event);
 
         autorun(() => {
-            const {show_labels, annotation_status_list} = this.state_proxy;
+            const {show_labels, annotation_status_filters} = this.state_proxy;
             /**
              * This clunky switch is used so that MobX registers the access to the show_labels property.
              * We could directly refresh the layers without regard to the actual value in show_labels, the style function picks it up.
              */
             switch (show_labels) {
                 default:
-                    Object.keys(annotation_status_list).forEach(k => {
-                        const annotation_status = annotation_status_list[k];
+                    Object.keys(annotation_status_filters).forEach(k => {
+                        const annotation_status = annotation_status_filters[k];
                         if (annotation_status.activated) {
                             this.user_interactions.refresh_source_by_status(annotation_status.text);
                         }

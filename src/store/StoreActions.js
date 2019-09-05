@@ -47,10 +47,10 @@ export class StoreActions {
      */
     @action.bound
     toggle_annotation_status_visibility(annotation_status_text: AnnotationStatus, override_activated: boolean|null = null) {
-        if (!(annotation_status_text in this.state_proxy.annotation_status_list)) {
+        if (!(annotation_status_text in this.state_proxy.annotation_status_filters)) {
             throw new TypeError(`Invalid annotation status: [${annotation_status_text}]`);
         }
-        const annotation_status_instance = this.state_proxy.annotation_status_list[annotation_status_text];
+        const annotation_status_instance = this.state_proxy.annotation_status_filters[annotation_status_text];
         if (override_activated !== null) {
             annotation_status_instance.activated = override_activated;
         } else {
@@ -239,7 +239,7 @@ export class StoreActions {
      */
     @action.bound
     set_annotation_layer_visibility(key: string, visible: boolean) {
-        this.state_proxy.annotation_status_list[key].activated = visible;
+        this.state_proxy.annotation_status_filters[key].activated = visible;
     }
 
     @action.bound
