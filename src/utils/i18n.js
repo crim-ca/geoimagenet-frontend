@@ -7,6 +7,7 @@ import {initReactI18next} from "react-i18next";
 const resources = {
     en: {
         annotations: {
+            filters: 'Filters',
             status: {
                 new: 'New',
                 pre_released: 'Pre released',
@@ -210,6 +211,7 @@ const resources = {
     },
     fr: {
         annotations: {
+            filters: 'Filtres',
             status: {
                 new: 'Nouvelles',
                 pre_released: 'Pré-relâchées',

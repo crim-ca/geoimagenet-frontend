@@ -83,46 +83,49 @@ class UserFilters extends React.Component<Props, State> {
                         color='primary'
                         onClick={this.toggle_filter_container}>{t(`annotations:filters`)}</Button>
                 <Fade in={this.state.open}>
-                    <PopperMarginLessPopper open
-                                            disablePortal
-                                            style={{marginTop: '11px'}}
-                                            anchorEl={anchor}
-                                            placement='bottom-end'>
-                        <FiltersPaper>
-                            <ul>
-                                {
-                                    Object.keys(state_proxy.annotation_status_filters).map((status_text: string, i: number) => {
-                                        const status_filter = state_proxy.annotation_status_filters[status_text];
-                                        return (
-                                            <li key={i}>
-                                                <input type='checkbox'
-                                                       checked={status_filter.activated}
-                                                       onChange={this.toggle_status_filter(status_filter.text)} />
-                                                <Typography
-                                                    variant='body2'>{t(`annotations:status.${status_filter.text}`)}</Typography>
-                                            </li>
-                                        );
-                                    })
-                                }
-                            </ul>
-                            <ul>
-                                {
-                                    Object.keys(state_proxy.annotation_ownership_filters).map((ownership: string, i: number) => {
-                                        const ownership_filter = state_proxy.annotation_ownership_filters[ownership];
-                                        return (
-                                            <li key={i}>
-                                                <input type='checkbox'
-                                                       checked={ownership_filter.activated}
-                                                       onChange={this.toggle_ownership_filter(ownership_filter.text)} />
-                                                <Typography
-                                                    variant='body2'>{t(`annotations:ownership.${ownership_filter.text}`)}</Typography>
-                                            </li>
-                                        );
-                                    })
-                                }
-                            </ul>
-                        </FiltersPaper>
-                    </PopperMarginLessPopper>
+                    {anchor !== null
+                        ? <PopperMarginLessPopper open
+                                                  disablePortal
+                                                  style={{marginTop: '11px'}}
+                                                  anchorEl={anchor}
+                                                  placement='bottom-end'>
+                            <FiltersPaper>
+                                <ul>
+                                    {
+                                        Object.keys(state_proxy.annotation_status_filters).map((status_text: string, i: number) => {
+                                            const status_filter = state_proxy.annotation_status_filters[status_text];
+                                            return (
+                                                <li key={i}>
+                                                    <input type='checkbox'
+                                                           checked={status_filter.activated}
+                                                           onChange={this.toggle_status_filter(status_filter.text)} />
+                                                    <Typography
+                                                        variant='body2'>{t(`annotations:status.${status_filter.text}`)}</Typography>
+                                                </li>
+                                            );
+                                        })
+                                    }
+                                </ul>
+                                <ul>
+                                    {
+                                        Object.keys(state_proxy.annotation_ownership_filters).map((ownership: string, i: number) => {
+                                            const ownership_filter = state_proxy.annotation_ownership_filters[ownership];
+                                            return (
+                                                <li key={i}>
+                                                    <input type='checkbox'
+                                                           checked={ownership_filter.activated}
+                                                           onChange={this.toggle_ownership_filter(ownership_filter.text)} />
+                                                    <Typography
+                                                        variant='body2'>{t(`annotations:ownership.${ownership_filter.text}`)}</Typography>
+                                                </li>
+                                            );
+                                        })
+                                    }
+                                </ul>
+                            </FiltersPaper>
+                        </PopperMarginLessPopper>
+                        : <div />
+                    }
                 </Fade>
             </>
         );
