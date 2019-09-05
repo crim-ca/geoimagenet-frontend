@@ -14,7 +14,12 @@ const resources = {
                 validated: 'Validated',
                 rejected: 'Rejected',
                 deleted: 'Deleted',
-            }
+            },
+            ownership: {
+                others: 'Others',
+                mine: 'Me',
+                followed_users: 'My users',
+            },
         },
         settings: {
             username: "Username",
@@ -212,7 +217,12 @@ const resources = {
                 validated: 'Validées',
                 rejected: 'Rejetées',
                 deleted: 'Supprimées',
-            }
+            },
+            ownership: {
+                others: 'Les autres',
+                mine: 'Moi',
+                followed_users: 'Mes utilisateurs/trices suiviEs',
+            },
         },
         settings: {
             username: "Nom d'utilisateur/trice",

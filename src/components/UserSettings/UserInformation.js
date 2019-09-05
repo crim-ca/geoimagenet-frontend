@@ -25,7 +25,7 @@ class UserInformation extends React.Component<Props> {
                     <td>********</td>
                 </tr>
                 <tr>
-                    <th>{t('settings:unique_password')}:</th>
+                    <th>{t('settings:unique_id')}:</th>
                     <td>{user.id}</td>
                 </tr>
                 </tbody>
