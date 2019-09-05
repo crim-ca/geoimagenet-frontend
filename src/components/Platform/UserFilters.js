@@ -28,27 +28,30 @@ const PopperMarginLessPopper = withStyles({
     },
 })(Popper);
 
-const FiltersPaper = withStyles({
-    root: {
-        border: '3px solid rgba(2,205,234,1)',
-        margin: 0,
-        padding: 0,
-        '& ul': {
+const FiltersPaper = withStyles(theme => {
+    const {colors} = theme;
+    return {
+        root: {
+            border: `3px solid ${colors.turquoise}`,
+            margin: 0,
             padding: 0,
-        },
-        '& > ul:not(:first-child)': {
-            borderTop: '3px solid rgba(2,205,234,1)',
-        },
-        '& > ul > li': {
-            padding: '0 6px 0 0',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-        },
-        '& input[type=checkbox]': {
-            display: 'inline-block'
+            '& ul': {
+                padding: 0,
+            },
+            '& > ul:not(:first-child)': {
+                borderTop: `3px solid ${colors.turquoise}`,
+            },
+            '& > ul > li': {
+                padding: '0 6px 0 0',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+            },
+            '& input[type=checkbox]': {
+                display: 'inline-block'
+            }
         }
-    }
+    };
 })(Paper);
 
 @observer

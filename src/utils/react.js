@@ -43,12 +43,19 @@ export const tableIcons = {
 const GUTTER_SMALL = '12px';
 const GUTTER_MEDIUM = '24px';
 
+const turquoise_ish = 'rgba(2,205,234,1)';
+
 /**
  * We want to give a coherent look to all themed components.
  * This theme should be used everywhere so that changes affect all components.
  * @type {Theme}
  */
 export const theme = createMuiTheme({
+    palette: {
+        primary: {
+            main: turquoise_ish
+        },
+    },
     typography: {
         useNextVariants: true,
         fontFamily: 'Montserrat'
@@ -66,6 +73,7 @@ export const theme = createMuiTheme({
         over_map: 10,
     },
     colors: {
+        turquoise: turquoise_ish,
         barelyWhite: 'rgba(255, 255, 255, 0.85)',
         lightGray: 'rgba(0, 0, 0, 0.1)',
         new: 'rgba(0, 0, 0, 0.1)',
