@@ -8,7 +8,7 @@ import {TFunction} from 'react-i18next';
 import type {FollowedUser} from "../../Types";
 
 type Props = {
-    save_user: (FollowedUser[]) => void,
+    save_user: (FollowedUser) => void,
     t: TFunction,
     classes: {
         form: {},
@@ -37,7 +37,7 @@ class AddFollowedUserForm extends React.Component<Props, State> {
     };
 
     save = async () => {
-        const saved = await this.props.save_user([this.state]);
+        const saved = await this.props.save_user(this.state);
         if (saved) {
             this.setState({
                 id: '',

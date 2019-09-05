@@ -6,7 +6,7 @@ import {InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionReposi
 import {AccessControlList} from './access-control-list.js';
 import {NotificationManager} from 'react-notifications';
 
-import {ANNOTATION} from "./constants";
+import {ANNOTATION, ANNOTATION_STATUS_AS_ARRAY} from "./constants";
 import {captureException} from "@sentry/browser";
 import {DataQueries} from "./data-queries";
 
@@ -65,6 +65,10 @@ export class UserInteractions {
 
         this.release_annotations = this.release_annotations.bind(this);
     }
+
+    refresh_all_sources = () => {
+        ANNOTATION_STATUS_AS_ARRAY.forEach(status => this.refresh_source_by_status(status));
+    };
 
     /**
      * Some actions need to redraw the annotations on the viewport. This method clears then refreshes the features on the specified layer.
@@ -161,8 +165,9 @@ export class UserInteractions {
         this.store_actions.end_annotation();
     };
 
-    save_followed_user = (form_data: FollowedUser[]): Promise<void> => {
-        return this.data_queries.save_followed_user(form_data);
+    save_followed_user = async (form_data: FollowedUser): Promise<void> => {
+        await this.data_queries.save_followed_user([form_data]);
+        this.store_actions.add_followed_user(form_data);
     };
 
     get_followed_users_collection = (): Promise<FollowedUser[]> => {
@@ -178,8 +183,9 @@ export class UserInteractions {
         });
     };
 
-    remove_followed_user = (id: number): Promise<Response> => {
-        return this.data_queries.remove_followed_user(id);
+    remove_followed_user = async (id: number): Promise<void> => {
+        await this.data_queries.remove_followed_user(id);
+        this.store_actions.remove_followed_user(id);
     };
 
     populate_image_dictionary = async () => {

@@ -5,7 +5,7 @@ import type {User} from "../../domain/entities";
 import {UserInformation} from "./UserInformation";
 import {AddFollowedUserForm} from "./AddFollowedUserForm";
 import {FollowedUsersList} from './FollowedUsersList';
-import type {UserInteractions} from "../../domain";
+import type {UserInteractions} from "../../domain/user-interactions";
 import type {FollowedUser} from "../../Types";
 import {NotificationManager} from "react-notifications";
 import {captureException} from "@sentry/browser";
@@ -17,30 +17,16 @@ type Props = {
     user_interactions: UserInteractions,
     t: TFunction,
 };
-type State = {
-    followed_users: FollowedUser[],
-};
 
-class Container extends React.Component<Props, State> {
+class Container extends React.Component<Props> {
 
-    state = {
-        followed_users: [],
-    };
-
-    componentDidMount(): void {
-        this.props.user_interactions.get_followed_users_collection().then(
-            followed_users => this.setState({followed_users: followed_users}),
-        );
-    }
-
-    save_followed_user_callback = (form_data: FollowedUser[]): Promise<boolean> => {
+    save_followed_user_callback = (form_data: FollowedUser): Promise<boolean> => {
         const {t, user_interactions} = this.props;
         return new Promise((resolve) => {
             user_interactions.save_followed_user(form_data).then(
                 async () => {
                     NotificationManager.success(t('settings.save_followed_users_success'));
-                    const followed_users = this.state.followed_users.concat(form_data);
-                    this.setState({followed_users: followed_users});
+                    user_interactions.refresh_all_sources();
                     resolve(true);
                 },
                 error => {
@@ -57,16 +43,13 @@ class Container extends React.Component<Props, State> {
         });
     };
 
-    remove_followed_user = async (id: number): void => {
-        const {t} = this.props;
-        this.props.user_interactions.remove_followed_user(id)
+    remove_followed_user = async (id: number): Promise<void> => {
+        const {t, user_interactions} = this.props;
+        user_interactions.remove_followed_user(id)
             .then(
                 () => {
                     NotificationManager.success(t('settings:remove_followed_user_success'));
-                    const followed_users = this.state.followed_users;
-                    const list_element_index = followed_users.findIndex((element: FollowedUser) => element.id === id);
-                    followed_users.splice(list_element_index, 1);
-                    this.setState({followed_users: followed_users});
+                    user_interactions.refresh_all_sources();
                 },
                 error => {
                     captureException(error);
@@ -81,7 +64,7 @@ class Container extends React.Component<Props, State> {
             <>
                 <UserInformation user={user} />
                 <AddFollowedUserForm save_user={this.save_followed_user_callback} />
-                <FollowedUsersList followed_users={this.state.followed_users} delete_user={this.remove_followed_user} />
+                <FollowedUsersList followed_users={user.followed_users} delete_user={this.remove_followed_user} />
             </>
         );
     }

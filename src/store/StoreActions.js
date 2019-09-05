@@ -9,7 +9,7 @@ import {typeof Collection} from "ol";
 import {typeof Source} from "ol/source";
 import {typeof Vector} from "ol/layer";
 import {GeoImageNetStore} from "./GeoImageNetStore";
-import type {TaxonomyClassFromAPI, AnnotationStatus} from "../Types";
+import type {TaxonomyClassFromAPI, AnnotationStatus, FollowedUser} from "../Types";
 
 /**
  * The store actions are lower level action handlers, in the sense that they are not directly related to a user's actions,
@@ -94,7 +94,25 @@ export class StoreActions {
 
     @action.bound
     set_session_user(user: User) {
-        this.state_proxy.logged_user = user;
+        this.state_proxy.logged_user = observable.object(user);
+    }
+
+    @action.bound
+    remove_followed_user(followed_user_id: number) {
+        if (this.state_proxy.logged_user === null) {
+            throw new Error("Trying to modify followed users but there's no user in the state yet.");
+        }
+        const followed_users = this.state_proxy.logged_user.followed_users;
+        const list_element_index = followed_users.findIndex((element: FollowedUser) => element.id === followed_user_id);
+        followed_users.splice(list_element_index, 1);
+    }
+
+    @action.bound
+    add_followed_user(followed_user: FollowedUser) {
+        if (this.state_proxy.logged_user === null) {
+            throw new Error("Trying to set followed users but there's nos user in the state yet.");
+        }
+        this.state_proxy.logged_user.followed_users.push(followed_user);
     }
 
     /**
