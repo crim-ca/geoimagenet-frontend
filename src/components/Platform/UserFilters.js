@@ -80,8 +80,9 @@ class UserFilters extends React.Component<Props, State> {
                         color='primary'
                         onClick={this.toggle_filter_container}>{t(`annotations:filters`)}</Button>
                 <Fade in={this.state.open}>
-                    <PopperMarginLessPopper open={true}
-                                            style={{marginRight: '-17px', marginTop: '11px'}}
+                    <PopperMarginLessPopper open
+                                            disablePortal
+                                            style={{marginTop: '11px'}}
                                             anchorEl={anchor}
                                             placement='bottom-end'>
                         <FiltersPaper>
