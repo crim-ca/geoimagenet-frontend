@@ -418,6 +418,9 @@ export class MapManager {
                 } else {
                     baseUrl += ` AND taxonomy_class_id IN (-1)`;
                 }
+                if (this.cql_ownership.length > 0) {
+                    baseUrl += ` AND (${this.cql_ownership})`;
+                }
                 return baseUrl;
             },
             strategy: bbox
