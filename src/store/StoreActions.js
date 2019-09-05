@@ -46,17 +46,34 @@ export class StoreActions {
      * When user adds an annotation status to the visibility pool, we need to update the store.
      */
     @action.bound
-    toggle_annotation_status_visibility(annotation_status_text: AnnotationStatus, override_activated: boolean|null = null) {
+    toggle_annotation_status_visibility(annotation_status_text: AnnotationStatus, override_activated: boolean | null = null) {
         if (!(annotation_status_text in this.state_proxy.annotation_status_filters)) {
             throw new TypeError(`Invalid annotation status: [${annotation_status_text}]`);
         }
-        const annotation_status_instance = this.state_proxy.annotation_status_filters[annotation_status_text];
+        const annotation_filter = this.state_proxy.annotation_status_filters[annotation_status_text];
         if (override_activated !== null) {
-            annotation_status_instance.activated = override_activated;
+            annotation_filter.activated = override_activated;
         } else {
-            annotation_status_instance.activated = !annotation_status_instance.activated;
+            annotation_filter.activated = !annotation_filter.activated;
         }
-        this.set_annotation_layer_visibility(annotation_status_text, annotation_status_instance.activated);
+        this.set_annotation_layer_visibility(annotation_status_text, annotation_filter.activated);
+    }
+
+    /**
+     * The ownership filters differ from the status filters in that they don't remove any actual feature layer, they
+     * simply filter the annotations in said layer, based on a user id condition.
+     */
+    @action.bound
+    toggle_annotation_ownership_filter(annotation_ownership: string, override_activated: boolean | null = null) {
+        if (!(annotation_ownership in this.state_proxy.annotation_ownership_filters)) {
+            throw new TypeError(`Invalid annotation ownership: [${annotation_ownership}]`);
+        }
+        const annotation_filter = this.state_proxy.annotation_ownership_filters[annotation_ownership];
+        if (override_activated !== null) {
+            annotation_filter.activated = override_activated;
+        } else {
+            annotation_filter.activated = !annotation_filter.activated;
+        }
     }
 
     /**
@@ -173,7 +190,7 @@ export class StoreActions {
         if (Object.values(ANNOTATION.STATUS).indexOf(status) === -1) {
             throw new TypeError(`${status} is not a status that is supported by our platform.`);
         }
-        if (! (taxonomy_class_id in this.state_proxy.flat_taxonomy_classes)) {
+        if (!(taxonomy_class_id in this.state_proxy.flat_taxonomy_classes)) {
             throw new TypeError('Trying to change the counts of a non-existent taxonomy class.');
         }
 
