@@ -7,9 +7,10 @@ import Button from '@material-ui/core/Button';
 import Fade from '@material-ui/core/Fade';
 import Paper from '@material-ui/core/Paper';
 import {TFunction} from 'react-i18next';
-import typeof {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import typeof {StoreActions} from "../../store/StoreActions";
+import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import {StoreActions} from "../../store/StoreActions";
 import {withTranslation} from '../../utils';
+import type {AnnotationStatus} from "../../Types";
 
 type Props = {
     state_proxy: GeoImageNetStore,
@@ -17,7 +18,7 @@ type Props = {
     t: TFunction,
 };
 type State = {
-    anchor: HTMLElement,
+    anchor: HTMLElement | null,
     open: boolean,
 };
 
@@ -27,7 +28,7 @@ const PopperMarginLessPopper = withStyles({
     },
 })(Popper);
 
-const VeryVeryOnTheTopPaper = withStyles({
+const FiltersPaper = withStyles({
     root: {
         border: '3px solid rgba(2,205,234,1)',
         margin: 0,
@@ -55,14 +56,15 @@ class UserFilters extends React.Component<Props, State> {
 
     state = {
         open: false,
+        anchor: null,
     };
 
     toggle_filter_container = (event) => {
         this.setState({open: !this.state.open, anchor: event.currentTarget});
     };
 
-    toggle_annotation_status = (annotation_type: string) => (event) => {
-        this.props.store_actions.toggle_annotation_status_visibility(annotation_type, event.target.checked);
+    toggle_annotation_status = (annotation_status: AnnotationStatus) => (event) => {
+        this.props.store_actions.toggle_annotation_status_visibility(annotation_status, event.target.checked);
     };
 
     render() {
@@ -70,29 +72,54 @@ class UserFilters extends React.Component<Props, State> {
         const {state_proxy, t} = this.props;
         return (
             <>
-                <Button onClick={this.toggle_filter_container}>click</Button>
-                <PopperMarginLessPopper open={this.state.open}
-                                        anchorEl={anchor}
-                                        placement='bottom-end'>
-                    <VeryVeryOnTheTopPaper>
-                        <ul>
-                            {
-                                Object.keys(state_proxy.annotation_status_list).map((status_text: string, i: number) => {
-                                    const status = state_proxy.annotation_status_list[status_text];
-                                    return (
-                                        <li key={i}>
-                                            <input type='checkbox' checked={status.activated} onChange={this.toggle_annotation_status(status.text)} />
-                                            <Typography variant='body2'>{t(`annotations:status.${status.text}`)}</Typography>
-                                        </li>
-                                    );
-                                })
-                            }
-                        </ul>
-                        <ul>
-                            <li>owner's filters</li>
-                        </ul>
-                    </VeryVeryOnTheTopPaper>
-                </PopperMarginLessPopper>
+                <Button variant='contained'
+                        color='primary'
+                        onClick={this.toggle_filter_container}>{t(`annotations:filters`)}</Button>
+                <Fade in={this.state.open}>
+                    <PopperMarginLessPopper open={true}
+                                            style={{marginRight: '-17px', marginTop: '11px'}}
+                                            anchorEl={anchor}
+                                            placement='bottom-end'>
+                        <FiltersPaper>
+                            <ul>
+                                {
+                                    Object.keys(state_proxy.annotation_status_list).map((status_text: string, i: number) => {
+                                        const status = state_proxy.annotation_status_list[status_text];
+                                        return (
+                                            <li key={i}>
+                                                <input type='checkbox'
+                                                       checked={status.activated}
+                                                       onChange={this.toggle_annotation_status(status.text)} />
+                                                <Typography
+                                                    variant='body2'>{t(`annotations:status.${status.text}`)}</Typography>
+                                            </li>
+                                        );
+                                    })
+                                }
+                            </ul>
+                            <ul>
+                                <li>
+                                    <input type='checkbox'
+                                           checked={true}
+                                           onChange={() => console.log('changed first')} />
+                                    <Typography variant='body2'>{t(`annotations:ownership.others`)}</Typography>
+                                </li>
+                                <li>
+                                    <input type='checkbox'
+                                           checked={true}
+                                           onChange={() => console.log('changed first')} />
+                                    <Typography variant='body2'>{t(`annotations:ownership.mine`)}</Typography>
+                                </li>
+                                <li>
+                                    <input type='checkbox'
+                                           checked={true}
+                                           onChange={() => console.log('changed first')} />
+                                    <Typography variant='body2'>{t(`annotations:ownership.followed_users`)}</Typography>
+                                </li>
+                            </ul>
+                        </FiltersPaper>
+                    </PopperMarginLessPopper>
+                </Fade>
             </>
         );
     }
