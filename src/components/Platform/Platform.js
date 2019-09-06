@@ -7,7 +7,7 @@ import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from '../../domain/user-interactions.js';
 import {StoreActions} from '../../store/StoreActions';
 import {Sidebar} from './Sidebar';
-import {UserFilters} from "./UserFilters";
+import {Container as FiltersContainer} from "./Filters/Container";
 
 const PlatformContainer = withStyles(({values}) => ({
     root: {
@@ -69,7 +69,7 @@ class Platform extends Component<Props> {
                     user_interactions={this.props.user_interactions} />
                 <Coordinates id='coordinates' />
                 <ActiveFiltersBox>
-                    <UserFilters state_proxy={this.props.state_proxy} store_actions={this.props.store_actions} />
+                    <FiltersContainer state_proxy={this.props.state_proxy} store_actions={this.props.store_actions} />
                 </ActiveFiltersBox>
                 <Sidebar
                     state_proxy={this.props.state_proxy}
