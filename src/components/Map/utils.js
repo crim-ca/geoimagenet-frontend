@@ -15,8 +15,7 @@ export function make_annotation_ownership_cql_filter(ownership_filters: Annotati
      *  those need to be added with OR glue, for instance - ( id NOT IN (1) OR id IN (3,4,5) )
      */
 
-    const activated_filters = ownership_filters.filter(filter => filter.activated);
-    if (activated_filters.length === 0 || ownership_filters.every(filter => filter.activated)) {
+    if (ownership_filters.every(filter => filter.activated)) {
         return '';
     }
 
