@@ -1,3 +1,5 @@
+// @flow strict
+
 import {MuiThemeProvider} from "@material-ui/core";
 import {theme} from "../utils/react";
 

@@ -15,7 +15,7 @@ import {typeof Event} from "ol/events";
 import {typeof GeoJSON} from "ol/format";
 import {StoreActions} from "../store/StoreActions";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
-import {typeof Feature, ModifyEvent} from "ol";
+import typeof {Feature, ModifyEvent} from "ol";
 import {SatelliteImage, Taxonomy, TaxonomyClass} from "./entities";
 import type {FollowedUser, MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI} from "../Types";
 import {i18n} from '../utils';
@@ -74,8 +74,10 @@ export class UserInteractions {
      * Some actions need to redraw the annotations on the viewport. This method clears then refreshes the features on the specified layer.
      */
     refresh_source_by_status = (status: string) => {
-        this.state_proxy.annotations_sources[status].clear();
-        this.state_proxy.annotations_sources[status].refresh(true);
+        if (this.state_proxy.annotations_sources[status]) {
+            this.state_proxy.annotations_sources[status].clear();
+            this.state_proxy.annotations_sources[status].refresh(true);
+        }
     };
 
     switch_features_from_source_to_source(features: Array<Feature>, old_source: string, new_source: string) {
