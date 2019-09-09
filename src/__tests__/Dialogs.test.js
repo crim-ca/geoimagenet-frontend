@@ -1,3 +1,5 @@
+import {wait} from "./utils";
+
 const React = require('react');
 const {shallow, configure} = require('enzyme');
 const {DialogManager} = require('../components/Dialogs/DialogManager');
@@ -40,7 +42,7 @@ describe('We should be able to instantiate the container and use it to display d
          * we wait manually for the component to be rendered
          */
         DialogManager.confirm('test');
-        await one_second();
+        await wait(1000);
 
         expect(wrapper.state().open).toEqual(true);
         expect(wrapper.state().text).toEqual('test');
@@ -98,5 +100,3 @@ describe('We should be able to instantiate the container and use it to display d
     });
 
 });
-
-const one_second = () => new Promise(resolve => setTimeout(resolve, 1000));
