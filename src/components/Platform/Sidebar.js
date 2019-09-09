@@ -6,9 +6,14 @@ import {ExpandMore} from "@material-ui/icons";
 import {Viewer} from "../Taxonomy/Viewer";
 import React from "react";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import {AnnotationBrowserStore} from "../../store/AnnotationBrowserStore";
 import {StoreActions} from "../../store/StoreActions";
 import {UserInteractions} from "../../domain";
 import {Container as SettingsContainer} from '../UserSettings/Container';
+import {TFunction} from 'react-i18next';
+import {withTranslation} from '../../utils';
+import {Container as AnnotationBrowserContainer} from '../AnnotationBrowser/Container';
+import {TaxonomyStore} from '../../store/TaxonomyStore';
 
 const SidebarSection = withStyles({
     root: {
@@ -41,6 +46,7 @@ type Props = {
     state_proxy: GeoImageNetStore,
     store_actions: StoreActions,
     user_interactions: UserInteractions,
+    t: TFunction,
 };
 type State = {
     opened_panel_title: string,
@@ -52,10 +58,11 @@ type SidebarSectionData = {
     content: {},
 };
 
-const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions) => SidebarSectionData[] = (
+const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, TFunction) => SidebarSectionData[] = (
     user_interactions,
     state_proxy,
     store_actions,
+    t,
 ) => {
     const sections = [
         {
@@ -68,6 +75,16 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions) 
                     user_interactions={user_interactions}
                     store_actions={store_actions} />
             ),
+        },
+        {
+            title: t('title:annotation_browser'),
+            slug: 'annotation-browser',
+            content: (<AnnotationBrowserContainer store={new AnnotationBrowserStore(
+                GEOSERVER_URL,
+                ANNOTATION_NAMESPACE,
+                ANNOTATION_LAYER,
+                new TaxonomyStore(state_proxy),
+            )}  />),
         },
         {
             title: 'Basemaps, Images and Filters',
@@ -85,7 +102,7 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions) 
     return sections;
 };
 
-export class Sidebar extends React.Component<Props, State> {
+class Sidebar extends React.Component<Props, State> {
 
     state = {
         opened_panel_title: '',
@@ -99,7 +116,7 @@ export class Sidebar extends React.Component<Props, State> {
 
     render() {
         const {opened_panel_title} = this.state;
-        const sidebar_sections = make_sidebar_sections(this.props.user_interactions, this.props.state_proxy, this.props.store_actions);
+        const sidebar_sections = make_sidebar_sections(this.props.user_interactions, this.props.state_proxy, this.props.store_actions, this.props.t);
         return (
             <SidebarSection>
                 <Actions state_proxy={this.props.state_proxy}
@@ -121,3 +138,7 @@ export class Sidebar extends React.Component<Props, State> {
         );
     }
 }
+
+const translated_sidebar = withTranslation()(Sidebar);
+
+export {translated_sidebar as Sidebar};

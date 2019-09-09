@@ -51,6 +51,7 @@ const resources = {
             publications: 'Publications',
             collaborators: 'Research collaborators',
             team: 'Team',
+            annotation_browser: 'Annotation Browser',
         },
         intro: {
             benchmarks: {
@@ -259,6 +260,7 @@ const resources = {
             publications: 'Publications',
             collaborators: 'Collaborateurs de recherche',
             team: "Équipe",
+            annotation_browser: 'Navigateur d\'annotations',
         },
         intro: {
             benchmarks: {
