@@ -45,7 +45,7 @@ class FollowedUsersList extends React.Component<Props> {
                     options={{
                         actionsColumnIndex: -1
                     }}
-                    title={t('settings:followed_users')} />
+                    title={t('annotations:ownership.followed_users')} />
             </div>
         );
     }
