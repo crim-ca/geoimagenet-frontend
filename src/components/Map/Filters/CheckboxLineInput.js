@@ -1,7 +1,6 @@
 // @flow strict
 
 import React from 'react';
-
 import Typography from "@material-ui/core/Typography";
 
 type Props = {
@@ -10,7 +9,6 @@ type Props = {
     change_handler: () => void,
     label: string,
 };
-
 class CheckboxLineInput extends React.Component<Props> {
     render() {
         const {unique_id, checked, change_handler, label} = this.props;
@@ -28,5 +26,4 @@ class CheckboxLineInput extends React.Component<Props> {
         );
     }
 }
-
 export {CheckboxLineInput};
