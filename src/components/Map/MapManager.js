@@ -46,6 +46,7 @@ import {make_http_request} from "../../utils/http";
 import {UserInteractions} from "../../domain";
 import {make_annotation_ownership_cql_filter} from "./utils";
 import {create_style_function} from './ol_dependant_utils';
+import {TaxonomyStore} from "../../store/TaxonomyStore";
 
 async function geoserver_capabilities(url) {
     let parser = new WMSCapabilities();
@@ -149,6 +150,11 @@ export class MapManager {
     /**
      * @private
      */
+    taxonomy_store: TaxonomyStore;
+
+    /**
+     * @private
+     */
     formatGeoJson: GeoJSON;
 
     /**
@@ -183,13 +189,15 @@ export class MapManager {
         state_proxy: GeoImageNetStore,
         store_actions: StoreActions,
         layer_switcher: LayerSwitcher,
-        user_interactions: UserInteractions
+        user_interactions: UserInteractions,
+        taxonomy_store: TaxonomyStore,
     ) {
 
         this.geoserver_url = geoserver_url;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
         this.state_proxy = state_proxy;
+        this.taxonomy_store = taxonomy_store;
         this.store_actions = store_actions;
         this.layer_switcher = layer_switcher;
         this.user_interactions = user_interactions;
@@ -245,19 +253,7 @@ export class MapManager {
         autorun(() => {
             const {annotation_status_filters, annotation_ownership_filters} = this.state_proxy;
 
-            const visible = [];
-            Object.keys(this.state_proxy.flat_taxonomy_classes).forEach(k => {
-                /** @var {TaxonomyClass} taxonomy_class */
-                const taxonomy_class = this.state_proxy.flat_taxonomy_classes[k];
-                if (taxonomy_class.visible) {
-                    visible.push(taxonomy_class.id);
-                }
-            });
-            if (visible.length > 0) {
-                this.cql_taxonomy_class_id = `taxonomy_class_id IN (${visible.join(',')})`;
-            } else {
-                this.cql_taxonomy_class_id = '';
-            }
+            this.cql_taxonomy_class_id = this.taxonomy_store.taxonomy_class_id_selection;
 
             const ownership_filters_array = Object.values(annotation_ownership_filters);
             this.cql_ownership = make_annotation_ownership_cql_filter(ownership_filters_array, state_proxy.logged_user);
