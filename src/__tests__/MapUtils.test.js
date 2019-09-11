@@ -12,7 +12,7 @@ describe('CQL filter generation', () => {
         const followed_users_filter = new AnnotationFilter(ANNOTATION.OWNERSHIP.FOLLOWED_USERS, false);
         const filters = [others_filter, mine_filter, followed_users_filter];
         const logged_user = new User('', '', [], 1, [{id: 2, nickname: 'user 2'}, {id: 3, nickname: 'user 3'}]);
-        expect(make_annotation_ownership_cql_filter(filters, logged_user)).toBe('');
+        expect(make_annotation_ownership_cql_filter(filters, logged_user)).toBe('annotator_id IN (-1)');
 
         others_filter.activated = true;
         expect(make_annotation_ownership_cql_filter(filters, logged_user)).toBe('annotator_id NOT IN (2,3,1)');
@@ -42,7 +42,7 @@ describe('CQL filter generation', () => {
         const followed_users_filter = new AnnotationFilter(ANNOTATION.OWNERSHIP.FOLLOWED_USERS, false);
         const filters = [others_filter, mine_filter, followed_users_filter];
         const logged_user = new User('', '', [], 1, [{id: 2, nickname: 'user 2'}, {id: 3, nickname: 'user 3'}]);
-        expect(make_annotation_ownership_cql_filter(filters, logged_user)).toBe('');
+        expect(make_annotation_ownership_cql_filter(filters, logged_user)).toBe('annotator_id IN (-1)');
 
         others_filter.activated = true;
         mine_filter.activated = true;
