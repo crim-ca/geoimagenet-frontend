@@ -93,3 +93,48 @@ export type FollowedUser = {
     id: number | string,
     nickname: string,
 };
+
+
+type BoundingBox = [number, number, number, number];
+type Coordinate = [number, number];
+type Geometry = Coordinate[];
+type AnnotationProperties = {
+    annotator_id: number,
+    bbox: BoundingBox,
+    id: number,
+    image_id: number,
+    name: string,
+    review_requested: boolean,
+    status: AnnotationStatus,
+    taxonomy_class_id: number,
+    updated_at: string,
+};
+export type Annotation = {
+    geometry: {
+        coordinates: Geometry[],
+        type: string,
+    },
+    geometry_name: string,
+    id: string,
+    properties: AnnotationProperties,
+    type: string,
+};
+export type WfsResponse = {
+    bbox: BoundingBox,
+    crs: {
+        type: string,
+        properties: {
+            name: string,
+        }
+    },
+    features: Annotation[],
+    numberMatched: number,
+    numberReturned: number,
+    timeStamp: string,
+    totalFeatures: number,
+    type: string,
+};
+
+export type Job = {
+    status: string,
+};

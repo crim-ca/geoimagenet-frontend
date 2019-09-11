@@ -28,7 +28,9 @@ export class TaxonomyStore {
 
     @computed get activated_status_filters_cql(): string {
         const activated_filters = Object.values(this.state_proxy.annotation_status_filters)
+        // $FlowFixMe
             .filter(filter => filter.activated)
+            // $FlowFixMe
             .map(filter => filter.text);
         if (activated_filters.length === 0) {
             return 'true=false';

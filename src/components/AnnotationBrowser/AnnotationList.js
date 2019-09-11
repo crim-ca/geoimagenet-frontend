@@ -2,9 +2,10 @@
 
 import React from 'react';
 import {observer} from 'mobx-react';
+import type {Annotation} from "../../Types";
 
 type Props = {
-    annotations: []
+    annotations: Annotation[]
 };
 
 @observer

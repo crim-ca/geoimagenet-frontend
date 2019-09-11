@@ -54,8 +54,8 @@ type Props = {
     classes: {
         root: {},
     },
-    toggle_ownership_filter: () => void,
-    toggle_status_filter: () => void,
+    toggle_ownership_filter: (string) => () => void,
+    toggle_status_filter: (string) => () => void,
 };
 
 @observer

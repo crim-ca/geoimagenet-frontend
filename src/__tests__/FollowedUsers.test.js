@@ -39,7 +39,9 @@ copyProps(window, global);
 configure({adapter: new Adapter()});
 
 const data_queries = new DataQueries('', '', '', '');
+// $FlowFixMe
 data_queries.save_followed_user = jest.fn(() => null);
+// $FlowFixMe
 data_queries.remove_followed_user = jest.fn(() => null);
 
 describe('Followed users form', () => {

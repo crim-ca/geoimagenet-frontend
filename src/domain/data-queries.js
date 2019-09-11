@@ -39,22 +39,15 @@ export class DataQueries {
         return post_json(`${this.geoimagenet_api_endpoint}/users/current/followed_users`, JSON.stringify(form_data));
     };
 
-    fetch_followed_users = (): Promise<FollowedUser[]> => {
-        return new Promise((resolve, reject) => {
-            make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users`)
-                .then(
-                    response => response.json(),
-                    error => reject(error),
-                )
-                .then(
-                    json => resolve(json),
-                    error => {
-                        Sentry.captureException(error);
-                        NotificationManager.error(t('network:malformed_response'));
-                        reject(error);
-                    }
-                );
-        });
+    fetch_followed_users = async (): Promise<FollowedUser[]> => {
+        const response: Response = await make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users`);
+        try {
+            return await response.json();
+        } catch (error) {
+            Sentry.captureException(error);
+            NotificationManager.error(t('network:malformed_response'));
+            throw error;
+        }
     };
 
     remove_followed_user = async (id: number): Promise<Response> => {

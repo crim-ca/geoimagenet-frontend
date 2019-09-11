@@ -4,6 +4,7 @@ import {make_http_request} from "../utils/http";
 import type {TaxonomyStore} from "./TaxonomyStore";
 import {make_annotation_ownership_cql_filter} from "../components/Map/utils";
 import {GeoImageNetStore} from "./GeoImageNetStore";
+import type {Annotation, WfsResponse} from "../Types";
 
 /**
  * this is relatively important in the sense that it constraints us to mutate the store only in actions
@@ -13,40 +14,6 @@ configure({
     enforceActions: 'always',
 });
 
-type BoundingBox = [number, number, number, number];
-type Coordinate = [number, number];
-type Geometry = Coordinate[];
-type AnnotationProperties = {
-    annotator_id: number,
-    bbox: BoundingBox,
-    id: number,
-    image_id: number,
-    name: string,
-    review_requested: boolean,
-    status: string,
-    taxonomy_class_id: number,
-    updated_at: string,
-};
-type Annotation = {
-    geometry: {
-        coordinates: Geometry[],
-        type: string,
-    },
-    geometry_name: string,
-    id: string,
-    properties: AnnotationProperties,
-    type: string,
-};
-type WfsResponse = {
-    bbox: BoundingBox,
-    crs: {
-        type: string,
-        properties: {
-            name: string,
-        }
-    },
-    features: Annotation[],
-};
 
 export class AnnotationBrowserStore {
 
@@ -101,7 +68,7 @@ export class AnnotationBrowserStore {
         return Math.ceil(this.total_features / this.page_size);
     }
 
-    @computed get current_page_content(): [] {
+    @computed get current_page_content(): Annotation[] {
         return this.wfs_response && this.wfs_response.features ? this.wfs_response.features : [];
     }
 
@@ -118,9 +85,12 @@ export class AnnotationBrowserStore {
             bits.push(this.taxonomy_store.taxonomy_class_id_selection);
         }
         const ownership_filters_array = Object.values(this.state_proxy.annotation_ownership_filters);
-        const cql_ownership = make_annotation_ownership_cql_filter(ownership_filters_array, this.state_proxy.logged_user);
-        if (cql_ownership.length > 0) {
-            bits.push(cql_ownership);
+        if (this.state_proxy.logged_user) {
+            // $FlowFixMe
+            const cql_ownership = make_annotation_ownership_cql_filter(ownership_filters_array, this.state_proxy.logged_user);
+            if (cql_ownership.length > 0) {
+                bits.push(cql_ownership);
+            }
         }
         if (bits.length === 0) {
             return '';

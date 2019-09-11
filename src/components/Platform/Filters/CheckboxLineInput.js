@@ -5,7 +5,7 @@ import React from 'react';
 import Typography from "@material-ui/core/Typography";
 
 type Props = {
-    unique_id: number,
+    unique_id: string,
     checked: boolean,
     change_handler: () => void,
     label: string,

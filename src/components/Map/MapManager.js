@@ -256,6 +256,7 @@ export class MapManager {
             this.cql_taxonomy_class_id = this.taxonomy_store.taxonomy_class_id_selection;
 
             const ownership_filters_array = Object.values(annotation_ownership_filters);
+            // $FlowFixMe
             this.cql_ownership = make_annotation_ownership_cql_filter(ownership_filters_array, state_proxy.logged_user);
 
             Object.keys(annotation_status_filters).forEach(k => {

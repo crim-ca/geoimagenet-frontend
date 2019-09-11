@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 import PlayArrow from "@material-ui/icons/PlayArrow";
 import MaterialTable from "material-table";
@@ -15,7 +15,14 @@ type Props = {
     data: {
         models: {}
     },
-    mutate: Function,
+    mutate: ({}) => Promise<{
+        data: {
+            launch_test: {
+                message: string,
+                success: boolean,
+            }
+        }
+    }>,
 };
 
 class ModelsTableComponent extends React.Component<Props> {

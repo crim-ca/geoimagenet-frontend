@@ -17,6 +17,7 @@ describe('Annotation status filter cql generation', () => {
         taxonomy_store = new TaxonomyStore(state_proxy);
         action(() => {
             Object.values(state_proxy.annotation_status_filters).forEach(status => {
+                // $FlowFixMe
                 status.activated = false;
             });
         })();
