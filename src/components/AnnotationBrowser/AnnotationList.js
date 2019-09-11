@@ -12,7 +12,6 @@ class AnnotationList extends React.Component<Props> {
     render() {
         return (
             <>
-                <p>list</p>
                 {this.props.annotations.map((annotation, i) => (
                     <p key={i}>{annotation.id}</p>
                 ))}

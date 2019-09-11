@@ -13,6 +13,41 @@ configure({
     enforceActions: 'always',
 });
 
+type BoundingBox = [number, number, number, number];
+type Coordinate = [number, number];
+type Geometry = Coordinate[];
+type AnnotationProperties = {
+    annotator_id: number,
+    bbox: BoundingBox,
+    id: number,
+    image_id: number,
+    name: string,
+    review_requested: boolean,
+    status: string,
+    taxonomy_class_id: number,
+    updated_at: string,
+};
+type Annotation = {
+    geometry: {
+        coordinates: Geometry[],
+        type: string,
+    },
+    geometry_name: string,
+    id: string,
+    properties: AnnotationProperties,
+    type: string,
+};
+type WfsResponse = {
+    bbox: BoundingBox,
+    crs: {
+        type: string,
+        properties: {
+            name: string,
+        }
+    },
+    features: Annotation[],
+};
+
 export class AnnotationBrowserStore {
 
     geoserver_endpoint: string;
@@ -40,17 +75,35 @@ export class AnnotationBrowserStore {
         }
         url += `&maxfeatures=${this.page_size}&startindex=${this.offset}`;
         const response = await make_http_request(url);
-        const json = await response.json();
-        this.set_features(json.features);
+        const json: WfsResponse = await response.json();
+        this.set_wfs_response(json);
     };
 
-    @action set_features = (features: []) => {
-        this.current_page_content = features;
+    @action set_wfs_response = (response: WfsResponse) => {
+        this.wfs_response = response;
+    };
+    @action next_page = () => {
+        this.page_number = Math.min(this.total_pages, this.page_number + 1);
+    };
+    @action previous_page = () => {
+        this.page_number = Math.max(1, this.page_number - 1);
     };
 
+    @observable wfs_response: WfsResponse;
     @observable page_number: number = 1;
     @observable page_size: number = 20;
-    @observable current_page_content: [] = [];
+
+    @computed get total_features(): number {
+        return this.wfs_response ? this.wfs_response.totalFeatures : 0;
+    }
+
+    @computed get total_pages(): number {
+        return Math.ceil(this.total_features / this.page_size);
+    }
+
+    @computed get current_page_content(): [] {
+        return this.wfs_response && this.wfs_response.features ? this.wfs_response.features : [];
+    }
 
     @computed get offset(): number {
         return (this.page_number - 1) * this.page_size;
