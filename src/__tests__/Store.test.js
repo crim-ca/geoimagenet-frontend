@@ -1,7 +1,7 @@
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 
 const {MODE, ANNOTATION} = require('../domain/constants');
-const {StoreActions} = require('../store');
+const {StoreActions} = require('../store/StoreActions');
 const {action} = require('mobx');
 const {TaxonomyClass} = require('../domain/entities');
 
