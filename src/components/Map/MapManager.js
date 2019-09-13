@@ -46,7 +46,8 @@ import {make_http_request} from "../../utils/http";
 import {UserInteractions} from "../../domain";
 import {make_annotation_ownership_cql_filter} from "./utils";
 import {create_style_function} from './ol_dependant_utils';
-import {TaxonomyStore} from "../../store/TaxonomyStore";
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
+import type {OpenLayersStore} from "../../store/OpenLayersStore";
 
 async function geoserver_capabilities(url) {
     let parser = new WMSCapabilities();
@@ -147,6 +148,8 @@ export class MapManager {
      */
     state_proxy: GeoImageNetStore;
 
+    open_layers_store: OpenLayersStore;
+
     /**
      * @private
      */
@@ -187,6 +190,7 @@ export class MapManager {
         annotation_layer: string,
         map_div_id: string,
         state_proxy: GeoImageNetStore,
+        open_layers_store: OpenLayersStore,
         store_actions: StoreActions,
         layer_switcher: LayerSwitcher,
         user_interactions: UserInteractions,
@@ -197,6 +201,7 @@ export class MapManager {
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
         this.state_proxy = state_proxy;
+        this.open_layers_store = open_layers_store;
         this.taxonomy_store = taxonomy_store;
         this.store_actions = store_actions;
         this.layer_switcher = layer_switcher;
@@ -244,6 +249,14 @@ export class MapManager {
 
         this.state_proxy.annotations_collections[ANNOTATION.STATUS.NEW].on('add', (e) => {
             e.element.revision_ = 0;
+        });
+
+        autorun(() => {
+            this.view.animate({
+                center: this.open_layers_store.center,
+                resolution: this.open_layers_store.resolution,
+                duration: 1000
+            });
         });
 
 

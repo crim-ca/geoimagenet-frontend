@@ -14,6 +14,8 @@ import {TFunction} from 'react-i18next';
 import {withTranslation} from '../../utils';
 import {Container as AnnotationBrowserContainer} from '../AnnotationBrowser/Container';
 import {TaxonomyStore} from '../../store/TaxonomyStore';
+import type {MapManager} from "../Map/MapManager";
+import type {OpenLayersStore} from "../../store/OpenLayersStore";
 
 const SidebarSection = withStyles({
     root: {
@@ -42,26 +44,17 @@ const SidebarBottom = withStyles(theme => {
     return <div className={classes.root}>{children}</div>;
 });
 
-type Props = {
-    state_proxy: GeoImageNetStore,
-    store_actions: StoreActions,
-    user_interactions: UserInteractions,
-    t: TFunction,
-};
-type State = {
-    opened_panel_title: string,
-};
-
 type SidebarSectionData = {
     title: string,
     slug: string,
     content: {},
 };
 
-const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, TFunction) => SidebarSectionData[] = (
+const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, MapManager, TFunction) => SidebarSectionData[] = (
     user_interactions,
     state_proxy,
     store_actions,
+    open_layers_store,
     t,
 ) => {
     const sections = [
@@ -79,13 +72,18 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, 
         {
             title: t('title:annotation_browser'),
             slug: 'annotation-browser',
-            content: (<AnnotationBrowserContainer store={new AnnotationBrowserStore(
-                GEOSERVER_URL,
-                ANNOTATION_NAMESPACE,
-                ANNOTATION_LAYER,
-                state_proxy,
-                new TaxonomyStore(state_proxy),
-            )}  />),
+            content: (
+                <AnnotationBrowserContainer
+                    open_layers_store={open_layers_store}
+                    state_proxy={state_proxy}
+                    store={new AnnotationBrowserStore(
+                        GEOSERVER_URL,
+                        ANNOTATION_NAMESPACE,
+                        ANNOTATION_LAYER,
+                        state_proxy,
+                        new TaxonomyStore(state_proxy),
+                    )} />
+            ),
         },
         {
             title: 'Basemaps, Images and Filters',
@@ -103,6 +101,17 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, 
     return sections;
 };
 
+type Props = {
+    state_proxy: GeoImageNetStore,
+    store_actions: StoreActions,
+    user_interactions: UserInteractions,
+    open_layers_store: OpenLayersStore,
+    t: TFunction,
+};
+type State = {
+    opened_panel_title: string,
+};
+
 class Sidebar extends React.Component<Props, State> {
 
     state = {
@@ -117,7 +126,12 @@ class Sidebar extends React.Component<Props, State> {
 
     render() {
         const {opened_panel_title} = this.state;
-        const sidebar_sections = make_sidebar_sections(this.props.user_interactions, this.props.state_proxy, this.props.store_actions, this.props.t);
+        const sidebar_sections = make_sidebar_sections(
+            this.props.user_interactions,
+            this.props.state_proxy,
+            this.props.store_actions,
+            this.props.open_layers_store,
+            this.props.t);
         return (
             <SidebarSection>
                 <Actions state_proxy={this.props.state_proxy}

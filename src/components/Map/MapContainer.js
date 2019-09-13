@@ -9,12 +9,14 @@ import {StoreActions} from "../../store/StoreActions";
 import {UserInteractions} from "../../domain";
 import {Interactions} from "./Interactions";
 import {TaxonomyStore} from '../../store/TaxonomyStore';
+import {OpenLayersStore} from "../../store/OpenLayersStore";
 
 type Props = {
     classes: { root: {} },
     state_proxy: GeoImageNetStore,
     store_actions: StoreActions,
     user_interactions: UserInteractions,
+    open_layers_store: OpenLayersStore,
 };
 
 const styles = {
@@ -34,7 +36,7 @@ class MapContainer extends React.Component<Props> {
      * callback and create the map manager only when the dom is correctly created.
      */
     componentDidMount(): void {
-        const {state_proxy, store_actions, user_interactions} = this.props;
+        const {state_proxy, store_actions, user_interactions, open_layers_store} = this.props;
 
         user_interactions.populate_image_dictionary();
 
@@ -54,6 +56,7 @@ class MapContainer extends React.Component<Props> {
             ANNOTATION_LAYER,
             'map',
             state_proxy,
+            open_layers_store,
             store_actions,
             this.layer_switcher,
             user_interactions,

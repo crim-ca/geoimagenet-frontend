@@ -94,9 +94,8 @@ export type FollowedUser = {
     nickname: string,
 };
 
-
-type BoundingBox = [number, number, number, number];
-type Coordinate = [number, number];
+export type BoundingBox = [number, number, number, number];
+export type Coordinate = [number, number];
 type Geometry = Coordinate[];
 type AnnotationProperties = {
     annotator_id: number,
