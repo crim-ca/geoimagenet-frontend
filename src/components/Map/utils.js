@@ -18,6 +18,9 @@ export function make_annotation_ownership_cql_filter(ownership_filters: Annotati
     if (ownership_filters.every(filter => filter.activated)) {
         return '';
     }
+    if (ownership_filters.every(filter => filter.activated === false)) {
+        return 'annotator_id IN (-1)';
+    }
 
     const cql_bits = [];
     ownership_filters.forEach(filter => {
