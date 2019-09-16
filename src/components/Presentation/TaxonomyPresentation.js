@@ -17,7 +17,7 @@ type Props = {
 };
 
 @observer
-class Taxonomy extends React.Component<Props> {
+class TaxonomyPresentation extends React.Component<Props> {
     render() {
         const {state_proxy, user_interactions, t} = this.props;
         const taxonomy_class = state_proxy.flat_taxonomy_classes[state_proxy.root_taxonomy_class_id];
@@ -42,5 +42,5 @@ class Taxonomy extends React.Component<Props> {
     }
 }
 
-const TaxonomyPresentation = withTranslation()(Taxonomy);
-export {TaxonomyPresentation};
+const translated_presentation = withTranslation()(TaxonomyPresentation);
+export {translated_presentation as TaxonomyPresentation};
