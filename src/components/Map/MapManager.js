@@ -7,7 +7,7 @@
 import {autorun} from 'mobx';
 
 import {Group, Vector} from 'ol/layer';
-import {fromLonLat, get as getProjection} from 'ol/proj';
+import {get as getProjection} from 'ol/proj';
 import {Control, MousePosition, ScaleLine} from 'ol/control';
 import {Collection, Feature, Map} from 'ol';
 import View from 'ol/View';
@@ -32,7 +32,6 @@ import {
     ANNOTATION_STATUS_AS_ARRAY,
     ALLOWED_BING_MAPS,
     CUSTOM_GEOIM_IMAGE_LAYER,
-    VIEW_CENTER,
     VALID_OPENLAYERS_ANNOTATION_RESOLUTION,
     READ,
     WMS
@@ -189,6 +188,7 @@ export class MapManager {
         annotation_namespace: string,
         annotation_layer: string,
         map_div_id: string,
+        view: View,
         state_proxy: GeoImageNetStore,
         open_layers_store: OpenLayersStore,
         store_actions: StoreActions,
@@ -216,10 +216,7 @@ export class MapManager {
             geometryName: 'geometry',
         });
 
-        this.view = new View({
-            center: fromLonLat(VIEW_CENTER.CENTRE),
-            zoom: VIEW_CENTER.ZOOM_LEVEL
-        });
+        this.view = view;
 
         this.map = new Map({
             target: map_div_id,
@@ -249,14 +246,6 @@ export class MapManager {
 
         this.state_proxy.annotations_collections[ANNOTATION.STATUS.NEW].on('add', (e) => {
             e.element.revision_ = 0;
-        });
-
-        autorun(() => {
-            this.view.animate({
-                center: this.open_layers_store.center,
-                resolution: this.open_layers_store.resolution,
-                duration: 1000
-            });
         });
 
 

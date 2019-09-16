@@ -49,7 +49,7 @@ export class PlatformLoader {
     data_queries: DataQueries;
     user_interactions: UserInteractions;
 
-    constructor(geoimagenet_api_endpoint: string, geoserver_endpoint: string, magpie_endpoint: string, ml_endpoint: string, i18next_instance) {
+    constructor(geoimagenet_api_endpoint: string, geoserver_endpoint: string, magpie_endpoint: string, ml_endpoint: string, i18next_instance: i18n) {
 
         this.state_proxy = new GeoImageNetStore();
         this.open_layers_store = new OpenLayersStore();
@@ -95,6 +95,9 @@ export class PlatformLoader {
 
         const div = document.createElement('div');
         div.classList.add('root');
+        if (document.body === null) {
+            throw new Error('We need a DOM document to execute this code.');
+        }
         document.body.appendChild(div);
 
         ReactDOM.render(<LoadingSplashCircle />, div);
@@ -122,7 +125,7 @@ export class PlatformLoader {
     }
 }
 
-addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', async () => {
     const platform_loader = new PlatformLoader(GEOIMAGENET_API_URL, GEOSERVER_URL, MAGPIE_ENDPOINT, ML_ENDPOINT, i18n);
     try {
         await platform_loader.init();

@@ -14,7 +14,6 @@ import {TFunction} from 'react-i18next';
 import {withTranslation} from '../../utils';
 import {Container as AnnotationBrowserContainer} from '../AnnotationBrowser/Container';
 import {TaxonomyStore} from '../../store/TaxonomyStore';
-import type {MapManager} from "../Map/MapManager";
 import type {OpenLayersStore} from "../../store/OpenLayersStore";
 
 const SidebarSection = withStyles({
@@ -50,7 +49,7 @@ type SidebarSectionData = {
     content: {},
 };
 
-const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, MapManager, TFunction) => SidebarSectionData[] = (
+const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, OpenLayersStore, TFunction) => SidebarSectionData[] = (
     user_interactions,
     state_proxy,
     store_actions,

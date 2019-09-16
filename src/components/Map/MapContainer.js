@@ -1,15 +1,20 @@
 // @flow strict
 
-import {withStyles} from "@material-ui/core";
 import React from "react";
-import {LayerSwitcher} from "../../LayerSwitcher";
+import {withStyles} from "@material-ui/core";
+import View from "ol/View";
+import {fromLonLat} from "ol/proj";
+
+import {Interactions} from "./Interactions";
 import {MapManager} from "./MapManager";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {StoreActions} from "../../store/StoreActions";
+import {LayerSwitcher} from "../../LayerSwitcher";
 import {UserInteractions} from "../../domain";
-import {Interactions} from "./Interactions";
 import {TaxonomyStore} from '../../store/TaxonomyStore';
 import {OpenLayersStore} from "../../store/OpenLayersStore";
+import {VIEW_CENTER} from "../../domain/constants";
+import {autorun} from "mobx";
 
 type Props = {
     classes: { root: {} },
@@ -29,7 +34,6 @@ const styles = {
 class MapContainer extends React.Component<Props> {
 
     map_manager: MapManager;
-    layer_switcher: LayerSwitcher;
 
     /**
      * Since we need DOM elements to exist to create Open Layers maps, we hook onto React's componentDidMount lifecycle
@@ -42,23 +46,38 @@ class MapContainer extends React.Component<Props> {
 
         /**
          * The Layer Switcher is paramount to the map: it should allow easy access and toggling to the various displayed layers.
-         * @private
-         * @type {LayerSwitcher}
          */
-        this.layer_switcher = new LayerSwitcher(
+        const layer_switcher = new LayerSwitcher(
             {target: 'layer-switcher'},
             store_actions.toggle_annotation_status_visibility
         );
+
+        const view = new View({
+            center: fromLonLat(open_layers_store.center),
+            zoom: open_layers_store.zoom_level,
+        });
+
+
+        /*
+                autorun(() => {
+            view.animate({
+                center: fromLonLat(open_layers_store.center),
+                resolution: open_layers_store.resolution,
+                duration: 1000
+            });
+        });
+         */
 
         this.map_manager = new MapManager(
             GEOSERVER_URL,
             ANNOTATION_NAMESPACE,
             ANNOTATION_LAYER,
             'map',
+            view,
             state_proxy,
             open_layers_store,
             store_actions,
-            this.layer_switcher,
+            layer_switcher,
             user_interactions,
             new TaxonomyStore(state_proxy),
         );
