@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 import {observer} from 'mobx-react';
 import {Component} from 'react';
@@ -14,8 +14,9 @@ import {Classes} from './Classes';
 import {ANNOTATION} from '../../domain/constants.js';
 import {TaxonomyClass} from "../../domain/entities";
 import {UserInteractions} from "../../domain";
-import {StoreActions} from "../../store";
+import {StoreActions} from "../../store/StoreActions";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import type {TaxonomyClassToggleFunction} from "../../Types";
 
 const StyledListItem = withStyles({
     root: {
@@ -42,9 +43,9 @@ const StyledLabelAndCountSpan = withStyles({
 });
 
 type Props = {
-    toggle_taxonomy_class_tree_element: Function,
-    invert_taxonomy_class_visibility: Function,
-    refresh_source_by_status: Function,
+    toggle_taxonomy_class_tree_element: (number) => void,
+    invert_taxonomy_class_visibility: TaxonomyClassToggleFunction,
+    refresh_source_by_status: (string) => void,
     taxonomy_class: TaxonomyClass,
     user_interactions: UserInteractions,
     store_actions: StoreActions,
@@ -52,11 +53,11 @@ type Props = {
 };
 
 /**
- * The TaxonomyClassListElement element is an entry in the taxonomy classes list, as well as any children the class might have.
+ * The PlatformListElement element is an entry in the taxonomy classes list, as well as any children the class might have.
  * It should allow for toggling of visibility for its classes, as well as releasing new annotations that are currently pending for that class.
  */
 @observer
-class TaxonomyClassListElement extends Component<Props> {
+class PlatformListElement extends Component<Props> {
 
     /**
      * Create the click handler with the relevant class entity
@@ -97,7 +98,10 @@ class TaxonomyClassListElement extends Component<Props> {
                                 button>
                     <StyledLabelAndCountSpan>
                         <TaxonomyClassLabel label={taxonomy_class.name_en} />
-                        <AnnotationCounts name_en={taxonomy_class.name_en} counts={taxonomy_class.counts} state_proxy={state_proxy}/>
+                        <AnnotationCounts
+                            name_en={taxonomy_class.name_en}
+                            counts={taxonomy_class.counts}
+                            annotation_status_filters={state_proxy.annotation_status_filters}/>
                     </StyledLabelAndCountSpan>
                     <TaxonomyClassActions taxonomy_class={taxonomy_class}
                                           release_handler={this.make_release_handler(taxonomy_class)}
@@ -121,4 +125,4 @@ class TaxonomyClassListElement extends Component<Props> {
     }
 }
 
-export {TaxonomyClassListElement};
+export {PlatformListElement};

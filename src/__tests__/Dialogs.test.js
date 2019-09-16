@@ -1,3 +1,5 @@
+import {wait} from "./utils";
+
 const React = require('react');
 const {shallow, configure} = require('enzyme');
 const {DialogManager} = require('../components/Dialogs/DialogManager');
@@ -40,7 +42,7 @@ describe('We should be able to instantiate the container and use it to display d
          * we wait manually for the component to be rendered
          */
         DialogManager.confirm('test');
-        await one_second();
+        await wait(1000);
 
         expect(wrapper.state().open).toEqual(true);
         expect(wrapper.state().text).toEqual('test');
@@ -87,12 +89,14 @@ describe('We should be able to instantiate the container and use it to display d
     test('Calling the confirm method without container correctly throws', async () => {
         await expect(DialogManager.confirm('test throw because no container')).rejects.toEqual('There is no dialog creation callback registered. Did you instantiate a DialogContainer?');
 
-        DialogManager.register_dialog_creation_callback('invalid function');
+        expect(() => {
+            DialogManager.register_dialog_creation_callback('invalid function');
+        }).toThrow('The dialog creation callback should be a function.');
 
+        DialogManager.dialog_creation_callback = 'invalid function';
         await expect(DialogManager.confirm('test throw because invalid callback')).rejects.toEqual('The dialog creation callback registered is not a function. ' +
             'Did you instantiate a DialogContainer?');
+        DialogManager.dialog_creation_callback = null;
     });
 
 });
-
-const one_second = () => new Promise(resolve => setTimeout(resolve, 1000));

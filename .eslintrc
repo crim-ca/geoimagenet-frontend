@@ -15,7 +15,11 @@
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
-    "plugin:jest/recommended"
+    "plugin:jest/recommended",
+    "plugin:flowtype/recommended"
+  ],
+  "plugins": [
+    "flowtype"
   ],
   "globals": {
     "GEOIMAGENET_API_URL": false,

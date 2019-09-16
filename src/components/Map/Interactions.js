@@ -5,33 +5,78 @@
 
 import {autorun} from "mobx";
 import {ANNOTATION, CUSTOM_GEOIM_IMAGE_LAYER, MODE} from "../../domain/constants";
-import {Draw, Modify} from "ol/interaction";
+import {Draw, Modify, Select} from "ol/interaction";
 import {NotificationManager} from "react-notifications";
 
-import Map from 'ol/Map.js';
+import typeof Map from 'ol/Map.js';
 import GeoJSON from "ol/format/GeoJSON.js";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from "../../domain";
-import {StoreActions} from "../../store";
 import typeof Event from 'ol/events/Event.js';
+import {create_style_function} from "./ol_dependant_utils";
+import {MapBrowserEvent} from "ol/events";
+import {Collection} from "ol";
+import {ContextualMenuManager} from "../ContextualMenu/ContextualMenuManager";
+
+const selected_features_collection = new Collection();
+
+const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStore) => (event: MapBrowserEvent) => {
+    if (event.type !== 'click') {
+        return false;
+    }
+    const pixel = event.pixel;
+    const features = map.getFeaturesAtPixel(pixel);
+    /**
+     * if we're slicking on a single feature, or clicking in empty space (that is, features is null), we want the event to be handled normally
+     */
+    if (features === null || features.length === 1) {
+        return true;
+    }
+    /**
+     * if we got here, technically there are multiple features under the click, so we want to ask user what feature they want to select,
+     * and then add that feature to the selected features collection.
+     */
+    const menu_items = [];
+
+    features.forEach(feature => {
+        const taxonomy_class_id = feature.get('taxonomy_class_id');
+        menu_items.push({
+            text: state_proxy.flat_taxonomy_classes[taxonomy_class_id].name_en,
+            value: feature,
+        });
+    });
+
+    ContextualMenuManager.choose_option(menu_items).then(
+        choice => {
+            selected_features_collection.clear();
+            selected_features_collection.push(choice);
+        },
+        error => {
+            console.log(error);
+            selected_features_collection.clear();
+            NotificationManager.info("That wasn't a valid feature choice, we unselected everything.");
+        },
+    );
+
+    return false;
+};
 
 export class Interactions {
 
     map: Map;
     state_proxy: GeoImageNetStore;
     user_interactions: UserInteractions;
-    store_actions: StoreActions;
     geojson_format: GeoJSON;
     annotation_layer: string;
     annotation_namespace: string;
     draw: Draw;
     modify: Modify;
+    select: Select;
 
     constructor(
         map: Map,
-        state_proxy:GeoImageNetStore,
+        state_proxy: GeoImageNetStore,
         user_interactions: UserInteractions,
-        store_actions: StoreActions,
         geojson_format: GeoJSON,
         annotation_layer: string,
         annotation_namespace: string,
@@ -39,23 +84,32 @@ export class Interactions {
         this.map = map;
         this.state_proxy = state_proxy;
         this.user_interactions = user_interactions;
-        this.store_actions = store_actions;
         this.geojson_format = geojson_format;
         this.annotation_layer = annotation_layer;
         this.annotation_namespace = annotation_namespace;
 
+        const layers = Object.keys(this.state_proxy.annotations_layers).map(key => {
+            return this.state_proxy.annotations_layers[key];
+        });
+        /**
+         * We can select layers from any and all layers, so we activate it on all layers by default.
+         */
+        this.select = new Select({
+            condition: make_feature_selection_condition(map, this.state_proxy),
+            layers: layers,
+            style: create_style_function('white', this.state_proxy, true),
+            features: selected_features_collection,
+        });
+        this.map.addInteraction(this.select);
+
         /**
          * Map interaction to modify existing annotations. To be disabled when zoomed out too far.
-         * @private
-         * @type {Modify}
          */
         this.modify = new Modify({
             features: this.state_proxy.annotations_collections[ANNOTATION.STATUS.NEW],
         });
         /**
          * Map interaction to create new annotations. To be disabled when zoomed out too far.
-         * @private
-         * @type {Draw}
          */
         this.draw = new Draw({
             source: this.state_proxy.annotations_sources[ANNOTATION.STATUS.NEW],
@@ -64,7 +118,8 @@ export class Interactions {
         });
 
         this.draw.on('drawend', this.user_interactions.create_drawend_handler(this.geojson_format, this.annotation_layer, this.annotation_namespace));
-        this.modify.on('modifyend', this.user_interactions.create_modifyend_handler(this.geojson_format));
+        this.modify.on('modifystart', this.user_interactions.modifystart_handler);
+        this.modify.on('modifyend', this.user_interactions.create_modifyend_handler(this.geojson_format, this.map));
 
         autorun(() => {
             switch (this.state_proxy.mode) {
@@ -135,8 +190,7 @@ export class Interactions {
             return false;
         }
 
-        // TODO move start_annotation in user interactions
-        this.store_actions.start_annotation(first_layer.get('title'));
+        this.user_interactions.start_annotation(first_layer.get('title'));
 
         return true;
     };

@@ -1,5 +1,7 @@
 // @flow strict
 
+import type {Counts, FollowedUser, MagpieResourceData, MagpieResourceDictionary} from '../Types';
+
 /**
  * This is the basic unit of annotation for machine learning: the class.
  * An class represents a thing that we want our model to recognize at some point.
@@ -126,31 +128,17 @@ export class InvalidPermissions extends Error {
 export class ProbablyInvalidPermissions extends Error {
 }
 
-type MagpieResource = {
-    children: Object<number, MagpieResource>,
-    parent_id: number,
-    permission_names: string[],
-    resource_display_name: string,
-    resource_id: number,
-    resource_name: string,
-    resource_type: string,
-    root_service_id: number,
-};
-
 /**
  * Group permissions for a given magpie resource.
  */
 export class ResourcePermissionRepository {
 
-    /**
-     * @type {Object<Number, Permission>}
-     */
     permissions = {};
 
     /**
-     * Expects the value of the resources property of the /users/current/services/{service}/resources Magpie route.
+     * Expects the value of the resources property of the /users/current/services/{service}/resources?inherit=true Magpie route.
      */
-    constructor(resources: Object<number, MagpieResource> = null) {
+    constructor(resources: MagpieResourceDictionary | null = null) {
         if (resources !== null) {
             if (Object.getOwnPropertyNames(resources).length === 0) {
                 throw new ProbablyInvalidPermissions('No permissions are defined in the resources for the frontend service. ' +
@@ -158,7 +146,7 @@ export class ResourcePermissionRepository {
                     'You will be unable to properly use the platform.');
             }
             Object.getOwnPropertyNames(resources).forEach(resource_id => {
-                const resource = resources[resource_id];
+                const resource = resources[parseInt(resource_id)];
                 this.permissions[resource.resource_name] = (new Permission(resource));
             });
 
@@ -183,7 +171,7 @@ export class Permission {
     resource_type: string;
     children: Permission[] = [];
 
-    constructor(resource: MagpieResource) {
+    constructor(resource: MagpieResourceData) {
 
         this.resource_id = resource.resource_id;
         this.resource_name = resource.resource_name;
@@ -194,7 +182,7 @@ export class Permission {
 
         if (resource.children && Object.getOwnPropertyNames(resource.children).length > 0) {
             Object.getOwnPropertyNames(resource.children).forEach(children_id => {
-                const children = resource.children[children_id];
+                const children = resource.children[parseInt(children_id)];
                 this.children.push(new Permission(children));
             });
         }
@@ -202,18 +190,19 @@ export class Permission {
     }
 }
 
-/**
- * User entity.
- */
 export class User {
     user_name: string;
     email: string;
     group_names: string[];
+    id: number;
+    followed_users: FollowedUser[];
 
-    constructor(user_name: string, email: string, group_names: string[]) {
+    constructor(user_name: string, email: string, group_names: string[], id: number, followed_users: FollowedUser[]) {
         this.user_name = user_name;
         this.email = email;
         this.group_names = group_names;
+        this.id = id;
+        this.followed_users = followed_users;
     }
 }
 
@@ -221,7 +210,7 @@ export class User {
  * While an annotation status is only a string and represents a status (yes), we need the actual state of that status across the platform.
  * This will in turn influence wether or not we see the counts, annotations, and actions (?) related to these annotation statuses.
  */
-export class AnnotationStatus {
+export class AnnotationFilter {
     /**
      * The status text, as seen from the api.
      */
@@ -241,4 +230,29 @@ export class AnnotationStatus {
         this.title = title;
     }
 
+}
+
+type Sensor = 'PLEIADES';
+type ImageExtension = '.tif' | '.png';
+type Bits = 8 | 16;
+type Bands = 'RGB' | 'NRG' | 'RGBN';
+
+export class SatelliteImage {
+    bands: Bands;
+    bits: Bits;
+    extension: ImageExtension;
+    filename: string;
+    id: number;
+    layer_name: string;
+    sensor_name: Sensor;
+
+    constructor(bands: Bands, bits: Bits, extension: ImageExtension, filename: string, id: number, layer_name: string, sensor_name: Sensor) {
+        this.bands = bands;
+        this.bits = bits;
+        this.extension = extension;
+        this.filename = filename;
+        this.id = id;
+        this.layer_name = layer_name;
+        this.sensor_name = sensor_name;
+    }
 }

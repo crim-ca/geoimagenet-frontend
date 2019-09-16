@@ -1,9 +1,9 @@
-// @flow
+// @flow strict
 import React from 'react';
 import {observer} from "mobx-react";
 import {Chip, Tooltip, withStyles} from "@material-ui/core";
 import {ANNOTATION_STATUS_AS_ARRAY} from "../../domain/constants";
-import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import type {AnnotationStatusFilters, Counts} from "../../Types";
 
 export const SpacedChip = withStyles({
     root: {
@@ -14,17 +14,17 @@ export const SpacedChip = withStyles({
 type Props = {
     name_en: string,
     counts: Counts,
-    state_proxy: GeoImageNetStore
+    annotation_status_filters: AnnotationStatusFilters,
 };
 
 @observer
 class AnnotationCounts extends React.Component<Props> {
     render() {
-        const {counts, name_en, state_proxy: {annotation_status_list}} = this.props;
+        const {counts, name_en, annotation_status_filters} = this.props;
         return (
             <>
                 {ANNOTATION_STATUS_AS_ARRAY.map((status, i) => (
-                    annotation_status_list[status].activated && counts[status]
+                    annotation_status_filters[status].activated && counts[status]
                         ? (
                             <Tooltip key={i} title={`${counts[status]} ${status} annotations of class ${name_en}`}>
                                 <SpacedChip label={counts[status]}

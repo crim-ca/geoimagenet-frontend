@@ -1,12 +1,22 @@
 // @flow strict
 import {ANNOTATION, MODE} from '../domain/constants.js';
 import {AccessControlList} from '../domain/access-control-list.js';
-import {AnnotationStatus, ResourcePermissionRepository} from '../domain/entities.js';
-import {observable} from 'mobx';
-import {Taxonomy, User} from "../domain/entities";
+import {AnnotationFilter, ResourcePermissionRepository} from '../domain/entities.js';
+import {observable, computed} from 'mobx';
+import {SatelliteImage, Taxonomy, User} from "../domain/entities";
 import typeof VectorLayer from "ol/layer/Vector.js";
 import typeof VectorSource from "ol/source/Vector";
 import {typeof Collection} from "ol";
+import type {AnnotationOwnershipFilters, AnnotationStatusFilters} from "../Types";
+import {configure} from 'mobx';
+
+/**
+ * this is relatively important in the sense that it constraints us to mutate the store only in actions
+ * otherwise, changing the store, affecting the state each time, can be compared to an open heart hemorrhage
+ */
+configure({
+    enforceActions: 'always',
+});
 
 /**
  * The application state must, at each given time, fully represent what a user is seeing.
@@ -17,58 +27,67 @@ import {typeof Collection} from "ol";
 export class GeoImageNetStore {
     /**
      * Labels can be overwhelming when there are too much objects on the screen, this property should allow user to show them or not.
-     * @type {boolean}
      */
-    show_labels = true;
+    @observable show_labels: boolean = true;
 
     /**
      * The visible annotations types should federate every part of the platform that manages annotations, from the counts
      * in the classes hierarchies to the visible annotations on the map, and every future annotations interactions.
-     * @type {Object<String, AnnotationStatus>}
      */
-    annotation_status_list = {
-        [ANNOTATION.STATUS.NEW]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.NEW, true)),
-        [ANNOTATION.STATUS.PRE_RELEASED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.PRE_RELEASED)),
-        [ANNOTATION.STATUS.RELEASED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.RELEASED, true)),
-        [ANNOTATION.STATUS.VALIDATED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.VALIDATED, true)),
-        [ANNOTATION.STATUS.REJECTED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.REJECTED)),
-        [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationStatus(ANNOTATION.STATUS.DELETED)),
+    @observable annotation_status_filters: AnnotationStatusFilters = {
+        [ANNOTATION.STATUS.NEW]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.NEW, true)),
+        [ANNOTATION.STATUS.PRE_RELEASED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.PRE_RELEASED, true)),
+        [ANNOTATION.STATUS.RELEASED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.RELEASED, true)),
+        [ANNOTATION.STATUS.VALIDATED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.VALIDATED, true)),
+        [ANNOTATION.STATUS.REJECTED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.REJECTED, true)),
+        [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.DELETED, true)),
+    };
+
+    @observable annotation_ownership_filters: AnnotationOwnershipFilters = {
+        [ANNOTATION.OWNERSHIP.OTHERS]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.OTHERS, true)),
+        [ANNOTATION.OWNERSHIP.MINE]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.MINE, true)),
+        [ANNOTATION.OWNERSHIP.FOLLOWED_USERS]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.FOLLOWED_USERS, true)),
     };
 
     /**
      * When loading the platform, we by default put the user in a state of visualization.
      * @type {String}
      */
-    mode = MODE.VISUALIZE;
+    @observable mode: string = MODE.VISUALIZE;
 
     /**
      * An user is able to act on the annotations based on wether or not they are at a suitable zoom level.
      * @todo make this a computed mobx value
      * @type {boolean}
      */
-    actions_activated = false;
+    @observable actions_activated: boolean = false;
 
-    /**
-     * @type {AccessControlList}
-     */
-    acl = new AccessControlList(new ResourcePermissionRepository());
+    @observable acl: AccessControlList = new AccessControlList(new ResourcePermissionRepository());
 
-    /**
-     * @type {Taxonomy[]}
-     */
-    taxonomies = [];
+    @observable taxonomies: Taxonomy[] = [];
 
-    selected_taxonomy: Taxonomy | null = null;
+    @computed get root_taxonomy_class_id(): number {
+        if (this.selected_taxonomy === null) {
+            return -1;
+        }
+        if (this.selected_taxonomy.versions === undefined) {
+            return -1;
+        }
+        return this.selected_taxonomy.versions[0].root_taxonomy_class_id || -1;
+    }
+
+    @observable images_dictionary: SatelliteImage[];
+
+    @observable selected_taxonomy: Taxonomy | null = null;
 
     /**
      * The flat taxonomy classes structure simplifies the acces to classes when we need to change one directly, without looping
      * over the whole taxnomy structure to find the one we want.
-     * @type {Object<Number, TaxonomyClass>}
      */
-    flat_taxonomy_classes = {};
+    @observable flat_taxonomy_classes = {};
 
-    selected_taxonomy_class_id = -1;
-    visible_classes = [];
+    @observable selected_taxonomy_class_id: number = -1;
+    @observable visible_classes: number[] = [];
 
     /**
      * For the next three properties, we directly write the indexes because flojs does not support the use of the constants
@@ -78,7 +97,7 @@ export class GeoImageNetStore {
     /**
      * The Open Layers collections currently used in the map.
      */
-    annotations_collections: {
+    @observable annotations_collections: {
         'new': Collection,
         'pre_released': Collection,
         'released': Collection,
@@ -90,7 +109,7 @@ export class GeoImageNetStore {
     /**
      * The Open Layers sources currently used in the map.
      */
-    annotations_sources: {
+    @observable annotations_sources: {
         'new': VectorSource,
         'pre_released': VectorSource,
         'released': VectorSource,
@@ -103,7 +122,7 @@ export class GeoImageNetStore {
      * The Open Layers layers currently used in the map.
      * We directly write
      */
-    annotations_layers: {
+    @observable annotations_layers: {
         'new': VectorLayer,
         'pre_released': VectorLayer,
         'released': VectorLayer,
@@ -115,16 +134,13 @@ export class GeoImageNetStore {
     /**
      * An instance with the current user's information.
      */
-    logged_user: User | null = null;
+    @observable logged_user: User | null = null;
 
     /**
      * We need to be able to control how annotations are created. Once we begin adding points, we limit the adding of points
      * that are outside of an image, or on another image (maybe). This represents an ongoing annotation.
-     * @type {Object}
-     * @property {boolean} initialized Wether or not an annotation have started.
-     * @property {String} image_title The image title that was associated with the first click.
      */
-    current_annotation = {
+    @observable current_annotation = {
         initialized: false,
         image_title: ''
     };

@@ -11,6 +11,9 @@ class DialogManagerClass {
     dialog_creation_callback: DialogCreationCallback | null = null;
 
     register_dialog_creation_callback = (callback: DialogCreationCallback) => {
+        if (typeof callback !== 'function') {
+            throw new Error('The dialog creation callback should be a function.');
+        }
         if (this.dialog_creation_callback !== null) {
             throw new Error('There should only be one registered dialog creation callback at a time. ' +
                 'Only one DialogContainer should be used at a time, are you trying to instantiate multiple ones?');

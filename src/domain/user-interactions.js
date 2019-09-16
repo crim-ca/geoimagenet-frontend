@@ -6,25 +6,40 @@ import {InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionReposi
 import {AccessControlList} from './access-control-list.js';
 import {NotificationManager} from 'react-notifications';
 
-import {ANNOTATION} from "./constants";
+import {ANNOTATION, ANNOTATION_STATUS_AS_ARRAY} from "./constants";
 import {captureException} from "@sentry/browser";
 import {DataQueries} from "./data-queries";
 
-import i18n from 'i18next';
+import {typeof Map} from "ol/Map";
 import {typeof Event} from "ol/events";
 import {typeof GeoJSON} from "ol/format";
-import {StoreActions} from "../store";
+import {StoreActions} from "../store/StoreActions";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
-import {typeof Feature} from "ol";
-import {Taxonomy, TaxonomyClass} from "./entities";
-import type {TaxonomyClassesDataFromAPI} from "../Types";
+import typeof {Feature, ModifyEvent} from "ol";
+import {SatelliteImage, Taxonomy, TaxonomyClass} from "./entities";
+import type {FollowedUser, MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI} from "../Types";
+import {i18n} from '../utils';
+
+const {t} = i18n;
 
 
 /**
  * In a web app, we need top level handlers that react to specific user intentions, and interactions.
  * These are not event handlers per se, they should receive everything needed to execute everything intended by the user,
  * from confirmation to store alterations.
+ *
+ * However, it starts to be apparent (with the latest remove_followed_users and others handlers) that possibly this layer is
+ * a superfluous proxy between presentation and data queries. Both user_interaction and data_queries represent the Data Access Layer.
+ * They could be the same, as the added responsibility of "error handling" (notifications to the user) could be actually done
+ * in the presentation. Which is possibly more relevant.
+ *
+ * In some cases an actual "data modification" needs multiples data queries to be made in succession, which I've tried to avoid in the
+ * data queries, but I now feel this separation is artificial. All of that concerns the data access layer, and it could be made from the
+ * same entity/layer, instead of the current separation between UserInteractions and DataQueries
  */
+type Coordinate = [number, number];
+type Coordinates = Coordinate[];
+type CoordinatesSet = Coordinates[];
 
 export class UserInteractions {
 
@@ -32,6 +47,10 @@ export class UserInteractions {
     data_queries: DataQueries;
     i18next_instance: i18n;
     state_proxy: GeoImageNetStore;
+    /**
+     * @TODO move the original coordinates in the store, possibly a store specific to open layers
+     */
+    original_coordinates: {} = {};
 
     /**
      *
@@ -47,22 +66,18 @@ export class UserInteractions {
         this.release_annotations = this.release_annotations.bind(this);
     }
 
+    refresh_all_sources = () => {
+        ANNOTATION_STATUS_AS_ARRAY.forEach(status => this.refresh_source_by_status(status));
+    };
+
     /**
      * Some actions need to redraw the annotations on the viewport. This method clears then refreshes the features on the specified layer.
      */
     refresh_source_by_status = (status: string) => {
-        this.state_proxy.annotations_sources[status].clear();
-        this.state_proxy.annotations_sources[status].refresh(true);
-    };
-
-    refresh_all_sources = () => {
-        const {annotation_status_list} = this.state_proxy;
-        Object.keys(this.state_proxy.annotation_status_list).forEach(k => {
-            const annotation_status = annotation_status_list[k];
-            if (annotation_status.activated) {
-                this.refresh_source_by_status(annotation_status.text);
-            }
-        });
+        if (this.state_proxy.annotations_sources[status]) {
+            this.state_proxy.annotations_sources[status].clear();
+            this.state_proxy.annotations_sources[status].refresh(true);
+        }
     };
 
     switch_features_from_source_to_source(features: Array<Feature>, old_source: string, new_source: string) {
@@ -132,8 +147,9 @@ export class UserInteractions {
      */
     create_drawend_handler = (format_geojson: GeoJSON, annotation_layer: string, annotation_namespace: string) => async (event: Event) => {
         const {feature}: { feature: Feature } = event;
+        const {selected_taxonomy_class_id} = this.state_proxy;
         feature.setProperties({
-            taxonomy_class_id: this.state_proxy.selected_taxonomy_class_id,
+            taxonomy_class_id: selected_taxonomy_class_id,
             image_name: this.state_proxy.current_annotation.image_title,
         });
         const payload = format_geojson.writeFeature(feature);
@@ -144,29 +160,118 @@ export class UserInteractions {
             const feature_from_distant_api = await this.data_queries.get_annotation_by_id(new_feature_id, typename);
             feature.set('name', feature_from_distant_api.properties.name);
             this.store_actions.change_annotation_status_count(this.state_proxy.selected_taxonomy_class_id, ANNOTATION.STATUS.NEW, 1);
+            this.store_actions.invert_taxonomy_class_visibility(this.state_proxy.flat_taxonomy_classes[selected_taxonomy_class_id], true);
         } catch (error) {
             NotificationManager.error(error.message);
         }
         this.store_actions.end_annotation();
     };
 
-    create_modifyend_handler = (format_geojson: GeoJSON) => async (event: Event) => {
+    save_followed_user = async (form_data: FollowedUser): Promise<void> => {
+        await this.data_queries.save_followed_user([form_data]);
+        this.store_actions.add_followed_user(form_data);
+    };
 
-        const modifiedFeatures = [];
+    get_followed_users_collection = (): Promise<FollowedUser[]> => {
+        return new Promise((resolve, reject) => {
+            this.data_queries.fetch_followed_users().then(
+                response => resolve(response),
+                error => {
+                    captureException(error);
+                    NotificationManager.error(t('settings.fetch_followed_users_failure'));
+                    reject(error);
+                },
+            );
+        });
+    };
+
+    remove_followed_user = async (id: number): Promise<void> => {
+        await this.data_queries.remove_followed_user(id);
+        this.store_actions.remove_followed_user(id);
+    };
+
+    populate_image_dictionary = async () => {
+        const images_dictionary = await this.data_queries.fetch_images_dictionary();
+        this.store_actions.set_images_dictionary(images_dictionary);
+    };
+
+    /**
+     * here we validate that a feature is completely over the same image
+     * for every point in the geometry
+     *   for every layer under the point
+     *     reject the modification if the layer does not correspond to either image name of the image id
+     */
+    feature_respects_its_original_image = (feature: Feature, map: Map) => {
+        const image_id = feature.get('image_id');
+        const this_satellite_image: SatelliteImage | typeof undefined = this.state_proxy.images_dictionary.find(image => {
+            return image.id === image_id;
+        });
+        if (this_satellite_image === undefined) {
+            NotificationManager.error('The image you are trying to annotate does not seem to be referenced by the aip. ' +
+                'You may try to reload the platform but this seem to be an internal error, you may want to contact ' +
+                'your platform administrator.');
+            return false;
+        }
+        const correct_image_layer = this_satellite_image.layer_name;
+        const coordinates_set: CoordinatesSet = feature.getGeometry().getCoordinates();
+        let passes_validation: boolean = true;
+        coordinates_set.forEach((coordinates: Coordinates) => {
+            coordinates.forEach(coordinate => {
+                const pixel = map.getPixelFromCoordinate(coordinate);
+                const layer_titles_under_this_pixel = [];
+                map.forEachLayerAtPixel(pixel, layer => {
+                    if (layer.type === 'TILE') {
+                        const title = layer.get('title');
+                        layer_titles_under_this_pixel.push(title);
+                    }
+                });
+                if (!layer_titles_under_this_pixel.some(title => title === correct_image_layer)) {
+                    passes_validation = false;
+                }
+            });
+        });
+        return passes_validation;
+    };
+
+    modifystart_handler = (event: Event) => {
+        event.features.forEach(feature => {
+            this.original_coordinates[feature.getId()] = feature.getGeometry().getCoordinates();
+        });
+    };
+
+    /**
+     * Create an event handler that OL will call when a modification is done
+     *
+     * the handler, when called, should verify that the geometry is over the same image as it was before.
+     */
+    create_modifyend_handler = (format_geojson: GeoJSON, map: Map) => async (event: ModifyEvent) => {
+        const modified_features = [];
         event.features.forEach((feature) => {
             if (feature.revision_ >= 1) {
-                modifiedFeatures.push(feature);
+                modified_features.push(feature);
                 feature.revision_ = 0;
             }
         });
-        const payload = format_geojson.writeFeatures(modifiedFeatures);
 
-        try {
-            await this.data_queries.modify_geojson_features(payload);
-        } catch (error) {
-            NotificationManager.error(error.message);
+        modified_features.forEach((feature: Feature, index: number) => {
+            if (!this.feature_respects_its_original_image(feature, map)) {
+                // feature is not ok, reset it and remove it from the modified features
+                feature.getGeometry().setCoordinates(this.original_coordinates[feature.getId()]);
+                modified_features.splice(index, 1);
+                NotificationManager.warning('An annotation must be wholly contained in a single image, ' +
+                    'you are trying to make a coordinate go outside of the original image.');
+            }
+
+        });
+
+        if (modified_features.length > 0) {
+            const payload = format_geojson.writeFeatures(modified_features);
+            try {
+                await this.data_queries.modify_geojson_features(payload);
+            } catch (error) {
+                NotificationManager.error(error.message);
+            }
         }
-
     };
 
     ask_expertise_for_features = async (feature_ids: number[], features: Feature[]) => {
@@ -181,6 +286,10 @@ export class UserInteractions {
             NotificationManager.error(error.message);
         }
     };
+
+    start_annotation(image_title: string) {
+        this.store_actions.set_current_annotation_image_title(image_title);
+    }
 
     logout = async () => {
         try {
@@ -235,12 +344,12 @@ export class UserInteractions {
      * When the user selects a taxonomy, we decide to refresh the annotation counts, as they can change more often than the classes themselves.
      */
     @action.bound
-    async select_taxonomy(taxonomy: Taxonomy, root_taxonomy_class_id: number) {
+    async select_taxonomy(taxonomy: Taxonomy) {
         this.store_actions.set_selected_taxonomy(taxonomy);
         try {
-            const counts = await this.data_queries.flat_taxonomy_classes_counts(root_taxonomy_class_id);
+            const counts = await this.data_queries.flat_taxonomy_classes_counts(this.state_proxy.root_taxonomy_class_id);
             this.store_actions.set_annotation_counts(counts);
-            this.store_actions.toggle_taxonomy_class_tree_element(root_taxonomy_class_id, true);
+            this.store_actions.toggle_taxonomy_class_tree_element(this.state_proxy.root_taxonomy_class_id, true);
         } catch (e) {
             NotificationManager.error('We were unable to fetch the taxonomy classes.');
         }
@@ -256,9 +365,10 @@ export class UserInteractions {
          *
          * @type {Object}
          */
-        const magpie_session_json = await this.data_queries.current_user_session();
+        const magpie_session_json: MagpieMergedSessionInformation = await this.data_queries.current_user_session();
         const {user, authenticated} = magpie_session_json;
-        const user_instance = new User(user.user_name, user.email, user.group_names);
+        const followed_users: FollowedUser[] = await this.get_followed_users_collection();
+        const user_instance = new User(user.user_name, user.email, user.group_names, user.user_id, followed_users);
         this.store_actions.set_session_user(user_instance);
         let json_response;
         try {
@@ -309,6 +419,7 @@ export class UserInteractions {
             this.store_actions.set_annotation_counts(counts);
             NotificationManager.success('Annotations were released.');
         } catch (error) {
+            captureException(error);
             NotificationManager.error('We were unable to release the annotations.');
         }
     };

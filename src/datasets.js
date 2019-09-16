@@ -5,7 +5,7 @@ import {CssBaseline, MuiThemeProvider} from '@material-ui/core';
 import {i18n} from './utils';
 
 import {DataQueries} from './domain/data-queries.js';
-import {create_state_proxy, StoreActions} from './store';
+import {StoreActions} from './store/StoreActions';
 import {UserInteractions} from './domain/user-interactions.js';
 import {LoggedLayout} from './components/LoggedLayout.js';
 import {Datasets} from './components/Datasets';
@@ -17,6 +17,7 @@ import {ApolloProvider} from 'react-apollo';
 import './css/base.css';
 import 'react-notifications/lib/notifications.css';
 import './img/icons/favicon.ico';
+import {GeoImageNetStore} from "./store/GeoImageNetStore";
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
@@ -24,7 +25,7 @@ Sentry.init({
 
 addEventListener('DOMContentLoaded', async () => {
 
-    const state_proxy = create_state_proxy();
+    const state_proxy = new GeoImageNetStore();
     const store_actions = new StoreActions(state_proxy);
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, GEOSERVER_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
     const user_interactions = new UserInteractions(store_actions, data_queries, i18n, state_proxy);

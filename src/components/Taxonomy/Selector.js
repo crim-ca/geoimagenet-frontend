@@ -1,16 +1,24 @@
+// @flow strict
+
 import {observer} from "mobx-react";
 import React, {Component} from "react";
-import PropTypes from "prop-types";
 import {UserInteractions} from "../../domain";
 import {Tab, Tabs} from "@material-ui/core";
+import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import type {TFunction} from "react-i18next";
+import {withTranslation} from '../../utils';
+
+type Props = {
+    state_proxy: GeoImageNetStore,
+    user_interactions: UserInteractions,
+    t: TFunction,
+};
+type State = {
+    value: number,
+};
 
 @observer
-class Selector extends Component {
-    static propTypes = {
-        state_proxy: PropTypes.object.isRequired,
-        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
-        t: PropTypes.func.isRequired,
-    };
+class Selector extends Component<Props, State> {
 
     state = {
         value: 0,
@@ -25,14 +33,11 @@ class Selector extends Component {
      * @param {number} taxonomy_positional_id the 0 indexed position of the taxonomy to be selected in the store's collection of taxonomies
      * @returns {Promise<void>}
      */
-    handle_tab_select = async (event, taxonomy_positional_id) => {
+    handle_tab_select = async (event: Event, taxonomy_positional_id: number) => {
         this.setState({value: taxonomy_positional_id});
-
         const {select_taxonomy} = this.props.user_interactions;
         const taxonomy = this.props.state_proxy.taxonomies[taxonomy_positional_id];
-
-        const version = taxonomy['versions'][0];
-        await select_taxonomy(taxonomy, version.root_taxonomy_class_id);
+        await select_taxonomy(taxonomy);
     };
 
     render() {
@@ -48,10 +53,11 @@ class Selector extends Component {
         return (
             <Tabs value={value} onChange={this.handle_tab_select}>
                 {taxonomies.map((taxonomy, i) => <Tab value={i} key={i}
-                                                      label={t(`taxonomy_classes:${taxonomy.versions[0].root_taxonomy_class_id}`)}/>)}
+                                                      label={t(`taxonomy_classes:${taxonomy.versions[0].root_taxonomy_class_id}`)} />)}
             </Tabs>
         );
     }
 }
 
-export {Selector};
+const TranslatedSelector = withTranslation()(Selector);
+export {TranslatedSelector as Selector};

@@ -4,12 +4,12 @@ import {TaxonomyClass} from '../domain/entities.js';
 import {ANNOTATION, MODE} from '../domain/constants.js';
 import {observable, action, runInAction} from 'mobx';
 import {AccessControlList} from "../domain/access-control-list";
-import {Taxonomy, User} from "../domain/entities";
+import {SatelliteImage, Taxonomy, User} from "../domain/entities";
 import {typeof Collection} from "ol";
 import {typeof Source} from "ol/source";
 import {typeof Vector} from "ol/layer";
 import {GeoImageNetStore} from "./GeoImageNetStore";
-import type {TaxonomyClassFromAPI} from "../Types";
+import type {TaxonomyClassFromAPI, AnnotationStatus, FollowedUser} from "../Types";
 
 /**
  * The store actions are lower level action handlers, in the sense that they are not directly related to a user's actions,
@@ -46,14 +46,34 @@ export class StoreActions {
      * When user adds an annotation status to the visibility pool, we need to update the store.
      */
     @action.bound
-    toggle_annotation_status_visibility(annotation_status_text: string, override_activated: boolean|null = null) {
-        const annotation_status_instance = this.state_proxy.annotation_status_list[annotation_status_text];
-        if (override_activated !== null) {
-            annotation_status_instance.activated = override_activated;
-        } else {
-            annotation_status_instance.activated = !annotation_status_instance.activated;
+    toggle_annotation_status_visibility(annotation_status_text: AnnotationStatus, override_activated: boolean | null = null) {
+        if (!(annotation_status_text in this.state_proxy.annotation_status_filters)) {
+            throw new TypeError(`Invalid annotation status: [${annotation_status_text}]`);
         }
-        this.set_annotation_layer_visibility(annotation_status_text, annotation_status_instance.activated);
+        const annotation_filter = this.state_proxy.annotation_status_filters[annotation_status_text];
+        if (override_activated !== null) {
+            annotation_filter.activated = override_activated;
+        } else {
+            annotation_filter.activated = !annotation_filter.activated;
+        }
+        this.set_annotation_layer_visibility(annotation_status_text, annotation_filter.activated);
+    }
+
+    /**
+     * The ownership filters differ from the status filters in that they don't remove any actual feature layer, they
+     * simply filter the annotations in said layer, based on a user id condition.
+     */
+    @action.bound
+    toggle_annotation_ownership_filter(annotation_ownership: string, override_activated: boolean | null = null) {
+        if (!(annotation_ownership in this.state_proxy.annotation_ownership_filters)) {
+            throw new TypeError(`Invalid annotation ownership: [${annotation_ownership}]`);
+        }
+        const annotation_filter = this.state_proxy.annotation_ownership_filters[annotation_ownership];
+        if (override_activated !== null) {
+            annotation_filter.activated = override_activated;
+        } else {
+            annotation_filter.activated = !annotation_filter.activated;
+        }
     }
 
     /**
@@ -74,12 +94,30 @@ export class StoreActions {
 
     @action.bound
     set_session_user(user: User) {
-        this.state_proxy.logged_user = user;
+        this.state_proxy.logged_user = observable.object(user);
+    }
+
+    @action.bound
+    remove_followed_user(followed_user_id: number) {
+        if (this.state_proxy.logged_user === null) {
+            throw new Error("Trying to modify followed users but there's no user in the state yet.");
+        }
+        const followed_users = this.state_proxy.logged_user.followed_users;
+        const list_element_index = followed_users.findIndex((element: FollowedUser) => element.id === followed_user_id);
+        followed_users.splice(list_element_index, 1);
+    }
+
+    @action.bound
+    add_followed_user(followed_user: FollowedUser) {
+        if (this.state_proxy.logged_user === null) {
+            throw new Error("Trying to set followed users but there's nos user in the state yet.");
+        }
+        this.state_proxy.logged_user.followed_users.push(followed_user);
     }
 
     /**
      * Invert the opened property for specific taxonomy class id
-     * @param {boolean|null} opened we should allow to override the toggling to force open or closed
+     * the opened param should allow to override the toggling to force open or closed
      */
     @action.bound
     toggle_taxonomy_class_tree_element(taxonomy_class_id: number, opened: boolean | null = null) {
@@ -170,7 +208,7 @@ export class StoreActions {
         if (Object.values(ANNOTATION.STATUS).indexOf(status) === -1) {
             throw new TypeError(`${status} is not a status that is supported by our platform.`);
         }
-        if (! (taxonomy_class_id in this.state_proxy.flat_taxonomy_classes)) {
+        if (!(taxonomy_class_id in this.state_proxy.flat_taxonomy_classes)) {
             throw new TypeError('Trying to change the counts of a non-existent taxonomy class.');
         }
 
@@ -192,7 +230,12 @@ export class StoreActions {
     }
 
     @action.bound
-    start_annotation(image_title: string) {
+    set_images_dictionary(images_dictionary: SatelliteImage[]) {
+        this.state_proxy.images_dictionary = images_dictionary;
+    }
+
+    @action.bound
+    set_current_annotation_image_title(image_title: string) {
         this.state_proxy.current_annotation.initialized = true;
         this.state_proxy.current_annotation.image_title = image_title;
     }
@@ -231,13 +274,12 @@ export class StoreActions {
      */
     @action.bound
     set_annotation_layer_visibility(key: string, visible: boolean) {
-        this.state_proxy.annotation_status_list[key].activated = visible;
+        this.state_proxy.annotation_status_filters[key].activated = visible;
     }
 
     @action.bound
     set_taxonomy(t: Array<Taxonomy>) {
         this.state_proxy.taxonomies = t;
-        this.state_proxy.selected_taxonomy = t[0];
     }
 
     @action.bound

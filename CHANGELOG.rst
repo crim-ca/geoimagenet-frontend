@@ -2,20 +2,131 @@ Changelog
 =========
 
 
-1.4.2 (2019-08-21)
+1.5.0 (2019-09-09)
 ------------------
+
+New
+~~~
+- GEOIM-254 - build the list from logged user to refresh features more
+  easily after followed users crud. [Félix Gagnon-Grenier]
+- GEOIM-254 - filtering annotations by ownership. [Félix Gagnon-Grenier]
+- GEOIM-254 - simple popover where to put the filters. [Félix Gagnon-
+  Grenier]
+- GEOIM-282 - add translations. [Félix Gagnon-Grenier]
+- GEOIM-282 - refresh list on followed user deletion. [Félix Gagnon-
+  Grenier]
+- GEOIM-282 - reload form when saving followed user with success. [Félix
+  Gagnon-Grenier]
+- GEOIM-282 - deleting user from list. [Félix Gagnon-Grenier]
+- GEOIM-282 - followed users list. [Félix Gagnon-Grenier]
+- GEOIM-282 - saving followed user. [Félix Gagnon-Grenier]
+- GEOIM-282 - save followed user form. [Félix Gagnon-Grenier]
+- GEOIM-109 - user information in settings section. [Félix Gagnon-
+  Grenier]
+- GEOIM-27 - centering contextual menu on mouse. [Félix Gagnon-Grenier]
+- GEOIM-37 - exit contextual menu on outside click. [Félix Gagnon-
+  Grenier]
+- GEOIM-37 - contextual menu on the map to choose annotation. [Félix
+  Gagnon-Grenier]
+- GEOIM-37 - test for contextual menu. [Félix Gagnon-Grenier]
+- GEOIM-37 - condition to let unambiguous feature selection events go
+  correctly. [Félix Gagnon-Grenier]
+- GEOIM-37 - very basic feature selection. [Félix Gagnon-Grenier]
+
+Changes
+~~~~~~~
+- GEOIM-254 - move the coloured chips inside positioned layer switcher.
+  [Félix Gagnon-Grenier]
+- GEOIM-282 - label save -> add. [Félix Gagnon-Grenier]
+- GEOIM-278 - activer filtres et classes lors de l'ajout. [Félix Gagnon-
+  Grenier]
+- GEOIM-37 - programatically select all features under click. [Félix
+  Gagnon-Grenier]
+- GEOIM-246 - warning user when modifying an annotation outside of its
+  image. [Félix Gagnon-Grenier]
+- GEOIM-246 - introduce checking stub for valid geometry on modifyend.
+  [Félix Gagnon-Grenier]
+- No need for react-scripts. [Félix Gagnon-Grenier]
 
 Fix
 ~~~
-- Fix loading taxonomies on the main page [David Caron]
+- GEOIM-254 - cover edge case where there are no followed users. [Félix
+  Gagnon-Grenier]
+- GEOIM-246 - reset image when modifying it outside of its image. [Félix
+  Gagnon-Grenier]
+- GEOIM-268 - select first taxonomy by default for better positional
+  relelvancy. [Félix Gagnon-Grenier]
+- GEOIM-268 - adding fetching of data in presentation. [Félix Gagnon-
+  Grenier]
+- GEOIM-246 - move start interaction in user_interactions to remove
+  dependency from interactions. [Félix Gagnon-Grenier]
+- GEOIM-228 - test for annotation status toggling. [Félix Gagnon-
+  Grenier]
+
+Other
+~~~~~
+- Usr: GEOIM-282 - same label for followed users. [Félix Gagnon-Grenier]
+- Dev: GEOIM-282 - testing add followed user form and list. [Félix
+  Gagnon-Grenier]
+- Dev: normalize wait function. [Félix Gagnon-Grenier]
+- Usr: GEOIM-254 - toggle checkbox with label click. [Félix Gagnon-
+  Grenier]
+- Dev: GEOIM-254 - extract component in filters. [Félix Gagnon-Grenier]
+- Usr: GEOIM-254 - show nothing if no checkboxes are checked. [Félix
+  Gagnon-Grenier]
+- Usr: GEOIM-282 - add validation in followed user form. [Félix Gagnon-
+  Grenier]
+- Usr: GEOIM-254 - fix typo on translation string. [Félix Gagnon-
+  Grenier]
+- Dev: GEOIM-254 - fix null elemeent anchor warning. [Félix Gagnon-
+  Grenier]
+- Usr: GEOIM-254 - translations. [Félix Gagnon-Grenier]
+- Dev: GEOIM-254 - test for cql_ownership generation. [Félix Gagnon-
+  Grenier]
+- Dev: GEOIM-254 - set primary color to turquoise-ish. [Félix Gagnon-
+  Grenier]
+- Dev: GEOIM-254 - fix DOM construction error creating empty space in
+  the bottom of the page. [Félix Gagnon-Grenier]
+- Dev: GEOIM-254 - link ownership filters to the state. [Félix Gagnon-
+  Grenier]
+- Dev: GEOIM-254 - renaming stuff closer to domain. [Félix Gagnon-
+  Grenier]
+- Usr: GEOIM-254 - fading filters into view. [Félix Gagnon-Grenier]
+- Dev: GEOIM-254 - moving annotation status filter to platform. [Félix
+  Gagnon-Grenier]
+- Dev: GEOIM-280 - capture problem when releasing annotations. [Félix
+  Gagnon-Grenier]
+- Dev: GEOIM-109 - flow annotations. [Félix Gagnon-Grenier]
+- Dev: GEOIM-109 - flow annotations fixing undefined image case. [Félix
+  Gagnon-Grenier]
+- Dev: GEOIM-109 - extract data sections. [Félix Gagnon-Grenier]
+- Dev: GEOIM-109 - extrait la sidebar de la plateforme, annotations
+  flow. [Félix Gagnon-Grenier]
+- Dev: GEOIM-37 - flow annotations. [Félix Gagnon-Grenier]
+- Dev: GEOIM-27 - rename to resolve/reject for better semantics. [Félix
+  Gagnon-Grenier]
+- Dev: update material-ui. [Félix Gagnon-Grenier]
+- Dev: GEOIM-268 - creating test for taxonomy in presentation. [Félix
+  Gagnon-Grenier]
+- Dev: GEOIM-268 - removing dependency on translation functions by using
+  higher order components. [Félix Gagnon-Grenier]
+- Dev: GEOIM-268 - removing superfluous create_state_proxy function with
+  direct object construction. [Félix Gagnon-Grenier]
+- Dev: GEOIM-268 - extract taxonomy component from the huge presentation
+  spaghetti. [Félix Gagnon-Grenier]
+- Dev: GEOIM-268 - retiré la dépendance sur le state_proxy dans le
+  AnnotationCounts. [Félix Gagnon-Grenier]
+- GEOIM-268 - extracting ListElement from Tree and distinction between
+  PlatformListElement and PresentationListElement. [Félix Gagnon-
+  Grenier]
+- GEOIM-228 - toggle annotation by status only when changing annotation
+  layer. [Félix Gagnon-Grenier]
+- Merge branch 'release-1.4.0' into develop. [Félix Gagnon-Grenier]
 
 
-1.4.1 (2019-08-21)
+1.4.2 (2019-08-22)
 ------------------
-
-Fix
-~~~
-- Fix loading taxonomies on the main page [David Caron]
+- Undo: annotation name as label. [David Caron]
 
 
 1.4.0 (2019-08-16)

@@ -56,7 +56,12 @@ export const ANNOTATION = {
         VALIDATED: 'validated',
         REJECTED: 'rejected',
         DELETED: 'deleted',
-    }
+    },
+    OWNERSHIP: {
+        OTHERS: 'others',
+        MINE: 'mine',
+        FOLLOWED_USERS: 'followed_users',
+    },
 };
 
 export const ANNOTATION_STATUS_AS_ARRAY = [

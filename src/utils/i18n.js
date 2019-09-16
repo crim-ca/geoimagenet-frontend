@@ -6,6 +6,43 @@ import {initReactI18next} from "react-i18next";
 
 const resources = {
     en: {
+        annotations: {
+            filters: 'Filters',
+            status: {
+                new: 'New',
+                pre_released: 'Pre released',
+                released: 'Released',
+                validated: 'Validated',
+                rejected: 'Rejected',
+                deleted: 'Deleted',
+            },
+            ownership: {
+                others: 'Others',
+                mine: 'Me',
+                followed_users: 'My users',
+            },
+        },
+        settings: {
+            username: "Username",
+            nickname: "Nickname",
+            password: 'Password',
+            unique_id: 'Unique ID',
+            id: 'Id',
+            followed_users: 'Followed users',
+            followed_user_id: "Other user's unique id",
+            followed_user_nickname: 'Choose a nickname',
+            save: 'Add',
+            delete_user: 'Remove user from the list',
+            fetch_followed_users_failure: "We were unable to get your followed users list.",
+            save_followed_users_success: "We added the user to your followed users list.",
+            save_followed_users_failure: "We were unable to add the user to your followed users list.",
+            remove_followed_user_success: "We removed the user from your followed users list.",
+            remove_followed_user_failure: "We were unable to remove the user from your followed users list.",
+            error: {
+                id_must_be_integer: "The id must be an integer.",
+                id_must_be_unique: "The id must be unique.",
+            },
+        },
         title: {
             benchmarks: 'Benchmark',
             mission: 'Mission',
@@ -177,6 +214,43 @@ const resources = {
         },
     },
     fr: {
+        annotations: {
+            filters: 'Filtres',
+            status: {
+                new: 'Nouvelles',
+                pre_released: 'Pré-relâchées',
+                released: 'Relâchées',
+                validated: 'Validées',
+                rejected: 'Rejetées',
+                deleted: 'Supprimées',
+            },
+            ownership: {
+                others: 'Les autres',
+                mine: 'Moi',
+                followed_users: 'Mes utilisateurs/trices suiviEs',
+            },
+        },
+        settings: {
+            username: "Nom d'utilisateur/trice",
+            nickname: "Surnom",
+            password: 'Mot de passe',
+            unique_id: 'Id unique',
+            id: 'Id',
+            followed_users: 'Utilisateurs/trices suiviEs',
+            followed_user_id: 'Id unique',
+            followed_user_nickname: 'Surnom voulu',
+            save: 'Ajouter',
+            delete_user: 'Retirer utilisateur/trice de la liste.',
+            fetch_followed_users_failure: "Nous n'avons pu générer la liste de vos utilisateurs/trices suiviEs.",
+            save_followed_users_success: "Nous avons ajouté l'utilisateur/trice à votre compte.",
+            save_followed_users_failure: "Nous n'avons pu ajouter l'utilisateur/trice à votre compte.",
+            remove_followed_user_success: "Nous avons retiré l'utilisateur/trice de votre compte.",
+            remove_followed_user_failure: "Nous n'avons pu retirer l'utilisateur/trice de votre compte.",
+            error: {
+                id_must_be_integer: "L'id voulu doit être un nombre entier.",
+                id_must_be_unique: "L'id voulu doit être unique.",
+            },
+        },
         title: {
             benchmarks: 'Benchmark/Test',
             mission: 'Mission',

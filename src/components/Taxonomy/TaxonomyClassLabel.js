@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 import {observer} from "mobx-react";
 import React, {Component} from "react";

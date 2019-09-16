@@ -1,19 +1,13 @@
 // @flow strict
 
 import {make_http_request, post_json, put_json} from '../utils/http.js';
+import {SatelliteImage} from "./entities";
+import type {FollowedUser, MagpieMergedSessionInformation} from "../Types";
+import Sentry from '@sentry/browser';
+import {i18n} from '../utils';
+import {NotificationManager} from "react-notifications";
 
-type MergedSessionInformation = {
-    authenticated: boolean,
-    code: number,
-    detail: string,
-    type: string,
-    user: {
-        email: string,
-        group_names: string[],
-        user_id: number,
-        user_name: string
-    },
-};
+const {t} = i18n;
 
 /**
  * Here we find all the actual requests for data from the api.
@@ -32,6 +26,42 @@ export class DataQueries {
         this.magpie_endpoint = magpie_endpoint;
         this.ml_endpoint = ml_endpoint;
     }
+
+    fetch_images_dictionary = async () => {
+        const response = await make_http_request(`${this.geoimagenet_api_endpoint}/images`);
+        const images = await response.json();
+        return images.map(raw => {
+            return new SatelliteImage(raw.bands, raw.bits, raw.extension, raw.filename, raw.id, raw.layer_name, raw.sensor_name);
+        });
+    };
+
+    save_followed_user = (form_data: { id: number | string, nickname: string }[]): Promise<Response> => {
+        return post_json(`${this.geoimagenet_api_endpoint}/users/current/followed_users`, JSON.stringify(form_data));
+    };
+
+    fetch_followed_users = (): Promise<FollowedUser[]> => {
+        return new Promise((resolve, reject) => {
+            make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users`)
+                .then(
+                    response => response.json(),
+                    error => reject(error),
+                )
+                .then(
+                    json => resolve(json),
+                    error => {
+                        Sentry.captureException(error);
+                        NotificationManager.error(t('network:malformed_response'));
+                        reject(error);
+                    }
+                );
+        });
+    };
+
+    remove_followed_user = async (id: number): Promise<Response> => {
+        return make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users/${id}`, {
+            method: 'delete',
+        });
+    };
 
     /**
      * we overwrite the return for the first element because this method is called get by id, we only ever want one element
@@ -71,7 +101,7 @@ export class DataQueries {
      * but users/current will happily return an user object even for not-logged users (the famed anonymous user).
      * @todo as we are coupled to the idea that there is an actual user that is anonymous, we could add test around this boundary
      */
-    current_user_session = async (): Promise<MergedSessionInformation> => {
+    current_user_session = async (): Promise<MagpieMergedSessionInformation> => {
         const responses = await Promise.all([
             make_http_request(`${this.magpie_endpoint}/users/current`),
             make_http_request(`${this.magpie_endpoint}/session`),

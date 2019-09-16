@@ -5,7 +5,7 @@ import React from "react";
 import {LayerSwitcher} from "../../LayerSwitcher";
 import {MapManager} from "./MapManager";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import {StoreActions} from "../../store";
+import {StoreActions} from "../../store/StoreActions";
 import {UserInteractions} from "../../domain";
 import {Interactions} from "./Interactions";
 
@@ -35,6 +35,8 @@ class MapContainer extends React.Component<Props> {
     componentDidMount(): void {
         const {state_proxy, store_actions, user_interactions} = this.props;
 
+        user_interactions.populate_image_dictionary();
+
         /**
          * The Layer Switcher is paramount to the map: it should allow easy access and toggling to the various displayed layers.
          * @private
@@ -56,7 +58,7 @@ class MapContainer extends React.Component<Props> {
             user_interactions
         );
 
-        new Interactions(this.map_manager.map, state_proxy, user_interactions, store_actions, this.map_manager.formatGeoJson, ANNOTATION_LAYER, ANNOTATION_NAMESPACE);
+        new Interactions(this.map_manager.map, state_proxy, user_interactions, this.map_manager.formatGeoJson, ANNOTATION_LAYER, ANNOTATION_NAMESPACE);
     }
 
     render() {

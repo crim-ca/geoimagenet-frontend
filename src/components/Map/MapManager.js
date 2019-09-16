@@ -39,11 +39,13 @@ import {
 } from '../../domain/constants.js';
 import {debounced} from '../../utils/event_handling.js';
 import {NotificationManager} from 'react-notifications';
-import {StoreActions} from "../../store";
+import {StoreActions} from "../../store/StoreActions";
 import {LayerSwitcher} from "../../LayerSwitcher";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {make_http_request} from "../../utils/http";
 import {UserInteractions} from "../../domain";
+import {make_annotation_ownership_cql_filter} from "./utils";
+import {create_style_function} from './ol_dependant_utils';
 
 async function geoserver_capabilities(url) {
     let parser = new WMSCapabilities();
@@ -116,7 +118,12 @@ export class MapManager {
     /**
      * @private
      */
-    cql_filter: string;
+    cql_taxonomy_class_id: string = '';
+
+    /**
+     * @private
+     */
+    cql_ownership: string = '';
 
     /**
      * @private
@@ -236,7 +243,7 @@ export class MapManager {
          * We need to show the layers that are activated in the filters, and refresh them when we change the visible classes selection
          */
         autorun(() => {
-            const {annotation_status_list} = this.state_proxy;
+            const {annotation_status_filters, annotation_ownership_filters} = this.state_proxy;
 
             const visible = [];
             Object.keys(this.state_proxy.flat_taxonomy_classes).forEach(k => {
@@ -247,21 +254,22 @@ export class MapManager {
                 }
             });
             if (visible.length > 0) {
-                this.cql_filter = `taxonomy_class_id IN (${visible.join(',')})`;
+                this.cql_taxonomy_class_id = `taxonomy_class_id IN (${visible.join(',')})`;
             } else {
-                this.cql_filter = '';
+                this.cql_taxonomy_class_id = '';
             }
 
-            Object.keys(annotation_status_list).forEach(k => {
-                const {activated, text} = annotation_status_list[k];
+            const ownership_filters_array = Object.values(annotation_ownership_filters);
+            this.cql_ownership = make_annotation_ownership_cql_filter(ownership_filters_array, state_proxy.logged_user);
+
+            Object.keys(annotation_status_filters).forEach(k => {
+                const {activated, text} = annotation_status_filters[k];
                 this.state_proxy.annotations_layers[text].setVisible(activated);
                 if (activated) {
                     this.user_interactions.refresh_source_by_status(text);
                 }
             });
         });
-
-        this.cql_filter = '';
 
         // We set the layers and the layer switcher here
         this.make_layers();
@@ -277,15 +285,15 @@ export class MapManager {
         this.map.addEventListener('click', this.receive_map_viewport_click_event);
 
         autorun(() => {
-            const {show_labels, annotation_status_list} = this.state_proxy;
+            const {show_labels, annotation_status_filters} = this.state_proxy;
             /**
              * This clunky switch is used so that MobX registers the access to the show_labels property.
              * We could directly refresh the layers without regard to the actual value in show_labels, the style function picks it up.
              */
             switch (show_labels) {
                 default:
-                    Object.keys(annotation_status_list).forEach(k => {
-                        const annotation_status = annotation_status_list[k];
+                    Object.keys(annotation_status_filters).forEach(k => {
+                        const annotation_status = annotation_status_filters[k];
                         if (annotation_status.activated) {
                             this.user_interactions.refresh_source_by_status(annotation_status.text);
                         }
@@ -299,58 +307,10 @@ export class MapManager {
      * Convenience factory function to create layers.
      */
     create_vector_layer(title: string, source: VectorSource, color: string, visible: boolean = true, zIndex: number = 99999999) {
-
-        const style_function = (feature, resolution) => {
-            const {show_labels} = this.state_proxy;
-            const taxonomy_class = this.state_proxy.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
-            const label = taxonomy_class.name_en || taxonomy_class.name_fr;
-            const styles = [
-                new Style({
-                    fill: new Fill({
-                        color: 'rgba(255, 255, 255, 0.25)',
-                    }),
-                    stroke: new Stroke({
-                        color: color,
-                        width: 2
-                    }),
-                    image: new Circle({
-                        radius: 7,
-                        fill: new Fill({
-                            color: color,
-                        })
-                    }),
-                }),
-            ];
-            if (show_labels) {
-                styles.push(new Style({
-                    text: new Text({
-                        font: '16px Calibri, sans-serif',
-                        fill: new Fill({color: '#000'}),
-                        stroke: new Stroke({color: '#FFF', width: 2}),
-                        text: resolution > 100 ? '' : label,
-                        overflow: true,
-                    }),
-                }));
-            }
-            if (feature.get('review_requested')) {
-                styles.push(new Style({
-                    text: new Text({
-                        font: '36px Calibri, sans-serif',
-                        fill: new Fill({color: '#000'}),
-                        stroke: new Stroke({color: '#FFF', width: 2}),
-                        text: resolution > 100 ? '' : '?',
-                        overflow: true,
-                        offsetY: show_labels ? 36 : 0,
-                    }),
-                }));
-            }
-            return styles;
-        };
-
         return new Vector({
             title: title,
             source: source,
-            style: style_function,
+            style: create_style_function(color, this.state_proxy),
             visible: visible,
             zIndex: zIndex
         });
@@ -453,10 +413,13 @@ export class MapManager {
                     `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
                     `outputFormat=application/json&srsname=EPSG:3857&` +
                     `cql_filter=status='${status}' AND BBOX(geometry, ${extent.join(',')})`;
-                if (this.cql_filter.length > 0) {
-                    baseUrl += ` AND ${this.cql_filter}`;
+                if (this.cql_taxonomy_class_id.length > 0) {
+                    baseUrl += ` AND ${this.cql_taxonomy_class_id}`;
                 } else {
                     baseUrl += ` AND taxonomy_class_id IN (-1)`;
+                }
+                if (this.cql_ownership.length > 0) {
+                    baseUrl += ` AND (${this.cql_ownership})`;
                 }
                 return baseUrl;
             },
