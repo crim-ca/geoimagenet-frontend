@@ -6,38 +6,23 @@ import {observer} from 'mobx-react';
 
 import {withTranslation} from '../../../utils';
 import {TFunction} from 'react-i18next';
-import {FiltersPaper} from "../FiltersPaper";
-import {FadingDialog} from "../FadingDialog";
+import {GeoImageNetStore} from "../../../store/GeoImageNetStore";
 
 type Props = {
     t: TFunction,
+    state_proxy: GeoImageNetStore,
 };
-type State = {
-    anchor: HTMLElement | null,
-    open: boolean,
-};
+type State = {};
 @observer
 class Container extends React.Component<Props, State> {
-    state = {
-        anchor: null,
-        open: false,
-    };
 
     render() {
-        const {t} = this.props;
-        const {anchor} = this.state;
+        const {t, state_proxy} = this.props;
         return (
             <>
                 <Button variant='contained'
-                        color='primary'
-                        onClick={this.toggle_filter_container}>{t(`annotations:labels`)}</Button>
-                <FadingDialog open={this.state.open} anchor={anchor}>
-                    <FiltersPaper>
-                        <ul>
-                            <li>ite</li>
-                        </ul>
-                    </FiltersPaper>
-                </FadingDialog>
+                        color={state_proxy.show_annotators_identifiers ? 'primary' : 'secondary'}
+                        onClick={state_proxy.toggle_annotator_identifiers}>{t(`annotations:annotators_identifiers`)}</Button>
             </>
         );
     }
