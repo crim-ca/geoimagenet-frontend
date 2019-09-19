@@ -14,6 +14,9 @@ export class OpenLayersStore {
     @action set_center: (Coordinate) => void = (center: Coordinate) => {
         this.center = center;
     };
+    @action set_extent: (BoundingBox) => void = (bounding_box: BoundingBox) => {
+        this.extent = bounding_box;
+    };
     @action set_zoom: (number) => void = (zoom: number) => {
         this.resolution = zoom;
     };
@@ -21,5 +24,6 @@ export class OpenLayersStore {
     @observable zoom_level: number = VIEW_CENTER.ZOOM_LEVEL;
     @observable center: Coordinate = VIEW_CENTER.CENTRE;
     @observable resolution: number;
+    @observable extent: BoundingBox;
 
 }

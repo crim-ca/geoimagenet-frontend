@@ -57,16 +57,16 @@ class MapContainer extends React.Component<Props> {
             zoom: open_layers_store.zoom_level,
         });
 
-
-        /*
-                autorun(() => {
-            view.animate({
-                center: fromLonLat(open_layers_store.center),
-                resolution: open_layers_store.resolution,
-                duration: 1000
-            });
+        let first = true;
+        autorun(() => {
+            const extent = open_layers_store.extent;
+            if (first === true) {
+                first = false;
+                return;
+            }
+            view.fit(extent, {duration: 800});
         });
-         */
+
 
         this.map_manager = new MapManager(
             GEOSERVER_URL,

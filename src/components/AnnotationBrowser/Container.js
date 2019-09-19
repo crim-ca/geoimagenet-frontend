@@ -28,8 +28,7 @@ type Props = {
 class Container extends React.Component<Props> {
 
     navigate = (bounding_box: BoundingBox) => {
-        const center: Coordinate = get_center_of_bbox(bounding_box);
-        this.props.open_layers_store.set_center(center);
+        this.props.open_layers_store.set_extent(bounding_box);
     };
 
     render() {
