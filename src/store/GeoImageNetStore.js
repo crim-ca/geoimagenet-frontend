@@ -2,7 +2,7 @@
 import {ANNOTATION, MODE} from '../domain/constants.js';
 import {AccessControlList} from '../domain/access-control-list.js';
 import {AnnotationFilter, ResourcePermissionRepository} from '../domain/entities.js';
-import {observable, computed} from 'mobx';
+import {observable, computed, action} from 'mobx';
 import {SatelliteImage, Taxonomy, User} from "../domain/entities";
 import typeof VectorLayer from "ol/layer/Vector.js";
 import typeof VectorSource from "ol/source/Vector";
@@ -29,6 +29,15 @@ export class GeoImageNetStore {
      * Labels can be overwhelming when there are too much objects on the screen, this property should allow user to show them or not.
      */
     @observable show_labels: boolean = true;
+    @observable show_annotators_identifiers: boolean = true;
+
+    @action toggle_annotator_identifiers: (?boolean) => void = (override: ?boolean) => {
+        if (typeof override !== undefined ) {
+            this.show_annotators_identifiers = !this.show_annotators_identifiers;
+            return;
+        }
+        this.show_annotators_identifiers = override;
+    };
 
     /**
      * The visible annotations types should federate every part of the platform that manages annotations, from the counts

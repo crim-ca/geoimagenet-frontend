@@ -7,7 +7,9 @@ import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from '../../domain/user-interactions.js';
 import {StoreActions} from '../../store/StoreActions';
 import {Sidebar} from './Sidebar';
-import {Container as FiltersContainer} from "./Filters/Container";
+import {Container as FiltersContainer} from "../Map/Filters/Container";
+import {Container as LabelsContainer} from "../Map/LabelsChoice/Container";
+import {ActiveFiltersBox} from '../Map/ActiveFiltersBox';
 
 const PlatformContainer = withStyles(({values}) => ({
     root: {
@@ -28,23 +30,6 @@ const Coordinates = withStyles(({values, zIndex}) => ({
         width: '300px',
     }
 }))(Paper);
-
-const ActiveFiltersBox = withStyles(theme => {
-    const {values} = theme;
-    return {
-        root: {
-            marginRight: values.gutterSmall,
-            gridRow: '2/3',
-            gridColumn: '2/3',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-end',
-        }
-    };
-})(props => {
-    const {classes, children} = props;
-    return <div className={classes.root}>{children}</div>;
-});
 
 type Props = {
     state_proxy: GeoImageNetStore,
@@ -69,6 +54,7 @@ class Platform extends Component<Props> {
                     user_interactions={this.props.user_interactions} />
                 <Coordinates id='coordinates' />
                 <ActiveFiltersBox>
+                    <LabelsContainer state_proxy={this.props.state_proxy} store_actions={this.props.store_actions} />
                     <FiltersContainer state_proxy={this.props.state_proxy} store_actions={this.props.store_actions} />
                 </ActiveFiltersBox>
                 <Sidebar

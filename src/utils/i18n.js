@@ -8,6 +8,7 @@ const resources = {
     en: {
         annotations: {
             filters: 'Filters',
+            labels: 'Labels',
             status: {
                 new: 'New',
                 pre_released: 'Pre released',
@@ -216,6 +217,7 @@ const resources = {
     fr: {
         annotations: {
             filters: 'Filtres',
+            labels: 'Libellés',
             status: {
                 new: 'Nouvelles',
                 pre_released: 'Pré-relâchées',
