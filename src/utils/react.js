@@ -55,6 +55,9 @@ export const theme = createMuiTheme({
         primary: {
             main: turquoise_ish
         },
+        secondary: {
+            main: '#FFF',
+        }
     },
     typography: {
         useNextVariants: true,

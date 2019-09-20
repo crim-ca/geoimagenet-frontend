@@ -7,6 +7,7 @@ import {initReactI18next} from "react-i18next";
 const resources = {
     en: {
         annotations: {
+            annotators_identifiers: 'Annotators identifiers',
             pagination: {
                 page_info: 'Page {{page_number}} of {{total_pages}}',
                 previous: 'Previous page',
@@ -222,6 +223,7 @@ const resources = {
     },
     fr: {
         annotations: {
+            annotators_identifiers: "Identifiants d'annotateurs/trices",
             pagination: {
                 page_info: 'Page {{page_number}} de {{total_pages}}',
                 previous: 'Page précédente',
