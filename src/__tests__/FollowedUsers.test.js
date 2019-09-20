@@ -46,6 +46,18 @@ data_queries.remove_followed_user = jest.fn(() => null);
 
 describe('Followed users form', () => {
 
+    test('We can log a user on', () => {
+        const store = new GeoImageNetStore();
+        const store_actions = new StoreActions(store);
+        store_actions.set_session_user(new User('user_name', 'email', [], 1, []));
+        /**
+         * $FlowFixMe
+         * We are in a controlled situation, the logged user is not null
+         */
+        expect(store.logged_user.user_name).toBe('user_name');
+    });
+
+
     /**
      * we want to validate that the form will populate the logged_user's followed users list
      * for that, we need a store and the form
@@ -54,8 +66,6 @@ describe('Followed users form', () => {
         const store = new GeoImageNetStore();
         const store_actions = new StoreActions(store);
         const user_interactions = new UserInteractions(store_actions, data_queries, i18next, store);
-        store_actions.set_session_user(new User('user_name', 'email', [], 1, []));
-        expect(store.logged_user.user_name).toBe('user_name');
         const wrapper = mount(<UserSettingsContainer user={store.logged_user} user_interactions={user_interactions} />);
         expect(wrapper.find(FollowedUsersList)).toHaveLength(1);
         let id_input = wrapper.find(AddFollowedUserForm).find('input[id="id"]');
@@ -78,6 +88,10 @@ describe('Followed users form', () => {
         submit_button.simulate('click');
         await wait(0);
         wrapper.update();
+        /**
+         * $FlowFixMe
+         * We are in a controlled situation, the logged user is not null
+         */
         expect(store.logged_user.followed_users.length).toBe(1);
         const material_rows = wrapper.find(FollowedUsersList).find('tbody').find('tr.MuiTableRow-root');
         expect(material_rows).toHaveLength(6);
@@ -87,6 +101,10 @@ describe('Followed users form', () => {
         delete_button.simulate('click');
         await wait(0);
         wrapper.update();
+        /**
+         * $FlowFixMe
+         * We are in a controlled situation, the logged user is not null
+         */
         expect(store.logged_user.followed_users.length).toBe(0);
     });
 

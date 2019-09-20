@@ -73,7 +73,7 @@ class ContextualMenuContainer extends React.Component<Props, State> {
         ContextualMenuManager.remove_populate_menu_callback();
     }
 
-    handle_populate_menu_request = async (menu_items: ContextualMenuItem[], resolve, reject) => {
+    handle_populate_menu_request = async (menu_items: ContextualMenuItem[], resolve: PromiseResolutionCallback, reject: PromiseResolutionCallback) => {
         this.setState({
             open: true,
             menu_items: menu_items,

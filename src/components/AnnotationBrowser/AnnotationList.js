@@ -26,6 +26,9 @@ class AnnotationList extends React.Component<Props> {
             <>
                 {this.props.annotations.map((annotation, i) => {
                     const image = this.props.state_proxy.images_dictionary.find(image => image.id === annotation.properties.image_id);
+                    if (image === undefined) {
+                        return;
+                    }
                     const url = `${this.props.geoserver_url}/wms?service=WMS&version=1.3.0&request=GetMap&format=image/png` +
                         `&transparent=true&layers=${image.layer_name}&hints=quality` +
                         `&width=150&height=150&crs=EPSG:3857&bbox=${annotation.properties.bbox.join(',')}`;
