@@ -39,6 +39,7 @@ copyProps(window, global);
 configure({adapter: new Adapter()});
 
 const data_queries = new DataQueries('', '', '', '');
+const user_without_followed_users = new User('user_name', 'email', [], 1, []);
 // $FlowFixMe
 data_queries.save_followed_user = jest.fn(() => null);
 // $FlowFixMe
@@ -49,7 +50,7 @@ describe('Followed users form', () => {
     test('We can log a user on', () => {
         const store = new GeoImageNetStore();
         const store_actions = new StoreActions(store);
-        store_actions.set_session_user(new User('user_name', 'email', [], 1, []));
+        store_actions.set_session_user(user_without_followed_users);
         /**
          * $FlowFixMe
          * We are in a controlled situation, the logged user is not null
@@ -66,6 +67,7 @@ describe('Followed users form', () => {
         const store = new GeoImageNetStore();
         const store_actions = new StoreActions(store);
         const user_interactions = new UserInteractions(store_actions, data_queries, i18next, store);
+        store_actions.set_session_user(user_without_followed_users);
         const wrapper = mount(<UserSettingsContainer user={store.logged_user} user_interactions={user_interactions} />);
         expect(wrapper.find(FollowedUsersList)).toHaveLength(1);
         let id_input = wrapper.find(AddFollowedUserForm).find('input[id="id"]');
