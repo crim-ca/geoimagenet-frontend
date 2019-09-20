@@ -236,6 +236,12 @@ export class MapManager {
 
         const {annotations_collections, annotations_sources} = this.state_proxy;
 
+        /**
+         * this innocent looking piece of code is actually very central to the map, here we create the Open Layers sources and collections that will hold the features
+         * (quick reminder, an GeoImageNet "annotation" is represented on the map as an Open Layers "feature", served with wfs"
+         * We need to set their color in accordance with their status.
+         * We keep references to the collections, sources and layers so that we can access them directly if need be (such as when refreshing sources, or setting style functions)
+         */
         ANNOTATION_STATUS_AS_ARRAY.forEach(key => {
             const color = style.getPropertyValue(`--color-${key}`);
             this.store_actions.set_annotation_collection(key, new Collection());
@@ -284,11 +290,16 @@ export class MapManager {
         this.map.addEventListener('click', this.receive_map_viewport_click_event);
 
         autorun(() => {
-            const {show_labels, annotation_status_filters} = this.state_proxy;
+            const {show_labels, show_annotators_identifiers, annotation_status_filters} = this.state_proxy;
             /**
              * This clunky switch is used so that MobX registers the access to the show_labels property.
-             * We could directly refresh the layers without regard to the actual value in show_labels, the style function picks it up.
+             * we assign noise only for mobx to rerun this function as well.
+             *
+             * this is horrible, there must be a way to change the style globally without reloading everything, I can't believe it's the only way
+             *
+             * We could directly refresh the layers without regard to the actual value in show_labels, the style function picks it up, but that would mean even more useless api calls
              */
+            const noise = show_annotators_identifiers;
             switch (show_labels) {
                 default:
                     Object.keys(annotation_status_filters).forEach(k => {

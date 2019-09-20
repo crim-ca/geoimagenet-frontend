@@ -13,6 +13,7 @@ const resources = {
                 next: 'Next page',
             },
             filters: 'Filters',
+            labels: 'Labels',
             status: {
                 new: 'New',
                 pre_released: 'Pre released',
@@ -227,6 +228,7 @@ const resources = {
                 next: 'Page suivante',
             },
             filters: 'Filtres',
+            labels: 'Libellés',
             status: {
                 new: 'Nouvelles',
                 pre_released: 'Pré-relâchées',

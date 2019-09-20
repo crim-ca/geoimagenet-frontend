@@ -53,6 +53,9 @@ export class DataQueries {
     remove_followed_user = async (id: number): Promise<Response> => {
         return make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users/${id}`, {
             method: 'delete',
+            headers: {
+                'Content-Type': 'application/json',
+            },
         });
     };
 

@@ -1,18 +1,15 @@
 // @flow strict
 
 import React from 'react';
-import {Menu, MenuItem, withStyles} from '@material-ui/core';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import type {ContextualMenuItem} from '../../Types';
 import {ContextualMenuManager} from './ContextualMenuManager';
 import {ACTION_EXIT_CONTEXTUAL_MENU} from "./utils";
 import {debounced} from "../../utils/event_handling";
 
 type PromiseResolutionCallback = (?string) => void;
-type Props = {
-    classes: {
-        anchor_element: {},
-    }
-};
+type Props = {};
 type State = {
     menu_items: ContextualMenuItem[],
     anchor_element: HTMLElement,
@@ -35,14 +32,6 @@ export const default_state = {
     open: false,
     resolve: default_resolve,
     reject: default_reject,
-};
-
-const style = {
-    anchor_element: {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-    }
 };
 
 class ContextualMenuContainer extends React.Component<Props, State> {
@@ -85,8 +74,6 @@ class ContextualMenuContainer extends React.Component<Props, State> {
     }
 
     handle_populate_menu_request = async (menu_items: ContextualMenuItem[], resolve, reject) => {
-        this.state.anchor_element.style.left = `${this.state.mouse_x}px`;
-        this.state.anchor_element.style.top = `${this.state.mouse_y}px`;
         this.setState({
             open: true,
             menu_items: menu_items,
@@ -107,10 +94,11 @@ class ContextualMenuContainer extends React.Component<Props, State> {
     };
 
     render() {
-        const {classes} = this.props;
         return (
             <>
-                <div id='anchor_element' className={classes.anchor_element} />
+                <div
+                    id='anchor_element'
+                    style={{position: 'absolute', left: `${this.state.mouse_x}px`, top: `${this.state.mouse_y}px`}} />
                 <Menu
                     onClose={this.handle_outside_click}
                     open={this.state.open}
@@ -126,8 +114,6 @@ class ContextualMenuContainer extends React.Component<Props, State> {
     }
 }
 
-const styled = withStyles(style)(ContextualMenuContainer);
-
 export {
-    styled as ContextualMenuContainer,
+    ContextualMenuContainer,
 };
