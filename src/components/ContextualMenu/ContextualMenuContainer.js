@@ -36,7 +36,7 @@ export const default_state = {
 class ContextualMenuContainer extends React.Component<Props, State> {
 
     state = Object.assign({}, default_state);
-    anchor_element: HTMLElement;
+    anchor_element: HTMLElement | null;
 
     constructor() {
         super();
@@ -56,7 +56,7 @@ class ContextualMenuContainer extends React.Component<Props, State> {
         window.addEventListener('mousemove', debounced(50, this.set_mouse_position));
     }
 
-    set_anchor_element = (element: HTMLElement) => {
+    set_anchor_element = (element: HTMLElement | null) => {
         this.anchor_element = element;
     };
 
