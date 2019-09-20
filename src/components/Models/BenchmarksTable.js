@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 import {tableIcons} from "../../utils/react";
 import Publish from '@material-ui/icons/Publish';
@@ -9,18 +9,26 @@ import {graphql} from "react-apollo/graphql";
 import React from "react";
 import {BENCHMARKS_JOBS, CHANGE_BENCHMARK_VISIBILITY} from "../../domain/graphql_queries";
 import {NotificationManager} from "react-notifications";
+import type {Job} from "../../Types";
 
 const make_publish_icon = () => <Publish />;
 const make_lock_icon = () => <Lock />;
 
 type Props = {
     data: {
-        jobs: Array<Object>,
-        refetch: Function,
-        startPolling: Function,
-        stopPolling: Function,
+        jobs: Job[],
+        refetch: () => void,
+        startPolling: (number) => void,
+        stopPolling: () => void,
     },
-    mutate: Function
+    mutate: ({}) => Promise<{
+        data: {
+            benchmark_visibility: {
+                message: string,
+                success: boolean,
+            }
+        }
+    }>
 };
 
 class BenchmarksTableComponent extends React.Component<Props> {

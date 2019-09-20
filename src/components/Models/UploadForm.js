@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 import {Button, CircularProgress, Link, TextField, Typography, withStyles} from "@material-ui/core";
 import PropTypes from 'prop-types';
@@ -40,7 +40,17 @@ const UploadFormContainer = withStyles(theme => ({
 ));
 
 type Props = {
-    mutate: Function,
+    mutate: ({
+                 variables: {},
+                 update: () => void,
+             }) => Promise<{
+        data: {
+            upload_model: {
+                message: string,
+                success: boolean,
+            },
+        },
+    }>,
     model_upload_instructions_url: string,
 };
 

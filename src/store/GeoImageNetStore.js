@@ -32,11 +32,11 @@ export class GeoImageNetStore {
     @observable show_annotators_identifiers: boolean = true;
 
     @action toggle_annotator_identifiers: (?boolean) => void = (override: ?boolean) => {
-        if (typeof override !== undefined ) {
-            this.show_annotators_identifiers = !this.show_annotators_identifiers;
+        if (override !== undefined && override !== null) {
+            this.show_annotators_identifiers = override;
             return;
         }
-        this.show_annotators_identifiers = override;
+        this.show_annotators_identifiers = !this.show_annotators_identifiers;
     };
 
     /**

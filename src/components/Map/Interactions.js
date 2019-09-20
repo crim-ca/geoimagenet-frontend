@@ -61,6 +61,11 @@ const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStor
     return false;
 };
 
+/**
+ * The Interactions class was intended as the repository where the various Open Layers interactions live.
+ * OL Interactions are classes from their bundle that represent an user's interaction with the viewport, be it a click,
+ * or a feature creation / modification.
+ */
 export class Interactions {
 
     map: Map;

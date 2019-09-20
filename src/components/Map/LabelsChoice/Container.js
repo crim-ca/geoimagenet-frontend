@@ -16,13 +16,17 @@ type State = {};
 @observer
 class Container extends React.Component<Props, State> {
 
+    receive_click_event = () => {
+        this.props.state_proxy.toggle_annotator_identifiers();
+    };
+
     render() {
         const {t, state_proxy} = this.props;
         return (
             <>
                 <Button variant='contained'
                         color={state_proxy.show_annotators_identifiers ? 'primary' : 'secondary'}
-                        onClick={state_proxy.toggle_annotator_identifiers}>{t(`annotations:annotators_identifiers`)}</Button>
+                        onClick={this.receive_click_event}>{t(`annotations:annotators_identifiers`)}</Button>
             </>
         );
     }

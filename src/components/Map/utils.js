@@ -3,7 +3,7 @@
 import {AnnotationFilter, User} from "../../domain/entities";
 import {ANNOTATION} from "../../domain/constants";
 
-export function make_annotation_ownership_cql_filter(ownership_filters: AnnotationFilter[], logged_user: User): string {
+export function make_annotation_ownership_cql_filter(ownership_filters: AnnotationFilter[], logged_user: User | null): string {
     /**
      * if none or all of the ownership filters are activated, we want the same behaviour, that is show all annotations
      * but if there's one or two, then we need to filter based on user ids
@@ -14,6 +14,10 @@ export function make_annotation_ownership_cql_filter(ownership_filters: Annotati
      *  - followed users: include annotations by followed users - IN (id1, id2, id3)
      *  those need to be added with OR glue, for instance - ( id NOT IN (1) OR id IN (3,4,5) )
      */
+
+    if (logged_user === null) {
+        return '';
+    }
 
     if (ownership_filters.every(filter => filter.activated)) {
         return '';

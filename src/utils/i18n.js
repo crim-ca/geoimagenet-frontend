@@ -7,6 +7,11 @@ import {initReactI18next} from "react-i18next";
 const resources = {
     en: {
         annotations: {
+            pagination: {
+                page_info: 'Page {{page_number}} of {{total_pages}}',
+                previous: 'Previous page',
+                next: 'Next page',
+            },
             filters: 'Filters',
             labels: 'Labels',
             status: {
@@ -52,6 +57,7 @@ const resources = {
             publications: 'Publications',
             collaborators: 'Research collaborators',
             team: 'Team',
+            annotation_browser: 'Annotation Browser',
         },
         intro: {
             benchmarks: {
@@ -216,6 +222,11 @@ const resources = {
     },
     fr: {
         annotations: {
+            pagination: {
+                page_info: 'Page {{page_number}} de {{total_pages}}',
+                previous: 'Page précédente',
+                next: 'Page suivante',
+            },
             filters: 'Filtres',
             labels: 'Libellés',
             status: {
@@ -261,6 +272,7 @@ const resources = {
             publications: 'Publications',
             collaborators: 'Collaborateurs de recherche',
             team: "Équipe",
+            annotation_browser: 'Navigateur d\'annotations',
         },
         intro: {
             benchmarks: {

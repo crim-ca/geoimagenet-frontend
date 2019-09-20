@@ -102,10 +102,16 @@ describe('Taxonomy viewer', () => {
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.NEW);
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.RELEASED);
         store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.VALIDATED);
+        store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.PRE_RELEASED);
+        store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.REJECTED);
+        store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.DELETED);
         const wrapper = mount(<TestableTaxonomyViewer />);
         expect(state_proxy.annotation_status_filters[ANNOTATION.STATUS.NEW].activated).toBe(false);
         expect(state_proxy.annotation_status_filters[ANNOTATION.STATUS.RELEASED].activated).toBe(false);
         expect(state_proxy.annotation_status_filters[ANNOTATION.STATUS.VALIDATED].activated).toBe(false);
+        expect(state_proxy.annotation_status_filters[ANNOTATION.STATUS.PRE_RELEASED].activated).toBe(false);
+        expect(state_proxy.annotation_status_filters[ANNOTATION.STATUS.REJECTED].activated).toBe(false);
+        expect(state_proxy.annotation_status_filters[ANNOTATION.STATUS.DELETED].activated).toBe(false);
         await wait(0);
         wrapper.update();
         expect(wrapper.find(SpacedChip).length).toEqual(0);

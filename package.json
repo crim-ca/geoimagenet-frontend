@@ -19,10 +19,6 @@
     "type": "git",
     "url": "https://felix.gagnon-grenier%40crim.ca@www.crim.ca/stash/scm/geo/frontend.git"
   },
-  "jest": {
-    "setupTestFrameworkScriptFile": "jest-enzyme",
-    "testEnvironment": "enzyme"
-  },
   "author": "Félix Gagnon-Grenier",
   "devDependencies": {
     "@babel/cli": "^7.5.5",
