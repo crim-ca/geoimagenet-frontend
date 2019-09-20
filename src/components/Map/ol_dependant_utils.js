@@ -39,21 +39,22 @@ function select_style(): Style {
 
 export function create_style_function(color: string, state_proxy: GeoImageNetStore, create_for_select_interaction: boolean = false): StyleFunction {
 
-
-    /**
-     * If there is a logged user (it's possible there isn't, people can access the map in anonymous mode)
-     * then we should not be trying to substitute nicknames for ids
-     */
-    const {logged_user} = state_proxy;
-    const nickname_map = {};
-    if (logged_user !== null) {
-        const assign_followed_user = (user: FollowedUser) => {
-            nickname_map[user.id] = user.nickname;
-        };
-        logged_user.followed_users.forEach(assign_followed_user);
-    }
-
     return (feature: Feature, resolution: number) => {
+
+        /**
+         * If there is a logged user (it's possible there isn't, people can access the map in anonymous mode)
+         * then we should not be trying to substitute nicknames for ids
+         *
+         * NOTE we must keep this code *inside* the callback otherwise the list is not updated in accordance to the changes to the followed users
+         */
+        const {logged_user} = state_proxy;
+        const nickname_map = {};
+        if (logged_user !== null) {
+            const assign_followed_user = (user: FollowedUser) => {
+                nickname_map[user.id] = user.nickname;
+            };
+            logged_user.followed_users.forEach(assign_followed_user);
+        }
 
         const {show_labels, show_annotators_identifiers} = state_proxy;
         const taxonomy_class = state_proxy.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
