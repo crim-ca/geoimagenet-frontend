@@ -8,7 +8,7 @@ import {AnnotationList} from './AnnotationList';
 
 import type {AnnotationBrowserStore} from "../../store/AnnotationBrowserStore";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import type {BoundingBox} from "../../Types";
+import type {AnnotationStatus, BoundingBox} from "../../Types";
 import {OpenLayersStore} from "../../store/OpenLayersStore";
 
 type Props = {
@@ -20,8 +20,10 @@ type Props = {
 @observer
 class Container extends React.Component<Props> {
 
-    navigate = (bounding_box: BoundingBox) => {
+    navigate = (bounding_box: BoundingBox, status: AnnotationStatus, annotation_id: number) => {
         this.props.open_layers_store.set_extent(bounding_box);
+        const feature = this.props.state_proxy.annotations_collections[status].getArray().find(candidate => candidate.get('id') === annotation_id);
+        this.props.open_layers_store.select_feature(feature);
     };
 
     render() {
