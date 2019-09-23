@@ -3,8 +3,10 @@
 import React from 'react';
 import {observer} from 'mobx-react';
 import withStyles from '@material-ui/core/styles/withStyles';
+import {TFunction} from 'react-i18next';
 
 import type {Annotation, AnnotationStatus, BoundingBox} from "../../Types";
+import {withTranslation} from '../../utils';
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 
 type Props = {
@@ -13,18 +15,25 @@ type Props = {
     state_proxy: GeoImageNetStore,
     fit_view_to_bounding_box: (BoundingBox, AnnotationStatus, number) => void,
     classes: {
-        root: {},
-        item: {},
+        list: {},
+        figure: {},
+        list_item: {},
     },
+    t: TFunction,
 };
-const style = {
-    root: {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+const style = (theme) => ({
+    list: {
+        display: 'flex',
+        flexDirection: 'column',
+        '& th': {
+            textAlign: 'right',
+        },
+        '& tr:not(:first-child) > *': {
+            borderTop: '1px solid rgba(0, 0, 0, 0.1)'
+        },
     },
-    item: {
+    figure: {
         position: 'relative',
-        height: '200px',
         '& > img': {
             cursor: 'pointer',
             position: 'absolute',
@@ -32,7 +41,13 @@ const style = {
             left: 0,
         }
     },
-};
+    list_item: {
+        display: 'grid',
+        gridGap: theme.values.gutterSmall,
+        gridTemplateColumns: '150px 1fr',
+        gridTemplateRows: `calc(150px + ${theme.values.gutterSmall})`,
+    }
+});
 
 @observer
 class AnnotationList extends React.Component<Props> {
@@ -42,11 +57,12 @@ class AnnotationList extends React.Component<Props> {
     };
 
     render() {
-        const {classes} = this.props;
+        const {classes, state_proxy, t} = this.props;
         return (
-            <div className={classes.root}>
+            <div className={classes.list}>
                 {this.props.annotations.map((annotation, i) => {
-                    const {image_id, bbox, id, status} = annotation.properties;
+                    const {image_id, bbox, id, status, taxonomy_class_id, annotator_id} = annotation.properties;
+                    const taxonomy_class_name = state_proxy.flat_taxonomy_classes[taxonomy_class_id].name_en;
                     const image = this.props.state_proxy.images_dictionary.find(image => image.id === image_id);
                     if (image === undefined) {
                         return;
@@ -59,12 +75,28 @@ class AnnotationList extends React.Component<Props> {
                         `&transparent=true&layers=annotation&srs=EPSG:3857&WIDTH=150&HEIGHT=150&styles=annotations&format=image/png` +
                         `&BBOX=${bounding_box}&cql_filter=id=${id}`;
                     return (
-                        <figure className={classes.item}
-                                key={i}
-                                onClick={this.make_animate_handler(bbox, status, id)}>
-                            <img src={encodeURI(image_url)} />
-                            <img src={encodeURI(feature_url)} />
-                        </figure>
+                        <div key={i} className={classes.list_item}>
+                            <figure className={classes.figure} onClick={this.make_animate_handler(bbox, status, id)}>
+                                <img src={encodeURI(image_url)} />
+                                <img src={encodeURI(feature_url)} />
+                            </figure>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <th>{t('annotations:class_name')}:</th>
+                                    <td>{taxonomy_class_name}</td>
+                                </tr>
+                                <tr>
+                                    <th>{t('annotations:status')}:</th>
+                                    <td>{status}</td>
+                                </tr>
+                                <tr>
+                                    <th>{t('annotations:owner')}:</th>
+                                    <td>{annotator_id}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     );
                 })}
             </div>
@@ -73,7 +105,8 @@ class AnnotationList extends React.Component<Props> {
 }
 
 const styled_annotations = withStyles(style)(AnnotationList);
+const translated_annotations = withTranslation()(styled_annotations);
 
 export {
-    styled_annotations as AnnotationList,
+    translated_annotations as AnnotationList,
 };

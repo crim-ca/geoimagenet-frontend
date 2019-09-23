@@ -6,7 +6,18 @@ import {initReactI18next} from "react-i18next";
 
 const resources = {
     en: {
+        status: {
+            new: 'New',
+            pre_released: 'Pre released',
+            released: 'Released',
+            validated: 'Validated',
+            rejected: 'Rejected',
+            deleted: 'Deleted',
+        },
         annotations: {
+            class_name: 'Class Name',
+            owner: 'Owner',
+            status: 'Status',
             annotators_identifiers: 'Annotators identifiers',
             pagination: {
                 page_info: 'Page {{page_number}} of {{total_pages}}',
@@ -15,14 +26,6 @@ const resources = {
             },
             filters: 'Filters',
             labels: 'Labels',
-            status: {
-                new: 'New',
-                pre_released: 'Pre released',
-                released: 'Released',
-                validated: 'Validated',
-                rejected: 'Rejected',
-                deleted: 'Deleted',
-            },
             ownership: {
                 others: 'Others',
                 mine: 'Me',
@@ -222,7 +225,18 @@ const resources = {
         },
     },
     fr: {
+        status: {
+            new: 'Nouvelles',
+            pre_released: 'Pré-relâchées',
+            released: 'Relâchées',
+            validated: 'Validées',
+            rejected: 'Rejetées',
+            deleted: 'Supprimées',
+        },
         annotations: {
+            class_name: 'Nom de classe',
+            owner: 'Propriétaire',
+            status: 'Statut',
             annotators_identifiers: "Identifiants d'annotateurs/trices",
             pagination: {
                 page_info: 'Page {{page_number}} de {{total_pages}}',
@@ -231,14 +245,6 @@ const resources = {
             },
             filters: 'Filtres',
             labels: 'Libellés',
-            status: {
-                new: 'Nouvelles',
-                pre_released: 'Pré-relâchées',
-                released: 'Relâchées',
-                validated: 'Validées',
-                rejected: 'Rejetées',
-                deleted: 'Supprimées',
-            },
             ownership: {
                 others: 'Les autres',
                 mine: 'Moi',

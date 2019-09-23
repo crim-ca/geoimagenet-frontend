@@ -22,8 +22,19 @@ class Container extends React.Component<Props> {
 
     navigate = (bounding_box: BoundingBox, status: AnnotationStatus, annotation_id: number) => {
         this.props.open_layers_store.set_extent(bounding_box);
-        const feature = this.props.state_proxy.annotations_collections[status].getArray().find(candidate => candidate.get('id') === annotation_id);
-        this.props.open_layers_store.select_feature(feature);
+        /**
+         * TODO ugly hack so that the feature is actually in the viewport when we try to select it
+         *
+         * The fit to extent method operates over 800 milliseconds, so 1000 here should be enough for it to finish
+         */
+        setTimeout(() => {
+            const {annotations_collections} = this.props.state_proxy;
+            const feature = annotations_collections[status].getArray().find(candidate => candidate.get('id') === annotation_id);
+            if (feature === undefined) {
+                return;
+            }
+            this.props.open_layers_store.select_feature(feature);
+        }, 1000);
     };
 
     render() {

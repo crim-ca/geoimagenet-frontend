@@ -61,7 +61,7 @@ class Container extends React.Component<Props, State> {
                                             <CheckboxLineInput unique_id={unique_input_id}
                                                                checked={status_filter.activated}
                                                                change_handler={this.toggle_status_filter(status_filter.text)}
-                                                               label={t(`annotations:status.${status_filter.text}`)} />
+                                                               label={t(`status:${status_filter.text}`)} />
                                         </li>
                                     );
                                 })
