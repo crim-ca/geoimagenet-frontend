@@ -27,6 +27,7 @@ import {GeoImageNetStore} from "./store/GeoImageNetStore";
 import {LoadingSplashCircle} from "./components/LoadingSplashCircle";
 import {ContextualMenuContainer} from "./components/ContextualMenu/ContextualMenuContainer";
 import {OpenLayersStore} from "./store/OpenLayersStore";
+import Collection from "ol/Collection";
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
@@ -52,7 +53,7 @@ export class PlatformLoader {
     constructor(geoimagenet_api_endpoint: string, geoserver_endpoint: string, magpie_endpoint: string, ml_endpoint: string, i18next_instance: i18n) {
 
         this.state_proxy = new GeoImageNetStore();
-        this.open_layers_store = new OpenLayersStore();
+        this.open_layers_store = new OpenLayersStore(new Collection());
         this.store_actions = new StoreActions(this.state_proxy);
         this.data_queries = new DataQueries(geoimagenet_api_endpoint, geoserver_endpoint, magpie_endpoint, ml_endpoint);
         this.user_interactions = new UserInteractions(this.store_actions, this.data_queries, i18next_instance, this.state_proxy);

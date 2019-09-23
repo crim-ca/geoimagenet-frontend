@@ -2,7 +2,6 @@
 
 import React from 'react';
 import {observer} from 'mobx-react';
-import Button from '@material-ui/core/Button';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 import type {Annotation, BoundingBox} from "../../Types";
@@ -14,7 +13,8 @@ type Props = {
     state_proxy: GeoImageNetStore,
     fit_view_to_bounding_box: (BoundingBox) => void,
     classes: {
-        root: {}
+        root: {},
+        item: {},
     },
 };
 const style = {
