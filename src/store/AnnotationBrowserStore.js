@@ -58,7 +58,7 @@ export class AnnotationBrowserStore {
 
     @observable wfs_response: WfsResponse;
     @observable page_number: number = 1;
-    @observable page_size: number = 5;
+    @observable page_size: number = 6;
 
     @computed get total_features(): number {
         return this.wfs_response ? this.wfs_response.totalFeatures : 0;
