@@ -18,6 +18,7 @@ type Props = {
         list: {},
         figure: {},
         list_item: {},
+        info: {},
     },
     t: TFunction,
 };
@@ -46,7 +47,13 @@ const style = (theme) => ({
         gridGap: theme.values.gutterSmall,
         gridTemplateColumns: '150px 1fr',
         gridTemplateRows: `calc(150px + ${theme.values.gutterSmall})`,
-    }
+    },
+    info: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'start',
+        justifyContent: 'start',
+    },
 });
 
 @observer
@@ -57,13 +64,13 @@ class AnnotationList extends React.Component<Props> {
     };
 
     render() {
-        const {classes, state_proxy, t} = this.props;
+        const {images_dictionary} = this.props.state_proxy;
+        const {classes, t} = this.props;
         return (
             <div className={classes.list}>
                 {this.props.annotations.map((annotation, i) => {
                     const {image_id, bbox, id, status, taxonomy_class_id, annotator_id} = annotation.properties;
-                    const taxonomy_class_name = state_proxy.flat_taxonomy_classes[taxonomy_class_id].name_en;
-                    const image = this.props.state_proxy.images_dictionary.find(image => image.id === image_id);
+                    const image = images_dictionary.find(image => image.id === image_id);
                     if (image === undefined) {
                         return;
                     }
@@ -80,22 +87,11 @@ class AnnotationList extends React.Component<Props> {
                                 <img src={encodeURI(image_url)} />
                                 <img src={encodeURI(feature_url)} />
                             </figure>
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <th>{t('annotations:class_name')}:</th>
-                                    <td>{taxonomy_class_name}</td>
-                                </tr>
-                                <tr>
-                                    <th>{t('annotations:status')}:</th>
-                                    <td>{status}</td>
-                                </tr>
-                                <tr>
-                                    <th>{t('annotations:owner')}:</th>
-                                    <td>{annotator_id}</td>
-                                </tr>
-                                </tbody>
-                            </table>
+                            <div className={classes.info}>
+                                <span style={{fontWeight: 'bold'}}>{t(`taxonomy_classes:${taxonomy_class_id}`)}</span>
+                                <span>{t(`status:singular.${status}`)}</span>
+                                <span>{t('annotations:created_by', {annotator: annotator_id})}</span>
+                            </div>
                         </div>
                     );
                 })}

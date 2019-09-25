@@ -7,14 +7,25 @@ import {initReactI18next} from "react-i18next";
 const resources = {
     en: {
         status: {
-            new: 'New',
-            pre_released: 'Pre released',
-            released: 'Released',
-            validated: 'Validated',
-            rejected: 'Rejected',
-            deleted: 'Deleted',
+            plural: {
+                new: 'New',
+                pre_released: 'Pre released',
+                released: 'Released',
+                validated: 'Validated',
+                rejected: 'Rejected',
+                deleted: 'Deleted',
+            },
+            singular: {
+                new: 'New',
+                pre_released: 'Pre released',
+                released: 'Released',
+                validated: 'Validated',
+                rejected: 'Rejected',
+                deleted: 'Deleted',
+            },
         },
         annotations: {
+            created_by: 'Created by {{annotator}}',
             class_name: 'Class Name',
             owner: 'Owner',
             status: 'Status',
@@ -226,14 +237,25 @@ const resources = {
     },
     fr: {
         status: {
-            new: 'Nouvelles',
-            pre_released: 'Pré-relâchées',
-            released: 'Relâchées',
-            validated: 'Validées',
-            rejected: 'Rejetées',
-            deleted: 'Supprimées',
+            plural: {
+                new: 'Nouvelles',
+                pre_released: 'Pré-relâchées',
+                released: 'Relâchées',
+                validated: 'Validées',
+                rejected: 'Rejetées',
+                deleted: 'Supprimées',
+            },
+            singular: {
+                new: 'Nouvelle',
+                pre_released: 'Pré-relâchée',
+                released: 'Relâchée',
+                validated: 'Validée',
+                rejected: 'Rejetée',
+                deleted: 'Supprimée',
+            },
         },
         annotations: {
+            created_by: 'Créée par {{annotator}}',
             class_name: 'Nom de classe',
             owner: 'Propriétaire',
             status: 'Statut',
