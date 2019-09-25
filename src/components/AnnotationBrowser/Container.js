@@ -34,7 +34,7 @@ class Container extends React.Component<Props> {
                 return;
             }
             this.props.open_layers_store.select_feature(feature);
-        }, 1000);
+        }, 1200);
     };
 
     render() {
