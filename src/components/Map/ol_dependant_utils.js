@@ -59,7 +59,10 @@ export function create_style_function(color: string, state_proxy: GeoImageNetSto
         const {show_labels, show_annotators_identifiers} = state_proxy;
         const taxonomy_class = state_proxy.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
         const label = taxonomy_class.name_en || taxonomy_class.name_fr;
-        const annotator_id = feature.get('annotator_id').toString();
+        /**
+         * theoretically, all features would have annotator ids. but y'know, theory and reality sometimes disagree.
+         */
+        const annotator_id = feature.get('annotator_id') ? feature.get('annotator_id').toString() : '-1';
         // TODO if we need performance of styling, this check could happen at the create style level, and return a different function instead of making the check here
         const identifier = nickname_map.hasOwnProperty(annotator_id) ? nickname_map[annotator_id] : annotator_id;
 

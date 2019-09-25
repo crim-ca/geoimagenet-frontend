@@ -71,7 +71,6 @@ export class Interactions {
     open_layers_store: OpenLayersStore;
     geojson_format: GeoJSON;
     annotation_layer: string;
-    annotation_namespace: string;
     draw: Draw;
     modify: Modify;
     select: Select;
@@ -83,7 +82,6 @@ export class Interactions {
         open_layers_store: OpenLayersStore,
         geojson_format: GeoJSON,
         annotation_layer: string,
-        annotation_namespace: string,
     ) {
         this.map = map;
         this.state_proxy = state_proxy;
@@ -91,7 +89,6 @@ export class Interactions {
         this.open_layers_store = open_layers_store;
         this.geojson_format = geojson_format;
         this.annotation_layer = annotation_layer;
-        this.annotation_namespace = annotation_namespace;
 
         const layers = Object.keys(this.state_proxy.annotations_layers).map(key => {
             return this.state_proxy.annotations_layers[key];
@@ -122,7 +119,7 @@ export class Interactions {
             condition: this.draw_condition_callback
         });
 
-        this.draw.on('drawend', this.user_interactions.create_drawend_handler(this.geojson_format, this.annotation_layer, this.annotation_namespace));
+        this.draw.on('drawend', this.user_interactions.create_drawend_handler(this.geojson_format, this.annotation_layer));
         this.modify.on('modifystart', this.user_interactions.modifystart_handler);
         this.modify.on('modifyend', this.user_interactions.create_modifyend_handler(this.geojson_format, this.map));
 
