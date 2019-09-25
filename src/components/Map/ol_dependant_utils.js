@@ -47,14 +47,7 @@ export function create_style_function(color: string, state_proxy: GeoImageNetSto
          *
          * NOTE we must keep this code *inside* the callback otherwise the list is not updated in accordance to the changes to the followed users
          */
-        const {logged_user} = state_proxy;
-        const nickname_map = {};
-        if (logged_user !== null) {
-            const assign_followed_user = (user: FollowedUser) => {
-                nickname_map[user.id] = user.nickname;
-            };
-            logged_user.followed_users.forEach(assign_followed_user);
-        }
+        const {nickname_map} = state_proxy;
 
         const {show_labels, show_annotators_identifiers} = state_proxy;
         const taxonomy_class = state_proxy.flat_taxonomy_classes[feature.get('taxonomy_class_id')];

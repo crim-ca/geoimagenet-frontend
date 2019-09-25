@@ -7,7 +7,7 @@ import {SatelliteImage, Taxonomy, User} from "../domain/entities";
 import typeof VectorLayer from "ol/layer/Vector.js";
 import typeof VectorSource from "ol/source/Vector";
 import {typeof Collection} from "ol";
-import type {AnnotationOwnershipFilters, AnnotationStatusFilters} from "../Types";
+import type {AnnotationOwnershipFilters, AnnotationStatusFilters, FollowedUser} from "../Types";
 import {configure} from 'mobx';
 
 /**
@@ -144,6 +144,21 @@ export class GeoImageNetStore {
      * An instance with the current user's information.
      */
     @observable logged_user: User | null = null;
+
+    @computed get nickname_map() {
+        const map = {};
+        if (this.logged_user === null) {
+            return {};
+        }
+        if (this.logged_user && this.logged_user.followed_users.length === 0) {
+            return {};
+        }
+        const assign_followed_user = (user: FollowedUser) => {
+            map[user.id] = user.nickname;
+        };
+        this.logged_user.followed_users.forEach(assign_followed_user);
+        return map;
+    }
 
     /**
      * We need to be able to control how annotations are created. Once we begin adding points, we limit the adding of points

@@ -64,7 +64,7 @@ class AnnotationList extends React.Component<Props> {
     };
 
     render() {
-        const {images_dictionary} = this.props.state_proxy;
+        const {images_dictionary, nickname_map} = this.props.state_proxy;
         const {classes, t} = this.props;
         return (
             <div className={classes.list}>
@@ -81,6 +81,7 @@ class AnnotationList extends React.Component<Props> {
                     const feature_url = `${this.props.geoserver_url}/wms?request=GetMap&service=WMS&version=1.3.0` +
                         `&transparent=true&layers=annotation&srs=EPSG:3857&WIDTH=150&HEIGHT=150&styles=annotations&format=image/png` +
                         `&BBOX=${bounding_box}&cql_filter=id=${id}`;
+                    const annotator = nickname_map[annotator_id] || annotator_id;
                     return (
                         <div key={i} className={classes.list_item}>
                             <figure className={classes.figure} onClick={this.make_animate_handler(bbox, status, id)}>
@@ -90,7 +91,7 @@ class AnnotationList extends React.Component<Props> {
                             <div className={classes.info}>
                                 <span style={{fontWeight: 'bold'}}>{t(`taxonomy_classes:${taxonomy_class_id}`)}</span>
                                 <span>{t(`status:singular.${status}`)}</span>
-                                <span>{t('annotations:created_by', {annotator: annotator_id})}</span>
+                                <span>{t('annotations:created_by', {annotator})}</span>
                             </div>
                         </div>
                     );
