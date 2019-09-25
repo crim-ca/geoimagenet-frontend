@@ -150,8 +150,9 @@ export class GeoImageNetStore {
         if (this.logged_user === null) {
             return {};
         }
+        map[this.logged_user.id] = this.logged_user.user_name;
         if (this.logged_user && this.logged_user.followed_users.length === 0) {
-            return {};
+            return map;
         }
         const assign_followed_user = (user: FollowedUser) => {
             map[user.id] = user.nickname;
