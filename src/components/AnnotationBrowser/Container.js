@@ -25,7 +25,7 @@ class Container extends React.Component<Props> {
         /**
          * TODO ugly hack so that the feature is actually in the viewport when we try to select it
          *
-         * The fit to extent method operates over 800 milliseconds, so 1000 here should be enough for it to finish
+         * The fit to extent method operates over 800 milliseconds, so 1200 here should be enough for it to finish when the transition is jerky
          */
         setTimeout(() => {
             const {annotations_collections} = this.props.state_proxy;

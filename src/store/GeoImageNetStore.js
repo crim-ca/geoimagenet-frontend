@@ -145,13 +145,17 @@ export class GeoImageNetStore {
      */
     @observable logged_user: User | null = null;
 
+    /**
+     * If there is a logged user (it's possible there isn't, people can access the map in anonymous mode)
+     * then we should not be trying to substitute nicknames for ids
+     */
     @computed get nickname_map() {
         const map = {};
         if (this.logged_user === null) {
             return {};
         }
         map[this.logged_user.id] = this.logged_user.user_name;
-        if (this.logged_user && this.logged_user.followed_users.length === 0) {
+        if (this.logged_user.followed_users.length === 0) {
             return map;
         }
         const assign_followed_user = (user: FollowedUser) => {

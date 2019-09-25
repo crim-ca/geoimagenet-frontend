@@ -238,7 +238,7 @@ export class MapManager {
 
         /**
          * this innocent looking piece of code is actually very central to the map, here we create the Open Layers sources and collections that will hold the features
-         * (quick reminder, an GeoImageNet "annotation" is represented on the map as an Open Layers "feature", served with wfs"
+         * (quick reminder, an GeoImageNet "annotation" is represented on the map as an Open Layers "feature", served with wfs
          * We need to set their color in accordance with their status.
          * We keep references to the collections, sources and layers so that we can access them directly if need be (such as when refreshing sources, or setting style functions)
          */
