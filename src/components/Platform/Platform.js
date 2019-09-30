@@ -11,6 +11,7 @@ import type {OpenLayersStore} from "../../store/OpenLayersStore";
 import {Container as FiltersContainer} from "../Map/Filters/Container";
 import {Container as LabelsContainer} from "../Map/LabelsChoice/Container";
 import {ActiveFiltersBox} from '../Map/ActiveFiltersBox';
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
 const PlatformContainer = withStyles(({values}) => ({
     root: {
@@ -35,6 +36,7 @@ const Coordinates = withStyles(({values, zIndex}) => ({
 type Props = {
     state_proxy: GeoImageNetStore,
     store_actions: StoreActions,
+    taxonomy_store: TaxonomyStore,
     user_interactions: UserInteractions,
     open_layers_store: OpenLayersStore,
 };
@@ -53,6 +55,7 @@ class Platform extends Component<Props> {
                 <MapContainer
                     open_layers_store={this.props.open_layers_store}
                     state_proxy={this.props.state_proxy}
+                    taxonomy_store={this.props.taxonomy_store}
                     store_actions={this.props.store_actions}
                     user_interactions={this.props.user_interactions} />
                 <Coordinates id='coordinates' />
@@ -63,6 +66,7 @@ class Platform extends Component<Props> {
                 <Sidebar
                     open_layers_store={this.props.open_layers_store}
                     state_proxy={this.props.state_proxy}
+                    taxonomy_store={this.props.taxonomy_store}
                     user_interactions={this.props.user_interactions}
                     store_actions={this.props.store_actions} />
             </PlatformContainer>

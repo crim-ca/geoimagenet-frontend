@@ -6,6 +6,7 @@ import {UserInteractions} from "../domain";
 import {ANNOTATIONS_COUNTS_RESPONSE, TAXONOMY_CLASSES_RESPONSE, TAXONOMY_RESPONSE} from "./api_responses";
 import {ANNOTATION} from "../domain/constants";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
+import {TaxonomyStore} from "../store/TaxonomyStore";
 
 const React = require('react');
 const {mount, configure} = require('enzyme');
@@ -48,8 +49,9 @@ type Props = {};
 
 const data_queries = new DataQueries('', '', '', '');
 const state_proxy = new GeoImageNetStore();
+const taxonomy_store = new TaxonomyStore(state_proxy);
 const store_actions = new StoreActions(state_proxy);
-const user_interactions = new UserInteractions(store_actions, data_queries, i18n, state_proxy);
+const user_interactions = new UserInteractions(store_actions, taxonomy_store, data_queries, i18n, state_proxy);
 
 data_queries.fetch_taxonomies = jest.fn(() => TAXONOMY_RESPONSE);
 data_queries.fetch_taxonomy_classes = jest.fn(() => TAXONOMY_CLASSES_RESPONSE);
@@ -64,6 +66,7 @@ class TestableTaxonomyViewer extends React.Component<Props> {
         return (
             <Viewer
                 state_proxy={state_proxy}
+                taxonomy_store={taxonomy_store}
                 user_interactions={user_interactions}
                 store_actions={store_actions}
                 refresh_source_by_status={refresh_source_callback_mock} />
@@ -93,6 +96,7 @@ describe('Taxonomy viewer', () => {
         const wrapper = mount(
             <TaxonomyPresentation
                 state_proxy={state_proxy}
+                taxonomy_store={taxonomy_store}
                 user_interactions={user_interactions} />
         );
         expect(wrapper.find(PresentationListElement).length).toBeGreaterThan(0);

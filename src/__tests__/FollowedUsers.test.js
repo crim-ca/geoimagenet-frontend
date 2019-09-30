@@ -9,6 +9,7 @@ import {AddFollowedUserForm} from '../components/UserSettings/AddFollowedUserFor
 import {i18n as i18next} from '../utils/i18n';
 import {User} from '../domain/entities';
 import {wait} from "./utils";
+import {TaxonomyStore} from "../store/TaxonomyStore";
 
 const React = require('react');
 const {mount, configure} = require('enzyme');
@@ -65,8 +66,9 @@ describe('Followed users form', () => {
      */
     test('Add followed user form validates input, adds and removes user', async () => {
         const store = new GeoImageNetStore();
+        const taxonomy_store = new TaxonomyStore(store)
         const store_actions = new StoreActions(store);
-        const user_interactions = new UserInteractions(store_actions, data_queries, i18next, store);
+        const user_interactions = new UserInteractions(store_actions, taxonomy_store, data_queries, i18next, store);
         store_actions.set_session_user(user_without_followed_users);
         const wrapper = mount(<UserSettingsContainer user={store.logged_user} user_interactions={user_interactions} />);
         expect(wrapper.find(FollowedUsersList)).toHaveLength(1);

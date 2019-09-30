@@ -2,19 +2,21 @@
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import {PlatformListElement} from './PlatformListElement.js';
-import {TaxonomyClass} from "../../domain/entities";
-import {UserInteractions} from "../../domain";
-import {StoreActions} from "../../store/StoreActions";
-import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import type {TaxonomyClass} from "../../domain/entities";
+import type {UserInteractions} from "../../domain";
+import type {StoreActions} from "../../store/StoreActions";
+import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {TaxonomyClassToggleFunction} from "../../Types";
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
 type Props = {
     toggle_taxonomy_class_tree_element: (number) => void,
     invert_taxonomy_class_visibility: TaxonomyClassToggleFunction,
     refresh_source_by_status: (string) => void,
-    classes: Array<TaxonomyClass>,
+    classes: TaxonomyClass[],
     user_interactions: UserInteractions,
     store_actions: StoreActions,
+    taxonomy_store: TaxonomyStore,
     state_proxy: GeoImageNetStore,
 };
 
@@ -29,6 +31,7 @@ class Classes extends Component<Props> {
                                          taxonomy_class={taxonomy_class}
                                          store_actions={this.props.store_actions}
                                          state_proxy={this.props.state_proxy}
+                                         taxonomy_store={this.props.taxonomy_store}
                                          refresh_source_by_status={this.props.refresh_source_by_status}
                                          user_interactions={this.props.user_interactions}
                                          invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility}

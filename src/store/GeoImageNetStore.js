@@ -95,7 +95,6 @@ export class GeoImageNetStore {
      */
     @observable flat_taxonomy_classes = {};
 
-    @observable selected_taxonomy_class_id: number = -1;
     @observable visible_classes: number[] = [];
 
     /**

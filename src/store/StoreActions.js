@@ -341,15 +341,6 @@ export class StoreActions {
     }
 
     /**
-     * When clicking on taxonomy classes leafs (and leafs only) we want to give the ability to the user of creating annotations.
-     * This will cascade the ability to the ui of creating annotations.
-     */
-    @action.bound
-    select_taxonomy_class(id: number) {
-        this.state_proxy.selected_taxonomy_class_id = id;
-    }
-
-    /**
      * Simply sets the current platform mode. Observed by other parts of the application.
      */
     @action.bound

@@ -12,11 +12,13 @@ import {TaxonomyClassActions} from './TaxonomyClassActions';
 
 import {Classes} from './Classes';
 import {ANNOTATION} from '../../domain/constants.js';
-import {TaxonomyClass} from "../../domain/entities";
-import {UserInteractions} from "../../domain";
-import {StoreActions} from "../../store/StoreActions";
-import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+
+import type {TaxonomyClass} from "../../domain/entities";
+import type {UserInteractions} from "../../domain";
+import type {StoreActions} from "../../store/StoreActions";
+import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {TaxonomyClassToggleFunction} from "../../Types";
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
 const StyledListItem = withStyles({
     root: {
@@ -49,6 +51,7 @@ type Props = {
     taxonomy_class: TaxonomyClass,
     user_interactions: UserInteractions,
     store_actions: StoreActions,
+    taxonomy_store: TaxonomyStore,
     state_proxy: GeoImageNetStore,
 };
 
@@ -78,7 +81,7 @@ class PlatformListElement extends Component<Props> {
     };
 
     make_select_taxonomy_class_for_annotation_handler = (taxonomy_class: TaxonomyClass) => () => {
-        this.props.store_actions.select_taxonomy_class(taxonomy_class.id);
+        this.props.taxonomy_store.select_taxonomy_class(taxonomy_class);
     };
 
     render() {
@@ -94,7 +97,7 @@ class PlatformListElement extends Component<Props> {
             <StyledList>
                 <StyledListItem className='taxonomy_class_list_element'
                                 onClick={label_click_callback}
-                                selected={this.props.state_proxy.selected_taxonomy_class_id === taxonomy_class.id}
+                                selected={this.props.taxonomy_store.selected_taxonomy_class_id === taxonomy_class.id}
                                 button>
                     <StyledLabelAndCountSpan>
                         <TaxonomyClassLabel label={taxonomy_class.name_en} />
@@ -113,6 +116,7 @@ class PlatformListElement extends Component<Props> {
                             <Classes classes={children}
                                      store_actions={this.props.store_actions}
                                      state_proxy={this.props.state_proxy}
+                                     taxonomy_store={this.props.taxonomy_store}
                                      user_interactions={this.props.user_interactions}
                                      refresh_source_by_status={this.props.refresh_source_by_status}
                                      invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility}

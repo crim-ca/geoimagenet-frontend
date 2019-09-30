@@ -17,6 +17,7 @@ import {create_style_function} from "./ol_dependant_utils";
 import {MapBrowserEvent} from "ol/events";
 import {ContextualMenuManager} from "../ContextualMenu/ContextualMenuManager";
 import type {OpenLayersStore} from "../../store/OpenLayersStore";
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
 const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStore, open_layers_store: OpenLayersStore) => (event: MapBrowserEvent) => {
     if (event.type !== 'click') {
@@ -67,6 +68,7 @@ export class Interactions {
 
     map: Map;
     state_proxy: GeoImageNetStore;
+    taxonomy_store: TaxonomyStore;
     user_interactions: UserInteractions;
     open_layers_store: OpenLayersStore;
     geojson_format: GeoJSON;
@@ -80,6 +82,7 @@ export class Interactions {
         state_proxy: GeoImageNetStore,
         user_interactions: UserInteractions,
         open_layers_store: OpenLayersStore,
+        taxonomy_store: TaxonomyStore,
         geojson_format: GeoJSON,
         annotation_layer: string,
     ) {
@@ -87,6 +90,7 @@ export class Interactions {
         this.state_proxy = state_proxy;
         this.user_interactions = user_interactions;
         this.open_layers_store = open_layers_store;
+        this.taxonomy_store = taxonomy_store;
         this.geojson_format = geojson_format;
         this.annotation_layer = annotation_layer;
 
@@ -126,7 +130,7 @@ export class Interactions {
         autorun(() => {
             switch (this.state_proxy.mode) {
                 case MODE.CREATION:
-                    if (this.state_proxy.selected_taxonomy_class_id > 0) {
+                    if (this.taxonomy_store.selected_taxonomy_class_id > 0) {
                         this.map.addInteraction(this.draw);
                     }
                     this.map.removeInteraction(this.modify);

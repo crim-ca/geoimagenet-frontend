@@ -1,7 +1,9 @@
 // @flow strict
 
+import {action, computed, observable} from "mobx";
+
 import type {GeoImageNetStore} from "./GeoImageNetStore";
-import {computed} from "mobx";
+import type {TaxonomyClass} from "../domain/entities";
 
 export class TaxonomyStore {
 
@@ -11,7 +13,20 @@ export class TaxonomyStore {
         this.state_proxy = state_proxy;
     }
 
-    @computed get taxonomy_class_id_selection(): string {
+    @observable selected_taxonomy_class: TaxonomyClass;
+
+    @action select_taxonomy_class(taxonomy_class: TaxonomyClass) {
+        this.selected_taxonomy_class = taxonomy_class;
+    }
+
+    @computed get selected_taxonomy_class_id(): number {
+        if (this.selected_taxonomy_class !== undefined) {
+            return this.selected_taxonomy_class.id;
+        }
+        return -1;
+    }
+
+    @computed get taxonomy_class_id_selection_cql(): string {
         const visible = [];
         Object.keys(this.state_proxy.flat_taxonomy_classes).forEach(k => {
             /** @var {TaxonomyClass} taxonomy_class */

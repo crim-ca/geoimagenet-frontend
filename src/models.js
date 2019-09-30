@@ -20,6 +20,7 @@ import './css/base.css';
 import 'react-notifications/lib/notifications.css';
 import './img/icons/favicon.ico';
 import {GeoImageNetStore} from "./store/GeoImageNetStore";
+import {TaxonomyStore} from "./store/TaxonomyStore";
 
 
 Sentry.init({
@@ -29,9 +30,10 @@ Sentry.init({
 window.addEventListener('DOMContentLoaded', async () => {
 
     const state_proxy = new GeoImageNetStore();
+    const taxonomy_store = new TaxonomyStore(state_proxy);
     const store_actions = new StoreActions(state_proxy);
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, GEOSERVER_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
-    const user_interactions = new UserInteractions(store_actions, data_queries, i18n, state_proxy);
+    const user_interactions = new UserInteractions(store_actions, taxonomy_store, data_queries, i18n, state_proxy);
     const apollo_client = create_client(GRAPHQL_ENDPOINT);
 
     const div = document.createElement('div');

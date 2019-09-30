@@ -28,6 +28,7 @@ import {LoadingSplashCircle} from "./components/LoadingSplashCircle";
 import {ContextualMenuContainer} from "./components/ContextualMenu/ContextualMenuContainer";
 import {OpenLayersStore} from "./store/OpenLayersStore";
 import Collection from "ol/Collection";
+import {TaxonomyStore} from "./store/TaxonomyStore";
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
@@ -45,6 +46,7 @@ Sentry.init({
 export class PlatformLoader {
 
     state_proxy: GeoImageNetStore;
+    taxonomy_store: TaxonomyStore;
     store_actions: StoreActions;
     open_layers_store: OpenLayersStore;
     data_queries: DataQueries;
@@ -53,10 +55,11 @@ export class PlatformLoader {
     constructor(geoimagenet_api_endpoint: string, geoserver_endpoint: string, magpie_endpoint: string, ml_endpoint: string, i18next_instance: i18n) {
 
         this.state_proxy = new GeoImageNetStore();
+        this.taxonomy_store = new TaxonomyStore(this.state_proxy);
         this.open_layers_store = new OpenLayersStore(new Collection());
         this.store_actions = new StoreActions(this.state_proxy);
         this.data_queries = new DataQueries(geoimagenet_api_endpoint, geoserver_endpoint, magpie_endpoint, ml_endpoint);
-        this.user_interactions = new UserInteractions(this.store_actions, this.data_queries, i18next_instance, this.state_proxy);
+        this.user_interactions = new UserInteractions(this.store_actions, this.taxonomy_store, this.data_queries, i18next_instance, this.state_proxy);
     }
 
     make_platform() {
@@ -64,6 +67,7 @@ export class PlatformLoader {
             <Platform
                 open_layers_store={this.open_layers_store}
                 state_proxy={this.state_proxy}
+                taxonomy_store={this.taxonomy_store}
                 store_actions={this.store_actions}
                 user_interactions={this.user_interactions} />
         );

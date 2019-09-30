@@ -49,9 +49,10 @@ type SidebarSectionData = {
     content: {},
 };
 
-const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, OpenLayersStore, TFunction) => SidebarSectionData[] = (
+const make_sidebar_sections: (UserInteractions, GeoImageNetStore, TaxonomyStore, StoreActions, OpenLayersStore, TFunction) => SidebarSectionData[] = (
     user_interactions,
     state_proxy,
+    taxonomy_store,
     store_actions,
     open_layers_store,
     t,
@@ -64,6 +65,7 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, 
                 <Viewer
                     refresh_source_by_status={user_interactions.refresh_source_by_status}
                     state_proxy={state_proxy}
+                    taxonomy_store={taxonomy_store}
                     user_interactions={user_interactions}
                     store_actions={store_actions} />
             ),
@@ -103,6 +105,7 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, 
 type Props = {
     state_proxy: GeoImageNetStore,
     store_actions: StoreActions,
+    taxonomy_store: TaxonomyStore,
     user_interactions: UserInteractions,
     open_layers_store: OpenLayersStore,
     t: TFunction,
@@ -128,6 +131,7 @@ class Sidebar extends React.Component<Props, State> {
         const sidebar_sections = make_sidebar_sections(
             this.props.user_interactions,
             this.props.state_proxy,
+            this.props.taxonomy_store,
             this.props.store_actions,
             this.props.open_layers_store,
             this.props.t);

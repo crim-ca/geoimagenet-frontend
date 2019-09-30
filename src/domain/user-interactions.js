@@ -8,17 +8,18 @@ import {NotificationManager} from 'react-notifications';
 
 import {ANNOTATION, ANNOTATION_STATUS_AS_ARRAY} from "./constants";
 import {captureException} from "@sentry/browser";
-import {DataQueries} from "./data-queries";
-
-import {typeof Map} from "ol/Map";
-import {typeof Event} from "ol/events";
-import {typeof GeoJSON} from "ol/format";
-import {StoreActions} from "../store/StoreActions";
-import {GeoImageNetStore} from "../store/GeoImageNetStore";
-import typeof {Feature, ModifyEvent} from "ol";
-import {SatelliteImage, Taxonomy, TaxonomyClass} from "./entities";
-import type {FollowedUser, MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI} from "../Types";
 import {i18n} from '../utils';
+
+import type {DataQueries} from "./data-queries";
+import type {StoreActions} from "../store/StoreActions";
+import type {GeoImageNetStore} from "../store/GeoImageNetStore";
+import type {Feature, ModifyEvent} from "ol";
+import type {SatelliteImage, Taxonomy, TaxonomyClass} from "./entities";
+import type {Map} from "ol/Map";
+import type {Event} from "ol/events";
+import type {GeoJSON} from "ol/format";
+import type {FollowedUser, MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI} from "../Types";
+import type {TaxonomyStore} from "../store/TaxonomyStore";
 
 const {t} = i18n;
 
@@ -44,6 +45,7 @@ type CoordinatesSet = Coordinates[];
 export class UserInteractions {
 
     store_actions: StoreActions;
+    taxonomy_store: TaxonomyStore;
     data_queries: DataQueries;
     i18next_instance: i18n;
     state_proxy: GeoImageNetStore;
@@ -57,11 +59,12 @@ export class UserInteractions {
      * The user interactions have first-hand influence upon the application state,
      * we need the store actions as dependency
      */
-    constructor(store_actions: StoreActions, data_queries: DataQueries, i18next_instance: i18n, state_proxy: GeoImageNetStore) {
+    constructor(store_actions: StoreActions, taxonomy_store: TaxonomyStore, data_queries: DataQueries, i18next_instance: i18n, state_proxy: GeoImageNetStore) {
         this.store_actions = store_actions;
         this.data_queries = data_queries;
         this.i18next_instance = i18next_instance;
         this.state_proxy = state_proxy;
+        this.taxonomy_store = taxonomy_store;
 
         this.release_annotations = this.release_annotations.bind(this);
     }
@@ -136,7 +139,7 @@ export class UserInteractions {
     };
 
     validate_creation_event_has_features = async () => {
-        if (this.state_proxy.selected_taxonomy_class_id === -1) {
+        if (this.taxonomy_store.selected_taxonomy_class_id === -1) {
             NotificationManager.warning('You must select a taxonomy class to begin annotating content.');
         }
     };
@@ -147,9 +150,9 @@ export class UserInteractions {
      */
     create_drawend_handler = (format_geojson: GeoJSON, annotation_layer: string) => async (event: Event) => {
         const {feature}: { feature: Feature } = event;
-        const {selected_taxonomy_class_id} = this.state_proxy;
+        const {selected_taxonomy_class: {id}} = this.taxonomy_store;
         feature.setProperties({
-            taxonomy_class_id: selected_taxonomy_class_id,
+            taxonomy_class_id: id,
             image_name: this.state_proxy.current_annotation.image_title,
         });
         const payload = format_geojson.writeFeature(feature);
@@ -159,8 +162,8 @@ export class UserInteractions {
             if (this.state_proxy.logged_user) {
                 feature.set('annotator_id', this.state_proxy.logged_user.id);
             }
-            this.store_actions.change_annotation_status_count(this.state_proxy.selected_taxonomy_class_id, ANNOTATION.STATUS.NEW, 1);
-            this.store_actions.invert_taxonomy_class_visibility(this.state_proxy.flat_taxonomy_classes[selected_taxonomy_class_id], true);
+            this.store_actions.change_annotation_status_count(id, ANNOTATION.STATUS.NEW, 1);
+            this.store_actions.invert_taxonomy_class_visibility(this.state_proxy.flat_taxonomy_classes[id], true);
         } catch (error) {
             NotificationManager.error(error.message);
         }

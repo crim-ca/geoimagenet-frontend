@@ -6,11 +6,13 @@ import {Collapse, List, ListItem, withStyles} from "@material-ui/core";
 import {Tree} from "./Tree";
 import {TaxonomyClassLabel} from './TaxonomyClassLabel';
 import {TaxonomyClass} from "../../domain/entities";
-import {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import {UserInteractions} from "../../domain";
-import type {TFunction} from "react-i18next";
 import {AnnotationCounts} from "./AnnotationCounts";
 import {withTranslation} from '../../utils';
+
+import type {UserInteractions} from "../../domain";
+import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
+import type {TFunction} from "react-i18next";
 
 const StyledList = withStyles({
     padding: {
@@ -38,6 +40,8 @@ const StyledLabelAndCountSpan = withStyles({
 type Props = {
     taxonomy_class: TaxonomyClass,
     state_proxy: GeoImageNetStore,
+    taxonomy_store: TaxonomyStore,
+    selected: boolean,
     user_interactions: UserInteractions,
     t: TFunction,
 };
@@ -45,7 +49,7 @@ type Props = {
 @observer
 class PresentationListElement extends Component<Props> {
     render() {
-        const {taxonomy_class, state_proxy, user_interactions, t} = this.props;
+        const {taxonomy_class, state_proxy, user_interactions, t, selected, taxonomy_store} = this.props;
         if (taxonomy_class === undefined) {
             return null;
         }
@@ -63,7 +67,7 @@ class PresentationListElement extends Component<Props> {
             <StyledList>
                 <StyledListItem className='taxonomy_class_list_element'
                                 onClick={label_click_callback}
-                                selected={state_proxy.selected_taxonomy_class_id === taxonomy_class.id}
+                                selected={selected}
                                 button>
                     <StyledLabelAndCountSpan>
                         <TaxonomyClassLabel label={label}/>
@@ -78,6 +82,7 @@ class PresentationListElement extends Component<Props> {
                         <Collapse in={taxonomy_class.opened}>
                             <Tree taxonomy_classes={children}
                                   state_proxy={state_proxy}
+                                  taxonomy_store={taxonomy_store}
                                   user_interactions={user_interactions}
                                   t={t}/>
                         </Collapse>)
