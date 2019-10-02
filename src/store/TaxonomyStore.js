@@ -22,6 +22,29 @@ export class TaxonomyStore {
     @action select_taxonomy_class(taxonomy_class: TaxonomyClass) {
         this.selected_taxonomy_class = taxonomy_class;
     }
+    @action toggle_pinned_class(taxonomy_class: TaxonomyClass, override: boolean): void {
+        if (override !== undefined) {
+            taxonomy_class.pinned = override;
+        } else {
+            taxonomy_class.pinned = !taxonomy_class.pinned;
+        }
+
+    }
+
+    /**
+     * there is a complication here, being that when pinning a parent class (that is, a class that have children, being a branch in the taxonomy)
+     * we want to display only the children
+     * in comparison, the tree in both the map and the presentation show all steps of the tree, branches to children,
+     * whereas in the workspace we will want to show only the children, with their breadcrumb
+     *
+     * as such, we organize the data in groups of leaf classes, all with the same parents
+     */
+    @computed get leaf_pinned_classes(): TaxonomyClass[] {
+
+        return Object.keys(this.flat_taxonomy_classes)
+            .map(class_id => this.flat_taxonomy_classes[class_id])
+            .filter(taxonomy_class => taxonomy_class.pinned === true);
+    }
 
     @computed get selected_taxonomy_class_id(): number {
         if (this.selected_taxonomy_class !== undefined) {

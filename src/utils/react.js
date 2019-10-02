@@ -21,29 +21,29 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 
 export const tableIcons = {
-  Add: AddBox,
-  Check: Check,
-  Clear: Clear,
-  Delete: DeleteOutline,
-  DetailPanel: ChevronRight,
-  Edit: Edit,
-  Export: SaveAlt,
-  Filter: FilterList,
-  FirstPage: FirstPage,
-  LastPage: LastPage,
-  NextPage: ChevronRight,
-  PreviousPage: ChevronLeft,
-  ResetSearch: Clear,
-  Search: Search,
-  SortArrow: ArrowUpward,
-  ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+    Add: AddBox,
+    Check: Check,
+    Clear: Clear,
+    Delete: DeleteOutline,
+    DetailPanel: ChevronRight,
+    Edit: Edit,
+    Export: SaveAlt,
+    Filter: FilterList,
+    FirstPage: FirstPage,
+    LastPage: LastPage,
+    NextPage: ChevronRight,
+    PreviousPage: ChevronLeft,
+    ResetSearch: Clear,
+    Search: Search,
+    SortArrow: ArrowUpward,
+    ThirdStateCheck: Remove,
+    ViewColumn: ViewColumn
 };
 
 const GUTTER_SMALL = '12px';
 const GUTTER_MEDIUM = '24px';
 
-const turquoise_ish = 'rgba(2,205,234,1)';
+const turquoise_ish = 'rgba(0, 188, 213, 1)';
 
 /**
  * We want to give a coherent look to all themed components.
@@ -76,6 +76,7 @@ export const theme = createMuiTheme({
         over_map: 10,
     },
     colors: {
+        icon_grey: 'rgba(113, 113, 113, 1)',
         turquoise: turquoise_ish,
         barelyWhite: 'rgba(255, 255, 255, 0.85)',
         lightGray: 'rgba(0, 0, 0, 0.1)',
@@ -106,7 +107,7 @@ export const theme = createMuiTheme({
     },
 });
 
-export const ThemedComponent = (props: {children: {}}) => {
+export const ThemedComponent = (props: { children: {} }) => {
     const {children} = props;
     return (
         <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>

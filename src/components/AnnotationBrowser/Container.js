@@ -11,10 +11,12 @@ import {Container as WorkspaceContainer} from './Workspace/Container';
 import type {AnnotationBrowserStore} from "../../store/AnnotationBrowserStore";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {AnnotationStatus, BoundingBox} from "../../Types";
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
 type Props = {
     store: AnnotationBrowserStore,
     state_proxy: GeoImageNetStore,
+    taxonomy_store: TaxonomyStore,
     open_layers_store: OpenLayersStore,
 };
 
@@ -44,7 +46,7 @@ class Container extends React.Component<Props> {
         ];
         return (
             <>
-                <WorkspaceContainer pinned_classes={pinned_classes}/>
+                <WorkspaceContainer taxonomy_store={this.props.taxonomy_store} />
                 <AnnotationList
                     fit_view_to_bounding_box={this.navigate}
                     annotations={this.props.store.current_page_content}

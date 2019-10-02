@@ -108,6 +108,7 @@ class PlatformListElement extends Component<Props> {
                     </StyledLabelAndCountSpan>
                     <TaxonomyClassActions taxonomy_class={taxonomy_class}
                                           release_handler={this.make_release_handler(taxonomy_class)}
+                                          toggle_pinned_class={this.props.taxonomy_store.toggle_pinned_class}
                                           invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility} />
                 </StyledListItem>
                 {children

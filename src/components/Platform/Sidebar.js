@@ -77,12 +77,13 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, TaxonomyStore,
                 <AnnotationBrowserContainer
                     open_layers_store={open_layers_store}
                     state_proxy={state_proxy}
+                    taxonomy_store={taxonomy_store}
                     store={new AnnotationBrowserStore(
                         GEOSERVER_URL,
                         ANNOTATION_NAMESPACE,
                         ANNOTATION_LAYER,
                         state_proxy,
-                        new TaxonomyStore(state_proxy),
+                        taxonomy_store,
                     )} />
             ),
         },

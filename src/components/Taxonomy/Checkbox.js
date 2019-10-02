@@ -6,6 +6,7 @@ import React, {Component} from "react";
 type Props = {
     value: number,
     checked: boolean,
+    image_class: string,
     change_handler: () => void,
 };
 
@@ -14,7 +15,7 @@ class Checkbox extends Component<Props> {
 
     render() {
         return (
-            <label className='checkbox_eye'>
+            <label className={this.props.image_class}>
                 <input type='checkbox'
                        value={this.props.value}
                        checked={this.props.checked}
