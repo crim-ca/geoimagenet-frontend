@@ -50,7 +50,7 @@ type Props = {};
 const data_queries = new DataQueries('', '', '', '');
 const state_proxy = new GeoImageNetStore();
 const taxonomy_store = new TaxonomyStore(state_proxy);
-const store_actions = new StoreActions(state_proxy);
+const store_actions = new StoreActions(state_proxy, taxonomy_store);
 const user_interactions = new UserInteractions(store_actions, taxonomy_store, data_queries, i18n, state_proxy);
 
 data_queries.fetch_taxonomies = jest.fn(() => TAXONOMY_RESPONSE);
@@ -82,7 +82,7 @@ describe('Taxonomy viewer', () => {
     });
 
     test('Building the taxonomy from real data shows annotations', async () => {
-        expect(state_proxy.flat_taxonomy_classes[1].counts['new']).toBeGreaterThan(0);
+        expect(taxonomy_store.flat_taxonomy_classes[1].counts['new']).toBeGreaterThan(0);
         const wrapper = mount(<TestableTaxonomyViewer />);
         expect(wrapper.find(Viewer)).toHaveLength(1);
         expect(wrapper.find(Selector)).toHaveLength(1);

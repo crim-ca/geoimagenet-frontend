@@ -22,7 +22,7 @@ type Props = {
 class TaxonomyPresentation extends React.Component<Props> {
     render() {
         const {state_proxy, taxonomy_store, user_interactions, t} = this.props;
-        const taxonomy_class = state_proxy.flat_taxonomy_classes[state_proxy.root_taxonomy_class_id];
+        const taxonomy_class = taxonomy_store.flat_taxonomy_classes[state_proxy.root_taxonomy_class_id];
         const classes = taxonomy_class ? [taxonomy_class] : [];
         return (
             <React.Fragment>

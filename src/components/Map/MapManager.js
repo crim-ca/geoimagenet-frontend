@@ -320,7 +320,7 @@ export class MapManager {
         return new Vector({
             title: title,
             source: source,
-            style: create_style_function(color, this.state_proxy),
+            style: create_style_function(color, this.state_proxy, this.taxonomy_store),
             visible: visible,
             zIndex: zIndex
         });

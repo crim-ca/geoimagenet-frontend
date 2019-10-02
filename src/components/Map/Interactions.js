@@ -19,7 +19,7 @@ import {ContextualMenuManager} from "../ContextualMenu/ContextualMenuManager";
 import type {OpenLayersStore} from "../../store/OpenLayersStore";
 import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
-const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStore, open_layers_store: OpenLayersStore) => (event: MapBrowserEvent) => {
+const make_feature_selection_condition = (map: Map, taxonomy_store: TaxonomyStore, open_layers_store: OpenLayersStore) => (event: MapBrowserEvent) => {
     if (event.type !== 'click') {
         return false;
     }
@@ -40,7 +40,7 @@ const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStor
     features.forEach(feature => {
         const taxonomy_class_id = feature.get('taxonomy_class_id');
         menu_items.push({
-            text: state_proxy.flat_taxonomy_classes[taxonomy_class_id].name_en,
+            text: taxonomy_store.flat_taxonomy_classes[taxonomy_class_id].name_en,
             value: feature,
         });
     });
@@ -101,9 +101,9 @@ export class Interactions {
          * We can select layers from any and all layers, so we activate it on all layers by default.
          */
         this.select = new Select({
-            condition: make_feature_selection_condition(map, this.state_proxy, this.open_layers_store),
+            condition: make_feature_selection_condition(map, this.taxonomy_store, this.open_layers_store),
             layers: layers,
-            style: create_style_function('white', this.state_proxy, true),
+            style: create_style_function('white', this.state_proxy, this.taxonomy_store, true),
             features: this.open_layers_store.selected_features,
         });
         this.map.addInteraction(this.select);

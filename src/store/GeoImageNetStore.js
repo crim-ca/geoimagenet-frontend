@@ -89,12 +89,6 @@ export class GeoImageNetStore {
 
     @observable selected_taxonomy: Taxonomy | null = null;
 
-    /**
-     * The flat taxonomy classes structure simplifies the acces to classes when we need to change one directly, without looping
-     * over the whole taxnomy structure to find the one we want.
-     */
-    @observable flat_taxonomy_classes = {};
-
     @observable visible_classes: number[] = [];
 
     /**

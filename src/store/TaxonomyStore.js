@@ -13,6 +13,10 @@ export class TaxonomyStore {
         this.state_proxy = state_proxy;
     }
 
+    /**
+     * The flat taxonomy classes structure simplifies the access to classes when we need to change one directly, without looping over the whole taxonomy structure to find the one we want.
+     */
+    @observable flat_taxonomy_classes = {};
     @observable selected_taxonomy_class: TaxonomyClass;
 
     @action select_taxonomy_class(taxonomy_class: TaxonomyClass) {
@@ -28,9 +32,9 @@ export class TaxonomyStore {
 
     @computed get taxonomy_class_id_selection_cql(): string {
         const visible = [];
-        Object.keys(this.state_proxy.flat_taxonomy_classes).forEach(k => {
+        Object.keys(this.flat_taxonomy_classes).forEach(k => {
             /** @var {TaxonomyClass} taxonomy_class */
-            const taxonomy_class = this.state_proxy.flat_taxonomy_classes[k];
+            const taxonomy_class = this.flat_taxonomy_classes[k];
             if (taxonomy_class.visible) {
                 visible.push(taxonomy_class.id);
             }

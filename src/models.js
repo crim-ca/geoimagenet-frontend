@@ -31,7 +31,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     const state_proxy = new GeoImageNetStore();
     const taxonomy_store = new TaxonomyStore(state_proxy);
-    const store_actions = new StoreActions(state_proxy);
+    const store_actions = new StoreActions(state_proxy, taxonomy_store);
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, GEOSERVER_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
     const user_interactions = new UserInteractions(store_actions, taxonomy_store, data_queries, i18n, state_proxy);
     const apollo_client = create_client(GRAPHQL_ENDPOINT);

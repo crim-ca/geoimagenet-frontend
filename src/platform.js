@@ -57,7 +57,7 @@ export class PlatformLoader {
         this.state_proxy = new GeoImageNetStore();
         this.taxonomy_store = new TaxonomyStore(this.state_proxy);
         this.open_layers_store = new OpenLayersStore(new Collection());
-        this.store_actions = new StoreActions(this.state_proxy);
+        this.store_actions = new StoreActions(this.state_proxy, this.taxonomy_store);
         this.data_queries = new DataQueries(geoimagenet_api_endpoint, geoserver_endpoint, magpie_endpoint, ml_endpoint);
         this.user_interactions = new UserInteractions(this.store_actions, this.taxonomy_store, this.data_queries, i18next_instance, this.state_proxy);
     }

@@ -163,7 +163,7 @@ export class UserInteractions {
                 feature.set('annotator_id', this.state_proxy.logged_user.id);
             }
             this.store_actions.change_annotation_status_count(id, ANNOTATION.STATUS.NEW, 1);
-            this.store_actions.invert_taxonomy_class_visibility(this.state_proxy.flat_taxonomy_classes[id], true);
+            this.store_actions.invert_taxonomy_class_visibility(this.taxonomy_store.flat_taxonomy_classes[id], true);
         } catch (error) {
             NotificationManager.error(error.message);
         }

@@ -49,14 +49,15 @@ data_queries.remove_followed_user = jest.fn(() => null);
 describe('Followed users form', () => {
 
     test('We can log a user on', () => {
-        const store = new GeoImageNetStore();
-        const store_actions = new StoreActions(store);
+        const state_proxy = new GeoImageNetStore();
+        const taxonomy_store = new TaxonomyStore(state_proxy);
+        const store_actions = new StoreActions(state_proxy, taxonomy_store);
         store_actions.set_session_user(user_without_followed_users);
         /**
          * $FlowFixMe
          * We are in a controlled situation, the logged user is not null
          */
-        expect(store.logged_user.user_name).toBe('user_name');
+        expect(state_proxy.logged_user.user_name).toBe('user_name');
     });
 
 
@@ -66,8 +67,8 @@ describe('Followed users form', () => {
      */
     test('Add followed user form validates input, adds and removes user', async () => {
         const store = new GeoImageNetStore();
-        const taxonomy_store = new TaxonomyStore(store)
-        const store_actions = new StoreActions(store);
+        const taxonomy_store = new TaxonomyStore(store);
+        const store_actions = new StoreActions(store, taxonomy_store);
         const user_interactions = new UserInteractions(store_actions, taxonomy_store, data_queries, i18next, store);
         store_actions.set_session_user(user_without_followed_users);
         const wrapper = mount(<UserSettingsContainer user={store.logged_user} user_interactions={user_interactions} />);
