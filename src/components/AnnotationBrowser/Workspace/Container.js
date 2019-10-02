@@ -3,11 +3,17 @@
 import React from 'react';
 import {observer} from 'mobx-react';
 
+import {PlatformListElement} from '../../Taxonomy/PlatformListElement';
+
 import type {TaxonomyClass} from "../../../domain/entities";
 import type {TaxonomyStore} from "../../../store/TaxonomyStore";
+import type {GeoImageNetStore} from "../../../store/GeoImageNetStore";
+import type {UserInteractions} from "../../../domain";
 
 type Props = {
     taxonomy_store: TaxonomyStore,
+    state_proxy: GeoImageNetStore,
+    user_interactions: UserInteractions,
 };
 /**
  * The "workspace", for lack of a better word, is a list of the taxonomy classes that are pinned by the user
@@ -22,7 +28,11 @@ class Container extends React.Component<Props> {
             <>
                 {this.props.taxonomy_store.leaf_pinned_classes.map((taxonomy_class: TaxonomyClass, i) => {
                     return (
-                        <span key={i}>{taxonomy_class.name_en}</span>
+                        <PlatformListElement user_interactions={this.props.user_interactions}
+                                             state_proxy={this.props.state_proxy}
+                                             taxonomy_class={taxonomy_class}
+                                             taxonomy_store={this.props.taxonomy_store}
+                                             key={i} />
                     );
                 })}
             </>

@@ -8,7 +8,6 @@ import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
 type Props = {
-    refresh_source_by_status: (string) => void,
     classes: TaxonomyClass[],
     user_interactions: UserInteractions,
     taxonomy_store: TaxonomyStore,
@@ -26,7 +25,6 @@ class Classes extends Component<Props> {
                                          taxonomy_class={taxonomy_class}
                                          state_proxy={this.props.state_proxy}
                                          taxonomy_store={this.props.taxonomy_store}
-                                         refresh_source_by_status={this.props.refresh_source_by_status}
                                          user_interactions={this.props.user_interactions} />
                 ))}
             </ul>

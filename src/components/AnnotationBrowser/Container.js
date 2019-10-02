@@ -12,10 +12,12 @@ import type {AnnotationBrowserStore} from "../../store/AnnotationBrowserStore";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {AnnotationStatus, BoundingBox} from "../../Types";
 import type {TaxonomyStore} from "../../store/TaxonomyStore";
+import type {UserInteractions} from "../../domain";
 
 type Props = {
     store: AnnotationBrowserStore,
     state_proxy: GeoImageNetStore,
+    user_interactions: UserInteractions,
     taxonomy_store: TaxonomyStore,
     open_layers_store: OpenLayersStore,
 };
@@ -41,12 +43,11 @@ class Container extends React.Component<Props> {
     };
 
     render() {
-        const pinned_classes = [
-            {name_en: 'bob'},
-        ];
         return (
             <>
-                <WorkspaceContainer taxonomy_store={this.props.taxonomy_store} />
+                <WorkspaceContainer user_interactions={this.props.user_interactions}
+                                    state_proxy={this.props.state_proxy}
+                                    taxonomy_store={this.props.taxonomy_store} />
                 <AnnotationList
                     fit_view_to_bounding_box={this.navigate}
                     annotations={this.props.store.current_page_content}

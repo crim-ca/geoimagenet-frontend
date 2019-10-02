@@ -74,6 +74,7 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, TaxonomyStore,
             slug: 'annotation-browser',
             content: (
                 <AnnotationBrowserContainer
+                    user_interactions={user_interactions}
                     open_layers_store={open_layers_store}
                     state_proxy={state_proxy}
                     taxonomy_store={taxonomy_store}

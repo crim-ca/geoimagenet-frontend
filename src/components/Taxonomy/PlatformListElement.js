@@ -43,7 +43,6 @@ const StyledLabelAndCountSpan = withStyles({
 });
 
 type Props = {
-    refresh_source_by_status: (string) => void,
     taxonomy_class: TaxonomyClass,
     user_interactions: UserInteractions,
     taxonomy_store: TaxonomyStore,
@@ -68,8 +67,8 @@ class PlatformListElement extends Component<Props> {
         try {
             event.stopPropagation();
             await this.props.user_interactions.release_annotations(taxonomy_class.id);
-            this.props.refresh_source_by_status(ANNOTATION.STATUS.NEW);
-            this.props.refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
+            this.props.user_interactions.refresh_source_by_status(ANNOTATION.STATUS.NEW);
+            this.props.user_interactions.refresh_source_by_status(ANNOTATION.STATUS.RELEASED);
         } catch (e) {
             throw e;
         }
@@ -112,8 +111,7 @@ class PlatformListElement extends Component<Props> {
                             <Classes classes={children}
                                      state_proxy={this.props.state_proxy}
                                      taxonomy_store={this.props.taxonomy_store}
-                                     user_interactions={this.props.user_interactions}
-                                     refresh_source_by_status={this.props.refresh_source_by_status} />
+                                     user_interactions={this.props.user_interactions} />
                         </Collapse>)
                     : null
                 }
