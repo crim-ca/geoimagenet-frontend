@@ -163,7 +163,7 @@ export class UserInteractions {
                 feature.set('annotator_id', this.state_proxy.logged_user.id);
             }
             this.store_actions.change_annotation_status_count(id, ANNOTATION.STATUS.NEW, 1);
-            this.store_actions.invert_taxonomy_class_visibility(this.taxonomy_store.flat_taxonomy_classes[id], true);
+            this.taxonomy_store.invert_taxonomy_class_visibility(this.taxonomy_store.flat_taxonomy_classes[id], true);
         } catch (error) {
             NotificationManager.error(error.message);
         }
@@ -352,7 +352,8 @@ export class UserInteractions {
         try {
             const counts = await this.data_queries.flat_taxonomy_classes_counts(this.state_proxy.root_taxonomy_class_id);
             this.store_actions.set_annotation_counts(counts);
-            this.store_actions.toggle_taxonomy_class_tree_element(this.state_proxy.root_taxonomy_class_id, true);
+            const taxonomy_class = this.taxonomy_store.flat_taxonomy_classes[this.state_proxy.root_taxonomy_class_id];
+            this.taxonomy_store.toggle_taxonomy_class_tree_element(taxonomy_class, true);
         } catch (e) {
             NotificationManager.error('We were unable to fetch the taxonomy classes.');
         }
@@ -428,18 +429,8 @@ export class UserInteractions {
     };
 
     /**
-     * Toggles the visibility of a taxonomy class's children in the taxonomy browser
-     * @param {TaxonomyClass} taxonomy_class
-     */
-    @action.bound
-    toggle_taxonomy_class(taxonomy_class: TaxonomyClass) {
-        const taxonomy_class_id = taxonomy_class.id;
-        this.store_actions.toggle_taxonomy_class_tree_element(taxonomy_class_id);
-    }
-
-    /**
      * When submitting the login form, the user expects to login, or be presented with error about said login.
-     * Send the credentials to magpie, then verify content to be sure user is logged in, then notify about sucessful login.
+     * Send the credentials to magpie, then verify content to be sure user is logged in, then notify about successful login.
      * In case of error, notify of problem without leaking too much detail.
      */
     async login_form_submission(form_data: {}) {

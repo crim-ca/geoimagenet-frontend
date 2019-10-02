@@ -1,6 +1,6 @@
 // @flow strict
 
-import {action, computed, observable} from "mobx";
+import {action, computed, observable, runInAction} from "mobx";
 
 import type {GeoImageNetStore} from "./GeoImageNetStore";
 import type {TaxonomyClass} from "../domain/entities";
@@ -22,6 +22,7 @@ export class TaxonomyStore {
     @action select_taxonomy_class(taxonomy_class: TaxonomyClass) {
         this.selected_taxonomy_class = taxonomy_class;
     }
+
     @action toggle_pinned_class(taxonomy_class: TaxonomyClass, override: boolean): void {
         if (override !== undefined) {
             taxonomy_class.pinned = override;
@@ -29,6 +30,40 @@ export class TaxonomyStore {
             taxonomy_class.pinned = !taxonomy_class.pinned;
         }
 
+    }
+
+    /**
+     * Inverts a taxonomy class annotations visibility on the viewport, as well as all this class's children's visibility.
+     * Note that filters still apply on what annotations statuses are shown.
+     */
+    @action invert_taxonomy_class_visibility(taxonomy_class: TaxonomyClass, override: boolean) {
+        /**
+         * here we run in action so that all the chain of changes have time to propagate to all children, so that we're not stuck in an infinite loop of inverting children's statuses
+         */
+        runInAction(() => {
+            if (override !== undefined) {
+                taxonomy_class.visible = override;
+            } else {
+                taxonomy_class.visible = !taxonomy_class.visible;
+            }
+            if (taxonomy_class.children && taxonomy_class.children.length > 0) {
+                taxonomy_class.children.forEach(c => {
+                    this.invert_taxonomy_class_visibility(c, taxonomy_class.visible);
+                });
+            }
+        });
+    }
+
+    /**
+     * Invert the opened property for specific taxonomy class id
+     * the opened param should allow to override the toggling to force open or closed
+     */
+    @action toggle_taxonomy_class_tree_element(taxonomy_class: TaxonomyClass, opened: boolean | null = null) {
+        if (opened === null) {
+            taxonomy_class.opened = !taxonomy_class.opened;
+            return;
+        }
+        taxonomy_class.opened = opened;
     }
 
     /**
@@ -40,7 +75,6 @@ export class TaxonomyStore {
      * as such, we organize the data in groups of leaf classes, all with the same parents
      */
     @computed get leaf_pinned_classes(): TaxonomyClass[] {
-
         return Object.keys(this.flat_taxonomy_classes)
             .map(class_id => this.flat_taxonomy_classes[class_id])
             .filter(taxonomy_class => taxonomy_class.pinned === true);

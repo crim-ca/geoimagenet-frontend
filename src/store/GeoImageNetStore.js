@@ -89,8 +89,6 @@ export class GeoImageNetStore {
 
     @observable selected_taxonomy: Taxonomy | null = null;
 
-    @observable visible_classes: number[] = [];
-
     /**
      * For the next three properties, we directly write the indexes because flojs does not support the use of the constants
      * as keys. If that changes in the future maybe change it.

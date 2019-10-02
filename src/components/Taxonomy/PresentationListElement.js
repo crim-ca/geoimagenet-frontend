@@ -54,9 +54,8 @@ class PresentationListElement extends Component<Props> {
             return null;
         }
         const {children} = taxonomy_class;
-        const {toggle_taxonomy_class} = user_interactions;
         const make_toggle_callback = elem => () => {
-            toggle_taxonomy_class(elem);
+            taxonomy_store.toggle_taxonomy_class_tree_element(elem);
         };
         const label_click_callback = children && children.length > 0
             ? make_toggle_callback(taxonomy_class)

@@ -66,8 +66,7 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, TaxonomyStore,
                     refresh_source_by_status={user_interactions.refresh_source_by_status}
                     state_proxy={state_proxy}
                     taxonomy_store={taxonomy_store}
-                    user_interactions={user_interactions}
-                    store_actions={store_actions} />
+                    user_interactions={user_interactions} />
             ),
         },
         {

@@ -120,20 +120,6 @@ export class StoreActions {
     }
 
     /**
-     * Invert the opened property for specific taxonomy class id
-     * the opened param should allow to override the toggling to force open or closed
-     */
-    @action.bound
-    toggle_taxonomy_class_tree_element(taxonomy_class_id: number, opened: boolean | null = null) {
-        const taxonomy_class: TaxonomyClass = this.taxonomy_store.flat_taxonomy_classes[taxonomy_class_id];
-        if (opened === null) {
-            taxonomy_class.opened = !taxonomy_class.opened;
-            return;
-        }
-        taxonomy_class.opened = opened;
-    }
-
-    /**
      * We want to extract all localized taxonomy classes strings and send them in a dictionary that makes ids correspond to names.
      * Later on, we'll use i18next to translate the strings.
      */
@@ -290,57 +276,9 @@ export class StoreActions {
         this.state_proxy.selected_taxonomy = t;
     }
 
-    /**
-     * Inverts a taxonomy class annotations visibility on the viewport, as well as all this class's children's visibility.
-     * Note that filters still apply on what annotations statuses are shown.
-     * @param {boolean|null} visible if null, assumes that we want to invert the visible property of the class,
-     *                       otherwise sets visibility to visible value passed to the function
-     */
-    @action.bound
-    invert_taxonomy_class_visibility(t: TaxonomyClass, visible: boolean | null = null) {
-        runInAction(() => {
-            if (visible !== null) {
-                t.visible = visible;
-            } else {
-                t.visible = !t.visible;
-            }
-            if (t.children && t.children.length > 0) {
-                t.children.forEach(c => {
-                    this.invert_taxonomy_class_visibility(c, t.visible);
-                });
-            }
-        });
-
-
-        const visible_ids = [];
-        const aggregate_selected_ids = (taxonomy_class) => {
-            if (taxonomy_class.visible === true) {
-                visible_ids.push(taxonomy_class.id);
-            }
-        };
-
-        Object.keys(this.taxonomy_store.flat_taxonomy_classes).forEach(key => {
-            const taxonomy_class = this.taxonomy_store.flat_taxonomy_classes[key];
-            aggregate_selected_ids(taxonomy_class);
-        });
-        this.set_visible_classes(visible_ids);
-
-    }
-
     @action.bound
     set_acl(acl: AccessControlList) {
         this.state_proxy.acl = acl;
-    }
-
-    /**
-     * @todo maybe directly watch on the visible attribute of the nested classes
-     * The cql filter runs on watching an array of ids, updating visible annotations when it changes.
-     * This should be called with the new array of visible ids whenever it changes.
-     * Liable to human error.
-     */
-    @action.bound
-    set_visible_classes(classes: Array<number>) {
-        this.state_proxy.visible_classes = classes;
     }
 
     /**

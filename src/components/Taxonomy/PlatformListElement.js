@@ -15,9 +15,7 @@ import {ANNOTATION} from '../../domain/constants.js';
 
 import type {TaxonomyClass} from "../../domain/entities";
 import type {UserInteractions} from "../../domain";
-import type {StoreActions} from "../../store/StoreActions";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import type {TaxonomyClassToggleFunction} from "../../Types";
 import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
 const StyledListItem = withStyles({
@@ -45,12 +43,9 @@ const StyledLabelAndCountSpan = withStyles({
 });
 
 type Props = {
-    toggle_taxonomy_class_tree_element: (number) => void,
-    invert_taxonomy_class_visibility: TaxonomyClassToggleFunction,
     refresh_source_by_status: (string) => void,
     taxonomy_class: TaxonomyClass,
     user_interactions: UserInteractions,
-    store_actions: StoreActions,
     taxonomy_store: TaxonomyStore,
     state_proxy: GeoImageNetStore,
 };
@@ -66,7 +61,7 @@ class PlatformListElement extends Component<Props> {
      * Create the click handler with the relevant class entity
      */
     make_toggle_callback = (taxonomy_class: TaxonomyClass) => () => {
-        this.props.user_interactions.toggle_taxonomy_class(taxonomy_class);
+        this.props.taxonomy_store.toggle_taxonomy_class_tree_element(taxonomy_class);
     };
 
     make_release_handler = (taxonomy_class: TaxonomyClass) => async (event: Event) => {
@@ -86,7 +81,7 @@ class PlatformListElement extends Component<Props> {
 
     render() {
 
-        const {taxonomy_class, state_proxy} = this.props;
+        const {taxonomy_class, state_proxy, taxonomy_store} = this.props;
         const {children} = taxonomy_class;
 
         const label_click_callback = children && children.length > 0
@@ -109,19 +104,16 @@ class PlatformListElement extends Component<Props> {
                     <TaxonomyClassActions taxonomy_class={taxonomy_class}
                                           release_handler={this.make_release_handler(taxonomy_class)}
                                           toggle_pinned_class={this.props.taxonomy_store.toggle_pinned_class}
-                                          invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility} />
+                                          invert_taxonomy_class_visibility={taxonomy_store.invert_taxonomy_class_visibility} />
                 </StyledListItem>
                 {children
                     ? (
                         <Collapse in={taxonomy_class.opened}>
                             <Classes classes={children}
-                                     store_actions={this.props.store_actions}
                                      state_proxy={this.props.state_proxy}
                                      taxonomy_store={this.props.taxonomy_store}
                                      user_interactions={this.props.user_interactions}
-                                     refresh_source_by_status={this.props.refresh_source_by_status}
-                                     invert_taxonomy_class_visibility={this.props.invert_taxonomy_class_visibility}
-                                     toggle_taxonomy_class_tree_element={this.props.toggle_taxonomy_class_tree_element} />
+                                     refresh_source_by_status={this.props.refresh_source_by_status} />
                         </Collapse>)
                     : null
                 }
