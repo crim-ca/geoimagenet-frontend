@@ -15,8 +15,20 @@ export class TaxonomyClass {
     taxonomy_id: number;
     parent_id: number | null;
     children: TaxonomyClass[];
+    /**
+     * The visible property controls whether or not annotations, counts and any related information about that specific class are to be displayed.
+     * There are a priori no exceptions to this rule, if anything anywhere is to be shown on the screen about a class, it should appear or not based on this property.
+     */
     visible: boolean;
+    /**
+     * In contrast to the visible property, the opened one is about the display of a class's children in the taxonomies and classes section of the sidebar
+     */
     opened: boolean;
+    /**
+     * Being "pinned" in the context of an annotation class is being present in the "workspace" of the annotation browser.
+     * Pinned classes are present in a second screen where only pinned classes are present, so that the user can see a limited amount of information at the same time.
+     */
+    pinned: boolean;
     counts: Counts;
 
     /**
@@ -32,52 +44,18 @@ export class TaxonomyClass {
         children: TaxonomyClass[] = [],
         visible: boolean = false,
         opened: boolean = false,
+        pinned: boolean = false,
         counts: Counts = {}
     ) {
-        /**
-         *
-         * @type {Number}
-         */
         this.id = id;
-        /**
-         *
-         * @type {String}
-         */
         this.name_fr = name_fr;
-        /**
-         *
-         * @type {String}
-         */
         this.name_en = name_en;
-        /**
-         *
-         * @type {Number}
-         */
         this.taxonomy_id = taxonomy_id;
-        /**
-         *
-         * @type {Number}
-         */
         this.parent_id = parent_id;
-        /**
-         *
-         * @type {TaxonomyClass[]}
-         */
         this.children = children;
-        /**
-         * The visibility of this class's annotations on the OpenLayers map.
-         * @type {boolean}
-         */
         this.visible = visible;
-        /**
-         * Wether or not the class's children classes are visible (toggled) in the taxonomy browser.
-         * @type {boolean}
-         */
         this.opened = opened;
-        /**
-         *
-         * @type {Object}
-         */
+        this.pinned = pinned;
         this.counts = counts;
     }
 }
