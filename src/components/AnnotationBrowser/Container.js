@@ -5,11 +5,12 @@ import {observer} from 'mobx-react';
 
 import {Paginator} from './Paginator';
 import {AnnotationList} from './AnnotationList';
+import {OpenLayersStore} from "../../store/OpenLayersStore";
+import {Container as WorkspaceContainer} from './Workspace/Container';
 
 import type {AnnotationBrowserStore} from "../../store/AnnotationBrowserStore";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {AnnotationStatus, BoundingBox} from "../../Types";
-import {OpenLayersStore} from "../../store/OpenLayersStore";
 
 type Props = {
     store: AnnotationBrowserStore,
@@ -38,8 +39,12 @@ class Container extends React.Component<Props> {
     };
 
     render() {
+        const pinned_classes = [
+            {name_en: 'bob'},
+        ];
         return (
             <>
+                <WorkspaceContainer pinned_classes={pinned_classes}/>
                 <AnnotationList
                     fit_view_to_bounding_box={this.navigate}
                     annotations={this.props.store.current_page_content}
