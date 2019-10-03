@@ -1,6 +1,6 @@
 // @flow strict
 
-import {action, computed, observable, runInAction} from "mobx";
+import {action, computed, observable} from "mobx";
 
 import type {GeoImageNetStore} from "./GeoImageNetStore";
 import type {TaxonomyClass} from "../domain/entities";
@@ -29,7 +29,20 @@ export class TaxonomyStore {
         } else {
             taxonomy_class.pinned = !taxonomy_class.pinned;
         }
-
+        /**
+         * when a class has children, we need to set the pin upon its children as well, as they're the ones that are gonna be displayed
+         */
+        if (taxonomy_class.children && taxonomy_class.children.length > 0) {
+            taxonomy_class.children.forEach(c => {
+                this.toggle_pinned_class(c, taxonomy_class.pinned);
+            });
+        }
+        /**
+         * When we are pinning a class, we need to see the related annotations, so override the visibility
+         */
+        if (taxonomy_class.pinned === true) {
+            this.invert_taxonomy_class_visibility(taxonomy_class, true);
+        }
     }
 
     /**
@@ -37,21 +50,16 @@ export class TaxonomyStore {
      * Note that filters still apply on what annotations statuses are shown.
      */
     @action invert_taxonomy_class_visibility(taxonomy_class: TaxonomyClass, override: boolean) {
-        /**
-         * here we run in action so that all the chain of changes have time to propagate to all children, so that we're not stuck in an infinite loop of inverting children's statuses
-         */
-        runInAction(() => {
-            if (override !== undefined) {
-                taxonomy_class.visible = override;
-            } else {
-                taxonomy_class.visible = !taxonomy_class.visible;
-            }
-            if (taxonomy_class.children && taxonomy_class.children.length > 0) {
-                taxonomy_class.children.forEach(c => {
-                    this.invert_taxonomy_class_visibility(c, taxonomy_class.visible);
-                });
-            }
-        });
+        if (override !== undefined) {
+            taxonomy_class.visible = override;
+        } else {
+            taxonomy_class.visible = !taxonomy_class.visible;
+        }
+        if (taxonomy_class.children && taxonomy_class.children.length > 0) {
+            taxonomy_class.children.forEach(c => {
+                this.invert_taxonomy_class_visibility(c, taxonomy_class.visible);
+            });
+        }
     }
 
     /**
