@@ -9,6 +9,7 @@ import {TFunction} from 'react-i18next';
 import {withTranslation} from "../../utils";
 
 import type {AnnotationBrowserStore} from "../../store/AnnotationBrowserStore";
+import {compose} from "react-apollo";
 
 const style = (theme) => ({
     root: {
@@ -61,6 +62,9 @@ class Paginator extends React.Component<Props> {
     }
 }
 
-const styled_paginator = withStyles(style)(Paginator);
-const translated_paginator = withTranslation()(styled_paginator);
-export {translated_paginator as Paginator};
+const component = compose(
+    withStyles(style),
+    withTranslation(),
+)(Paginator);
+
+export {component as Paginator};

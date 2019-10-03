@@ -4,6 +4,7 @@ import React from 'react';
 import {observer} from 'mobx-react';
 import withStyles from '@material-ui/core/styles/withStyles';
 import {TFunction} from 'react-i18next';
+import {compose} from 'react-apollo';
 
 import type {Annotation, AnnotationStatus, BoundingBox} from "../../Types";
 import {withTranslation} from '../../utils';
@@ -101,9 +102,11 @@ class AnnotationList extends React.Component<Props> {
     }
 }
 
-const styled_annotations = withStyles(style)(AnnotationList);
-const translated_annotations = withTranslation()(styled_annotations);
+const component = compose(
+    withStyles(style),
+    withTranslation(),
+)(AnnotationList);
 
 export {
-    translated_annotations as AnnotationList,
+    component as AnnotationList,
 };

@@ -42,5 +42,5 @@ class TaxonomyPresentation extends React.Component<Props> {
     }
 }
 
-const translated_presentation = withTranslation()(TaxonomyPresentation);
-export {translated_presentation as TaxonomyPresentation};
+const component = withTranslation()(TaxonomyPresentation);
+export {component as TaxonomyPresentation};

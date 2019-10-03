@@ -91,6 +91,6 @@ class MapContainer extends React.Component<Props> {
     }
 }
 
-const StyledMapContainer = withStyles(styles)(MapContainer);
+const component = withStyles(styles)(MapContainer);
 
-export {StyledMapContainer as MapContainer};
+export {component as MapContainer};

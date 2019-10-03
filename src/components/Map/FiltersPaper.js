@@ -61,8 +61,8 @@ class FiltersPaper extends React.Component<Props> {
     }
 }
 
-const styled_paper = withStyles(style)(FiltersPaper);
+const component = withStyles(style)(FiltersPaper);
 
 export {
-    styled_paper as FiltersPaper
+    component as FiltersPaper
 };
