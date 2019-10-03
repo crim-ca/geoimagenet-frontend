@@ -90,6 +90,6 @@ class Container extends React.Component<Props, State> {
     }
 }
 
-const translated_filters = withTranslation()(Container);
+const component = withTranslation()(Container);
 
-export {translated_filters as Container};
+export {component as Container};

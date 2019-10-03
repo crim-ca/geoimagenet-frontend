@@ -153,6 +153,6 @@ class Sidebar extends React.Component<Props, State> {
     }
 }
 
-const translated_sidebar = withTranslation()(Sidebar);
+const component = withTranslation()(Sidebar);
 
-export {translated_sidebar as Sidebar};
+export {component as Sidebar};

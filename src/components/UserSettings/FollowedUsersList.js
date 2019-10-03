@@ -51,5 +51,5 @@ class FollowedUsersList extends React.Component<Props> {
     }
 }
 
-const TranslatedComponent = withTranslation()(FollowedUsersList);
-export {TranslatedComponent as FollowedUsersList};
+const component = withTranslation()(FollowedUsersList);
+export {component as FollowedUsersList};
