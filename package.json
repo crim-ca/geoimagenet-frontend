@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Frontend annotation platform for GeoImageNet",
   "directories": {
     "test": "test"
@@ -13,15 +13,12 @@
     "dev-server": "webpack-dev-server --open --config webpack.dev.js",
     "esdoc": "./node_modules/.bin/esdoc",
     "flow": "flow",
-    "flow:deps": "flow-typed install"
+    "flow:deps": "flow-typed install && flow-typed create-stub graphql-tag mobx react-apollo",
+    "postinstall": "npm run flow:deps"
   },
   "repository": {
     "type": "git",
     "url": "https://felix.gagnon-grenier%40crim.ca@www.crim.ca/stash/scm/geo/frontend.git"
-  },
-  "jest": {
-    "setupTestFrameworkScriptFile": "jest-enzyme",
-    "testEnvironment": "enzyme"
   },
   "author": "Félix Gagnon-Grenier",
   "devDependencies": {

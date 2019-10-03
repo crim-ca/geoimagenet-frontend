@@ -7,7 +7,7 @@
 import {autorun} from 'mobx';
 
 import {Group, Vector} from 'ol/layer';
-import {fromLonLat, get as getProjection} from 'ol/proj';
+import {get as getProjection} from 'ol/proj';
 import {Control, MousePosition, ScaleLine} from 'ol/control';
 import {Collection, Feature, Map} from 'ol';
 import View from 'ol/View';
@@ -32,7 +32,6 @@ import {
     ANNOTATION_STATUS_AS_ARRAY,
     ALLOWED_BING_MAPS,
     CUSTOM_GEOIM_IMAGE_LAYER,
-    VIEW_CENTER,
     VALID_OPENLAYERS_ANNOTATION_RESOLUTION,
     READ,
     WMS
@@ -46,6 +45,8 @@ import {make_http_request} from "../../utils/http";
 import {UserInteractions} from "../../domain";
 import {make_annotation_ownership_cql_filter} from "./utils";
 import {create_style_function} from './ol_dependant_utils';
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
+import type {OpenLayersStore} from "../../store/OpenLayersStore";
 
 async function geoserver_capabilities(url) {
     let parser = new WMSCapabilities();
@@ -146,6 +147,13 @@ export class MapManager {
      */
     state_proxy: GeoImageNetStore;
 
+    open_layers_store: OpenLayersStore;
+
+    /**
+     * @private
+     */
+    taxonomy_store: TaxonomyStore;
+
     /**
      * @private
      */
@@ -180,16 +188,21 @@ export class MapManager {
         annotation_namespace: string,
         annotation_layer: string,
         map_div_id: string,
+        view: View,
         state_proxy: GeoImageNetStore,
+        open_layers_store: OpenLayersStore,
         store_actions: StoreActions,
         layer_switcher: LayerSwitcher,
-        user_interactions: UserInteractions
+        user_interactions: UserInteractions,
+        taxonomy_store: TaxonomyStore,
     ) {
 
         this.geoserver_url = geoserver_url;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
         this.state_proxy = state_proxy;
+        this.open_layers_store = open_layers_store;
+        this.taxonomy_store = taxonomy_store;
         this.store_actions = store_actions;
         this.layer_switcher = layer_switcher;
         this.user_interactions = user_interactions;
@@ -203,10 +216,7 @@ export class MapManager {
             geometryName: 'geometry',
         });
 
-        this.view = new View({
-            center: fromLonLat(VIEW_CENTER.CENTRE),
-            zoom: VIEW_CENTER.ZOOM_LEVEL
-        });
+        this.view = view;
 
         this.map = new Map({
             target: map_div_id,
@@ -226,6 +236,12 @@ export class MapManager {
 
         const {annotations_collections, annotations_sources} = this.state_proxy;
 
+        /**
+         * this innocent looking piece of code is actually very central to the map, here we create the Open Layers sources and collections that will hold the features
+         * (quick reminder, an GeoImageNet "annotation" is represented on the map as an Open Layers "feature", served with wfs
+         * We need to set their color in accordance with their status.
+         * We keep references to the collections, sources and layers so that we can access them directly if need be (such as when refreshing sources, or setting style functions)
+         */
         ANNOTATION_STATUS_AS_ARRAY.forEach(key => {
             const color = style.getPropertyValue(`--color-${key}`);
             this.store_actions.set_annotation_collection(key, new Collection());
@@ -245,21 +261,10 @@ export class MapManager {
         autorun(() => {
             const {annotation_status_filters, annotation_ownership_filters} = this.state_proxy;
 
-            const visible = [];
-            Object.keys(this.state_proxy.flat_taxonomy_classes).forEach(k => {
-                /** @var {TaxonomyClass} taxonomy_class */
-                const taxonomy_class = this.state_proxy.flat_taxonomy_classes[k];
-                if (taxonomy_class.visible) {
-                    visible.push(taxonomy_class.id);
-                }
-            });
-            if (visible.length > 0) {
-                this.cql_taxonomy_class_id = `taxonomy_class_id IN (${visible.join(',')})`;
-            } else {
-                this.cql_taxonomy_class_id = '';
-            }
+            this.cql_taxonomy_class_id = this.taxonomy_store.taxonomy_class_id_selection;
 
             const ownership_filters_array = Object.values(annotation_ownership_filters);
+            // $FlowFixMe
             this.cql_ownership = make_annotation_ownership_cql_filter(ownership_filters_array, state_proxy.logged_user);
 
             Object.keys(annotation_status_filters).forEach(k => {
@@ -285,11 +290,16 @@ export class MapManager {
         this.map.addEventListener('click', this.receive_map_viewport_click_event);
 
         autorun(() => {
-            const {show_labels, annotation_status_filters} = this.state_proxy;
+            const {show_labels, show_annotators_identifiers, annotation_status_filters} = this.state_proxy;
             /**
              * This clunky switch is used so that MobX registers the access to the show_labels property.
-             * We could directly refresh the layers without regard to the actual value in show_labels, the style function picks it up.
+             * we assign noise only for mobx to rerun this function as well.
+             *
+             * this is horrible, there must be a way to change the style globally without reloading everything, I can't believe it's the only way
+             *
+             * We could directly refresh the layers without regard to the actual value in show_labels, the style function picks it up, but that would mean even more useless api calls
              */
+            const noise = show_annotators_identifiers;
             switch (show_labels) {
                 default:
                     Object.keys(annotation_status_filters).forEach(k => {

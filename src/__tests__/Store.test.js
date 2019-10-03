@@ -1,14 +1,62 @@
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
+import {Container as LabelsContainer} from '../components/Map/LabelsChoice/Container';
+
+const React = require('react');
+const {action} = require('mobx');
 
 const {MODE, ANNOTATION} = require('../domain/constants');
-const {StoreActions} = require('../store');
-const {action} = require('mobx');
+const {StoreActions} = require('../store/StoreActions');
 const {TaxonomyClass} = require('../domain/entities');
 
-const state_proxy = new GeoImageNetStore();
-const store_actions = new StoreActions(state_proxy);
+const Button = require('@material-ui/core/Button');
+const {configure, mount} = require('enzyme');
+const Adapter = require('enzyme-adapter-react-16');
+
+const {JSDOM} = require('jsdom');
+const {window} = new JSDOM(`<!doctype html>`);
+
+function copyProps(src, target) {
+    Object.defineProperties(target, {
+        ...Object.getOwnPropertyDescriptors(src),
+        ...Object.getOwnPropertyDescriptors(target),
+    });
+}
+
+global.window = window;
+global.document = window.document;
+global.navigator = {
+    userAgent: 'node.js',
+};
+global.requestAnimationFrame = function (callback) {
+    return setTimeout(callback, 0);
+};
+global.cancelAnimationFrame = function (id) {
+    clearTimeout(id);
+};
+copyProps(window, global);
+
+configure({adapter: new Adapter()});
+
+
+describe('UI Elements correctly change the store', () => {
+    test('Toggle annotators identifier off from default state', () => {
+        const state_proxy = new GeoImageNetStore();
+        const wrapper = mount(<LabelsContainer state_proxy={state_proxy} />);
+        wrapper.simulate('click');
+        expect(state_proxy.show_annotators_identifiers).toBe(false);
+    });
+    test('Toggle annotators identifier on when state is already false', () => {
+        const state_proxy = new GeoImageNetStore();
+        state_proxy.toggle_annotator_identifiers(false);
+        const wrapper = mount(<LabelsContainer state_proxy={state_proxy} />);
+        wrapper.simulate('click');
+        expect(state_proxy.show_annotators_identifiers).toBe(true);
+    });
+});
 
 test('injects a state_proxy and keeps track', () => {
+    const state_proxy = new GeoImageNetStore();
+    const store_actions = new StoreActions(state_proxy);
     store_actions.set_mode(MODE.VISUALIZE);
     expect(state_proxy.mode).toBe(MODE.VISUALIZE);
     store_actions.set_mode(MODE.ASK_EXPERTISE);
@@ -16,6 +64,8 @@ test('injects a state_proxy and keeps track', () => {
 });
 
 test('builds flat taxonomy_classes list', () => {
+    const state_proxy = new GeoImageNetStore();
+    const store_actions = new StoreActions(state_proxy);
     const sub_children = [
         {id: 4},
         {id: 5},
@@ -37,6 +87,8 @@ test('builds flat taxonomy_classes list', () => {
 });
 
 test('accessing flat classes changes nested ones', () => {
+    const state_proxy = new GeoImageNetStore();
+    const store_actions = new StoreActions(state_proxy);
     const sub_children = [
         {id: 4},
         {id: 5},

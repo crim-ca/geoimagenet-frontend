@@ -15,12 +15,10 @@ import {UserInteractions} from "../../domain";
 import typeof Event from 'ol/events/Event.js';
 import {create_style_function} from "./ol_dependant_utils";
 import {MapBrowserEvent} from "ol/events";
-import {Collection} from "ol";
 import {ContextualMenuManager} from "../ContextualMenu/ContextualMenuManager";
+import type {OpenLayersStore} from "../../store/OpenLayersStore";
 
-const selected_features_collection = new Collection();
-
-const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStore) => (event: MapBrowserEvent) => {
+const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStore, open_layers_store: OpenLayersStore) => (event: MapBrowserEvent) => {
     if (event.type !== 'click') {
         return false;
     }
@@ -48,12 +46,11 @@ const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStor
 
     ContextualMenuManager.choose_option(menu_items).then(
         choice => {
-            selected_features_collection.clear();
-            selected_features_collection.push(choice);
+            open_layers_store.select_feature(choice);
         },
         error => {
             console.log(error);
-            selected_features_collection.clear();
+            open_layers_store.clear_selected_features();
             NotificationManager.info("That wasn't a valid feature choice, we unselected everything.");
         },
     );
@@ -61,14 +58,19 @@ const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStor
     return false;
 };
 
+/**
+ * The Interactions class was intended as the repository where the various Open Layers interactions live.
+ * OL Interactions are classes from their bundle that represent an user's interaction with the viewport, be it a click,
+ * or a feature creation / modification.
+ */
 export class Interactions {
 
     map: Map;
     state_proxy: GeoImageNetStore;
     user_interactions: UserInteractions;
+    open_layers_store: OpenLayersStore;
     geojson_format: GeoJSON;
     annotation_layer: string;
-    annotation_namespace: string;
     draw: Draw;
     modify: Modify;
     select: Select;
@@ -77,16 +79,16 @@ export class Interactions {
         map: Map,
         state_proxy: GeoImageNetStore,
         user_interactions: UserInteractions,
+        open_layers_store: OpenLayersStore,
         geojson_format: GeoJSON,
         annotation_layer: string,
-        annotation_namespace: string,
     ) {
         this.map = map;
         this.state_proxy = state_proxy;
         this.user_interactions = user_interactions;
+        this.open_layers_store = open_layers_store;
         this.geojson_format = geojson_format;
         this.annotation_layer = annotation_layer;
-        this.annotation_namespace = annotation_namespace;
 
         const layers = Object.keys(this.state_proxy.annotations_layers).map(key => {
             return this.state_proxy.annotations_layers[key];
@@ -95,10 +97,10 @@ export class Interactions {
          * We can select layers from any and all layers, so we activate it on all layers by default.
          */
         this.select = new Select({
-            condition: make_feature_selection_condition(map, this.state_proxy),
+            condition: make_feature_selection_condition(map, this.state_proxy, this.open_layers_store),
             layers: layers,
             style: create_style_function('white', this.state_proxy, true),
-            features: selected_features_collection,
+            features: this.open_layers_store.selected_features,
         });
         this.map.addInteraction(this.select);
 
@@ -117,7 +119,7 @@ export class Interactions {
             condition: this.draw_condition_callback
         });
 
-        this.draw.on('drawend', this.user_interactions.create_drawend_handler(this.geojson_format, this.annotation_layer, this.annotation_namespace));
+        this.draw.on('drawend', this.user_interactions.create_drawend_handler(this.geojson_format, this.annotation_layer));
         this.modify.on('modifystart', this.user_interactions.modifystart_handler);
         this.modify.on('modifyend', this.user_interactions.create_modifyend_handler(this.geojson_format, this.map));
 

@@ -59,5 +59,5 @@ class Selector extends Component<Props, State> {
     }
 }
 
-const TranslatedSelector = withTranslation()(Selector);
-export {TranslatedSelector as Selector};
+const component = withTranslation()(Selector);
+export {component as Selector};

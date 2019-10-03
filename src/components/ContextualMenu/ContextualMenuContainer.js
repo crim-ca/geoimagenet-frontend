@@ -12,7 +12,6 @@ type PromiseResolutionCallback = (?string) => void;
 type Props = {};
 type State = {
     menu_items: ContextualMenuItem[],
-    anchor_element: HTMLElement,
     open: boolean,
     resolve: PromiseResolutionCallback,
     reject: PromiseResolutionCallback,
@@ -37,6 +36,7 @@ export const default_state = {
 class ContextualMenuContainer extends React.Component<Props, State> {
 
     state = Object.assign({}, default_state);
+    anchor_element: HTMLElement | null;
 
     constructor() {
         super();
@@ -44,12 +44,10 @@ class ContextualMenuContainer extends React.Component<Props, State> {
     }
 
     componentDidMount(): void {
-        const anchor_element = document.getElementById('anchor_element');
-        if (anchor_element === null) {
+        if (this.anchor_element === null) {
             throw new TypeError('There should be an anchor element for the contextual menu container. ' +
                 'It appears the DOM was not correctly constructed.');
         }
-        this.setState({anchor_element: anchor_element});
         /**
          * $FlowFixMe
          * We can't possibly know all the type of every handler we'll want to debounce
@@ -57,6 +55,10 @@ class ContextualMenuContainer extends React.Component<Props, State> {
          */
         window.addEventListener('mousemove', debounced(50, this.set_mouse_position));
     }
+
+    set_anchor_element = (element: HTMLElement | null) => {
+        this.anchor_element = element;
+    };
 
     set_mouse_position = (event: MouseEvent) => {
         this.setState({
@@ -73,7 +75,7 @@ class ContextualMenuContainer extends React.Component<Props, State> {
         ContextualMenuManager.remove_populate_menu_callback();
     }
 
-    handle_populate_menu_request = async (menu_items: ContextualMenuItem[], resolve, reject) => {
+    handle_populate_menu_request = async (menu_items: ContextualMenuItem[], resolve: PromiseResolutionCallback, reject: PromiseResolutionCallback) => {
         this.setState({
             open: true,
             menu_items: menu_items,
@@ -97,12 +99,12 @@ class ContextualMenuContainer extends React.Component<Props, State> {
         return (
             <>
                 <div
-                    id='anchor_element'
+                    ref={this.set_anchor_element}
                     style={{position: 'absolute', left: `${this.state.mouse_x}px`, top: `${this.state.mouse_y}px`}} />
                 <Menu
                     onClose={this.handle_outside_click}
                     open={this.state.open}
-                    anchorEl={this.state.anchor_element}>
+                    anchorEl={this.anchor_element}>
                     {
                         this.state.menu_items.map((item, i) => (
                             <MenuItem key={i} onClick={this.create_onclick_handler(item)}>{item.text}</MenuItem>

@@ -1,3 +1,5 @@
+// @flow strict
+
 import gql from "graphql-tag";
 
 export const MODELS = gql`

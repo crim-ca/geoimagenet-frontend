@@ -88,5 +88,5 @@ class PresentationListElement extends Component<Props> {
     }
 }
 
-const TranslatedPresentationListElement = withTranslation()(PresentationListElement);
-export {TranslatedPresentationListElement as PresentationListElement};
+const component = withTranslation()(PresentationListElement);
+export {component as PresentationListElement};

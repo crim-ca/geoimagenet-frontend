@@ -1,3 +1,4 @@
+// @flow
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Sentry from '@sentry/browser';
@@ -25,6 +26,8 @@ import {captureException} from "@sentry/browser";
 import {GeoImageNetStore} from "./store/GeoImageNetStore";
 import {LoadingSplashCircle} from "./components/LoadingSplashCircle";
 import {ContextualMenuContainer} from "./components/ContextualMenu/ContextualMenuContainer";
+import {OpenLayersStore} from "./store/OpenLayersStore";
+import Collection from "ol/Collection";
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
@@ -43,13 +46,14 @@ export class PlatformLoader {
 
     state_proxy: GeoImageNetStore;
     store_actions: StoreActions;
+    open_layers_store: OpenLayersStore;
     data_queries: DataQueries;
     user_interactions: UserInteractions;
 
-
-    constructor(geoimagenet_api_endpoint: string, geoserver_endpoint: string, magpie_endpoint: string, ml_endpoint: string, i18next_instance) {
+    constructor(geoimagenet_api_endpoint: string, geoserver_endpoint: string, magpie_endpoint: string, ml_endpoint: string, i18next_instance: i18n) {
 
         this.state_proxy = new GeoImageNetStore();
+        this.open_layers_store = new OpenLayersStore(new Collection());
         this.store_actions = new StoreActions(this.state_proxy);
         this.data_queries = new DataQueries(geoimagenet_api_endpoint, geoserver_endpoint, magpie_endpoint, ml_endpoint);
         this.user_interactions = new UserInteractions(this.store_actions, this.data_queries, i18next_instance, this.state_proxy);
@@ -58,6 +62,7 @@ export class PlatformLoader {
     make_platform() {
         return (
             <Platform
+                open_layers_store={this.open_layers_store}
                 state_proxy={this.state_proxy}
                 store_actions={this.store_actions}
                 user_interactions={this.user_interactions} />
@@ -91,6 +96,9 @@ export class PlatformLoader {
 
         const div = document.createElement('div');
         div.classList.add('root');
+        if (document.body === null) {
+            throw new Error('We need a DOM document to execute this code.');
+        }
         document.body.appendChild(div);
 
         ReactDOM.render(<LoadingSplashCircle />, div);
@@ -118,7 +126,7 @@ export class PlatformLoader {
     }
 }
 
-addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', async () => {
     const platform_loader = new PlatformLoader(GEOIMAGENET_API_URL, GEOSERVER_URL, MAGPIE_ENDPOINT, ML_ENDPOINT, i18n);
     try {
         await platform_loader.init();

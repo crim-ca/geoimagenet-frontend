@@ -6,9 +6,8 @@ import {initReactI18next} from "react-i18next";
 
 const resources = {
     en: {
-        annotations: {
-            filters: 'Filters',
-            status: {
+        status: {
+            plural: {
                 new: 'New',
                 pre_released: 'Pre released',
                 released: 'Released',
@@ -16,6 +15,28 @@ const resources = {
                 rejected: 'Rejected',
                 deleted: 'Deleted',
             },
+            singular: {
+                new: 'New',
+                pre_released: 'Pre released',
+                released: 'Released',
+                validated: 'Validated',
+                rejected: 'Rejected',
+                deleted: 'Deleted',
+            },
+        },
+        annotations: {
+            created_by: 'Created by {{annotator}}',
+            class_name: 'Class Name',
+            owner: 'Owner',
+            status: 'Status',
+            annotators_identifiers: 'Annotators identifiers',
+            pagination: {
+                page_info: 'Page {{page_number}} of {{total_pages}}',
+                previous: 'Previous page',
+                next: 'Next page',
+            },
+            filters: 'Filters',
+            labels: 'Labels',
             ownership: {
                 others: 'Others',
                 mine: 'Me',
@@ -51,6 +72,7 @@ const resources = {
             publications: 'Publications',
             collaborators: 'Research collaborators',
             team: 'Team',
+            annotation_browser: 'Annotation Browser',
         },
         intro: {
             benchmarks: {
@@ -214,9 +236,8 @@ const resources = {
         },
     },
     fr: {
-        annotations: {
-            filters: 'Filtres',
-            status: {
+        status: {
+            plural: {
                 new: 'Nouvelles',
                 pre_released: 'Pré-relâchées',
                 released: 'Relâchées',
@@ -224,6 +245,28 @@ const resources = {
                 rejected: 'Rejetées',
                 deleted: 'Supprimées',
             },
+            singular: {
+                new: 'Nouvelle',
+                pre_released: 'Pré-relâchée',
+                released: 'Relâchée',
+                validated: 'Validée',
+                rejected: 'Rejetée',
+                deleted: 'Supprimée',
+            },
+        },
+        annotations: {
+            created_by: 'Créée par {{annotator}}',
+            class_name: 'Nom de classe',
+            owner: 'Propriétaire',
+            status: 'Statut',
+            annotators_identifiers: "Identifiants d'annotateurs/trices",
+            pagination: {
+                page_info: 'Page {{page_number}} de {{total_pages}}',
+                previous: 'Page précédente',
+                next: 'Page suivante',
+            },
+            filters: 'Filtres',
+            labels: 'Libellés',
             ownership: {
                 others: 'Les autres',
                 mine: 'Moi',
@@ -259,6 +302,7 @@ const resources = {
             publications: 'Publications',
             collaborators: 'Collaborateurs de recherche',
             team: "Équipe",
+            annotation_browser: 'Navigateur d\'annotations',
         },
         intro: {
             benchmarks: {

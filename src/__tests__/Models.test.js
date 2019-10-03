@@ -40,7 +40,7 @@ copyProps(window, global);
 configure({adapter: new Adapter()});
 
 type Props = {
-    mocks: Array<Object>,
+    mocks: {}[],
 }
 
 class TestingModels extends React.Component<Props> {

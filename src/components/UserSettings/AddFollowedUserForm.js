@@ -8,6 +8,7 @@ import {withTranslation} from '../../utils';
 import {TFunction} from 'react-i18next';
 import type {FollowedUser} from "../../Types";
 import {NotificationManager} from "react-notifications";
+import {compose} from "react-apollo";
 
 type Props = {
     save_user: (FollowedUser) => void,
@@ -51,7 +52,7 @@ class AddFollowedUserForm extends React.Component<Props, State> {
         }
     };
 
-    form_data_is_valid = (id: string, nickname: string) => {
+    form_data_is_valid = (id: number, nickname: string) => {
         if (isNaN(id)) {
             NotificationManager.warning(this.props.t('settings:error.id_must_be_integer'));
             return false;
@@ -60,12 +61,12 @@ class AddFollowedUserForm extends React.Component<Props, State> {
             NotificationManager.warning(this.props.t('settings:error.id_must_be_unique'));
             return false;
         }
-        return id.length > 0 && nickname.length > 0;
+        return id > 0 && nickname.length > 0;
     };
 
     change = (field: string) => (event: Event) => {
         this.setState({[field]: (event.target: window.HTMLInputElement).value}, () => {
-            const valid = this.form_data_is_valid(this.state.id, this.state.nickname);
+            const valid = this.form_data_is_valid(parseInt(this.state.id), this.state.nickname);
             this.setState({valid: valid});
         });
     };
@@ -91,6 +92,9 @@ class AddFollowedUserForm extends React.Component<Props, State> {
     }
 }
 
-const StyledComponent = withStyles(styles)(AddFollowedUserForm);
-const TranslatedComponent = withTranslation()(StyledComponent);
-export {TranslatedComponent as AddFollowedUserForm};
+const component = compose(
+    withStyles(styles),
+    withTranslation(),
+)(AddFollowedUserForm);
+
+export {component as AddFollowedUserForm};

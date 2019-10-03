@@ -2,12 +2,12 @@
 import {ANNOTATION, MODE} from '../domain/constants.js';
 import {AccessControlList} from '../domain/access-control-list.js';
 import {AnnotationFilter, ResourcePermissionRepository} from '../domain/entities.js';
-import {observable, computed} from 'mobx';
+import {observable, computed, action} from 'mobx';
 import {SatelliteImage, Taxonomy, User} from "../domain/entities";
 import typeof VectorLayer from "ol/layer/Vector.js";
 import typeof VectorSource from "ol/source/Vector";
 import {typeof Collection} from "ol";
-import type {AnnotationOwnershipFilters, AnnotationStatusFilters} from "../Types";
+import type {AnnotationOwnershipFilters, AnnotationStatusFilters, FollowedUser} from "../Types";
 import {configure} from 'mobx';
 
 /**
@@ -29,6 +29,15 @@ export class GeoImageNetStore {
      * Labels can be overwhelming when there are too much objects on the screen, this property should allow user to show them or not.
      */
     @observable show_labels: boolean = true;
+    @observable show_annotators_identifiers: boolean = true;
+
+    @action toggle_annotator_identifiers: (?boolean) => void = (override: ?boolean) => {
+        if (override !== undefined && override !== null) {
+            this.show_annotators_identifiers = override;
+            return;
+        }
+        this.show_annotators_identifiers = !this.show_annotators_identifiers;
+    };
 
     /**
      * The visible annotations types should federate every part of the platform that manages annotations, from the counts
@@ -135,6 +144,26 @@ export class GeoImageNetStore {
      * An instance with the current user's information.
      */
     @observable logged_user: User | null = null;
+
+    /**
+     * If there is a logged user (it's possible there isn't, people can access the map in anonymous mode)
+     * then we should not be trying to substitute nicknames for ids
+     */
+    @computed get nickname_map() {
+        const map = {};
+        if (this.logged_user === null) {
+            return {};
+        }
+        map[this.logged_user.id] = this.logged_user.user_name;
+        if (this.logged_user.followed_users.length === 0) {
+            return map;
+        }
+        const assign_followed_user = (user: FollowedUser) => {
+            map[user.id] = user.nickname;
+        };
+        this.logged_user.followed_users.forEach(assign_followed_user);
+        return map;
+    }
 
     /**
      * We need to be able to control how annotations are created. Once we begin adding points, we limit the adding of points
