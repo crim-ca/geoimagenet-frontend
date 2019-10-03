@@ -13,7 +13,8 @@
     "dev-server": "webpack-dev-server --open --config webpack.dev.js",
     "esdoc": "./node_modules/.bin/esdoc",
     "flow": "flow",
-    "flow:deps": "flow-typed install"
+    "flow:deps": "flow-typed install && flow-typed create-stub graphql-tag mobx react-apollo",
+    "postinstall": "npm run flow:deps"
   },
   "repository": {
     "type": "git",
