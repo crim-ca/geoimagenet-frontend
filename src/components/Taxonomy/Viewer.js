@@ -45,6 +45,6 @@ class Viewer extends React.Component<Props> {
     }
 }
 
-const TranslatedViewer = withTranslation()(Viewer);
+const component = withTranslation()(Viewer);
 
-export {TranslatedViewer as Viewer};
+export {component as Viewer};

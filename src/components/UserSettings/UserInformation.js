@@ -34,6 +34,6 @@ class UserInformation extends React.Component<Props> {
     }
 }
 
-const TranslatedUserInformation = withTranslation()(UserInformation);
+const component = withTranslation()(UserInformation);
 
-export {TranslatedUserInformation as UserInformation};
+export {component as UserInformation};

@@ -42,10 +42,8 @@ export function create_style_function(color: string, state_proxy: GeoImageNetSto
     return (feature: Feature, resolution: number) => {
 
         /**
-         * If there is a logged user (it's possible there isn't, people can access the map in anonymous mode)
-         * then we should not be trying to substitute nicknames for ids
-         *
-         * NOTE we must keep this code *inside* the callback otherwise the list is not updated in accordance to the changes to the followed users
+         * While one might be tempted to move these variable access outside of the callback,
+         * we must keep this code *inside* the callback otherwise the list is not updated in accordance to the changes to the followed users
          */
         const {nickname_map} = state_proxy;
 

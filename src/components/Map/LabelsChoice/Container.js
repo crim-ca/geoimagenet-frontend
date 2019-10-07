@@ -32,8 +32,8 @@ class Container extends React.Component<Props, State> {
     }
 }
 
-const translated_container = withTranslation()(Container);
+const component = withTranslation()(Container);
 
 export {
-    translated_container as Container,
+    component as Container,
 };

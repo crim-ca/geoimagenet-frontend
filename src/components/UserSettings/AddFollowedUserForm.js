@@ -8,6 +8,7 @@ import {withTranslation} from '../../utils';
 import {TFunction} from 'react-i18next';
 import type {FollowedUser} from "../../Types";
 import {NotificationManager} from "react-notifications";
+import {compose} from "react-apollo";
 
 type Props = {
     save_user: (FollowedUser) => void,
@@ -91,6 +92,9 @@ class AddFollowedUserForm extends React.Component<Props, State> {
     }
 }
 
-const StyledComponent = withStyles(styles)(AddFollowedUserForm);
-const TranslatedComponent = withTranslation()(StyledComponent);
-export {TranslatedComponent as AddFollowedUserForm};
+const component = compose(
+    withStyles(styles),
+    withTranslation(),
+)(AddFollowedUserForm);
+
+export {component as AddFollowedUserForm};
