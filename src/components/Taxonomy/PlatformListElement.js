@@ -17,6 +17,7 @@ import type {TaxonomyClass} from "../../domain/entities";
 import type {UserInteractions} from "../../domain";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {TaxonomyStore} from "../../store/TaxonomyStore";
+import {withTaxonomyStore} from "../../store/HOCs";
 
 const StyledListItem = withStyles({
     root: {
@@ -110,7 +111,6 @@ class PlatformListElement extends Component<Props> {
                         <Collapse in={taxonomy_class.opened}>
                             <Classes classes={children}
                                      state_proxy={this.props.state_proxy}
-                                     taxonomy_store={this.props.taxonomy_store}
                                      user_interactions={this.props.user_interactions} />
                         </Collapse>)
                     : null
@@ -120,4 +120,6 @@ class PlatformListElement extends Component<Props> {
     }
 }
 
-export {PlatformListElement};
+const component = withTaxonomyStore(PlatformListElement);
+
+export {component as PlatformListElement};

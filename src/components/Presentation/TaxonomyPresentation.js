@@ -6,10 +6,13 @@ import {Link, Paper, Typography} from "@material-ui/core";
 import {Selector} from "../Taxonomy/Selector";
 import {Tree} from "../Taxonomy/Tree";
 import {withTranslation} from "../../utils";
-import {UserInteractions} from "../../domain";
-import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import {compose} from "react-apollo";
+import {withTaxonomyStore} from "../../store/HOCs";
+
+import type {UserInteractions} from "../../domain";
+import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {TFunction} from "react-i18next";
-import {TaxonomyStore} from "../../store/TaxonomyStore";
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
 type Props = {
     user_interactions: UserInteractions,
@@ -35,7 +38,6 @@ class TaxonomyPresentation extends React.Component<Props> {
                     {classes.length > 0
                         ? <Tree
                             state_proxy={state_proxy}
-                            taxonomy_store={taxonomy_store}
                             user_interactions={user_interactions}
                             taxonomy_classes={classes} />
                         : null}
@@ -45,5 +47,8 @@ class TaxonomyPresentation extends React.Component<Props> {
     }
 }
 
-const component = withTranslation()(TaxonomyPresentation);
+const component = compose(
+    withTranslation(),
+    withTaxonomyStore,
+)(TaxonomyPresentation);
 export {component as TaxonomyPresentation};

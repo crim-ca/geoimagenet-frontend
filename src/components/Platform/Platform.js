@@ -12,6 +12,7 @@ import {Container as FiltersContainer} from "../Map/Filters/Container";
 import {Container as LabelsContainer} from "../Map/LabelsChoice/Container";
 import {ActiveFiltersBox} from '../Map/ActiveFiltersBox';
 import type {TaxonomyStore} from "../../store/TaxonomyStore";
+import {withTaxonomyStore} from "../../store/HOCs";
 
 const PlatformContainer = withStyles(({values}) => ({
     root: {
@@ -66,14 +67,13 @@ class Platform extends Component<Props> {
                 <Sidebar
                     open_layers_store={this.props.open_layers_store}
                     state_proxy={this.props.state_proxy}
-                    taxonomy_store={this.props.taxonomy_store}
                     user_interactions={this.props.user_interactions}
                     store_actions={this.props.store_actions} />
             </PlatformContainer>
         );
     }
 }
-
+const component = withTaxonomyStore(Platform);
 export {
-    Platform
+    component as Platform
 };

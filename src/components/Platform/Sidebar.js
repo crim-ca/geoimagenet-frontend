@@ -49,10 +49,9 @@ type SidebarSectionData = {
     content: {},
 };
 
-const make_sidebar_sections: (UserInteractions, GeoImageNetStore, TaxonomyStore, StoreActions, OpenLayersStore, TFunction) => SidebarSectionData[] = (
+const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, OpenLayersStore, TFunction) => SidebarSectionData[] = (
     user_interactions,
     state_proxy,
-    taxonomy_store,
     store_actions,
     open_layers_store,
     t,
@@ -65,7 +64,6 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, TaxonomyStore,
                 <Viewer
                     refresh_source_by_status={user_interactions.refresh_source_by_status}
                     state_proxy={state_proxy}
-                    taxonomy_store={taxonomy_store}
                     user_interactions={user_interactions} />
             ),
         },
@@ -76,15 +74,7 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, TaxonomyStore,
                 <AnnotationBrowserContainer
                     user_interactions={user_interactions}
                     open_layers_store={open_layers_store}
-                    state_proxy={state_proxy}
-                    taxonomy_store={taxonomy_store}
-                    store={new AnnotationBrowserStore(
-                        GEOSERVER_URL,
-                        ANNOTATION_NAMESPACE,
-                        ANNOTATION_LAYER,
-                        state_proxy,
-                        taxonomy_store,
-                    )} />
+                    state_proxy={state_proxy} />
             ),
         },
         {
@@ -106,7 +96,6 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, TaxonomyStore,
 type Props = {
     state_proxy: GeoImageNetStore,
     store_actions: StoreActions,
-    taxonomy_store: TaxonomyStore,
     user_interactions: UserInteractions,
     open_layers_store: OpenLayersStore,
     t: TFunction,
@@ -132,7 +121,6 @@ class Sidebar extends React.Component<Props, State> {
         const sidebar_sections = make_sidebar_sections(
             this.props.user_interactions,
             this.props.state_proxy,
-            this.props.taxonomy_store,
             this.props.store_actions,
             this.props.open_layers_store,
             this.props.t);

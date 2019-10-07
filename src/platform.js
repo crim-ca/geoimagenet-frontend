@@ -23,12 +23,14 @@ import './img/icons/favicon.ico';
 import {theme} from './utils/react.js';
 import {NotificationContainer} from "react-notifications";
 import {captureException} from "@sentry/browser";
-import {GeoImageNetStore} from "./store/GeoImageNetStore";
 import {LoadingSplashCircle} from "./components/LoadingSplashCircle";
 import {ContextualMenuContainer} from "./components/ContextualMenu/ContextualMenuContainer";
 import {OpenLayersStore} from "./store/OpenLayersStore";
 import Collection from "ol/Collection";
-import {TaxonomyStore} from "./store/TaxonomyStore";
+import {state_proxy, taxonomy_store} from './store/instance_cache';
+
+import type {TaxonomyStore} from "./store/TaxonomyStore";
+import type {GeoImageNetStore} from "./store/GeoImageNetStore";
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
@@ -54,8 +56,8 @@ export class PlatformLoader {
 
     constructor(geoimagenet_api_endpoint: string, geoserver_endpoint: string, magpie_endpoint: string, ml_endpoint: string, i18next_instance: i18n) {
 
-        this.state_proxy = new GeoImageNetStore();
-        this.taxonomy_store = new TaxonomyStore(this.state_proxy);
+        this.state_proxy = state_proxy;
+        this.taxonomy_store = taxonomy_store;
         this.open_layers_store = new OpenLayersStore(new Collection());
         this.store_actions = new StoreActions(this.state_proxy, this.taxonomy_store);
         this.data_queries = new DataQueries(geoimagenet_api_endpoint, geoserver_endpoint, magpie_endpoint, ml_endpoint);
@@ -67,7 +69,6 @@ export class PlatformLoader {
             <Platform
                 open_layers_store={this.open_layers_store}
                 state_proxy={this.state_proxy}
-                taxonomy_store={this.taxonomy_store}
                 store_actions={this.store_actions}
                 user_interactions={this.user_interactions} />
         );

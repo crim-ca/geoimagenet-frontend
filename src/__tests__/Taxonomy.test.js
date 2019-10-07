@@ -66,7 +66,6 @@ class TestableTaxonomyViewer extends React.Component<Props> {
         return (
             <Viewer
                 state_proxy={state_proxy}
-                taxonomy_store={taxonomy_store}
                 user_interactions={user_interactions}
                 store_actions={store_actions}
                 refresh_source_by_status={refresh_source_callback_mock} />
@@ -96,7 +95,6 @@ describe('Taxonomy viewer', () => {
         const wrapper = mount(
             <TaxonomyPresentation
                 state_proxy={state_proxy}
-                taxonomy_store={taxonomy_store}
                 user_interactions={user_interactions} />
         );
         expect(wrapper.find(PresentationListElement).length).toBeGreaterThan(0);

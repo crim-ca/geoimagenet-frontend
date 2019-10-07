@@ -13,6 +13,8 @@ import type {UserInteractions} from "../../domain";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {TaxonomyStore} from "../../store/TaxonomyStore";
 import type {TFunction} from "react-i18next";
+import {compose} from "react-apollo";
+import {withTaxonomyStore} from "../../store/HOCs";
 
 const StyledList = withStyles({
     padding: {
@@ -81,7 +83,6 @@ class PresentationListElement extends Component<Props> {
                         <Collapse in={taxonomy_class.opened}>
                             <Tree taxonomy_classes={children}
                                   state_proxy={state_proxy}
-                                  taxonomy_store={taxonomy_store}
                                   user_interactions={user_interactions}
                                   t={t}/>
                         </Collapse>)
@@ -92,5 +93,8 @@ class PresentationListElement extends Component<Props> {
     }
 }
 
-const component = withTranslation()(PresentationListElement);
+const component = compose(
+    withTranslation(),
+    withTaxonomyStore,
+)(PresentationListElement);
 export {component as PresentationListElement};

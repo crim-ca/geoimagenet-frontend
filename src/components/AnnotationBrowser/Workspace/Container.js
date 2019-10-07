@@ -4,6 +4,7 @@ import React from 'react';
 import {observer} from 'mobx-react';
 
 import {PlatformListElement} from '../../Taxonomy/PlatformListElement';
+import {withTaxonomyStore} from "../../../store/HOCs";
 
 import type {TaxonomyClass} from "../../../domain/entities";
 import type {TaxonomyStore} from "../../../store/TaxonomyStore";
@@ -31,7 +32,6 @@ class Container extends React.Component<Props> {
                         <PlatformListElement user_interactions={this.props.user_interactions}
                                              state_proxy={this.props.state_proxy}
                                              taxonomy_class={taxonomy_class}
-                                             taxonomy_store={this.props.taxonomy_store}
                                              key={i} />
                     );
                 })}
@@ -39,5 +39,5 @@ class Container extends React.Component<Props> {
         );
     }
 }
-
-export {Container};
+const component = withTaxonomyStore(Container);
+export {component as Container};

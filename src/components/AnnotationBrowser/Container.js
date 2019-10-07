@@ -11,14 +11,13 @@ import {Container as WorkspaceContainer} from './Workspace/Container';
 import type {AnnotationBrowserStore} from "../../store/AnnotationBrowserStore";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {AnnotationStatus, BoundingBox} from "../../Types";
-import type {TaxonomyStore} from "../../store/TaxonomyStore";
 import type {UserInteractions} from "../../domain";
+import {withAnnotationBrowserStore} from "../../store/HOCs";
 
 type Props = {
-    store: AnnotationBrowserStore,
+    annotation_browser_store: AnnotationBrowserStore,
     state_proxy: GeoImageNetStore,
     user_interactions: UserInteractions,
-    taxonomy_store: TaxonomyStore,
     open_layers_store: OpenLayersStore,
 };
 
@@ -43,22 +42,26 @@ class Container extends React.Component<Props> {
     };
 
     render() {
+        const {annotation_browser_store: {page_number, total_pages, total_features, next_page, previous_page, current_page_content}} = this.props;
         return (
             <>
                 <WorkspaceContainer user_interactions={this.props.user_interactions}
-                                    state_proxy={this.props.state_proxy}
-                                    taxonomy_store={this.props.taxonomy_store} />
+                                    state_proxy={this.props.state_proxy} />
                 <AnnotationList
                     fit_view_to_bounding_box={this.navigate}
-                    annotations={this.props.store.current_page_content}
+                    annotations={current_page_content}
                     geoserver_url={GEOSERVER_URL}
                     state_proxy={this.props.state_proxy} />
-                <Paginator annotation_browser_store={this.props.store} />
+                <Paginator page_number={page_number}
+                           total_pages={total_pages}
+                           total_features={total_features}
+                           previous_page={previous_page}
+                           next_page={next_page} />
             </>
         );
     }
 }
-
+const component = withAnnotationBrowserStore(Container);
 export {
-    Container,
+    component as Container,
 };

@@ -9,6 +9,8 @@ import type {UserInteractions} from "../../domain";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {TFunction} from "react-i18next";
 import type {TaxonomyStore} from "../../store/TaxonomyStore";
+import {compose} from "react-apollo";
+import {withTaxonomyStore} from "../../store/HOCs";
 
 type Props = {
     t: TFunction,
@@ -37,7 +39,6 @@ class Viewer extends React.Component<Props> {
                           state_proxy={state_proxy} />
                 <Classes user_interactions={user_interactions}
                          state_proxy={state_proxy}
-                         taxonomy_store={taxonomy_store}
                          refresh_source_by_status={this.props.refresh_source_by_status}
                          classes={classes} />
             </React.Fragment>
@@ -45,6 +46,9 @@ class Viewer extends React.Component<Props> {
     }
 }
 
-const component = withTranslation()(Viewer);
+const component = compose(
+    withTranslation(),
+    withTaxonomyStore,
+)(Viewer);
 
 export {component as Viewer};

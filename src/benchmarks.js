@@ -17,8 +17,7 @@ import {ApolloProvider} from 'react-apollo';
 import './css/base.css';
 import 'react-notifications/lib/notifications.css';
 import './img/icons/favicon.ico';
-import {GeoImageNetStore} from "./store/GeoImageNetStore";
-import {TaxonomyStore} from "./store/TaxonomyStore";
+import {state_proxy, taxonomy_store} from './store/instance_cache';
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN
@@ -26,8 +25,6 @@ Sentry.init({
 
 addEventListener('DOMContentLoaded', async () => {
 
-    const state_proxy = new GeoImageNetStore();
-    const taxonomy_store = new TaxonomyStore(state_proxy);
     const store_actions = new StoreActions(state_proxy, taxonomy_store);
     const data_queries = new DataQueries(GEOIMAGENET_API_URL, GEOSERVER_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
     const user_interactions = new UserInteractions(store_actions, taxonomy_store, data_queries, i18n, state_proxy);

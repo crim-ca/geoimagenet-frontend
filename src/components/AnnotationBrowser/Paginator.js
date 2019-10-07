@@ -26,7 +26,11 @@ const style = (theme) => ({
     }
 });
 type Props = {
-    annotation_browser_store: AnnotationBrowserStore,
+    page_number: number,
+    total_pages: number,
+    total_features: number,
+    previous_page: () => void,
+    next_page: () => void,
     classes: {
         root: {},
         buttons: {},
@@ -36,26 +40,25 @@ type Props = {
 
 class Paginator extends React.Component<Props> {
     render() {
-        const {classes: {root, buttons}, annotation_browser_store, t} = this.props;
-        const {page_number, total_pages} = annotation_browser_store;
+        const {classes: {root, buttons}, t} = this.props;
         return (
             <div className={root}>
-                <Typography variant='body2'>{annotation_browser_store.total_features} annotations</Typography>
+                <Typography variant='body2'>{this.props.total_features} annotations</Typography>
                 <Typography variant='body2'>{t('annotations:pagination.page_info', {
-                    page_number: page_number,
-                    total_pages: total_pages,
+                    page_number: this.props.page_number,
+                    total_pages: this.props.total_pages,
                 })}</Typography>
                 <div className={buttons}>
                     <Button
                         color='primary'
                         variant='contained'
-                        disabled={page_number === 1}
-                        onClick={annotation_browser_store.previous_page}>{t('annotations:pagination.previous')}</Button>
+                        disabled={this.props.page_number === 1}
+                        onClick={this.props.previous_page}>{t('annotations:pagination.previous')}</Button>
                     <Button
                         color='primary'
                         variant='contained'
-                        disabled={page_number === total_pages}
-                        onClick={annotation_browser_store.next_page}>{t('annotations:pagination.next')}</Button>
+                        disabled={this.props.page_number === this.props.total_pages}
+                        onClick={this.props.next_page}>{t('annotations:pagination.next')}</Button>
                 </div>
             </div>
         );

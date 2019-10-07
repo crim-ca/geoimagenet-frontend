@@ -5,12 +5,10 @@ import {PlatformListElement} from './PlatformListElement.js';
 import type {TaxonomyClass} from "../../domain/entities";
 import type {UserInteractions} from "../../domain";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
 type Props = {
     classes: TaxonomyClass[],
     user_interactions: UserInteractions,
-    taxonomy_store: TaxonomyStore,
     state_proxy: GeoImageNetStore,
 };
 
@@ -24,7 +22,6 @@ class Classes extends Component<Props> {
                     <PlatformListElement key={i}
                                          taxonomy_class={taxonomy_class}
                                          state_proxy={this.props.state_proxy}
-                                         taxonomy_store={this.props.taxonomy_store}
                                          user_interactions={this.props.user_interactions} />
                 ))}
             </ul>

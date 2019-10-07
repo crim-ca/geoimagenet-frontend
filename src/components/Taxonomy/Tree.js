@@ -7,6 +7,7 @@ import type {UserInteractions} from '../../domain';
 import type {TaxonomyClass} from "../../domain/entities";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {TaxonomyStore} from "../../store/TaxonomyStore";
+import {withTaxonomyStore} from "../../store/HOCs";
 
 /**
  * The taxonomy tree should allow the user to navigate in a taxonomy's classes
@@ -31,7 +32,6 @@ class Tree extends Component<Props> {
                     <PresentationListElement key={i}
                                              taxonomy_class={taxonomy_class}
                                              state_proxy={state_proxy}
-                                             taxonomy_store={taxonomy_store}
                                              selected={taxonomy_store.selected_taxonomy_class_id === taxonomy_class.id}
                                              user_interactions={user_interactions} />
                 ))}
@@ -39,5 +39,5 @@ class Tree extends Component<Props> {
         );
     }
 }
-
-export {Tree};
+const component = withTaxonomyStore(Tree);
+export {component as Tree};
