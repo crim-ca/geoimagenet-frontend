@@ -148,22 +148,35 @@ export class UserInteractions {
     create_drawend_handler = (format_geojson: GeoJSON, annotation_layer: string) => async (event: Event) => {
         const {feature}: { feature: Feature } = event;
         const {selected_taxonomy_class_id} = this.state_proxy;
-        feature.setProperties({
-            taxonomy_class_id: selected_taxonomy_class_id,
-            image_name: this.state_proxy.current_annotation.image_title,
-        });
-        const payload = format_geojson.writeFeature(feature);
-        try {
-            const [new_feature_id] = await this.data_queries.create_geojson_feature(payload);
-            feature.setId(`${annotation_layer}.${new_feature_id}`);
-            if (this.state_proxy.logged_user) {
-                feature.set('annotator_id', this.state_proxy.logged_user.id);
+
+        const feature_wkt = this.wkt_format.writeFeature(feature);
+        const json = await this.data_queries.get_annotation_images(feature_wkt);
+
+        let image_title = this.state_proxy.current_annotation.image_title;
+        const image_feature = json.features.filter(f => f.properties.layer_name === image_title).pop();
+
+        if (image_feature === undefined) {
+            NotificationManager.warning('The annotation must be entirely located on an image.');
+            event.preventDefault();
+        } else {
+            feature.setProperties({
+                taxonomy_class_id: selected_taxonomy_class_id,
+                image_id: image_feature.properties.id,
+            });
+            const payload = format_geojson.writeFeature(feature);
+            try {
+                const [new_feature_id] = await this.data_queries.create_geojson_feature(payload);
+                feature.setId(`${annotation_layer}.${new_feature_id}`);
+                if (this.state_proxy.logged_user) {
+                    feature.set('annotator_id', this.state_proxy.logged_user.id);
+                }
+                this.store_actions.change_annotation_status_count(this.state_proxy.selected_taxonomy_class_id, ANNOTATION.STATUS.NEW, 1);
+                this.store_actions.invert_taxonomy_class_visibility(this.state_proxy.flat_taxonomy_classes[selected_taxonomy_class_id], true);
+            } catch (error) {
+                NotificationManager.error(error.message);
             }
-            this.store_actions.change_annotation_status_count(this.state_proxy.selected_taxonomy_class_id, ANNOTATION.STATUS.NEW, 1);
-            this.store_actions.invert_taxonomy_class_visibility(this.state_proxy.flat_taxonomy_classes[selected_taxonomy_class_id], true);
-        } catch (error) {
-            NotificationManager.error(error.message);
         }
+
         this.store_actions.end_annotation();
     };
 
@@ -203,6 +216,9 @@ export class UserInteractions {
      */
     feature_respects_its_original_image = async (feature: Feature, map: Map) => {
         const image_id = feature.get('image_id');
+        const format_wkt = new WKT();
+        const feature_wkt = format_wkt.writeFeature(feature);
+
         const this_satellite_image: SatelliteImage | typeof undefined = this.state_proxy.images_dictionary.find(image => {
             return image.id === image_id;
         });
@@ -212,25 +228,9 @@ export class UserInteractions {
                 'your platform administrator.');
             return false;
         }
-        const correct_image_layer = this_satellite_image.layer_name;
-        const coordinates_set: CoordinatesSet = feature.getGeometry().getCoordinates();
-        let passes_validation: boolean = true;
-        coordinates_set.forEach((coordinates: Coordinates) => {
-            coordinates.forEach(coordinate => {
-                const pixel = map.getPixelFromCoordinate(coordinate);
-                const layer_titles_under_this_pixel = [];
-                map.forEachLayerAtPixel(pixel, layer => {
-                    if (layer.type === 'TILE') {
-                        const title = layer.get('title');
-                        layer_titles_under_this_pixel.push(title);
-                    }
-                });
-                if (!layer_titles_under_this_pixel.some(title => title === correct_image_layer)) {
-                    passes_validation = false;
-                }
-            });
-        });
-        return passes_validation;
+
+        const json = await this.data_queries.get_annotation_images(feature_wkt);
+        return json.features.some(f => f.properties.id === image_id);
     };
 
     modifystart_handler = (event: Event) => {
