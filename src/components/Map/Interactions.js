@@ -157,42 +157,24 @@ export class Interactions {
          if we are clicks afterwards, verify that we are over the same image
          */
 
-        let layer_index = -1;
-
         const layers = [];
-        this.map.forEachLayerAtPixel(event.pixel, l => {
-            layers.push(l);
-        });
-
-        const at_least_one_layer_is_an_image = (element, index) => {
-            const layer_is_image = element.get('type') === CUSTOM_GEOIM_IMAGE_LAYER;
-            if (layer_is_image) {
-                layer_index = index;
-                return true;
-            }
-            return false;
+        const options = {
+            layerFilter: layer => layer.get('type') === CUSTOM_GEOIM_IMAGE_LAYER
         };
+        event.map.forEachLayerAtPixel(event.pixel, layer => {layers.push(layer)}, options);
 
-        if (!layers.some(at_least_one_layer_is_an_image)) {
+        if (!layers.length) {
             if (this.state_proxy.current_annotation.initialized) {
                 NotificationManager.warning('All corners of an annotation polygon must be on an image.');
-                return false;
+            } else {
+                NotificationManager.warning('You must select an image to begin creating annotations.');
             }
-            NotificationManager.warning('You must select an image to begin creating annotations.');
             return false;
         }
 
-        const first_layer = layers[layer_index];
+        const top_layer = layers.sort((a, b) => a.getZIndex() - b.getZIndex()).slice(-1)[0];
 
-        if (this.state_proxy.current_annotation.initialized) {
-            if (first_layer.get('title') === this.state_proxy.current_annotation.image_title) {
-                return true;
-            }
-            NotificationManager.warning('Annotations must be made on a single image, make sure that all polygon points are on the same image.');
-            return false;
-        }
-
-        this.user_interactions.start_annotation(first_layer.get('title'));
+        this.start_annotation(top_layer.get('title'));
 
         return true;
     };
