@@ -176,7 +176,7 @@ export class Interactions {
 
         const top_layer = layers.sort((a, b) => a.getZIndex() - b.getZIndex()).slice(-1)[0];
 
-        this.start_annotation(top_layer.get('title'));
+        this.user_interactions.start_annotation(top_layer.get('title'));
 
         return true;
     };

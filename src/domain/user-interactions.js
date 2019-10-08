@@ -16,6 +16,7 @@ import {typeof GeoJSON} from "ol/format";
 import {StoreActions} from "../store/StoreActions";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 import typeof {Feature, ModifyEvent} from "ol";
+import WKT from "ol/format/WKT"
 import {SatelliteImage, Taxonomy, TaxonomyClass} from "./entities";
 import type {FollowedUser, MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI} from "../Types";
 import {i18n} from '../utils';
@@ -62,6 +63,7 @@ export class UserInteractions {
         this.data_queries = data_queries;
         this.i18next_instance = i18next_instance;
         this.state_proxy = state_proxy;
+        this.wkt_format = new WKT();
 
         this.release_annotations = this.release_annotations.bind(this);
     }
@@ -216,8 +218,7 @@ export class UserInteractions {
      */
     feature_respects_its_original_image = async (feature: Feature, map: Map) => {
         const image_id = feature.get('image_id');
-        const format_wkt = new WKT();
-        const feature_wkt = format_wkt.writeFeature(feature);
+        const feature_wkt = this.wkt_format.writeFeature(feature);
 
         const this_satellite_image: SatelliteImage | typeof undefined = this.state_proxy.images_dictionary.find(image => {
             return image.id === image_id;
