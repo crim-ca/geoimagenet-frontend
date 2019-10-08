@@ -27,7 +27,7 @@ const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStor
     /**
      * if we're slicking on a single feature, or clicking in empty space (that is, features is null), we want the event to be handled normally
      */
-    if (features === null || features.length === 1) {
+    if (features === null || features.length === 1 || features.some(f => !f.get('id'))) {
         return true;
     }
     /**
@@ -119,7 +119,9 @@ export class Interactions {
             condition: this.draw_condition_callback
         });
 
+        this.draw.on('drawstart', () => this.select.setActive(false));
         this.draw.on('drawend', this.user_interactions.create_drawend_handler(this.geojson_format, this.annotation_layer));
+        this.draw.on('drawend', () => this.select.setActive(true));
         this.modify.on('modifystart', this.user_interactions.modifystart_handler);
         this.modify.on('modifyend', this.user_interactions.create_modifyend_handler(this.geojson_format, this.map));
 
