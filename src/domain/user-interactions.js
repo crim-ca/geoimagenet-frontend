@@ -201,7 +201,7 @@ export class UserInteractions {
      *   for every layer under the point
      *     reject the modification if the layer does not correspond to either image name of the image id
      */
-    feature_respects_its_original_image = (feature: Feature, map: Map) => {
+    feature_respects_its_original_image = async (feature: Feature, map: Map) => {
         const image_id = feature.get('image_id');
         const this_satellite_image: SatelliteImage | typeof undefined = this.state_proxy.images_dictionary.find(image => {
             return image.id === image_id;
@@ -245,33 +245,53 @@ export class UserInteractions {
      * the handler, when called, should verify that the geometry is over the same image as it was before.
      */
     create_modifyend_handler = (format_geojson: GeoJSON, map: Map) => async (event: ModifyEvent) => {
-        const modified_features = [];
+        const all_modified_features = [];
+        const modified_features_to_update = [];
+        const modified_features_to_reset = [];
+
         event.features.forEach((feature) => {
             if (feature.revision_ >= 1) {
-                modified_features.push(feature);
-                feature.revision_ = 0;
+                all_modified_features.push(feature);
             }
         });
 
-        modified_features.forEach((feature: Feature, index: number) => {
-            if (!this.feature_respects_its_original_image(feature, map)) {
-                // feature is not ok, reset it and remove it from the modified features
-                feature.getGeometry().setCoordinates(this.original_coordinates[feature.getId()]);
-                modified_features.splice(index, 1);
-                NotificationManager.warning('An annotation must be wholly contained in a single image, ' +
-                    'you are trying to make a coordinate go outside of the original image.');
+        await Promise.all(all_modified_features.map(async (feature: Feature) => {
+            let valid = await this.feature_respects_its_original_image(feature, map);
+            if (!valid) {
+                modified_features_to_reset.push(feature);
+            } else {
+                modified_features_to_update.push(feature);
             }
+        }));
 
-        });
+        const reset_feature = feature => {
+            // feature is not ok, reset it and remove it from the modified features
+            feature.getGeometry().setCoordinates(this.original_coordinates[feature.getId()]);
+        };
 
-        if (modified_features.length > 0) {
-            const payload = format_geojson.writeFeatures(modified_features);
+        if (modified_features_to_reset.length > 0) {
+            modified_features_to_reset.forEach((feature) => {
+                reset_feature(feature);
+            });
+            NotificationManager.warning('An annotation must be wholly contained in a single image, ' +
+                'you are trying to make a coordinate go outside of the original image.');
+        }
+
+        if (modified_features_to_update.length > 0) {
+            const payload = format_geojson.writeFeatures(modified_features_to_update);
             try {
                 await this.data_queries.modify_geojson_features(payload);
             } catch (error) {
+                modified_features_to_update.forEach(reset_feature);
                 NotificationManager.error(error.message);
             }
         }
+
+        // reset modification status
+        all_modified_features.forEach(feature => {
+            feature.revision_ = 0;
+            delete this.original_coordinates[feature.getId()];
+        });
     };
 
     ask_expertise_for_features = async (feature_ids: number[], features: Feature[]) => {
