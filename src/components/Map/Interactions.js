@@ -127,13 +127,16 @@ export class Interactions {
 
         autorun(() => {
             switch (this.state_proxy.mode) {
+                // Before adding an interaction, remove it or else it could be added twice
                 case MODE.CREATION:
                     if (this.state_proxy.selected_taxonomy_class_id > 0) {
+                        this.map.removeInteraction(this.draw);
                         this.map.addInteraction(this.draw);
                     }
                     this.map.removeInteraction(this.modify);
                     break;
                 case MODE.MODIFY:
+                    this.map.removeInteraction(this.modify);
                     this.map.addInteraction(this.modify);
                     this.map.removeInteraction(this.draw);
                     break;
@@ -158,7 +161,6 @@ export class Interactions {
          if we are the first click, only verify that we are over an image layer
          if we are clicks afterwards, verify that we are over the same image
          */
-
         const layers = [];
         const options = {
             layerFilter: layer => layer.get('type') === CUSTOM_GEOIM_IMAGE_LAYER
