@@ -4,6 +4,7 @@ import {action, computed, observable} from "mobx";
 
 import type {GeoImageNetStore} from "./GeoImageNetStore";
 import type {TaxonomyClass} from "../domain/entities";
+import type {LeafClassGroup} from "../Types";
 
 export class TaxonomyStore {
 
@@ -74,6 +75,25 @@ export class TaxonomyStore {
         taxonomy_class.opened = opened;
     }
 
+    make_class_path(original_taxonomy_class: TaxonomyClass): string {
+        /**
+         * Clunky reassignment so that flow does not whine on reassigning to the passed taxonomy_class parameter
+         */
+        let taxonomy_class = original_taxonomy_class;
+        let path = '';
+        let parent_id = taxonomy_class.parent_id;
+        if (parent_id === null) {
+            return '';
+        }
+        do {
+            let parent: TaxonomyClass = this.flat_taxonomy_classes[parent_id];
+            path += `${parent.name_en} / `;
+            taxonomy_class = parent;
+            parent_id = taxonomy_class.parent_id;
+        } while (parent_id !== null);
+        return path;
+    }
+
     /**
      * there is a complication here, being that when pinning a parent class (that is, a class that have children, being a branch in the taxonomy)
      * we want to display only the children
@@ -82,10 +102,34 @@ export class TaxonomyStore {
      *
      * as such, we organize the data in groups of leaf classes, all with the same parents
      */
+    @computed get leaf_class_groups(): LeafClassGroup[] {
+        const leaf_class_groups_dict = {};
+        this.leaf_pinned_classes.forEach((leaf_class: TaxonomyClass) => {
+            const path = this.make_class_path(leaf_class);
+            if (leaf_class_groups_dict[path] === undefined) {
+                leaf_class_groups_dict[path] = [leaf_class];
+            } else {
+                leaf_class_groups_dict[path].push(leaf_class);
+            }
+        });
+        return Object.keys(leaf_class_groups_dict).map(key => {
+            const classes = leaf_class_groups_dict[key];
+            return {
+                path: key,
+                children: classes,
+            };
+        });
+    }
+
     @computed get leaf_pinned_classes(): TaxonomyClass[] {
+        return this.flat_classes_as_array.filter((taxonomy_class: TaxonomyClass) => {
+            return (taxonomy_class.pinned === true) && (taxonomy_class.children.length === 0);
+        });
+    }
+
+    @computed get flat_classes_as_array(): TaxonomyClass[] {
         return Object.keys(this.flat_taxonomy_classes)
-            .map(class_id => this.flat_taxonomy_classes[class_id])
-            .filter(taxonomy_class => taxonomy_class.pinned === true);
+            .map(class_id => this.flat_taxonomy_classes[class_id]);
     }
 
     @computed get selected_taxonomy_class_id(): number {

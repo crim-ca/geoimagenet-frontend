@@ -137,3 +137,8 @@ export type WfsResponse = {
 export type Job = {
     status: string,
 };
+
+export type LeafClassGroup = {
+    path: string,
+    children: TaxonomyClass[],
+};

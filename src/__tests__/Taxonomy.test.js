@@ -41,6 +41,9 @@ global.requestAnimationFrame = function (callback) {
 global.cancelAnimationFrame = function (id) {
     clearTimeout(id);
 };
+global.GEOSERVER_URL = '';
+global.ANNOTATION_NAMESPACE = '';
+global.ANNOTATION_LAYER = '';
 global.GEOIMAGENET_API_URL = '';
 copyProps(window, global);
 
