@@ -5,9 +5,9 @@ import {Component} from 'react';
 import {Collapse, List, ListItem} from '@material-ui/core';
 import React from 'react';
 import {withStyles} from '@material-ui/core';
+import {withTranslation} from '../../utils';
 
 import {AnnotationCounts} from './AnnotationCounts';
-import {TaxonomyClassLabel} from './TaxonomyClassLabel';
 import {TaxonomyClassActions} from './TaxonomyClassActions';
 
 import {Classes} from './Classes';
@@ -18,6 +18,8 @@ import type {UserInteractions} from "../../domain";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {TaxonomyStore} from "../../store/TaxonomyStore";
 import {withTaxonomyStore} from "../../store/HOCs";
+import {compose} from "react-apollo";
+import {TFunction} from 'react-i18next';
 
 const StyledListItem = withStyles({
     root: {
@@ -48,6 +50,7 @@ type Props = {
     user_interactions: UserInteractions,
     taxonomy_store: TaxonomyStore,
     state_proxy: GeoImageNetStore,
+    t: TFunction,
 };
 
 /**
@@ -81,7 +84,7 @@ class PlatformListElement extends Component<Props> {
 
     render() {
 
-        const {taxonomy_class, state_proxy, taxonomy_store} = this.props;
+        const {taxonomy_class, state_proxy, taxonomy_store, t} = this.props;
         const {children} = taxonomy_class;
 
         const label_click_callback = children && children.length > 0
@@ -95,7 +98,7 @@ class PlatformListElement extends Component<Props> {
                                 selected={this.props.taxonomy_store.selected_taxonomy_class_id === taxonomy_class.id}
                                 button>
                     <StyledLabelAndCountSpan>
-                        <TaxonomyClassLabel label={taxonomy_class.name_en} />
+                        <span>{t(`taxonomy_classes:${taxonomy_class.id}`)}</span>
                         <AnnotationCounts
                             name_en={taxonomy_class.name_en}
                             counts={taxonomy_class.counts}
@@ -120,6 +123,9 @@ class PlatformListElement extends Component<Props> {
     }
 }
 
-const component = withTaxonomyStore(PlatformListElement);
+const component = compose(
+    withTaxonomyStore,
+    withTranslation(),
+)(PlatformListElement);
 
 export {component as PlatformListElement};

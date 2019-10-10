@@ -4,7 +4,6 @@ import {observer} from "mobx-react";
 import React, {Component} from "react";
 import {Collapse, List, ListItem, withStyles} from "@material-ui/core";
 import {Tree} from "./Tree";
-import {TaxonomyClassLabel} from './TaxonomyClassLabel';
 import {TaxonomyClass} from "../../domain/entities";
 import {AnnotationCounts} from "./AnnotationCounts";
 import {withTranslation} from '../../utils';
@@ -62,8 +61,6 @@ class PresentationListElement extends Component<Props> {
         const label_click_callback = children && children.length > 0
             ? make_toggle_callback(taxonomy_class)
             : null;
-
-        const label = t(`taxonomy_classes:${taxonomy_class.id}`);
         return (
             <StyledList>
                 <StyledListItem className='taxonomy_class_list_element'
@@ -71,7 +68,7 @@ class PresentationListElement extends Component<Props> {
                                 selected={selected}
                                 button>
                     <StyledLabelAndCountSpan>
-                        <TaxonomyClassLabel label={label}/>
+                        <span>{t(`taxonomy_classes:${taxonomy_class.id}`)}</span>
                         <AnnotationCounts
                             name_en={taxonomy_class.name_en}
                             counts={taxonomy_class.counts}

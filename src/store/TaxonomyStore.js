@@ -1,6 +1,7 @@
 // @flow strict
 
 import {action, computed, observable} from "mobx";
+import {i18n} from '../utils';
 
 import type {GeoImageNetStore} from "./GeoImageNetStore";
 import type {TaxonomyClass} from "../domain/entities";
@@ -86,8 +87,9 @@ export class TaxonomyStore {
             return '';
         }
         do {
-            let parent: TaxonomyClass = this.flat_taxonomy_classes[parent_id];
-            path = `${parent.name_en}/` + path;
+            const parent: TaxonomyClass = this.flat_taxonomy_classes[parent_id];
+            const label = i18n.t(`taxonomy_classes:${parent.id}`);
+            path = `${label}/${path}`;
             taxonomy_class = parent;
             parent_id = taxonomy_class.parent_id;
         } while (parent_id !== null);
