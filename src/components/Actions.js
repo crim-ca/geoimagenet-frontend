@@ -16,7 +16,6 @@ import {
     faCheck,
     faTimes
 } from '@fortawesome/free-solid-svg-icons';
-import PropTypes from 'prop-types';
 import {StoreActions} from "../store/StoreActions";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 

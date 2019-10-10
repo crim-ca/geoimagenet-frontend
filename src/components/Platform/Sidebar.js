@@ -74,6 +74,7 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, 
                 <AnnotationBrowserContainer
                     user_interactions={user_interactions}
                     open_layers_store={open_layers_store}
+                    store_actions={store_actions}
                     state_proxy={state_proxy} />
             ),
         },
@@ -126,8 +127,6 @@ class Sidebar extends React.Component<Props, State> {
             this.props.t);
         return (
             <SidebarSection>
-                <Actions state_proxy={this.props.state_proxy}
-                         store_actions={this.props.store_actions} />
                 <SidebarBottom>
                     {
                         sidebar_sections.map((section, i) => (

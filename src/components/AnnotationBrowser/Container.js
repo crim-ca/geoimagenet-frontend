@@ -2,24 +2,27 @@
 
 import React from 'react';
 import {observer} from 'mobx-react';
+import {compose} from "react-apollo";
+import withStyles from "@material-ui/core/styles/withStyles";
 
 import {Paginator} from './Paginator';
 import {AnnotationList} from './AnnotationList';
 import {OpenLayersStore} from "../../store/OpenLayersStore";
 import {Container as WorkspaceContainer} from './Workspace/Container';
+import {withAnnotationBrowserStore} from "../../store/HOCs";
+import {Actions} from "../Actions";
 
 import type {AnnotationBrowserStore} from "../../store/AnnotationBrowserStore";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {AnnotationStatus, BoundingBox} from "../../Types";
 import type {UserInteractions} from "../../domain";
-import {withAnnotationBrowserStore} from "../../store/HOCs";
-import {compose} from "react-apollo";
-import withStyles from "@material-ui/core/styles/withStyles";
+import type {StoreActions} from "../../store/StoreActions";
 
 type Props = {
     annotation_browser_store: AnnotationBrowserStore,
     state_proxy: GeoImageNetStore,
     user_interactions: UserInteractions,
+    store_actions: StoreActions,
     open_layers_store: OpenLayersStore,
     classes: {
         root: {},
@@ -61,6 +64,8 @@ class Container extends React.Component<Props> {
             <div className={this.props.classes.root}>
                 <WorkspaceContainer user_interactions={this.props.user_interactions}
                                     state_proxy={this.props.state_proxy} />
+                <Actions state_proxy={this.props.state_proxy}
+                         store_actions={this.props.store_actions} />
                 <hr />
                 <AnnotationList
                     fit_view_to_bounding_box={this.navigate}

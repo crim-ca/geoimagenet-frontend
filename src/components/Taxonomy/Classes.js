@@ -17,7 +17,7 @@ type Props = {
 };
 const style = theme => ({
     root: {
-        '& ul:not(:first-child)': {
+        '& ul': {
             paddingLeft: theme.values.gutterMedium,
         },
     },
