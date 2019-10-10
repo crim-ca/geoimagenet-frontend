@@ -87,7 +87,7 @@ export class TaxonomyStore {
         }
         do {
             let parent: TaxonomyClass = this.flat_taxonomy_classes[parent_id];
-            path += `${parent.name_en} / `;
+            path = `${parent.name_en}/` + path;
             taxonomy_class = parent;
             parent_id = taxonomy_class.parent_id;
         } while (parent_id !== null);

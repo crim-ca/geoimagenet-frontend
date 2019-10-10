@@ -79,6 +79,7 @@ export const theme = createMuiTheme({
         icon_grey: 'rgba(113, 113, 113, 1)',
         turquoise: turquoise_ish,
         barelyWhite: 'rgba(255, 255, 255, 0.85)',
+        gray: 'rgba(0, 0, 0, 0.5)',
         lightGray: 'rgba(0, 0, 0, 0.1)',
         new: 'rgba(0, 0, 0, 0.1)',
         pre_released: 'rgba(146, 209, 139, 0.9)',
@@ -103,6 +104,15 @@ export const theme = createMuiTheme({
             body1: {
                 margin: `${GUTTER_SMALL} 0`
             }
+        },
+        MuiExpansionPanel: {
+            root: {
+                padding: 0,
+                '&$expanded': {
+                    margin: 0,
+                    padding: 0,
+                }
+            },
         },
     },
 });

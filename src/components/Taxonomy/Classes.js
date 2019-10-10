@@ -5,29 +5,39 @@ import {PlatformListElement} from './PlatformListElement.js';
 import type {TaxonomyClass} from "../../domain/entities";
 import type {UserInteractions} from "../../domain";
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import withStyles from "@material-ui/core/styles/withStyles";
 
 type Props = {
-    classes: TaxonomyClass[],
+    taxonomy_classes: TaxonomyClass[],
     user_interactions: UserInteractions,
     state_proxy: GeoImageNetStore,
+    classes: {
+        root: {},
+    },
 };
-
+const style = theme => ({
+    root: {
+        '& ul:not(:first-child)': {
+            paddingLeft: theme.values.gutterMedium,
+        },
+    },
+});
 @observer
-class Classes extends Component<Props> {
+class TaxonomyClasses extends Component<Props> {
 
     render() {
         return (
-            <ul>
-                {this.props.classes.map((taxonomy_class, i) => (
+            <div className={this.props.classes.root}>
+                {this.props.taxonomy_classes.map((taxonomy_class, i) => (
                     <PlatformListElement key={i}
                                          taxonomy_class={taxonomy_class}
                                          state_proxy={this.props.state_proxy}
                                          user_interactions={this.props.user_interactions} />
                 ))}
-            </ul>
+            </div>
         );
     }
 }
 
-
-export {Classes};
+const component = withStyles(style)(TaxonomyClasses);
+export {component as Classes};

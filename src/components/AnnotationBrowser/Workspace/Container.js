@@ -28,14 +28,18 @@ class Container extends React.Component<Props> {
     render() {
         return (
             <>
-                {this.props.taxonomy_store.leaf_class_groups.map((class_group: leafClassGroupEntity, i) => {
-                    return (
-                        <LeafClassGroup key={i}
-                                        class_group={class_group}
-                                        state_proxy={this.props.state_proxy}
-                                        user_interactions={this.props.user_interactions} />
-                    );
-                })}
+                {this.props.taxonomy_store.leaf_class_groups
+                    .sort((class_group_left: leafClassGroupEntity, class_group_right: leafClassGroupEntity) => {
+                        return class_group_left.path.localeCompare(class_group_right.path);
+                    })
+                    .map((class_group: leafClassGroupEntity, i) => {
+                        return (
+                            <LeafClassGroup key={i}
+                                            class_group={class_group}
+                                            state_proxy={this.props.state_proxy}
+                                            user_interactions={this.props.user_interactions} />
+                        );
+                    })}
             </>
         );
     }

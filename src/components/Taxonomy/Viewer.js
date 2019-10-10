@@ -40,7 +40,7 @@ class Viewer extends React.Component<Props> {
                 <Classes user_interactions={user_interactions}
                          state_proxy={state_proxy}
                          refresh_source_by_status={this.props.refresh_source_by_status}
-                         classes={classes} />
+                         taxonomy_classes={classes} />
             </React.Fragment>
         );
     }

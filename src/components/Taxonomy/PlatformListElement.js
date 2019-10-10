@@ -109,7 +109,7 @@ class PlatformListElement extends Component<Props> {
                 {children
                     ? (
                         <Collapse in={taxonomy_class.opened}>
-                            <Classes classes={children}
+                            <Classes taxonomy_classes={children}
                                      state_proxy={this.props.state_proxy}
                                      user_interactions={this.props.user_interactions} />
                         </Collapse>)

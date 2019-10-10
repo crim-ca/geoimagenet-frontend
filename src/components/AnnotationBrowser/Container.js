@@ -13,13 +13,27 @@ import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {AnnotationStatus, BoundingBox} from "../../Types";
 import type {UserInteractions} from "../../domain";
 import {withAnnotationBrowserStore} from "../../store/HOCs";
+import {compose} from "react-apollo";
+import withStyles from "@material-ui/core/styles/withStyles";
 
 type Props = {
     annotation_browser_store: AnnotationBrowserStore,
     state_proxy: GeoImageNetStore,
     user_interactions: UserInteractions,
     open_layers_store: OpenLayersStore,
+    classes: {
+        root: {},
+    },
 };
+const style = theme => ({
+    root: {
+        '& hr': {
+            margin: `${theme.values.gutterMedium} -${theme.values.gutterMedium}`,
+            borderTop: `1px solid ${theme.colors.turquoise}`,
+            border: '0',
+        },
+    },
+});
 
 @observer
 class Container extends React.Component<Props> {
@@ -44,9 +58,10 @@ class Container extends React.Component<Props> {
     render() {
         const {annotation_browser_store: {page_number, total_pages, total_features, next_page, previous_page, current_page_content}} = this.props;
         return (
-            <>
+            <div className={this.props.classes.root}>
                 <WorkspaceContainer user_interactions={this.props.user_interactions}
                                     state_proxy={this.props.state_proxy} />
+                <hr />
                 <AnnotationList
                     fit_view_to_bounding_box={this.navigate}
                     annotations={current_page_content}
@@ -57,11 +72,16 @@ class Container extends React.Component<Props> {
                            total_features={total_features}
                            previous_page={previous_page}
                            next_page={next_page} />
-            </>
+            </div>
         );
     }
 }
-const component = withAnnotationBrowserStore(Container);
+
+const component = compose(
+    withStyles(style),
+    withAnnotationBrowserStore,
+)(Container);
+
 export {
     component as Container,
 };
