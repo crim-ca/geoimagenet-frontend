@@ -316,7 +316,7 @@ export const PresentationContainer = withStyles(({values}) => ({
         alignItems: 'baseline',
         justifyContent: 'flex-end',
         flexDirection: 'row',
-        fontSize: '1.5em',
+        fontSize: '1.5rem',
         lineHeight: '24px',
         '& a': {
             color: 'white',

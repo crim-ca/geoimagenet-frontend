@@ -26,7 +26,7 @@ const style = theme => ({
     },
     span: {
         color: theme.colors.gray,
-        fontSize: '0.9em',
+        fontSize: '0.9rem',
         fontStyle: 'italic',
     },
 });

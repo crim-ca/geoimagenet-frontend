@@ -1,6 +1,14 @@
-// @flow
+// @flow strict
+
 import React from 'react';
 import ReactDOM from 'react-dom';
+
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route
+} from 'react-router-dom';
+
 import * as Sentry from '@sentry/browser';
 import {CssBaseline, MuiThemeProvider} from '@material-ui/core';
 
@@ -31,6 +39,13 @@ import {state_proxy, taxonomy_store} from './store/instance_cache';
 
 import type {TaxonomyStore} from "./store/TaxonomyStore";
 import type {GeoImageNetStore} from "./store/GeoImageNetStore";
+import {ThemedComponent} from "./utils/react";
+import {ApolloProvider} from "react-apollo";
+import {PresentationContainer} from "./components/Presentation/Presentation";
+import {create_client} from "./utils/apollo";
+import {Datasets} from "./components/Datasets";
+import {Models} from "./components/Models";
+import {Benchmarks} from "./components/Benchmarks";
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
@@ -66,11 +81,35 @@ export class PlatformLoader {
 
     make_platform() {
         return (
-            <Platform
-                open_layers_store={this.open_layers_store}
-                state_proxy={this.state_proxy}
-                store_actions={this.store_actions}
-                user_interactions={this.user_interactions} />
+            <Switch>
+                <Route path='/platform'>
+                    <Platform
+                        open_layers_store={this.open_layers_store}
+                        state_proxy={this.state_proxy}
+                        store_actions={this.store_actions}
+                        user_interactions={this.user_interactions} />
+                </Route>
+                <Route path='/datasets'>
+                    <Datasets
+                        state_proxy={this.state_proxy} />
+                </Route>
+                <Route path='/models'>
+                    <Models model_upload_instructions_url={THELPER_MODEL_UPLOAD_INSTRUCTIONS} />
+                </Route>
+                <Route path='/benchmarks'><Benchmarks /></Route>
+                <Route path='/'>
+                    <ThemedComponent>
+                        <div style={{height: '100%'}}>
+                            <PresentationContainer
+                                state_proxy={this.state_proxy}
+                                contact_email={CONTACT_EMAIL}
+                                user_interactions={this.user_interactions} />
+                            <NotificationContainer />
+                        </div>
+                    </ThemedComponent>
+                </Route>
+            </Switch>
+
         );
     }
 
@@ -118,14 +157,20 @@ export class PlatformLoader {
             captureException(e);
         }
 
+        const client = create_client(GRAPHQL_ENDPOINT);
+
         ReactDOM.render(
-            <MuiThemeProvider theme={theme}>
-                <CssBaseline />
-                {this.make_layout()}
-                <DialogContainer />
-                <NotificationContainer />
-                <ContextualMenuContainer />
-            </MuiThemeProvider>,
+            <Router>
+                <MuiThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <ApolloProvider client={client}>
+                        {this.make_layout()}
+                    </ApolloProvider>
+                    <DialogContainer />
+                    <NotificationContainer />
+                    <ContextualMenuContainer />
+                </MuiThemeProvider>
+            </Router>,
             div
         );
     }

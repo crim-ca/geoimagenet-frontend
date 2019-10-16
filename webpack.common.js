@@ -5,14 +5,9 @@ const webpack = require('webpack');
 
 module.exports = {
     entry: {
-        presentation: './src/presentation.js',
-        platform: './src/platform.js',
-        datasets: './src/datasets.js',
-        models: './src/models.js',
-        benchmarks: './src/benchmarks.js',
+        home: './src/home.js',
     },
     output: {
-        filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
@@ -31,28 +26,7 @@ module.exports = {
         }),
         new CleanWebpackPlugin(['dist/*']),
         new HtmlWebpackPlugin({
-            title: 'Presentation',
-            chunks: ['presentation'],
-        }),
-        new HtmlWebpackPlugin({
-            title: 'Platform',
-            filename: 'platform.html',
-            chunks: ['platform'],
-        }),
-        new HtmlWebpackPlugin({
-            title: 'Datasets',
-            filename: 'datasets.html',
-            chunks: ['datasets'],
-        }),
-        new HtmlWebpackPlugin({
-            title: 'Models',
-            filename: 'models.html',
-            chunks: ['models'],
-        }),
-        new HtmlWebpackPlugin({
-            title: 'Benchmarks',
-            filename: 'benchmarks.html',
-            chunks: ['benchmarks'],
+            title: 'GeoImageNet'
         }),
     ],
     module: {
