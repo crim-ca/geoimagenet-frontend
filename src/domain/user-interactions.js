@@ -145,7 +145,7 @@ export class UserInteractions {
      * Launch the creation of a new annotation. This should also update the "new" annotations count of the relevant
      * taxonomy class.
      */
-    create_drawend_handler = (format_geojson: GeoJSON, format_wkt: WKT, annotation_layer: string) => async (event: Event) => {
+    create_drawend_handler = (format_geojson: GeoJSON, wkt_format: WKT, annotation_layer: string) => async (event: Event) => {
         const {feature}: { feature: Feature } = event;
         const {selected_taxonomy_class_id} = this.state_proxy;
 
