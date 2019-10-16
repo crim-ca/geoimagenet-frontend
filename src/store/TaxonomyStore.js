@@ -39,12 +39,6 @@ export class TaxonomyStore {
                 this.toggle_pinned_class(c, taxonomy_class.pinned);
             });
         }
-        /**
-         * When we are pinning a class, we need to see the related annotations, so override the visibility
-         */
-        if (taxonomy_class.pinned === true) {
-            this.invert_taxonomy_class_visibility(taxonomy_class, true);
-        }
     }
 
     /**
