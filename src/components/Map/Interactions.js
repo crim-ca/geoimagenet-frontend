@@ -10,6 +10,7 @@ import {NotificationManager} from "react-notifications";
 
 import typeof Map from 'ol/Map.js';
 import GeoJSON from "ol/format/GeoJSON.js";
+import WKT from "ol/format/WKT.js";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from "../../domain";
 import typeof Event from 'ol/events/Event.js';
@@ -70,6 +71,7 @@ export class Interactions {
     user_interactions: UserInteractions;
     open_layers_store: OpenLayersStore;
     geojson_format: GeoJSON;
+    wkt_format: WKT;
     annotation_layer: string;
     draw: Draw;
     modify: Modify;
@@ -81,6 +83,7 @@ export class Interactions {
         user_interactions: UserInteractions,
         open_layers_store: OpenLayersStore,
         geojson_format: GeoJSON,
+        wkt_format: WKT,
         annotation_layer: string,
     ) {
         this.map = map;
@@ -88,6 +91,7 @@ export class Interactions {
         this.user_interactions = user_interactions;
         this.open_layers_store = open_layers_store;
         this.geojson_format = geojson_format;
+        this.wkt_format = wkt_format;
         this.annotation_layer = annotation_layer;
 
         const layers = Object.keys(this.state_proxy.annotations_layers).map(key => {
@@ -120,10 +124,10 @@ export class Interactions {
         });
 
         this.draw.on('drawstart', () => this.select.setActive(false));
-        this.draw.on('drawend', this.user_interactions.create_drawend_handler(this.geojson_format, this.annotation_layer));
+        this.draw.on('drawend', this.user_interactions.create_drawend_handler(this.geojson_format, this.wkt_format, this.annotation_layer));
         this.draw.on('drawend', () => this.select.setActive(true));
         this.modify.on('modifystart', this.user_interactions.modifystart_handler);
-        this.modify.on('modifyend', this.user_interactions.create_modifyend_handler(this.geojson_format, this.map));
+        this.modify.on('modifyend', this.user_interactions.create_modifyend_handler(this.geojson_format, this.wkt_format, this.map));
 
         autorun(() => {
             switch (this.state_proxy.mode) {

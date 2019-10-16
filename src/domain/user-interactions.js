@@ -12,11 +12,10 @@ import {DataQueries} from "./data-queries";
 
 import {typeof Map} from "ol/Map";
 import {typeof Event} from "ol/events";
-import {typeof GeoJSON} from "ol/format";
+import typeof {GeoJSON, WKT} from "ol/format";
 import {StoreActions} from "../store/StoreActions";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 import typeof {Feature, ModifyEvent} from "ol";
-import WKT from "ol/format/WKT"
 import {SatelliteImage, Taxonomy, TaxonomyClass} from "./entities";
 import type {FollowedUser, MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI} from "../Types";
 import {i18n} from '../utils';
@@ -63,7 +62,6 @@ export class UserInteractions {
         this.data_queries = data_queries;
         this.i18next_instance = i18next_instance;
         this.state_proxy = state_proxy;
-        this.wkt_format = new WKT();
 
         this.release_annotations = this.release_annotations.bind(this);
     }
@@ -147,11 +145,11 @@ export class UserInteractions {
      * Launch the creation of a new annotation. This should also update the "new" annotations count of the relevant
      * taxonomy class.
      */
-    create_drawend_handler = (format_geojson: GeoJSON, annotation_layer: string) => async (event: Event) => {
+    create_drawend_handler = (format_geojson: GeoJSON, format_wkt: WKT, annotation_layer: string) => async (event: Event) => {
         const {feature}: { feature: Feature } = event;
         const {selected_taxonomy_class_id} = this.state_proxy;
 
-        const feature_wkt = this.wkt_format.writeFeature(feature);
+        const feature_wkt = wkt_format.writeFeature(feature);
         const json = await this.data_queries.get_annotation_images(feature_wkt);
 
         let image_title = this.state_proxy.current_annotation.image_title;
@@ -216,9 +214,9 @@ export class UserInteractions {
      *   for every layer under the point
      *     reject the modification if the layer does not correspond to either image name of the image id
      */
-    feature_respects_its_original_image = async (feature: Feature, map: Map) => {
+    feature_respects_its_original_image = async (feature: Feature, wkt_format: WKT, map: Map) => {
         const image_id = feature.get('image_id');
-        const feature_wkt = this.wkt_format.writeFeature(feature);
+        const feature_wkt = wkt_format.writeFeature(feature);
 
         const this_satellite_image: SatelliteImage | typeof undefined = this.state_proxy.images_dictionary.find(image => {
             return image.id === image_id;
@@ -245,7 +243,7 @@ export class UserInteractions {
      *
      * the handler, when called, should verify that the geometry is over the same image as it was before.
      */
-    create_modifyend_handler = (format_geojson: GeoJSON, map: Map) => async (event: ModifyEvent) => {
+    create_modifyend_handler = (format_geojson: GeoJSON, format_wkt: WKT, map: Map) => async (event: ModifyEvent) => {
         const all_modified_features = [];
         const modified_features_to_update = [];
         const modified_features_to_reset = [];
@@ -257,7 +255,7 @@ export class UserInteractions {
         });
 
         await Promise.all(all_modified_features.map(async (feature: Feature) => {
-            let valid = await this.feature_respects_its_original_image(feature, map);
+            let valid = await this.feature_respects_its_original_image(feature, format_wkt, map);
             if (!valid) {
                 modified_features_to_reset.push(feature);
             } else {

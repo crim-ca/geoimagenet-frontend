@@ -16,7 +16,7 @@ import {toStringHDMS} from 'ol/coordinate';
 import VectorSource from 'ol/source/Vector';
 import {bbox} from 'ol/loadingstrategy';
 import {Circle, Fill, Stroke, Style, Text} from 'ol/style';
-import {GeoJSON, WMSCapabilities} from 'ol/format';
+import {GeoJSON, WMSCapabilities, WKT} from 'ol/format';
 import TileLayer from 'ol/layer/Tile';
 import {BingMaps, Cluster, OSM, TileWMS} from 'ol/source';
 import TileGrid from 'ol/tilegrid/TileGrid';
@@ -160,6 +160,11 @@ export class MapManager {
     formatGeoJson: GeoJSON;
 
     /**
+     * @private
+     */
+    formatWKT: WKT;
+
+    /**
      * Reference to the OL map instance.
      * @private
      * @type {Map}
@@ -215,6 +220,8 @@ export class MapManager {
             featureProjection: 'EPSG:3857',
             geometryName: 'geometry',
         });
+
+        this.formatWKT = new WKT();
 
         this.view = view;
 
