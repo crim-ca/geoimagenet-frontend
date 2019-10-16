@@ -371,7 +371,12 @@ export class UserInteractions {
          */
         const magpie_session_json: MagpieMergedSessionInformation = await this.data_queries.current_user_session();
         const {user, authenticated} = magpie_session_json;
-        const followed_users: FollowedUser[] = await this.get_followed_users_collection();
+        let followed_users: FollowedUser[];
+        try {
+            followed_users = await this.get_followed_users_collection();
+        } catch (error) {
+            followed_users = [];
+        }
         const user_instance = new User(user.user_name, user.email, user.group_names, user.user_id, followed_users);
         this.store_actions.set_session_user(user_instance);
         let json_response;

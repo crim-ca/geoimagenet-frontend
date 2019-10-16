@@ -503,4 +503,6 @@ i18n.use(LanguageDetector)
         }
     });
 
+i18n.t = i18n.t.bind(i18n);
+
 export {i18n};

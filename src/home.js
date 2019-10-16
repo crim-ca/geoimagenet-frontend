@@ -27,6 +27,7 @@ import './css/layer_switcher.css';
 import 'react-notifications/lib/notifications.css';
 import './css/open_layers.css';
 import './img/icons/favicon.ico';
+import './img/background.hack.jpg';
 
 import {theme} from './utils/react.js';
 import {NotificationContainer} from "react-notifications";
