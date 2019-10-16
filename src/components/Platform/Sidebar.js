@@ -1,47 +1,19 @@
 // @flow strict
-
-import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Paper, withStyles} from "@material-ui/core";
-import {Actions} from "../Actions";
-import {ExpandMore} from "@material-ui/icons";
-import {Viewer} from "../Taxonomy/Viewer";
 import React from "react";
-import {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import {AnnotationBrowserStore} from "../../store/AnnotationBrowserStore";
-import {StoreActions} from "../../store/StoreActions";
-import {UserInteractions} from "../../domain";
+import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Paper, withStyles} from "@material-ui/core";
+import {ExpandMore} from "@material-ui/icons";
+import {compose} from "react-apollo";
+
+import {Viewer} from "../Taxonomy/Viewer";
 import {Container as SettingsContainer} from '../UserSettings/Container';
-import {TFunction} from 'react-i18next';
 import {withTranslation} from '../../utils';
 import {Container as AnnotationBrowserContainer} from '../AnnotationBrowser/Container';
-import {TaxonomyStore} from '../../store/TaxonomyStore';
+
 import type {OpenLayersStore} from "../../store/OpenLayersStore";
-
-const SidebarSection = withStyles({
-    root: {
-        gridRow: '1/3',
-        gridColumn: '3/4',
-        padding: 0,
-    },
-})(Paper);
-
-const StyledPanelDetails = withStyles({
-    root: {
-        flexDirection: 'column'
-    },
-})(ExpansionPanelDetails);
-
-const SidebarBottom = withStyles(theme => {
-    const {values} = theme;
-    return {
-        root: {
-            height: `calc(100% - ${values.heightActionsBar})`,
-            overflowY: 'scroll',
-        }
-    };
-})(props => {
-    const {classes, children} = props;
-    return <div className={classes.root}>{children}</div>;
-});
+import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import type {StoreActions} from "../../store/StoreActions";
+import type {UserInteractions} from "../../domain";
+import type {TFunction} from 'react-i18next';
 
 type SidebarSectionData = {
     title: string,
@@ -99,10 +71,29 @@ type Props = {
     store_actions: StoreActions,
     user_interactions: UserInteractions,
     open_layers_store: OpenLayersStore,
+    classes: {
+        sidebar: {},
+        bottom: {},
+        details: {},
+    },
     t: TFunction,
 };
 type State = {
     opened_panel_title: string,
+};
+const style = {
+    sidebar: {
+        gridRow: '1/3',
+        gridColumn: '3/4',
+        padding: 0,
+    },
+    bottom: {
+        height: '100%',
+        overflowY: 'scroll',
+    },
+    details: {
+        flexDirection: 'column',
+    },
 };
 
 class Sidebar extends React.Component<Props, State> {
@@ -119,6 +110,7 @@ class Sidebar extends React.Component<Props, State> {
 
     render() {
         const {opened_panel_title} = this.state;
+        const {classes} = this.props;
         const sidebar_sections = make_sidebar_sections(
             this.props.user_interactions,
             this.props.state_proxy,
@@ -126,8 +118,8 @@ class Sidebar extends React.Component<Props, State> {
             this.props.open_layers_store,
             this.props.t);
         return (
-            <SidebarSection>
-                <SidebarBottom>
+            <Paper className={classes.sidebar}>
+                <div className={classes.bottom}>
                     {
                         sidebar_sections.map((section, i) => (
                             <ExpansionPanel key={i}
@@ -135,16 +127,19 @@ class Sidebar extends React.Component<Props, State> {
                                             onChange={this.create_open_panel_handler(section.slug)}>
                                 <ExpansionPanelSummary
                                     expandIcon={<ExpandMore />}>{section.title}</ExpansionPanelSummary>
-                                <StyledPanelDetails>{section.content}</StyledPanelDetails>
+                                <ExpansionPanelDetails className={classes.details}>{section.content}</ExpansionPanelDetails>
                             </ExpansionPanel>
                         ))
                     }
-                </SidebarBottom>
-            </SidebarSection>
+                </div>
+            </Paper>
         );
     }
 }
 
-const component = withTranslation()(Sidebar);
+const component = compose(
+    withTranslation(),
+    withStyles(style),
+)(Sidebar);
 
 export {component as Sidebar};
