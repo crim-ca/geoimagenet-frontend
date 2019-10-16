@@ -183,7 +183,8 @@ export class Interactions {
             return false;
         }
 
-        const top_layer = layers.sort((a, b) => a.getZIndex() - b.getZIndex()).slice(-1)[0];
+        // forEachLayerAtPixel should return the topmost layer first
+        const top_layer = layers[0];
 
         this.user_interactions.start_annotation(top_layer.get('title'));
 
