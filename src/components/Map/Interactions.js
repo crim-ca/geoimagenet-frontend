@@ -26,9 +26,12 @@ const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStor
     const pixel = event.pixel;
     const features = map.getFeaturesAtPixel(pixel);
     /**
-     * if we're slicking on a single feature, or clicking in empty space (that is, features is null), we want the event to be handled normally
+     * if we're clicking on a single feature, or clicking in empty space (that is, features is null),
+     * or the user is currently drawing we want the event to be handled normally
      */
-    if (features === null || features.length === 1 || features.some(f => !f.get('id'))) {
+    const less_than_two_features = features === null || features.length < 2;
+    const currently_drawing = features.some(f => !f.get('id'));
+    if (less_than_two_features || currently_drawing) {
         return true;
     }
     /**
