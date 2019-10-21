@@ -48,6 +48,9 @@ export function create_style_function(color: string, state_proxy: GeoImageNetSto
         const {nickname_map} = state_proxy;
 
         const {show_labels, show_annotators_identifiers} = state_proxy;
+        if (!feature.get('taxonomy_class_id')) {
+            return new Style();
+        }
         const taxonomy_class = taxonomy_store.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
         const label = taxonomy_class.name_en || taxonomy_class.name_fr;
         /**

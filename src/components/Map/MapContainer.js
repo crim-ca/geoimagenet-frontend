@@ -83,7 +83,7 @@ class MapContainer extends React.Component<Props> {
             taxonomy_store,
         );
 
-        new Interactions(this.map_manager.map, state_proxy, user_interactions, open_layers_store, taxonomy_store, this.map_manager.formatGeoJson, ANNOTATION_LAYER);
+        new Interactions(this.map_manager.map, state_proxy, user_interactions, open_layers_store, taxonomy_store, this.map_manager.formatGeoJson, this.map_manager.formatWKT, ANNOTATION_LAYER);
     }
 
     render() {

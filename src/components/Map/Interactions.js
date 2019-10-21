@@ -10,6 +10,7 @@ import {NotificationManager} from "react-notifications";
 
 import typeof Map from 'ol/Map.js';
 import GeoJSON from "ol/format/GeoJSON.js";
+import WKT from "ol/format/WKT.js";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import {UserInteractions} from "../../domain";
 import typeof Event from 'ol/events/Event.js';
@@ -26,9 +27,12 @@ const make_feature_selection_condition = (map: Map, taxonomy_store: TaxonomyStor
     const pixel = event.pixel;
     const features = map.getFeaturesAtPixel(pixel);
     /**
-     * if we're slicking on a single feature, or clicking in empty space (that is, features is null), we want the event to be handled normally
+     * if we're clicking on a single feature, or clicking in empty space (that is, features is null),
+     * or the user is currently drawing we want the event to be handled normally
      */
-    if (features === null || features.length === 1) {
+    const less_than_two_features = features === null || features.length < 2;
+    const currently_drawing = features.some(f => !f.get('id'));
+    if (less_than_two_features || currently_drawing) {
         return true;
     }
     /**
@@ -72,6 +76,7 @@ export class Interactions {
     user_interactions: UserInteractions;
     open_layers_store: OpenLayersStore;
     geojson_format: GeoJSON;
+    wkt_format: WKT;
     annotation_layer: string;
     draw: Draw;
     modify: Modify;
@@ -84,6 +89,7 @@ export class Interactions {
         open_layers_store: OpenLayersStore,
         taxonomy_store: TaxonomyStore,
         geojson_format: GeoJSON,
+        wkt_format: WKT,
         annotation_layer: string,
     ) {
         this.map = map;
@@ -92,6 +98,7 @@ export class Interactions {
         this.open_layers_store = open_layers_store;
         this.taxonomy_store = taxonomy_store;
         this.geojson_format = geojson_format;
+        this.wkt_format = wkt_format;
         this.annotation_layer = annotation_layer;
 
         const layers = Object.keys(this.state_proxy.annotations_layers).map(key => {
@@ -123,19 +130,25 @@ export class Interactions {
             condition: this.draw_condition_callback
         });
 
-        this.draw.on('drawend', this.user_interactions.create_drawend_handler(this.geojson_format, this.annotation_layer));
+        this.draw.on('drawstart', () => this.select.setActive(false));
+        this.draw.on('drawend', this.user_interactions.create_drawend_handler(this.geojson_format, this.wkt_format, this.annotation_layer));
+        this.draw.on('drawend', () => this.select.setActive(true));
         this.modify.on('modifystart', this.user_interactions.modifystart_handler);
-        this.modify.on('modifyend', this.user_interactions.create_modifyend_handler(this.geojson_format, this.map));
+        this.modify.on('modifyend', this.user_interactions.create_modifyend_handler(this.geojson_format, this.wkt_format, this.map));
 
         autorun(() => {
             switch (this.state_proxy.mode) {
+                // Before adding an interaction, remove it or else it could be added twice
                 case MODE.CREATION:
+
                     if (this.taxonomy_store.selected_taxonomy_class_id > 0) {
+                        this.map.removeInteraction(this.draw);
                         this.map.addInteraction(this.draw);
                     }
                     this.map.removeInteraction(this.modify);
                     break;
                 case MODE.MODIFY:
+                    this.map.removeInteraction(this.modify);
                     this.map.addInteraction(this.modify);
                     this.map.removeInteraction(this.draw);
                     break;
@@ -160,43 +173,25 @@ export class Interactions {
          if we are the first click, only verify that we are over an image layer
          if we are clicks afterwards, verify that we are over the same image
          */
-
-        let layer_index = -1;
-
         const layers = [];
-        this.map.forEachLayerAtPixel(event.pixel, l => {
-            layers.push(l);
-        });
-
-        const at_least_one_layer_is_an_image = (element, index) => {
-            const layer_is_image = element.get('type') === CUSTOM_GEOIM_IMAGE_LAYER;
-            if (layer_is_image) {
-                layer_index = index;
-                return true;
-            }
-            return false;
+        const options = {
+            layerFilter: layer => layer.get('type') === CUSTOM_GEOIM_IMAGE_LAYER
         };
+        event.map.forEachLayerAtPixel(event.pixel, layer => {layers.push(layer);}, options);
 
-        if (!layers.some(at_least_one_layer_is_an_image)) {
+        if (!layers.length) {
             if (this.state_proxy.current_annotation.initialized) {
                 NotificationManager.warning('All corners of an annotation polygon must be on an image.');
-                return false;
+            } else {
+                NotificationManager.warning('You must select an image to begin creating annotations.');
             }
-            NotificationManager.warning('You must select an image to begin creating annotations.');
             return false;
         }
 
-        const first_layer = layers[layer_index];
+        // forEachLayerAtPixel should return the topmost layer first
+        const top_layer = layers[0];
 
-        if (this.state_proxy.current_annotation.initialized) {
-            if (first_layer.get('title') === this.state_proxy.current_annotation.image_title) {
-                return true;
-            }
-            NotificationManager.warning('Annotations must be made on a single image, make sure that all polygon points are on the same image.');
-            return false;
-        }
-
-        this.user_interactions.start_annotation(first_layer.get('title'));
+        this.user_interactions.start_annotation(top_layer.get('title'));
 
         return true;
     };

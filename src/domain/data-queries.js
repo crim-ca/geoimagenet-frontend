@@ -70,6 +70,23 @@ export class DataQueries {
         return json.features[0];
     };
 
+    /**
+     * Returns a GeoJson FeatureCollection with the images that contain a specific wkt geometry
+     */
+    get_annotation_images = async (feature_wkt) => {
+        let url = `${this.geoserver_endpoint}/wfs?service=WFS&` +
+          "exceptions=application/json&" +
+          "request=GetFeature&" +
+          "typeNames=GeoImageNet:image&" +
+          "outputFormat=application/json&" +
+          "srsName=EPSG:3857&" +
+          "propertyName=id,layer_name&" +
+          `cql_filter=CONTAINS(trace_simplified, ${feature_wkt}) AND bands IN ('RGB', 'NRG') AND bits=8`;
+
+        const response = await make_http_request(url);
+        return await response.json();
+    };
+
     logout_request() {
         return make_http_request(`${this.magpie_endpoint}/signout`);
     }
