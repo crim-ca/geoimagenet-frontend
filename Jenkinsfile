@@ -25,9 +25,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh """
-                npm run test
-                """
+                sh 'docker run --rm $LOCAL_IMAGE_NAME /bin/sh -c "cd /code && npm run test"'
             }
         }
 
