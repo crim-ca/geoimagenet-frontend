@@ -35,7 +35,7 @@ import {
     VALID_OPENLAYERS_ANNOTATION_RESOLUTION,
     READ,
     WMS
-} from '../../domain/constants.js';
+} from '../../constants.js';
 import {debounced} from '../../utils/event_handling.js';
 import {NotificationManager} from 'react-notifications';
 import {StoreActions} from "../../store/StoreActions";
@@ -268,7 +268,7 @@ export class MapManager {
         autorun(() => {
             const {annotation_status_filters, annotation_ownership_filters} = this.state_proxy;
 
-            this.cql_taxonomy_class_id = this.taxonomy_store.taxonomy_class_id_selection;
+            this.cql_taxonomy_class_id = this.taxonomy_store.taxonomy_class_id_selection_cql;
 
             const ownership_filters_array = Object.values(annotation_ownership_filters);
             // $FlowFixMe
@@ -327,7 +327,7 @@ export class MapManager {
         return new Vector({
             title: title,
             source: source,
-            style: create_style_function(color, this.state_proxy),
+            style: create_style_function(color, this.state_proxy, this.taxonomy_store),
             visible: visible,
             zIndex: zIndex
         });

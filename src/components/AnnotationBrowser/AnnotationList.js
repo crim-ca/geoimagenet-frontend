@@ -6,9 +6,11 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import {TFunction} from 'react-i18next';
 import {compose} from 'react-apollo';
 
-import type {Annotation, AnnotationStatus, BoundingBox} from "../../Types";
 import {withTranslation} from '../../utils';
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import {ANNOTATION_THUMBNAIL_SIZE} from '../../constants';
+
+import type {Annotation, AnnotationStatus, BoundingBox} from "../../Types";
 
 type Props = {
     annotations: Annotation[],
@@ -46,8 +48,8 @@ const style = (theme) => ({
     list_item: {
         display: 'grid',
         gridGap: theme.values.gutterSmall,
-        gridTemplateColumns: '150px 1fr',
-        gridTemplateRows: `calc(150px + ${theme.values.gutterSmall})`,
+        gridTemplateColumns: `${theme.values.annotation_size} 1fr`,
+        gridTemplateRows: `calc(${theme.values.annotation_size} + ${theme.values.gutterSmall})`,
     },
     info: {
         display: 'flex',
@@ -78,10 +80,10 @@ class AnnotationList extends React.Component<Props> {
                     const bounding_box = bbox.join(',');
                     const image_url = `${this.props.geoserver_url}/wms?service=WMS&version=1.3.0&request=GetMap&format=image/png` +
                         `&transparent=true&layers=${image.layer_name}&hints=quality` +
-                        `&width=150&height=150&crs=EPSG:3857&bbox=${bounding_box}`;
+                        `&width=${ANNOTATION_THUMBNAIL_SIZE}&height=${ANNOTATION_THUMBNAIL_SIZE}&crs=EPSG:3857&bbox=${bounding_box}`;
                     const feature_url = `${this.props.geoserver_url}/wms?request=GetMap&service=WMS&version=1.3.0` +
-                        `&transparent=true&layers=annotation&srs=EPSG:3857&WIDTH=150&HEIGHT=150&styles=annotations&format=image/png` +
-                        `&BBOX=${bounding_box}&cql_filter=id=${id}`;
+                        `&transparent=true&layers=annotation&srs=EPSG:3857&WIDTH=${ANNOTATION_THUMBNAIL_SIZE}&HEIGHT=${ANNOTATION_THUMBNAIL_SIZE}` +
+                        `&styles=annotations&format=image/png&BBOX=${bounding_box}&cql_filter=id=${id}`;
                     const annotator = nickname_map[annotator_id] || annotator_id;
                     return (
                         <div key={i} className={classes.list_item}>

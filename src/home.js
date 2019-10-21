@@ -1,6 +1,14 @@
-// @flow
+// @flow strict
+
 import React from 'react';
 import ReactDOM from 'react-dom';
+
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route
+} from 'react-router-dom';
+
 import * as Sentry from '@sentry/browser';
 import {CssBaseline, MuiThemeProvider} from '@material-ui/core';
 
@@ -19,15 +27,26 @@ import './css/layer_switcher.css';
 import 'react-notifications/lib/notifications.css';
 import './css/open_layers.css';
 import './img/icons/favicon.ico';
+import './img/background.hack.jpg';
 
 import {theme} from './utils/react.js';
 import {NotificationContainer} from "react-notifications";
 import {captureException} from "@sentry/browser";
-import {GeoImageNetStore} from "./store/GeoImageNetStore";
 import {LoadingSplashCircle} from "./components/LoadingSplashCircle";
 import {ContextualMenuContainer} from "./components/ContextualMenu/ContextualMenuContainer";
 import {OpenLayersStore} from "./store/OpenLayersStore";
 import Collection from "ol/Collection";
+import {state_proxy, taxonomy_store} from './store/instance_cache';
+
+import type {TaxonomyStore} from "./store/TaxonomyStore";
+import type {GeoImageNetStore} from "./store/GeoImageNetStore";
+import {ThemedComponent} from "./utils/react";
+import {ApolloProvider} from "react-apollo";
+import {PresentationContainer} from "./components/Presentation/Presentation";
+import {create_client} from "./utils/apollo";
+import {Datasets} from "./components/Datasets/Datasets";
+import {Models} from "./components/Models/Models";
+import {Benchmarks} from "./components/Benchmarks";
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
@@ -45,6 +64,7 @@ Sentry.init({
 export class PlatformLoader {
 
     state_proxy: GeoImageNetStore;
+    taxonomy_store: TaxonomyStore;
     store_actions: StoreActions;
     open_layers_store: OpenLayersStore;
     data_queries: DataQueries;
@@ -52,20 +72,45 @@ export class PlatformLoader {
 
     constructor(geoimagenet_api_endpoint: string, geoserver_endpoint: string, magpie_endpoint: string, ml_endpoint: string, i18next_instance: i18n) {
 
-        this.state_proxy = new GeoImageNetStore();
+        this.state_proxy = state_proxy;
+        this.taxonomy_store = taxonomy_store;
         this.open_layers_store = new OpenLayersStore(new Collection());
-        this.store_actions = new StoreActions(this.state_proxy);
+        this.store_actions = new StoreActions(this.state_proxy, this.taxonomy_store);
         this.data_queries = new DataQueries(geoimagenet_api_endpoint, geoserver_endpoint, magpie_endpoint, ml_endpoint);
-        this.user_interactions = new UserInteractions(this.store_actions, this.data_queries, i18next_instance, this.state_proxy);
+        this.user_interactions = new UserInteractions(this.store_actions, this.taxonomy_store, this.data_queries, i18next_instance, this.state_proxy);
     }
 
     make_platform() {
         return (
-            <Platform
-                open_layers_store={this.open_layers_store}
-                state_proxy={this.state_proxy}
-                store_actions={this.store_actions}
-                user_interactions={this.user_interactions} />
+            <Switch>
+                <Route path='/platform'>
+                    <Platform
+                        open_layers_store={this.open_layers_store}
+                        state_proxy={this.state_proxy}
+                        store_actions={this.store_actions}
+                        user_interactions={this.user_interactions} />
+                </Route>
+                <Route path='/datasets'>
+                    <Datasets
+                        state_proxy={this.state_proxy} />
+                </Route>
+                <Route path='/models'>
+                    <Models model_upload_instructions_url={THELPER_MODEL_UPLOAD_INSTRUCTIONS} />
+                </Route>
+                <Route path='/benchmarks'><Benchmarks /></Route>
+                <Route path='/'>
+                    <ThemedComponent>
+                        <div style={{height: '100%'}}>
+                            <PresentationContainer
+                                state_proxy={this.state_proxy}
+                                contact_email={CONTACT_EMAIL}
+                                user_interactions={this.user_interactions} />
+                            <NotificationContainer />
+                        </div>
+                    </ThemedComponent>
+                </Route>
+            </Switch>
+
         );
     }
 
@@ -113,14 +158,20 @@ export class PlatformLoader {
             captureException(e);
         }
 
+        const client = create_client(GRAPHQL_ENDPOINT);
+
         ReactDOM.render(
-            <MuiThemeProvider theme={theme}>
-                <CssBaseline />
-                {this.make_layout()}
-                <DialogContainer />
-                <NotificationContainer />
-                <ContextualMenuContainer />
-            </MuiThemeProvider>,
+            <Router>
+                <MuiThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <ApolloProvider client={client}>
+                        {this.make_layout()}
+                    </ApolloProvider>
+                    <DialogContainer />
+                    <NotificationContainer />
+                    <ContextualMenuContainer />
+                </MuiThemeProvider>
+            </Router>,
             div
         );
     }

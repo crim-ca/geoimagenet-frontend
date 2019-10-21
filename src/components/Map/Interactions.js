@@ -4,7 +4,7 @@
  */
 
 import {autorun} from "mobx";
-import {ANNOTATION, CUSTOM_GEOIM_IMAGE_LAYER, MODE} from "../../domain/constants";
+import {ANNOTATION, CUSTOM_GEOIM_IMAGE_LAYER, MODE} from "../../constants";
 import {Draw, Modify, Select} from "ol/interaction";
 import {NotificationManager} from "react-notifications";
 
@@ -18,8 +18,9 @@ import {create_style_function} from "./ol_dependant_utils";
 import {MapBrowserEvent} from "ol/events";
 import {ContextualMenuManager} from "../ContextualMenu/ContextualMenuManager";
 import type {OpenLayersStore} from "../../store/OpenLayersStore";
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
-const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStore, open_layers_store: OpenLayersStore) => (event: MapBrowserEvent) => {
+const make_feature_selection_condition = (map: Map, taxonomy_store: TaxonomyStore, open_layers_store: OpenLayersStore) => (event: MapBrowserEvent) => {
     if (event.type !== 'click') {
         return false;
     }
@@ -43,7 +44,7 @@ const make_feature_selection_condition = (map: Map, state_proxy: GeoImageNetStor
     features.forEach(feature => {
         const taxonomy_class_id = feature.get('taxonomy_class_id');
         menu_items.push({
-            text: state_proxy.flat_taxonomy_classes[taxonomy_class_id].name_en,
+            text: taxonomy_store.flat_taxonomy_classes[taxonomy_class_id].name_en,
             value: feature,
         });
     });
@@ -71,6 +72,7 @@ export class Interactions {
 
     map: Map;
     state_proxy: GeoImageNetStore;
+    taxonomy_store: TaxonomyStore;
     user_interactions: UserInteractions;
     open_layers_store: OpenLayersStore;
     geojson_format: GeoJSON;
@@ -85,6 +87,7 @@ export class Interactions {
         state_proxy: GeoImageNetStore,
         user_interactions: UserInteractions,
         open_layers_store: OpenLayersStore,
+        taxonomy_store: TaxonomyStore,
         geojson_format: GeoJSON,
         wkt_format: WKT,
         annotation_layer: string,
@@ -93,6 +96,7 @@ export class Interactions {
         this.state_proxy = state_proxy;
         this.user_interactions = user_interactions;
         this.open_layers_store = open_layers_store;
+        this.taxonomy_store = taxonomy_store;
         this.geojson_format = geojson_format;
         this.wkt_format = wkt_format;
         this.annotation_layer = annotation_layer;
@@ -104,9 +108,9 @@ export class Interactions {
          * We can select layers from any and all layers, so we activate it on all layers by default.
          */
         this.select = new Select({
-            condition: make_feature_selection_condition(map, this.state_proxy, this.open_layers_store),
+            condition: make_feature_selection_condition(map, this.taxonomy_store, this.open_layers_store),
             layers: layers,
-            style: create_style_function('white', this.state_proxy, true),
+            style: create_style_function('white', this.state_proxy, this.taxonomy_store, true),
             features: this.open_layers_store.selected_features,
         });
         this.map.addInteraction(this.select);
@@ -136,7 +140,8 @@ export class Interactions {
             switch (this.state_proxy.mode) {
                 // Before adding an interaction, remove it or else it could be added twice
                 case MODE.CREATION:
-                    if (this.state_proxy.selected_taxonomy_class_id > 0) {
+
+                    if (this.taxonomy_store.selected_taxonomy_class_id > 0) {
                         this.map.removeInteraction(this.draw);
                         this.map.addInteraction(this.draw);
                     }
@@ -172,7 +177,7 @@ export class Interactions {
         const options = {
             layerFilter: layer => layer.get('type') === CUSTOM_GEOIM_IMAGE_LAYER
         };
-        event.map.forEachLayerAtPixel(event.pixel, layer => {layers.push(layer)}, options);
+        event.map.forEachLayerAtPixel(event.pixel, layer => {layers.push(layer);}, options);
 
         if (!layers.length) {
             if (this.state_proxy.current_annotation.initialized) {

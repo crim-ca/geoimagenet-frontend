@@ -1,6 +1,6 @@
 // @flow strict
 
-import {AnnotationFilter, TaxonomyClass} from "./domain/entities";
+import type {AnnotationFilter, TaxonomyClass} from "./domain/entities";
 
 export type TaxonomyClassFromAPI = {
     children: TaxonomyClassFromAPI[],
@@ -136,4 +136,9 @@ export type WfsResponse = {
 
 export type Job = {
     status: string,
+};
+
+export type LeafClassGroup = {
+    path: string,
+    children: TaxonomyClass[],
 };

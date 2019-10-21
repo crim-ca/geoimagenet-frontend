@@ -3,7 +3,7 @@
 import {Feature} from "ol/Feature";
 import {Circle, Fill, Stroke, Style, Text} from "ol/style";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import type {FollowedUser} from "../../Types";
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
 type StyleFunction = (Feature, number) => Style | Style[];
 
@@ -37,7 +37,7 @@ function select_style(): Style {
     });
 }
 
-export function create_style_function(color: string, state_proxy: GeoImageNetStore, create_for_select_interaction: boolean = false): StyleFunction {
+export function create_style_function(color: string, state_proxy: GeoImageNetStore, taxonomy_store: TaxonomyStore, create_for_select_interaction: boolean = false): StyleFunction {
 
     return (feature: Feature, resolution: number) => {
 
@@ -51,7 +51,7 @@ export function create_style_function(color: string, state_proxy: GeoImageNetSto
         if (!feature.get('taxonomy_class_id')) {
             return new Style();
         }
-        const taxonomy_class = state_proxy.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
+        const taxonomy_class = taxonomy_store.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
         const label = taxonomy_class.name_en || taxonomy_class.name_fr;
         /**
          * theoretically, all features would have annotator ids. but y'know, theory and reality sometimes disagree.

@@ -1,15 +1,17 @@
 // @flow strict
 
 import {TaxonomyClass} from '../domain/entities.js';
-import {ANNOTATION, MODE} from '../domain/constants.js';
+import {ANNOTATION, MODE} from '../constants.js';
 import {observable, action, runInAction} from 'mobx';
-import {AccessControlList} from "../domain/access-control-list";
-import {SatelliteImage, Taxonomy, User} from "../domain/entities";
-import {typeof Collection} from "ol";
-import {typeof Source} from "ol/source";
-import {typeof Vector} from "ol/layer";
-import {GeoImageNetStore} from "./GeoImageNetStore";
+
+import type {AccessControlList} from "../domain/access-control-list";
+import type {SatelliteImage, Taxonomy, User} from "../domain/entities";
+import type {Collection} from "ol";
+import type {Source} from "ol/source";
+import type {Vector} from "ol/layer";
+import type {GeoImageNetStore} from "./GeoImageNetStore";
 import type {TaxonomyClassFromAPI, AnnotationStatus, FollowedUser} from "../Types";
+import type {TaxonomyStore} from "./TaxonomyStore";
 
 /**
  * The store actions are lower level action handlers, in the sense that they are not directly related to a user's actions,
@@ -29,12 +31,14 @@ type AnnotationCounts = {
 export class StoreActions {
 
     state_proxy: GeoImageNetStore;
+    taxonomy_store: TaxonomyStore;
 
     /**
      * We use MobX as our state manager, hence our store is the primary dependency of our store actions.
      */
-    constructor(state_proxy: GeoImageNetStore) {
+    constructor(state_proxy: GeoImageNetStore, taxonomy_store: TaxonomyStore) {
         this.state_proxy = state_proxy;
+        this.taxonomy_store = taxonomy_store;
     }
 
     @action.bound
@@ -116,27 +120,12 @@ export class StoreActions {
     }
 
     /**
-     * Invert the opened property for specific taxonomy class id
-     * the opened param should allow to override the toggling to force open or closed
-     */
-    @action.bound
-    toggle_taxonomy_class_tree_element(taxonomy_class_id: number, opened: boolean | null = null) {
-        /** @type {TaxonomyClass} taxonomy_class */
-        const taxonomy_class = this.state_proxy.flat_taxonomy_classes[taxonomy_class_id];
-        if (opened === null) {
-            taxonomy_class.opened = !taxonomy_class.opened;
-            return;
-        }
-        taxonomy_class.opened = opened;
-    }
-
-    /**
      * We want to extract all localized taxonomy classes strings and send them in a dictionary that makes ids correspond to names.
      * Later on, we'll use i18next to translate the strings.
      */
     @action.bound
     generate_localized_taxonomy_classes_labels(lang: string) {
-        const {flat_taxonomy_classes} = this.state_proxy;
+        const {flat_taxonomy_classes} = this.taxonomy_store;
         const dict = {};
         for (const taxonomy_class_id in flat_taxonomy_classes) {
             if (flat_taxonomy_classes.hasOwnProperty(taxonomy_class_id)) {
@@ -177,11 +166,11 @@ export class StoreActions {
                 current_raw.name_en,
                 current_raw.taxonomy_id
             ));
-            this.state_proxy.flat_taxonomy_classes[current_instance.id] = current_instance;
+            this.taxonomy_store.flat_taxonomy_classes[current_instance.id] = current_instance;
 
             if (parent_id !== null) {
                 current_instance.parent_id = parent_id;
-                this.state_proxy.flat_taxonomy_classes[parent_id].children.push(current_instance);
+                this.taxonomy_store.flat_taxonomy_classes[parent_id].children.push(current_instance);
             }
 
             if (current_raw.children && current_raw.children.length > 0) {
@@ -208,11 +197,11 @@ export class StoreActions {
         if (Object.values(ANNOTATION.STATUS).indexOf(status) === -1) {
             throw new TypeError(`${status} is not a status that is supported by our platform.`);
         }
-        if (!(taxonomy_class_id in this.state_proxy.flat_taxonomy_classes)) {
+        if (!(taxonomy_class_id in this.taxonomy_store.flat_taxonomy_classes)) {
             throw new TypeError('Trying to change the counts of a non-existent taxonomy class.');
         }
 
-        let instance = this.state_proxy.flat_taxonomy_classes[taxonomy_class_id];
+        let instance = this.taxonomy_store.flat_taxonomy_classes[taxonomy_class_id];
         let {counts} = instance;
         /**
          * if we're under 0, we're decrementing, and the lowest possible value is 0.
@@ -223,7 +212,7 @@ export class StoreActions {
         counts[status] = quantity < 0 ? Math.max(counts[status] + quantity, 0) : (counts[status] + quantity) || quantity;
 
         while (instance.parent_id !== null) {
-            instance = this.state_proxy.flat_taxonomy_classes[instance.parent_id];
+            instance = this.taxonomy_store.flat_taxonomy_classes[instance.parent_id];
             ({counts} = instance);
             counts[status] = quantity < 0 ? Math.max(counts[status] + quantity, 0) : (counts[status] + quantity) || quantity;
         }
@@ -249,7 +238,7 @@ export class StoreActions {
     @action.bound
     set_annotation_counts(counts: AnnotationCounts) {
         for (let class_id in counts) {
-            this.state_proxy.flat_taxonomy_classes[class_id].counts = counts[class_id];
+            this.taxonomy_store.flat_taxonomy_classes[class_id].counts = counts[class_id];
         }
     }
 
@@ -278,7 +267,7 @@ export class StoreActions {
     }
 
     @action.bound
-    set_taxonomy(t: Array<Taxonomy>) {
+    set_taxonomy(t: Taxonomy[]) {
         this.state_proxy.taxonomies = t;
     }
 
@@ -287,66 +276,9 @@ export class StoreActions {
         this.state_proxy.selected_taxonomy = t;
     }
 
-    /**
-     * Inverts a taxonomy class annotations visibility on the viewport, as well as all this class's children's visibility.
-     * Note that filters still apply on what annotations statuses are shown.
-     * @param {boolean|null} visible if null, assumes that we want to invert the visible property of the class,
-     *                       otherwise sets visibility to visible value passed to the function
-     */
-    @action.bound
-    invert_taxonomy_class_visibility(t: TaxonomyClass, visible: boolean | null = null) {
-        runInAction(() => {
-            if (visible !== null) {
-                t.visible = visible;
-            } else {
-                t.visible = !t.visible;
-            }
-            if (t.children && t.children.length > 0) {
-                t.children.forEach(c => {
-                    this.invert_taxonomy_class_visibility(c, t.visible);
-                });
-            }
-        });
-
-
-        const visible_ids = [];
-        const aggregate_selected_ids = (taxonomy_class) => {
-            if (taxonomy_class.visible === true) {
-                visible_ids.push(taxonomy_class.id);
-            }
-        };
-
-        Object.keys(this.state_proxy.flat_taxonomy_classes).forEach(key => {
-            const taxonomy_class = this.state_proxy.flat_taxonomy_classes[key];
-            aggregate_selected_ids(taxonomy_class);
-        });
-        this.set_visible_classes(visible_ids);
-
-    }
-
     @action.bound
     set_acl(acl: AccessControlList) {
         this.state_proxy.acl = acl;
-    }
-
-    /**
-     * @todo maybe directly watch on the visible attribute of the nested classes
-     * The cql filter runs on watching an array of ids, updating visible annotations when it changes.
-     * This should be called with the new array of visible ids whenever it changes.
-     * Liable to human error.
-     */
-    @action.bound
-    set_visible_classes(classes: Array<number>) {
-        this.state_proxy.visible_classes = classes;
-    }
-
-    /**
-     * When clicking on taxonomy classes leafs (and leafs only) we want to give the ability to the user of creating annotations.
-     * This will cascade the ability to the ui of creating annotations.
-     */
-    @action.bound
-    select_taxonomy_class(id: number) {
-        this.state_proxy.selected_taxonomy_class_id = id;
     }
 
     /**

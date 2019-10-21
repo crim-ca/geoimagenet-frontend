@@ -4,7 +4,7 @@ import {observer} from 'mobx-react';
 import {withStyles} from '@material-ui/core';
 import {features} from '../../features';
 
-import {ANNOTATIONS, MODE, READ, VALIDATIONS, WRITE} from '../domain/constants.js';
+import {ANNOTATIONS, MODE, READ, VALIDATIONS, WRITE} from '../constants.js';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {
     faEye,
@@ -16,7 +16,6 @@ import {
     faCheck,
     faTimes
 } from '@fortawesome/free-solid-svg-icons';
-import PropTypes from 'prop-types';
 import {StoreActions} from "../store/StoreActions";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 

@@ -1,3 +1,4 @@
+// @flow strict
 import React, {useState} from 'react';
 import {withStyles, Link, Typography, Paper, Select, MenuItem, Dialog} from '@material-ui/core';
 import Clear from '@material-ui/icons/Clear';
@@ -316,7 +317,7 @@ export const PresentationContainer = withStyles(({values}) => ({
         alignItems: 'baseline',
         justifyContent: 'flex-end',
         flexDirection: 'row',
-        fontSize: '1.5em',
+        fontSize: '1.5rem',
         lineHeight: '24px',
         '& a': {
             color: 'white',

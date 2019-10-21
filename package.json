@@ -10,10 +10,10 @@
     "prod": "webpack --config webpack.prod.js && npm run esdoc",
     "dev": "webpack --config webpack.dev.js --progress && npm run esdoc",
     "dev:watch": "webpack --watch --progress --config webpack.dev.js",
-    "dev-server": "webpack-dev-server --open --config webpack.dev.js",
+    "dev-server": "webpack-dev-server --config webpack.dev.js",
     "esdoc": "./node_modules/.bin/esdoc",
     "flow": "flow",
-    "flow:deps": "flow-typed install && flow-typed create-stub graphql-tag mobx react-apollo",
+    "flow:deps": "flow-typed install && flow-typed create-stub graphql-tag mobx react-apollo apollo-utilities",
     "postinstall": "npm run flow:deps"
   },
   "repository": {
@@ -67,13 +67,13 @@
     "style-loader": "^0.23.1",
     "webpack": "^4.21.0",
     "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.2.1",
+    "webpack-dev-server": "^3.8.2",
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
-    "@material-ui/core": "^4.4.0",
-    "@material-ui/icons": "^4.2.1",
+    "@material-ui/core": "^4.5.0",
+    "@material-ui/icons": "^4.4.3",
     "@reach/router": "^1.2.1",
     "@sentry/browser": "^4.6.4",
     "apollo-cache-inmemory": "^1.5.1",
@@ -101,6 +101,7 @@
     "react-emotion": "^10.0.0",
     "react-i18next": "^10.11.0",
     "react-notifications": "^1.4.3",
+    "react-router-dom": "^5.1.2",
     "subscriptions-transport-ws": "^0.9.16"
   }
 }

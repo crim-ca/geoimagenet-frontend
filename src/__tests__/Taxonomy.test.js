@@ -4,8 +4,9 @@ import {StoreActions} from "../store/StoreActions";
 import {DataQueries} from "../domain/data-queries";
 import {UserInteractions} from "../domain";
 import {ANNOTATIONS_COUNTS_RESPONSE, TAXONOMY_CLASSES_RESPONSE, TAXONOMY_RESPONSE} from "./api_responses";
-import {ANNOTATION} from "../domain/constants";
+import {ANNOTATION} from "../constants";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
+import {TaxonomyStore} from "../store/TaxonomyStore";
 
 const React = require('react');
 const {mount, configure} = require('enzyme');
@@ -40,6 +41,9 @@ global.requestAnimationFrame = function (callback) {
 global.cancelAnimationFrame = function (id) {
     clearTimeout(id);
 };
+global.GEOSERVER_URL = '';
+global.ANNOTATION_NAMESPACE = '';
+global.ANNOTATION_LAYER = '';
 global.GEOIMAGENET_API_URL = '';
 copyProps(window, global);
 
@@ -48,8 +52,9 @@ type Props = {};
 
 const data_queries = new DataQueries('', '', '', '');
 const state_proxy = new GeoImageNetStore();
-const store_actions = new StoreActions(state_proxy);
-const user_interactions = new UserInteractions(store_actions, data_queries, i18n, state_proxy);
+const taxonomy_store = new TaxonomyStore(state_proxy);
+const store_actions = new StoreActions(state_proxy, taxonomy_store);
+const user_interactions = new UserInteractions(store_actions, taxonomy_store, data_queries, i18n, state_proxy);
 
 data_queries.fetch_taxonomies = jest.fn(() => TAXONOMY_RESPONSE);
 data_queries.fetch_taxonomy_classes = jest.fn(() => TAXONOMY_CLASSES_RESPONSE);
@@ -79,7 +84,7 @@ describe('Taxonomy viewer', () => {
     });
 
     test('Building the taxonomy from real data shows annotations', async () => {
-        expect(state_proxy.flat_taxonomy_classes[1].counts['new']).toBeGreaterThan(0);
+        expect(taxonomy_store.flat_taxonomy_classes[1].counts['new']).toBeGreaterThan(0);
         const wrapper = mount(<TestableTaxonomyViewer />);
         expect(wrapper.find(Viewer)).toHaveLength(1);
         expect(wrapper.find(Selector)).toHaveLength(1);

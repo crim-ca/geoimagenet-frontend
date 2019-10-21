@@ -1,16 +1,18 @@
-// @flow
+// @flow strict
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import {withStyles, Paper} from '@material-ui/core';
 import {MapContainer} from '../Map/MapContainer';
 import {UserInteractions} from '../../domain/user-interactions.js';
 import {StoreActions} from '../../store/StoreActions';
-import {Sidebar} from './Sidebar';
+import {Sidebar} from '../Sidebar';
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {OpenLayersStore} from "../../store/OpenLayersStore";
 import {Container as FiltersContainer} from "../Map/Filters/Container";
 import {Container as LabelsContainer} from "../Map/LabelsChoice/Container";
 import {ActiveFiltersBox} from '../Map/ActiveFiltersBox';
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
+import {withTaxonomyStore} from "../../store/HOCs";
 
 const PlatformContainer = withStyles(({values}) => ({
     root: {
@@ -32,12 +34,13 @@ const Coordinates = withStyles(({values, zIndex}) => ({
     }
 }))(Paper);
 
-type Props = {
+type Props = {|
     state_proxy: GeoImageNetStore,
     store_actions: StoreActions,
+    taxonomy_store: TaxonomyStore,
     user_interactions: UserInteractions,
     open_layers_store: OpenLayersStore,
-};
+|};
 
 /**
  * The Platform is the top level component for the annotation platform. It is responsible for managing the map, hence
@@ -53,6 +56,7 @@ class Platform extends Component<Props> {
                 <MapContainer
                     open_layers_store={this.props.open_layers_store}
                     state_proxy={this.props.state_proxy}
+                    taxonomy_store={this.props.taxonomy_store}
                     store_actions={this.props.store_actions}
                     user_interactions={this.props.user_interactions} />
                 <Coordinates id='coordinates' />
@@ -69,7 +73,7 @@ class Platform extends Component<Props> {
         );
     }
 }
-
+const component = withTaxonomyStore(Platform);
 export {
-    Platform
+    component as Platform
 };

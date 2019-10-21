@@ -1,5 +1,5 @@
 // @flow strict
-import {ANNOTATION, MODE} from '../domain/constants.js';
+import {ANNOTATION, MODE} from '../constants.js';
 import {AccessControlList} from '../domain/access-control-list.js';
 import {AnnotationFilter, ResourcePermissionRepository} from '../domain/entities.js';
 import {observable, computed, action} from 'mobx';
@@ -90,15 +90,6 @@ export class GeoImageNetStore {
     @observable selected_taxonomy: Taxonomy | null = null;
 
     /**
-     * The flat taxonomy classes structure simplifies the acces to classes when we need to change one directly, without looping
-     * over the whole taxnomy structure to find the one we want.
-     */
-    @observable flat_taxonomy_classes = {};
-
-    @observable selected_taxonomy_class_id: number = -1;
-    @observable visible_classes: number[] = [];
-
-    /**
      * For the next three properties, we directly write the indexes because flojs does not support the use of the constants
      * as keys. If that changes in the future maybe change it.
      */
@@ -143,7 +134,7 @@ export class GeoImageNetStore {
     /**
      * An instance with the current user's information.
      */
-    @observable logged_user: User | null = null;
+    @observable logged_user: User;
 
     /**
      * If there is a logged user (it's possible there isn't, people can access the map in anonymous mode)
@@ -151,7 +142,7 @@ export class GeoImageNetStore {
      */
     @computed get nickname_map() {
         const map = {};
-        if (this.logged_user === null) {
+        if (this.logged_user === undefined) {
             return {};
         }
         map[this.logged_user.id] = this.logged_user.user_name;

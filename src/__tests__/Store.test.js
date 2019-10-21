@@ -1,14 +1,14 @@
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 import {Container as LabelsContainer} from '../components/Map/LabelsChoice/Container';
+import {TaxonomyStore} from "../store/TaxonomyStore";
 
 const React = require('react');
 const {action} = require('mobx');
 
-const {MODE, ANNOTATION} = require('../domain/constants');
+const {MODE, ANNOTATION} = require('../constants');
 const {StoreActions} = require('../store/StoreActions');
 const {TaxonomyClass} = require('../domain/entities');
 
-const Button = require('@material-ui/core/Button');
 const {configure, mount} = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
 
@@ -56,7 +56,8 @@ describe('UI Elements correctly change the store', () => {
 
 test('injects a state_proxy and keeps track', () => {
     const state_proxy = new GeoImageNetStore();
-    const store_actions = new StoreActions(state_proxy);
+    const taxonomy_store = new TaxonomyStore(state_proxy);
+    const store_actions = new StoreActions(state_proxy, taxonomy_store);
     store_actions.set_mode(MODE.VISUALIZE);
     expect(state_proxy.mode).toBe(MODE.VISUALIZE);
     store_actions.set_mode(MODE.ASK_EXPERTISE);
@@ -65,7 +66,8 @@ test('injects a state_proxy and keeps track', () => {
 
 test('builds flat taxonomy_classes list', () => {
     const state_proxy = new GeoImageNetStore();
-    const store_actions = new StoreActions(state_proxy);
+    const taxonomy_store = new TaxonomyStore(state_proxy);
+    const store_actions = new StoreActions(state_proxy, taxonomy_store);
     const sub_children = [
         {id: 4},
         {id: 5},
@@ -82,13 +84,14 @@ test('builds flat taxonomy_classes list', () => {
         children: children
     };
     store_actions.build_taxonomy_classes_structures(classes_from_api);
-    expect(state_proxy.flat_taxonomy_classes[1]['children'][0]['name_fr']).toEqual('children name');
-    expect(state_proxy.flat_taxonomy_classes[2]['name_fr']).toEqual('children name');
+    expect(taxonomy_store.flat_taxonomy_classes[1]['children'][0]['name_fr']).toEqual('children name');
+    expect(taxonomy_store.flat_taxonomy_classes[2]['name_fr']).toEqual('children name');
 });
 
 test('accessing flat classes changes nested ones', () => {
     const state_proxy = new GeoImageNetStore();
-    const store_actions = new StoreActions(state_proxy);
+    const taxonomy_store = new TaxonomyStore(state_proxy);
+    const store_actions = new StoreActions(state_proxy, taxonomy_store);
     const sub_children = [
         {id: 4},
         {id: 5},
@@ -106,34 +109,35 @@ test('accessing flat classes changes nested ones', () => {
     };
     store_actions.build_taxonomy_classes_structures(classes_from_api);
     action(() => {
-        state_proxy.flat_taxonomy_classes[1]['children'][0]['name'] = 'test_name';
-        expect(state_proxy.flat_taxonomy_classes[2]['name']).toEqual('test_name');
+        taxonomy_store.flat_taxonomy_classes[1]['children'][0]['name'] = 'test_name';
+        expect(taxonomy_store.flat_taxonomy_classes[2]['name']).toEqual('test_name');
     });
 });
 
 describe('Annotation counts', () => {
     test('changing annotation counts actually changes annotation counts', () => {
-        const store = new GeoImageNetStore();
-        const store_actions = new StoreActions(store);
+        const state_proxy = new GeoImageNetStore();
+        const taxonomy_store = new TaxonomyStore(state_proxy);
+        const store_actions = new StoreActions(state_proxy, taxonomy_store);
 
-        expect(store.flat_taxonomy_classes[1]).toBe(undefined);
+        expect(taxonomy_store.flat_taxonomy_classes[1]).toBe(undefined);
         const taxonomy_class = new TaxonomyClass(1, 'name_fr', 'name_en', 1, null);
 
         const add_taxonomy = action(() => {
-            store.flat_taxonomy_classes[1] = taxonomy_class;
+            taxonomy_store.flat_taxonomy_classes[1] = taxonomy_class;
         });
         add_taxonomy();
 
-        expect(store.flat_taxonomy_classes[1].counts[ANNOTATION.STATUS.NEW]).toBe(undefined);
+        expect(taxonomy_store.flat_taxonomy_classes[1].counts[ANNOTATION.STATUS.NEW]).toBe(undefined);
 
         store_actions.change_annotation_status_count(1, ANNOTATION.STATUS.NEW, 1);
-        expect(store.flat_taxonomy_classes[1].counts[ANNOTATION.STATUS.NEW]).toBe(1);
+        expect(taxonomy_store.flat_taxonomy_classes[1].counts[ANNOTATION.STATUS.NEW]).toBe(1);
 
         store_actions.change_annotation_status_count(1, ANNOTATION.STATUS.NEW, 2);
-        expect(store.flat_taxonomy_classes[1].counts[ANNOTATION.STATUS.NEW]).toBe(3);
+        expect(taxonomy_store.flat_taxonomy_classes[1].counts[ANNOTATION.STATUS.NEW]).toBe(3);
 
         store_actions.change_annotation_status_count(1, ANNOTATION.STATUS.NEW, -4);
-        expect(store.flat_taxonomy_classes[1].counts[ANNOTATION.STATUS.NEW]).toBe(0);
+        expect(taxonomy_store.flat_taxonomy_classes[1].counts[ANNOTATION.STATUS.NEW]).toBe(0);
 
         expect(() => {
             store_actions.change_annotation_status_count(1, 'undefined', 1);
@@ -148,14 +152,17 @@ describe('Annotation counts', () => {
 
 describe('Annotation visibility toggling.', () => {
     test('toggle_annotation_status_visibility refuses incorrect input.', () => {
-        const store_actions = new StoreActions(new GeoImageNetStore());
+        const state_proxy = new GeoImageNetStore();
+        const taxonomy_store = new TaxonomyStore(state_proxy);
+        const store_actions = new StoreActions(state_proxy, taxonomy_store);
         expect(() => {
             store_actions.toggle_annotation_status_visibility('not_a_real_status');
         }).toThrow('Invalid annotation status: [not_a_real_status]');
     });
     test('toggle_annotation_status_visibility toggles existent annotation status visibility', () => {
         const state_proxy = new GeoImageNetStore();
-        const store_actions = new StoreActions(state_proxy);
+        const taxonomy_store = new TaxonomyStore(state_proxy);
+        const store_actions = new StoreActions(state_proxy, taxonomy_store);
         const status = 'new';
         expect(state_proxy.annotation_status_filters[status].activated).toBe(true);
         store_actions.toggle_annotation_status_visibility(status);

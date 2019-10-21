@@ -81,8 +81,8 @@ export class AnnotationBrowserStore {
         if (this.taxonomy_store.activated_status_filters_cql.length > 0) {
             bits.push(this.taxonomy_store.activated_status_filters_cql);
         }
-        if (this.taxonomy_store.taxonomy_class_id_selection.length > 0) {
-            bits.push(this.taxonomy_store.taxonomy_class_id_selection);
+        if (this.taxonomy_store.taxonomy_class_id_selection_cql.length > 0) {
+            bits.push(this.taxonomy_store.taxonomy_class_id_selection_cql);
         }
         const ownership_filters_array = Object.values(this.state_proxy.annotation_ownership_filters);
         if (this.state_proxy.logged_user) {

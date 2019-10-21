@@ -2,7 +2,7 @@
 import React from 'react';
 import {observer} from "mobx-react";
 import {Chip, Tooltip, withStyles} from "@material-ui/core";
-import {ANNOTATION_STATUS_AS_ARRAY} from "../../domain/constants";
+import {ANNOTATION_STATUS_AS_ARRAY} from "../../constants";
 import type {AnnotationStatusFilters, Counts} from "../../Types";
 
 export const SpacedChip = withStyles({

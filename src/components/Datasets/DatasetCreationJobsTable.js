@@ -1,3 +1,4 @@
+// @flow strict
 import MaterialTable from "material-table";
 import {graphql, compose} from 'react-apollo';
 import {tableIcons} from "../../utils/react";

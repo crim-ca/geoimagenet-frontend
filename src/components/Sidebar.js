@@ -1,47 +1,19 @@
 // @flow strict
-
-import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Paper, withStyles} from "@material-ui/core";
-import {Actions} from "../Actions";
-import {ExpandMore} from "@material-ui/icons";
-import {Viewer} from "../Taxonomy/Viewer";
 import React from "react";
-import {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import {AnnotationBrowserStore} from "../../store/AnnotationBrowserStore";
-import {StoreActions} from "../../store/StoreActions";
-import {UserInteractions} from "../../domain";
-import {Container as SettingsContainer} from '../UserSettings/Container';
-import {TFunction} from 'react-i18next';
-import {withTranslation} from '../../utils';
-import {Container as AnnotationBrowserContainer} from '../AnnotationBrowser/Container';
-import {TaxonomyStore} from '../../store/TaxonomyStore';
-import type {OpenLayersStore} from "../../store/OpenLayersStore";
+import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Paper, withStyles} from "@material-ui/core";
+import {ExpandMore} from "@material-ui/icons";
+import {compose} from "react-apollo";
 
-const SidebarSection = withStyles({
-    root: {
-        gridRow: '1/3',
-        gridColumn: '3/4',
-        padding: 0,
-    },
-})(Paper);
+import {Viewer} from "./Taxonomy/Viewer";
+import {Container as SettingsContainer} from './UserSettings/Container';
+import {withTranslation} from '../utils';
+import {Container as AnnotationBrowserContainer} from './AnnotationBrowser/Container';
 
-const StyledPanelDetails = withStyles({
-    root: {
-        flexDirection: 'column'
-    },
-})(ExpansionPanelDetails);
-
-const SidebarBottom = withStyles(theme => {
-    const {values} = theme;
-    return {
-        root: {
-            height: `calc(100% - ${values.heightActionsBar})`,
-            overflowY: 'scroll',
-        }
-    };
-})(props => {
-    const {classes, children} = props;
-    return <div className={classes.root}>{children}</div>;
-});
+import type {OpenLayersStore} from "../store/OpenLayersStore";
+import type {GeoImageNetStore} from "../store/GeoImageNetStore";
+import type {StoreActions} from "../store/StoreActions";
+import type {UserInteractions} from "../domain";
+import type {TFunction} from 'react-i18next';
 
 type SidebarSectionData = {
     title: string,
@@ -64,8 +36,7 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, 
                 <Viewer
                     refresh_source_by_status={user_interactions.refresh_source_by_status}
                     state_proxy={state_proxy}
-                    user_interactions={user_interactions}
-                    store_actions={store_actions} />
+                    user_interactions={user_interactions} />
             ),
         },
         {
@@ -73,15 +44,10 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, 
             slug: 'annotation-browser',
             content: (
                 <AnnotationBrowserContainer
+                    user_interactions={user_interactions}
                     open_layers_store={open_layers_store}
-                    state_proxy={state_proxy}
-                    store={new AnnotationBrowserStore(
-                        GEOSERVER_URL,
-                        ANNOTATION_NAMESPACE,
-                        ANNOTATION_LAYER,
-                        state_proxy,
-                        new TaxonomyStore(state_proxy),
-                    )} />
+                    store_actions={store_actions}
+                    state_proxy={state_proxy} />
             ),
         },
         {
@@ -105,10 +71,29 @@ type Props = {
     store_actions: StoreActions,
     user_interactions: UserInteractions,
     open_layers_store: OpenLayersStore,
+    classes: {
+        sidebar: {},
+        bottom: {},
+        details: {},
+    },
     t: TFunction,
 };
 type State = {
     opened_panel_title: string,
+};
+const style = {
+    sidebar: {
+        gridRow: '1/3',
+        gridColumn: '3/4',
+        padding: 0,
+    },
+    bottom: {
+        height: '100%',
+        overflowY: 'scroll',
+    },
+    details: {
+        flexDirection: 'column',
+    },
 };
 
 class Sidebar extends React.Component<Props, State> {
@@ -125,6 +110,7 @@ class Sidebar extends React.Component<Props, State> {
 
     render() {
         const {opened_panel_title} = this.state;
+        const {classes} = this.props;
         const sidebar_sections = make_sidebar_sections(
             this.props.user_interactions,
             this.props.state_proxy,
@@ -132,10 +118,8 @@ class Sidebar extends React.Component<Props, State> {
             this.props.open_layers_store,
             this.props.t);
         return (
-            <SidebarSection>
-                <Actions state_proxy={this.props.state_proxy}
-                         store_actions={this.props.store_actions} />
-                <SidebarBottom>
+            <Paper className={classes.sidebar}>
+                <div className={classes.bottom}>
                     {
                         sidebar_sections.map((section, i) => (
                             <ExpansionPanel key={i}
@@ -143,16 +127,19 @@ class Sidebar extends React.Component<Props, State> {
                                             onChange={this.create_open_panel_handler(section.slug)}>
                                 <ExpansionPanelSummary
                                     expandIcon={<ExpandMore />}>{section.title}</ExpansionPanelSummary>
-                                <StyledPanelDetails>{section.content}</StyledPanelDetails>
+                                <ExpansionPanelDetails className={classes.details}>{section.content}</ExpansionPanelDetails>
                             </ExpansionPanel>
                         ))
                     }
-                </SidebarBottom>
-            </SidebarSection>
+                </div>
+            </Paper>
         );
     }
 }
 
-const component = withTranslation()(Sidebar);
+const component = compose(
+    withTranslation(),
+    withStyles(style),
+)(Sidebar);
 
 export {component as Sidebar};

@@ -6,19 +6,21 @@ import {InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionReposi
 import {AccessControlList} from './access-control-list.js';
 import {NotificationManager} from 'react-notifications';
 
-import {ANNOTATION, ANNOTATION_STATUS_AS_ARRAY} from "./constants";
+import {ANNOTATION, ANNOTATION_STATUS_AS_ARRAY} from "../constants";
 import {captureException} from "@sentry/browser";
-import {DataQueries} from "./data-queries";
 
-import {typeof Map} from "ol/Map";
-import {typeof Event} from "ol/events";
-import typeof {GeoJSON, WKT} from "ol/format";
-import {StoreActions} from "../store/StoreActions";
-import {GeoImageNetStore} from "../store/GeoImageNetStore";
-import typeof {Feature, ModifyEvent} from "ol";
-import {SatelliteImage, Taxonomy, TaxonomyClass} from "./entities";
-import type {FollowedUser, MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI} from "../Types";
 import {i18n} from '../utils';
+
+import type {DataQueries} from "./data-queries";
+import type {StoreActions} from "../store/StoreActions";
+import type {GeoImageNetStore} from "../store/GeoImageNetStore";
+import type {Feature, ModifyEvent} from "ol";
+import type {SatelliteImage, Taxonomy} from "./entities";
+import type {Map} from "ol/Map";
+import type {Event} from "ol/events";
+import type {GeoJSON, WKT} from "ol/format";
+import type {FollowedUser, MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI} from "../Types";
+import type {TaxonomyStore} from "../store/TaxonomyStore";
 
 const {t} = i18n;
 
@@ -37,13 +39,11 @@ const {t} = i18n;
  * data queries, but I now feel this separation is artificial. All of that concerns the data access layer, and it could be made from the
  * same entity/layer, instead of the current separation between UserInteractions and DataQueries
  */
-type Coordinate = [number, number];
-type Coordinates = Coordinate[];
-type CoordinatesSet = Coordinates[];
 
 export class UserInteractions {
 
     store_actions: StoreActions;
+    taxonomy_store: TaxonomyStore;
     data_queries: DataQueries;
     i18next_instance: i18n;
     state_proxy: GeoImageNetStore;
@@ -57,11 +57,12 @@ export class UserInteractions {
      * The user interactions have first-hand influence upon the application state,
      * we need the store actions as dependency
      */
-    constructor(store_actions: StoreActions, data_queries: DataQueries, i18next_instance: i18n, state_proxy: GeoImageNetStore) {
+    constructor(store_actions: StoreActions, taxonomy_store: TaxonomyStore, data_queries: DataQueries, i18next_instance: i18n, state_proxy: GeoImageNetStore) {
         this.store_actions = store_actions;
         this.data_queries = data_queries;
         this.i18next_instance = i18next_instance;
         this.state_proxy = state_proxy;
+        this.taxonomy_store = taxonomy_store;
 
         this.release_annotations = this.release_annotations.bind(this);
     }
@@ -136,7 +137,7 @@ export class UserInteractions {
     };
 
     validate_creation_event_has_features = async () => {
-        if (this.state_proxy.selected_taxonomy_class_id === -1) {
+        if (this.taxonomy_store.selected_taxonomy_class_id === -1) {
             NotificationManager.warning('You must select a taxonomy class to begin annotating content.');
         }
     };
@@ -214,7 +215,7 @@ export class UserInteractions {
      *   for every layer under the point
      *     reject the modification if the layer does not correspond to either image name of the image id
      */
-    feature_respects_its_original_image = async (feature: Feature, wkt_format: WKT, map: Map) => {
+    feature_respects_its_original_image = async (feature: Feature, wkt_format: WKT) => {
         const image_id = feature.get('image_id');
         const feature_wkt = wkt_format.writeFeature(feature);
 
@@ -368,7 +369,8 @@ export class UserInteractions {
         try {
             const counts = await this.data_queries.flat_taxonomy_classes_counts(this.state_proxy.root_taxonomy_class_id);
             this.store_actions.set_annotation_counts(counts);
-            this.store_actions.toggle_taxonomy_class_tree_element(this.state_proxy.root_taxonomy_class_id, true);
+            const taxonomy_class = this.taxonomy_store.flat_taxonomy_classes[this.state_proxy.root_taxonomy_class_id];
+            this.taxonomy_store.toggle_taxonomy_class_tree_element(taxonomy_class, true);
         } catch (e) {
             NotificationManager.error('We were unable to fetch the taxonomy classes.');
         }
@@ -386,7 +388,12 @@ export class UserInteractions {
          */
         const magpie_session_json: MagpieMergedSessionInformation = await this.data_queries.current_user_session();
         const {user, authenticated} = magpie_session_json;
-        const followed_users: FollowedUser[] = await this.get_followed_users_collection();
+        let followed_users: FollowedUser[];
+        try {
+            followed_users = await this.get_followed_users_collection();
+        } catch (error) {
+            followed_users = [];
+        }
         const user_instance = new User(user.user_name, user.email, user.group_names, user.user_id, followed_users);
         this.store_actions.set_session_user(user_instance);
         let json_response;
@@ -444,18 +451,8 @@ export class UserInteractions {
     };
 
     /**
-     * Toggles the visibility of a taxonomy class's children in the taxonomy browser
-     * @param {TaxonomyClass} taxonomy_class
-     */
-    @action.bound
-    toggle_taxonomy_class(taxonomy_class: TaxonomyClass) {
-        const taxonomy_class_id = taxonomy_class.id;
-        this.store_actions.toggle_taxonomy_class_tree_element(taxonomy_class_id);
-    }
-
-    /**
      * When submitting the login form, the user expects to login, or be presented with error about said login.
-     * Send the credentials to magpie, then verify content to be sure user is logged in, then notify about sucessful login.
+     * Send the credentials to magpie, then verify content to be sure user is logged in, then notify about successful login.
      * In case of error, notify of problem without leaking too much detail.
      */
     async login_form_submission(form_data: {}) {

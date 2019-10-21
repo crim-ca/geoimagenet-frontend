@@ -1,18 +1,12 @@
+// @flow strict
 import React, {Component} from 'react';
-import {Link, withStyles} from '@material-ui/core';
-import PropTypes from 'prop-types';
+import {withStyles} from '@material-ui/core';
+import {Link, withRouter} from 'react-router-dom';
 
 import {SessionHandle} from './SessionHandle.js';
-import {UserInteractions} from '../domain';
-
-const MenuLink = withStyles(theme => {
-    const {values} = theme;
-    return {
-        root: {
-            padding: `0 ${values.gutterSmall}`,
-        }
-    };
-})(Link);
+import type {UserInteractions} from '../domain';
+import type {GeoImageNetStore} from "../store/GeoImageNetStore";
+import {compose} from "react-apollo";
 
 const MenuContainerDiv = withStyles(theme => {
     const {values} = theme;
@@ -34,23 +28,32 @@ const MenuContainerDiv = withStyles(theme => {
     return <div className={classes.container}>{children}</div>;
 });
 
+const style = theme => ({
+    link: {
+        padding: `0 ${theme.values.gutterSmall}`,
+    },
+    selected: {
+        textDecoration: 'underline',
+    },
+});
+
+type Props = {
+    state_proxy: GeoImageNetStore,
+    user_interactions: UserInteractions,
+    contact_email: string,
+    location: { pathname: string },
+    classes: {link: string, selected: ''},
+};
 
 /**
  * A menu centering items using Links from material. Should be placed at the top of each logged pages.
  */
-class Menu extends Component {
+class Menu extends Component<Props> {
 
-    static propTypes = {
-        state_proxy: PropTypes.object.isRequired,
-        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
-        contact_email: PropTypes.string.isRequired,
-    };
 
     /**
      * Defines the different menus that can be shown when logged in
      * @todo bring back help when we have an idea what to put in there
-     * @private
-     * @type {{title: string, href: string}[]}
      */
     menus = [
         {title: 'Home', href: '/'},
@@ -63,14 +66,13 @@ class Menu extends Component {
     ];
 
     render() {
-        const current_url = window.location.pathname;
-        const {state_proxy, user_interactions} = this.props;
+        const {state_proxy, user_interactions, location, classes} = this.props;
+        const current_url = location.pathname;
         return (
             <MenuContainerDiv>
-                {this.menus.map((menu, i) => <MenuLink href={menu.href}
-                                                       key={i}
-                                                       underline={menu.href === current_url ? 'always' : 'hover'}
-                                                       color={menu.href === current_url ? 'textPrimary' : 'textSecondary'}>{menu.title}</MenuLink>
+                {this.menus.map((menu, i) => <Link to={menu.href}
+                                                   key={i}
+                                                   className={menu.href === current_url ? `${classes.link} ${classes.selected}` : classes.link}>{menu.title}</Link>
                 )}
                 <SessionHandle state_proxy={state_proxy} user_interactions={user_interactions} />
             </MenuContainerDiv>
@@ -78,4 +80,8 @@ class Menu extends Component {
     }
 }
 
-export {Menu};
+const component = compose(
+    withRouter,
+    withStyles(style),
+)(Menu);
+export {component as Menu};

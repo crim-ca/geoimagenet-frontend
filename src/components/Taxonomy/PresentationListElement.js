@@ -4,13 +4,16 @@ import {observer} from "mobx-react";
 import React, {Component} from "react";
 import {Collapse, List, ListItem, withStyles} from "@material-ui/core";
 import {Tree} from "./Tree";
-import {TaxonomyClassLabel} from './TaxonomyClassLabel';
 import {TaxonomyClass} from "../../domain/entities";
-import {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import {UserInteractions} from "../../domain";
-import type {TFunction} from "react-i18next";
 import {AnnotationCounts} from "./AnnotationCounts";
 import {withTranslation} from '../../utils';
+
+import type {UserInteractions} from "../../domain";
+import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
+import type {TFunction} from "react-i18next";
+import {compose} from "react-apollo";
+import {withTaxonomyStore} from "../../store/HOCs";
 
 const StyledList = withStyles({
     padding: {
@@ -38,6 +41,8 @@ const StyledLabelAndCountSpan = withStyles({
 type Props = {
     taxonomy_class: TaxonomyClass,
     state_proxy: GeoImageNetStore,
+    taxonomy_store: TaxonomyStore,
+    selected: boolean,
     user_interactions: UserInteractions,
     t: TFunction,
 };
@@ -45,28 +50,25 @@ type Props = {
 @observer
 class PresentationListElement extends Component<Props> {
     render() {
-        const {taxonomy_class, state_proxy, user_interactions, t} = this.props;
+        const {taxonomy_class, state_proxy, user_interactions, t, selected, taxonomy_store} = this.props;
         if (taxonomy_class === undefined) {
             return null;
         }
         const {children} = taxonomy_class;
-        const {toggle_taxonomy_class} = user_interactions;
         const make_toggle_callback = elem => () => {
-            toggle_taxonomy_class(elem);
+            taxonomy_store.toggle_taxonomy_class_tree_element(elem);
         };
         const label_click_callback = children && children.length > 0
             ? make_toggle_callback(taxonomy_class)
             : null;
-
-        const label = t(`taxonomy_classes:${taxonomy_class.id}`);
         return (
             <StyledList>
                 <StyledListItem className='taxonomy_class_list_element'
                                 onClick={label_click_callback}
-                                selected={state_proxy.selected_taxonomy_class_id === taxonomy_class.id}
+                                selected={selected}
                                 button>
                     <StyledLabelAndCountSpan>
-                        <TaxonomyClassLabel label={label}/>
+                        <span>{t(`taxonomy_classes:${taxonomy_class.id}`)}</span>
                         <AnnotationCounts
                             name_en={taxonomy_class.name_en}
                             counts={taxonomy_class.counts}
@@ -88,5 +90,8 @@ class PresentationListElement extends Component<Props> {
     }
 }
 
-const component = withTranslation()(PresentationListElement);
+const component = compose(
+    withTranslation(),
+    withTaxonomyStore,
+)(PresentationListElement);
 export {component as PresentationListElement};
