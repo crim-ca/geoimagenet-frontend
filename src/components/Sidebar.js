@@ -4,15 +4,15 @@ import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Paper, wit
 import {ExpandMore} from "@material-ui/icons";
 import {compose} from "react-apollo";
 
-import {Viewer} from "../Taxonomy/Viewer";
-import {Container as SettingsContainer} from '../UserSettings/Container';
-import {withTranslation} from '../../utils';
-import {Container as AnnotationBrowserContainer} from '../AnnotationBrowser/Container';
+import {Viewer} from "./Taxonomy/Viewer";
+import {Container as SettingsContainer} from './UserSettings/Container';
+import {withTranslation} from '../utils';
+import {Container as AnnotationBrowserContainer} from './AnnotationBrowser/Container';
 
-import type {OpenLayersStore} from "../../store/OpenLayersStore";
-import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import type {StoreActions} from "../../store/StoreActions";
-import type {UserInteractions} from "../../domain";
+import type {OpenLayersStore} from "../store/OpenLayersStore";
+import type {GeoImageNetStore} from "../store/GeoImageNetStore";
+import type {StoreActions} from "../store/StoreActions";
+import type {UserInteractions} from "../domain";
 import type {TFunction} from 'react-i18next';
 
 type SidebarSectionData = {

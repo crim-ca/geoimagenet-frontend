@@ -5,7 +5,7 @@ import {TaxonomyStore} from "../store/TaxonomyStore";
 const React = require('react');
 const {action} = require('mobx');
 
-const {MODE, ANNOTATION} = require('../domain/constants');
+const {MODE, ANNOTATION} = require('../constants');
 const {StoreActions} = require('../store/StoreActions');
 const {TaxonomyClass} = require('../domain/entities');
 

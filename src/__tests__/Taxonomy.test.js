@@ -4,7 +4,7 @@ import {StoreActions} from "../store/StoreActions";
 import {DataQueries} from "../domain/data-queries";
 import {UserInteractions} from "../domain";
 import {ANNOTATIONS_COUNTS_RESPONSE, TAXONOMY_CLASSES_RESPONSE, TAXONOMY_RESPONSE} from "./api_responses";
-import {ANNOTATION} from "../domain/constants";
+import {ANNOTATION} from "../constants";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";
 import {TaxonomyStore} from "../store/TaxonomyStore";
 

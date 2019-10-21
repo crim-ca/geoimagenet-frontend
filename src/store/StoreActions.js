@@ -1,7 +1,7 @@
 // @flow strict
 
 import {TaxonomyClass} from '../domain/entities.js';
-import {ANNOTATION, MODE} from '../domain/constants.js';
+import {ANNOTATION, MODE} from '../constants.js';
 import {observable, action, runInAction} from 'mobx';
 
 import type {AccessControlList} from "../domain/access-control-list";

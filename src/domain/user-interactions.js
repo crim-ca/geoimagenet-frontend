@@ -6,7 +6,7 @@ import {InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionReposi
 import {AccessControlList} from './access-control-list.js';
 import {NotificationManager} from 'react-notifications';
 
-import {ANNOTATION, ANNOTATION_STATUS_AS_ARRAY} from "./constants";
+import {ANNOTATION, ANNOTATION_STATUS_AS_ARRAY} from "../constants";
 import {captureException} from "@sentry/browser";
 import {i18n} from '../utils';
 

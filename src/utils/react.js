@@ -4,6 +4,8 @@ import {createMuiTheme, MuiThemeProvider} from '@material-ui/core';
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import {ANNOTATION_THUMBNAIL_SIZE} from '../constants';
+
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
@@ -64,7 +66,8 @@ export const theme = createMuiTheme({
         fontFamily: 'Montserrat'
     },
     values: {
-        widthSidebar: '500px',
+        annotation_size: `${ANNOTATION_THUMBNAIL_SIZE}px`,
+        widthSidebar: '600px',
         heightAppBar: '64px',
         heightActionsBar: '64px',
         gutterSmall: GUTTER_SMALL,

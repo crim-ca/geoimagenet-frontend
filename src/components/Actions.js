@@ -4,7 +4,7 @@ import {observer} from 'mobx-react';
 import {withStyles} from '@material-ui/core';
 import {features} from '../../features';
 
-import {ANNOTATIONS, MODE, READ, VALIDATIONS, WRITE} from '../domain/constants.js';
+import {ANNOTATIONS, MODE, READ, VALIDATIONS, WRITE} from '../constants.js';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {
     faEye,

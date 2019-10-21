@@ -1,5 +1,5 @@
 // @flow strict
-import {ANNOTATION, MODE} from '../domain/constants.js';
+import {ANNOTATION, MODE} from '../constants.js';
 import {AccessControlList} from '../domain/access-control-list.js';
 import {AnnotationFilter, ResourcePermissionRepository} from '../domain/entities.js';
 import {observable, computed, action} from 'mobx';

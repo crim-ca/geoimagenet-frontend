@@ -5,7 +5,7 @@ import {withStyles, Paper} from '@material-ui/core';
 import {MapContainer} from '../Map/MapContainer';
 import {UserInteractions} from '../../domain/user-interactions.js';
 import {StoreActions} from '../../store/StoreActions';
-import {Sidebar} from './Sidebar';
+import {Sidebar} from '../Sidebar';
 import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {OpenLayersStore} from "../../store/OpenLayersStore";
 import {Container as FiltersContainer} from "../Map/Filters/Container";

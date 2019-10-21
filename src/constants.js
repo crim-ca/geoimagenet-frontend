@@ -125,3 +125,8 @@ export const VALIDATIONS = 'validations';
  * @type {string}
  */
 export const WMS = 'wms';
+
+/**
+ * Really just used in string concatenation for material-ui styling and geoserver requests, so we don't use an integer here
+ */
+export const ANNOTATION_THUMBNAIL_SIZE: string = '75';

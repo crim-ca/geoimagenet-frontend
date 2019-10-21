@@ -4,7 +4,7 @@ import {withStyles} from '@material-ui/core';
 import {observer} from 'mobx-react';
 
 import {DatasetsTable} from './DatasetsTable';
-import {DATASETS, WRITE} from '../../domain/constants.js';
+import {DATASETS, WRITE} from '../../constants.js';
 
 import {DatasetCreationJobsTable} from './DatasetCreationJobsTable';
 

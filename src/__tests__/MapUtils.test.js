@@ -1,7 +1,7 @@
 // @flow strict
 
 import {action} from 'mobx';
-import {ANNOTATION} from "../domain/constants";
+import {ANNOTATION} from "../constants";
 import {AnnotationFilter, User} from "../domain/entities";
 import {make_annotation_ownership_cql_filter} from "../components/Map/utils";
 import {GeoImageNetStore} from "../store/GeoImageNetStore";

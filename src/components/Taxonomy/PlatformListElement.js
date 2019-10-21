@@ -11,7 +11,7 @@ import {AnnotationCounts} from './AnnotationCounts';
 import {TaxonomyClassActions} from './TaxonomyClassActions';
 
 import {Classes} from './Classes';
-import {ANNOTATION} from '../../domain/constants.js';
+import {ANNOTATION} from '../../constants.js';
 
 import type {TaxonomyClass} from "../../domain/entities";
 import type {UserInteractions} from "../../domain";

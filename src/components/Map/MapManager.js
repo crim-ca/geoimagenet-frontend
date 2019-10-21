@@ -35,7 +35,7 @@ import {
     VALID_OPENLAYERS_ANNOTATION_RESOLUTION,
     READ,
     WMS
-} from '../../domain/constants.js';
+} from '../../constants.js';
 import {debounced} from '../../utils/event_handling.js';
 import {NotificationManager} from 'react-notifications';
 import {StoreActions} from "../../store/StoreActions";

@@ -4,7 +4,7 @@
  */
 
 import {autorun} from "mobx";
-import {ANNOTATION, CUSTOM_GEOIM_IMAGE_LAYER, MODE} from "../../domain/constants";
+import {ANNOTATION, CUSTOM_GEOIM_IMAGE_LAYER, MODE} from "../../constants";
 import {Draw, Modify, Select} from "ol/interaction";
 import {NotificationManager} from "react-notifications";
 
