@@ -134,7 +134,7 @@ export class GeoImageNetStore {
     /**
      * An instance with the current user's information.
      */
-    @observable logged_user: User | null = null;
+    @observable logged_user: User;
 
     /**
      * If there is a logged user (it's possible there isn't, people can access the map in anonymous mode)
@@ -142,7 +142,7 @@ export class GeoImageNetStore {
      */
     @computed get nickname_map() {
         const map = {};
-        if (this.logged_user === null) {
+        if (this.logged_user === undefined) {
             return {};
         }
         map[this.logged_user.id] = this.logged_user.user_name;

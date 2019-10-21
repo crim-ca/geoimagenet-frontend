@@ -1,10 +1,12 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+// @flow strict
+import React from 'react';
 import {observer} from 'mobx-react';
 import {withStyles, Paper, CircularProgress, Typography} from '@material-ui/core';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faUserCog, faSignOutAlt} from '@fortawesome/free-solid-svg-icons';
-import {UserInteractions} from '../domain';
+
+import type {UserInteractions} from '../domain';
+import type {GeoImageNetStore} from "../store/GeoImageNetStore";
 
 const SessionHandlePaper = withStyles(theme => {
     const {values} = theme;
@@ -40,18 +42,18 @@ const ClickableSpan = withStyles(theme => {
     return <span className={classes.root}>{children}</span>;
 });
 
+type Props = {
+    state_proxy: GeoImageNetStore,
+    user_interactions: UserInteractions,
+};
+
 /**
  * We want to have an indication of who the user is authenticated as. This will eventually feature a way to change settings,
  * such as language, maybe default filters. There should be a logout button, redirecting to the home page, and a way
  * to change one's password.
  */
 @observer
-class SessionHandle extends Component {
-
-    static propTypes = {
-        state_proxy: PropTypes.object.isRequired,
-        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
-    };
+class SessionHandle extends React.Component<Props> {
 
     render() {
         /**
@@ -68,7 +70,8 @@ class SessionHandle extends Component {
                 <PresentationText>Hello {logged_user.user_name}.</PresentationText>
                 <FontAwesomeIcon icon={faUserCog} className='fa-2x' />
                 <ClickableSpan>
-                    <FontAwesomeIcon onClick={this.props.user_interactions.logout} icon={faSignOutAlt} className='fa-2x' />
+                    <FontAwesomeIcon onClick={this.props.user_interactions.logout} icon={faSignOutAlt}
+                                     className='fa-2x' />
                 </ClickableSpan>
             </SessionHandlePaper>
         );

@@ -44,8 +44,8 @@ import {ThemedComponent} from "./utils/react";
 import {ApolloProvider} from "react-apollo";
 import {PresentationContainer} from "./components/Presentation/Presentation";
 import {create_client} from "./utils/apollo";
-import {Datasets} from "./components/Datasets";
-import {Models} from "./components/Models";
+import {Datasets} from "./components/Datasets/Datasets";
+import {Models} from "./components/Models/Models";
 import {Benchmarks} from "./components/Benchmarks";
 
 Sentry.init({

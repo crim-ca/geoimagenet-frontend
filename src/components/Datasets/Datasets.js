@@ -1,12 +1,13 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+// @flow strict
+import React from 'react';
 import {withStyles} from '@material-ui/core';
 import {observer} from 'mobx-react';
 
 import {DatasetsTable} from './DatasetsTable';
+import {DatasetCreationJobsTable} from './DatasetCreationJobsTable';
 import {DATASETS, WRITE} from '../../constants.js';
 
-import {DatasetCreationJobsTable} from './DatasetCreationJobsTable';
+import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 
 const Layout = withStyles(({values}) => ({
     grid: {
@@ -25,17 +26,12 @@ const Layout = withStyles(({values}) => ({
     </div>;
 });
 
-@observer
-class Datasets extends Component {
+type Props = {
+    state_proxy: GeoImageNetStore,
+};
 
-    /**
-     *
-     * @type {Object}
-     * @property {Object} state_proxy
-     */
-    static propTypes = {
-        state_proxy: PropTypes.object.isRequired,
-    };
+@observer
+class Datasets extends React.Component<Props> {
 
     render() {
         const {acl} = this.props.state_proxy;

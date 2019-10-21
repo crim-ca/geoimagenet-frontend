@@ -1,3 +1,4 @@
+// @flow strict
 import React, {useState} from 'react';
 import {withStyles, Link, Typography, Paper, Select, MenuItem, Dialog} from '@material-ui/core';
 import Clear from '@material-ui/icons/Clear';

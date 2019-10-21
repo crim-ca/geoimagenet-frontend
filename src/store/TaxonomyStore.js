@@ -25,7 +25,7 @@ export class TaxonomyStore {
         this.selected_taxonomy_class = taxonomy_class;
     }
 
-    @action toggle_pinned_class(taxonomy_class: TaxonomyClass, override: boolean): void {
+    @action toggle_pinned_class(taxonomy_class: TaxonomyClass, override?: boolean): void {
         if (override !== undefined) {
             taxonomy_class.pinned = override;
         } else {
@@ -45,7 +45,7 @@ export class TaxonomyStore {
      * Inverts a taxonomy class annotations visibility on the viewport, as well as all this class's children's visibility.
      * Note that filters still apply on what annotations statuses are shown.
      */
-    @action invert_taxonomy_class_visibility(taxonomy_class: TaxonomyClass, override: boolean) {
+    @action invert_taxonomy_class_visibility(taxonomy_class: TaxonomyClass, override?: boolean) {
         if (override !== undefined) {
             taxonomy_class.visible = override;
         } else {

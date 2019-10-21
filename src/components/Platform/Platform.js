@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import {withStyles, Paper} from '@material-ui/core';
@@ -34,13 +34,13 @@ const Coordinates = withStyles(({values, zIndex}) => ({
     }
 }))(Paper);
 
-type Props = {
+type Props = {|
     state_proxy: GeoImageNetStore,
     store_actions: StoreActions,
     taxonomy_store: TaxonomyStore,
     user_interactions: UserInteractions,
     open_layers_store: OpenLayersStore,
-};
+|};
 
 /**
  * The Platform is the top level component for the annotation platform. It is responsible for managing the map, hence

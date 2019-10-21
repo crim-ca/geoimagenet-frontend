@@ -1,11 +1,12 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
+// @flow strict
+import React from 'react';
 import {withStyles} from '@material-ui/core';
-
 import {NotificationContainer} from 'react-notifications';
 
 import {Menu} from './Menu.js';
-import {UserInteractions} from '../domain';
+
+import type {UserInteractions} from '../domain';
+import type {GeoImageNetStore} from "../store/GeoImageNetStore";
 
 const LayoutGrid = withStyles(theme => {
     const {values} = theme;
@@ -36,18 +37,18 @@ const Top = withStyles({
     }
 })(({classes, children}) => (<div className={classes.root}>{children}</div>));
 
+type Props = {
+    state_proxy: GeoImageNetStore,
+    user_interactions: UserInteractions,
+    children: {},
+};
+
 /**
  * The LoggedLayout should be used for every top level page that is behind the login.
  * It will put a menu on top, and the children at the bottom.
  * Each bottom component is responsible for setting its bottom section's layout.
  */
-class LoggedLayout extends Component {
-
-    static propTypes = {
-        state_proxy: PropTypes.object.isRequired,
-        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
-        children: PropTypes.any,
-    };
+class LoggedLayout extends React.Component<Props> {
 
     render() {
         const {children, state_proxy, user_interactions} = this.props;
@@ -60,11 +61,11 @@ class LoggedLayout extends Component {
                     <Menu
                         state_proxy={state_proxy}
                         user_interactions={user_interactions}
-                        contact_email={CONTACT_EMAIL}/>
+                        contact_email={CONTACT_EMAIL} />
                 </Top>
                 <Bottom>
                     {children}
-                    <NotificationContainer/>
+                    <NotificationContainer />
                 </Bottom>
             </LayoutGrid>
         );

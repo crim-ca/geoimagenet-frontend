@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core';
 import {Link, withRouter} from 'react-router-dom';
@@ -42,10 +42,7 @@ type Props = {
     user_interactions: UserInteractions,
     contact_email: string,
     location: { pathname: string },
-    classes: {
-        link: {},
-        selected: {},
-    },
+    classes: {link: string, selected: ''},
 };
 
 /**

@@ -1,23 +1,34 @@
 // @flow strict
 
-import React from 'react';
+import * as React from 'react';
 import {taxonomy_store, annotation_browser_store} from './instance_cache';
 
-type Props = {};
-const withTaxonomyStore = (InnerComponent) => class extends React.Component<Props> {
-    render() {
+import type {TaxonomyStore} from "./TaxonomyStore";
+import type {AnnotationBrowserStore} from "./AnnotationBrowserStore";
+
+type InjectedForTaxonomy = {| taxonomy_store: TaxonomyStore |};
+
+function withTaxonomyStore<Config>(
+    InnerComponent: React.AbstractComponent<{| ...Config, ...InjectedForTaxonomy |}>
+): React.AbstractComponent<Config> {
+    return function WrapperComponent(props: Config) {
         return (
-            <InnerComponent {...this.props} taxonomy_store={taxonomy_store} />
+            <InnerComponent {...props} taxonomy_store={taxonomy_store} />
         );
-    }
-};
-const withAnnotationBrowserStore = (InnerComponent) => class extends React.Component<Props> {
-        render() {
+    };
+}
+
+type InjectedForAnnotationBrowser = {| annotation_browser_store: AnnotationBrowserStore |};
+
+function withAnnotationBrowserStore<Config>(
+    InnerComponent: React.AbstractComponent<{| ...Config, ...InjectedForAnnotationBrowser |}>
+): React.AbstractComponent<Config> {
+    return function WrapperComponent(props: Config) {
         return (
-            <InnerComponent {...this.props} annotation_browser_store={annotation_browser_store} />
+            <InnerComponent {...props} annotation_browser_store={annotation_browser_store} />
         );
-    }
-};
+    };
+}
 
 export {
     withTaxonomyStore,

@@ -15,12 +15,12 @@ import {withTaxonomyStore} from "../../store/HOCs";
  * Optimally, it could also be used in a tree that would allow actions to be taken from the widgets
  */
 
-type Props = {
+type Props = {|
     taxonomy_classes: TaxonomyClass[],
     state_proxy: GeoImageNetStore,
     taxonomy_store: TaxonomyStore,
     user_interactions: UserInteractions,
-};
+|};
 
 @observer
 class Tree extends Component<Props> {
