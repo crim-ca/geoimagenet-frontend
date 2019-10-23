@@ -3,6 +3,7 @@
 import {Feature} from "ol/Feature";
 import {Circle, Fill, Stroke, Style, Text} from "ol/style";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import {features as activated_features} from '../../../features';
 import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
 type StyleFunction = (Feature, number) => Style | Style[];
@@ -83,7 +84,7 @@ export function create_style_function(color: string, state_proxy: GeoImageNetSto
                 }),
             }));
         }
-        if (feature.get('review_requested')) {
+        if (activated_features.expertise && feature.get('review_requested')) {
             styles.push(new Style({
                 text: new Text({
                     font: '36px Calibri, sans-serif',
@@ -95,6 +96,7 @@ export function create_style_function(color: string, state_proxy: GeoImageNetSto
                 }),
             }));
         }
+
         return styles;
     };
 }

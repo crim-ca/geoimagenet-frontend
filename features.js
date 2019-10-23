@@ -2,7 +2,7 @@
 
 const features = {
     subscriptions: false,
-    expertise: true,
+    expertise: false,
 };
 
 module.exports = {features};
