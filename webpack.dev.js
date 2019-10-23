@@ -4,7 +4,7 @@ const webpack = require('webpack');
 
 module.exports = merge(common, {
     mode: 'development',
-    devtool: 'inline-source-map',
+    devtool: 'eval-source-map',
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
     ],
@@ -13,7 +13,7 @@ module.exports = merge(common, {
         historyApiFallback: true,
         contentBase: './dist',
         host: '10.30.90.114',
-        https: true,
+        https: false,
         compress: true,
         port: 9000,
     },

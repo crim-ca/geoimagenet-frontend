@@ -16,11 +16,9 @@ type Props = {
 @observer
 class TaxonomyClassActions extends Component<Props> {
 
-    make_change_handler(taxonomy_class: TaxonomyClass) {
-        return () => {
-            this.props.invert_taxonomy_class_visibility(taxonomy_class);
-        };
-    }
+    make_change_handler = (taxonomy_class: TaxonomyClass) => () => {
+        this.props.invert_taxonomy_class_visibility(taxonomy_class);
+    };
 
     make_pinned_handler = (taxonomy_class: TaxonomyClass) => () => {
         this.props.toggle_pinned_class(taxonomy_class);
@@ -31,11 +29,11 @@ class TaxonomyClassActions extends Component<Props> {
         return (
             <span className='actions'>
                 <Checkbox value={id}
-                          image_class='checkbox_eye'
+                          image_class='checkbox eye'
                           change_handler={this.make_change_handler(this.props.taxonomy_class)}
                           checked={visible} />
                 <Checkbox value={id}
-                          image_class='checkbox_eye'
+                          image_class='checkbox pin'
                           change_handler={this.make_pinned_handler(this.props.taxonomy_class)}
                           checked={pinned} />
                 <ReleaseButton onclick={this.props.release_handler} />

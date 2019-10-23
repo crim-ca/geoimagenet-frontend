@@ -1,25 +1,15 @@
 // @flow strict
 
+import {hot} from 'react-hot-loader/root';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route
-} from 'react-router-dom';
-
 import * as Sentry from '@sentry/browser';
-import {CssBaseline, MuiThemeProvider} from '@material-ui/core';
 
 import {DataQueries} from './domain/data-queries.js';
 import {StoreActions} from './store/StoreActions';
 import {UserInteractions} from './domain/user-interactions.js';
-import {Platform} from './components/Platform/Platform.js';
-import {LoggedLayout} from './components/LoggedLayout.js';
 import {i18n} from './utils';
-
-import {DialogContainer} from './components/Dialogs';
 
 import './css/base.css';
 import './css/style_platform.css';
@@ -29,28 +19,22 @@ import './css/open_layers.css';
 import './img/icons/favicon.ico';
 import './img/background.hack.jpg';
 
-import {theme} from './utils/react.js';
-import {NotificationContainer} from "react-notifications";
 import {captureException} from "@sentry/browser";
 import {LoadingSplashCircle} from "./components/LoadingSplashCircle";
-import {ContextualMenuContainer} from "./components/ContextualMenu/ContextualMenuContainer";
 import {OpenLayersStore} from "./store/OpenLayersStore";
 import Collection from "ol/Collection";
 import {state_proxy, taxonomy_store} from './store/instance_cache';
 
+import {App} from './App';
 import type {TaxonomyStore} from "./store/TaxonomyStore";
 import type {GeoImageNetStore} from "./store/GeoImageNetStore";
-import {ThemedComponent} from "./utils/react";
-import {ApolloProvider} from "react-apollo";
-import {PresentationContainer} from "./components/Presentation/Presentation";
 import {create_client} from "./utils/apollo";
-import {Datasets} from "./components/Datasets/Datasets";
-import {Models} from "./components/Models/Models";
-import {Benchmarks} from "./components/Benchmarks";
 
 Sentry.init({
     dsn: FRONTEND_JS_SENTRY_DSN,
 });
+
+const HotApp = hot(App);
 
 /**
  * When initiating the platform, we need to
@@ -71,65 +55,12 @@ export class PlatformLoader {
     user_interactions: UserInteractions;
 
     constructor(geoimagenet_api_endpoint: string, geoserver_endpoint: string, magpie_endpoint: string, ml_endpoint: string, i18next_instance: i18n) {
-
         this.state_proxy = state_proxy;
         this.taxonomy_store = taxonomy_store;
         this.open_layers_store = new OpenLayersStore(new Collection());
         this.store_actions = new StoreActions(this.state_proxy, this.taxonomy_store);
         this.data_queries = new DataQueries(geoimagenet_api_endpoint, geoserver_endpoint, magpie_endpoint, ml_endpoint);
         this.user_interactions = new UserInteractions(this.store_actions, this.taxonomy_store, this.data_queries, i18next_instance, this.state_proxy);
-    }
-
-    make_platform() {
-        return (
-            <Switch>
-                <Route path='/platform'>
-                    <Platform
-                        open_layers_store={this.open_layers_store}
-                        state_proxy={this.state_proxy}
-                        store_actions={this.store_actions}
-                        user_interactions={this.user_interactions} />
-                </Route>
-                <Route path='/datasets'>
-                    <Datasets
-                        state_proxy={this.state_proxy} />
-                </Route>
-                <Route path='/models'>
-                    <Models model_upload_instructions_url={THELPER_MODEL_UPLOAD_INSTRUCTIONS} />
-                </Route>
-                <Route path='/benchmarks'><Benchmarks /></Route>
-                <Route path='/'>
-                    <ThemedComponent>
-                        <div style={{height: '100%'}}>
-                            <PresentationContainer
-                                state_proxy={this.state_proxy}
-                                contact_email={CONTACT_EMAIL}
-                                user_interactions={this.user_interactions} />
-                            <NotificationContainer />
-                        </div>
-                    </ThemedComponent>
-                </Route>
-            </Switch>
-
-        );
-    }
-
-    /**
-     * we must make sure not to return the whole logged layout when the request is not authenticated: that situation
-     * means we are in a demo platform context.
-     * @todo at some point add the possibility of quick login from this state so that humans don't need to go back to the home page to login.
-     * @returns {*}
-     */
-    make_layout() {
-        const {acl: {authenticated}} = this.state_proxy;
-        if (authenticated) {
-            return (
-                <LoggedLayout state_proxy={this.state_proxy} user_interactions={this.user_interactions}>
-                    {this.make_platform()}
-                </LoggedLayout>
-            );
-        }
-        return this.make_platform();
     }
 
     /**
@@ -161,17 +92,13 @@ export class PlatformLoader {
         const client = create_client(GRAPHQL_ENDPOINT);
 
         ReactDOM.render(
-            <Router>
-                <MuiThemeProvider theme={theme}>
-                    <CssBaseline />
-                    <ApolloProvider client={client}>
-                        {this.make_layout()}
-                    </ApolloProvider>
-                    <DialogContainer />
-                    <NotificationContainer />
-                    <ContextualMenuContainer />
-                </MuiThemeProvider>
-            </Router>,
+            <HotApp open_layers_store={this.open_layers_store}
+                    state_proxy={state_proxy}
+                    store_actions={this.store_actions}
+                    user_interactions={user_interactions}
+                    thelper_model_upload_instructions_url={THELPER_MODEL_UPLOAD_INSTRUCTIONS}
+                    contact_email={CONTACT_EMAIL}
+                    client={client} />,
             div
         );
     }

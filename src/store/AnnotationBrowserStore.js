@@ -1,5 +1,5 @@
 // @flow strict
-import {configure, observable, computed, autorun, action} from 'mobx';
+import {configure, observable, computed, action} from 'mobx';
 import {make_annotation_ownership_cql_filter} from "../components/Map/utils";
 
 import type {GeoImageNetStore} from "./GeoImageNetStore";
@@ -58,7 +58,7 @@ export class AnnotationBrowserStore {
 
     @observable wfs_response: WfsResponse;
     @observable page_number: number = 1;
-    @observable page_size: number = 5;
+    @observable page_size: number = 10;
 
     @computed get total_features(): number {
         return this.wfs_response ? this.wfs_response.totalFeatures : 0;
