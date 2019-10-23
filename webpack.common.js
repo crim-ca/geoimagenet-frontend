@@ -4,9 +4,9 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: {
-        home: './src/home.js',
-    },
+    entry: [
+        './src/home.js',
+    ],
     output: {
         path: path.resolve(__dirname, 'dist'),
     },
@@ -29,6 +29,11 @@ module.exports = {
             title: 'GeoImageNet'
         }),
     ],
+    resolve: {
+        alias: {
+            'react-dom': '@hot-loader/react-dom',
+        }
+    },
     module: {
         rules: [
             {

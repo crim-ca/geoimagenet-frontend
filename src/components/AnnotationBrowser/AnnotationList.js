@@ -27,14 +27,11 @@ type Props = {
 };
 const style = (theme) => ({
     list: {
-        display: 'flex',
-        flexDirection: 'column',
-        '& th': {
-            textAlign: 'right',
-        },
+        display: 'grid',
         '& tr:not(:first-child) > *': {
             borderTop: '1px solid rgba(0, 0, 0, 0.1)'
         },
+        gridTemplateColumns: '1fr 1fr',
     },
     figure: {
         position: 'relative',
