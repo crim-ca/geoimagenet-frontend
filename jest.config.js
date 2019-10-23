@@ -58,9 +58,14 @@ module.exports = {
     // globalTeardown: null,
 
     // A set of global variables that need to be available in all test environments
-    //globals: {
-    //"window": true
-    //},
+    globals: {
+        "GEOSERVER_URL": true,
+        "ANNOTATION_NAMESPACE": true,
+        "ANNOTATION_LAYER": true,
+        "GEOIMAGENET_API_URL": true,
+        "MAGPIE_ENDPOINT": true,
+        "ML_ENDPOINT": true,
+    },
 
     // An array of directory names to be searched recursively up from the requiring module's location
     // moduleDirectories: [

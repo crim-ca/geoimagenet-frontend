@@ -1,10 +1,11 @@
 // @flow strict
 import {configure, observable, computed, autorun, action} from 'mobx';
-import {make_http_request} from "../utils/http";
-import type {TaxonomyStore} from "./TaxonomyStore";
 import {make_annotation_ownership_cql_filter} from "../components/Map/utils";
-import {GeoImageNetStore} from "./GeoImageNetStore";
+
+import type {GeoImageNetStore} from "./GeoImageNetStore";
+import type {TaxonomyStore} from "./TaxonomyStore";
 import type {Annotation, WfsResponse} from "../Types";
+import type {DataQueries} from "../domain/data-queries";
 
 /**
  * this is relatively important in the sense that it constraints us to mutate the store only in actions
@@ -14,7 +15,6 @@ configure({
     enforceActions: 'always',
 });
 
-
 export class AnnotationBrowserStore {
 
     geoserver_endpoint: string;
@@ -22,27 +22,27 @@ export class AnnotationBrowserStore {
     annotation_layer: string;
     state_proxy: GeoImageNetStore;
     taxonomy_store: TaxonomyStore;
+    data_queries: DataQueries;
 
-    constructor(geoserver_endpoint: string, annotation_namespace: string, annotation_layer: string, state_proxy: GeoImageNetStore, taxonomy_store: TaxonomyStore) {
+    constructor(
+        geoserver_endpoint: string,
+        annotation_namespace: string,
+        annotation_layer: string,
+        state_proxy: GeoImageNetStore,
+        taxonomy_store: TaxonomyStore,
+        data_queries: DataQueries,
+    ) {
         this.geoserver_endpoint = geoserver_endpoint;
         this.annotation_namespace = annotation_namespace;
         this.annotation_layer = annotation_layer;
         this.state_proxy = state_proxy;
         this.taxonomy_store = taxonomy_store;
-
-        autorun(this.refresh_content);
+        this.data_queries = data_queries;
     }
 
     refresh_content = async () => {
-        let url = `${this.geoserver_endpoint}/wfs?service=WFS&` +
-            `version=1.1.0&request=GetFeature&typeName=${this.annotation_namespace}:${this.annotation_layer}&` +
-            `outputFormat=application/json&srsname=EPSG:3857&`;
-        if (this.cql_filter.length > 0) {
-            url += this.cql_filter;
-        }
-        url += `&maxfeatures=${this.page_size}&startindex=${this.offset}`;
-        const response = await make_http_request(url);
-        const json: WfsResponse = await response.json();
+        const type_name = `${this.annotation_namespace}:${this.annotation_layer}`;
+        const json: WfsResponse = await this.data_queries.get_annotations_browser_page(type_name, this.cql_filter, this.page_size, this.offset);
         this.set_wfs_response(json);
     };
 

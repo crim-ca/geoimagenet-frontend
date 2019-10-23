@@ -17,6 +17,7 @@ import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {AnnotationStatus, BoundingBox} from "../../Types";
 import type {UserInteractions} from "../../domain";
 import type {StoreActions} from "../../store/StoreActions";
+import {autorun} from "mobx";
 
 type Props = {
     annotation_browser_store: AnnotationBrowserStore,
@@ -40,6 +41,10 @@ const style = theme => ({
 
 @observer
 class Container extends React.Component<Props> {
+
+    componentDidMount(): void {
+        autorun(this.props.annotation_browser_store.refresh_content);
+    }
 
     navigate = (bounding_box: BoundingBox, status: AnnotationStatus, annotation_id: number) => {
         this.props.open_layers_store.set_extent(bounding_box);
