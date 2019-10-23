@@ -27,22 +27,30 @@ input[type=checkbox] {
     */
     display: none;
 }
-label.checkbox_eye {
+label.checkbox {
     font-size: 30px;
     height: 30px;
     width: 30px;
 }
-label.checkbox_eye span {
+label.checkbox span {
     width: 30px;
     height: 30px;
     position: relative;
     display: inline-block;
 }
-label.checkbox_eye [type=checkbox] + span {
+label.checkbox.eye [type=checkbox] + span {
     content: var(--icon-eye-slash);
 }
-label.checkbox_eye [type=checkbox]:checked + span {
+label.checkbox.eye [type=checkbox]:checked + span {
     content: var(--icon-eye);
+    visibility: visible;
+}
+label.checkbox.pin [type=checkbox]:not(:checked) + span {
+    content: var(--icon-pin-black);
+    opacity: 0.45;
+}
+label.checkbox.pin [type=checkbox]:checked + span {
+    content: var(--icon-pin-blue);
     visibility: visible;
 }
 .taxonomy_class_list_element {
