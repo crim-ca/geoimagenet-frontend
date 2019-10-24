@@ -1,50 +1,50 @@
 // @flow strict
-import React from 'react';
-import {observer} from 'mobx-react';
-import {withStyles, Paper, CircularProgress, Typography} from '@material-ui/core';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faUserCog, faSignOutAlt} from '@fortawesome/free-solid-svg-icons';
+import React from 'react'
+import { observer } from 'mobx-react'
+import { withStyles, Paper, CircularProgress, Typography } from '@material-ui/core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUserCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 
-import type {UserInteractions} from '../domain';
-import type {GeoImageNetStore} from "../store/GeoImageNetStore";
+import type { UserInteractions } from '../domain'
+import type { GeoImageNetStore } from '../store/GeoImageNetStore'
 
 const SessionHandlePaper = withStyles(theme => {
-    const {values} = theme;
-    return {
-        root: {
-            padding: values.gutterSmall,
-            display: 'grid',
-            gridTemplateColumns: 'max-content min-content min-content',
-            gridGap: values.gutterSmall,
-            alignItems: 'center',
-        },
-    };
-})(Paper);
+  const { values } = theme
+  return {
+    root: {
+      padding: values.gutterSmall,
+      display: 'grid',
+      gridTemplateColumns: 'max-content min-content min-content',
+      gridGap: values.gutterSmall,
+      alignItems: 'center',
+    },
+  }
+})(Paper)
 
 const PresentationText = withStyles(theme => {
-    const {values} = theme;
-    return {
-        root: {
-            marginRight: values.gutterSmall
-        }
-    };
-})(Typography);
+  const { values } = theme
+  return {
+    root: {
+      marginRight: values.gutterSmall
+    }
+  }
+})(Typography)
 
 const ClickableSpan = withStyles(theme => {
-    const {values} = theme;
-    return {
-        root: {
-            cursor: 'pointer'
-        }
-    };
+  const { values } = theme
+  return {
+    root: {
+      cursor: 'pointer'
+    }
+  }
 })(props => {
-    const {classes, children} = props;
-    return <span className={classes.root}>{children}</span>;
-});
+  const { classes, children } = props
+  return <span className={classes.root}>{children}</span>
+})
 
 type Props = {
-    state_proxy: GeoImageNetStore,
-    user_interactions: UserInteractions,
+  state_proxy: GeoImageNetStore,
+  user_interactions: UserInteractions,
 };
 
 /**
@@ -55,27 +55,27 @@ type Props = {
 @observer
 class SessionHandle extends React.Component<Props> {
 
-    render() {
-        /**
-         * @type {User} logged_user
-         */
-        const logged_user = this.props.state_proxy.logged_user;
+  render() {
+    /**
+     * @type {User} logged_user
+     */
+    const logged_user = this.props.state_proxy.logged_user
 
-        if (!logged_user) {
-            return <CircularProgress />;
-        }
-
-        return (
-            <SessionHandlePaper>
-                <PresentationText>Hello {logged_user.user_name}.</PresentationText>
-                <FontAwesomeIcon icon={faUserCog} className='fa-2x' />
-                <ClickableSpan>
-                    <FontAwesomeIcon onClick={this.props.user_interactions.logout} icon={faSignOutAlt}
-                                     className='fa-2x' />
-                </ClickableSpan>
-            </SessionHandlePaper>
-        );
+    if (!logged_user) {
+      return <CircularProgress />
     }
+
+    return (
+      <SessionHandlePaper>
+        <PresentationText>Hello {logged_user.user_name}.</PresentationText>
+        <FontAwesomeIcon icon={faUserCog} className='fa-2x' />
+        <ClickableSpan>
+          <FontAwesomeIcon onClick={this.props.user_interactions.logout} icon={faSignOutAlt}
+                           className='fa-2x' />
+        </ClickableSpan>
+      </SessionHandlePaper>
+    )
+  }
 }
 
-export {SessionHandle};
+export { SessionHandle }

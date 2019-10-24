@@ -1,121 +1,134 @@
 // @flow strict
 
-import React from 'react';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import type {ContextualMenuItem} from '../../Types';
-import {ContextualMenuManager} from './ContextualMenuManager';
-import {ACTION_EXIT_CONTEXTUAL_MENU} from "./utils";
-import {debounced} from "../../utils/event_handling";
+import React from 'react'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
+import { debounced } from '../../utils/event_handling'
+import type { ContextualMenuItem } from '../../Types'
+import { ContextualMenuManager } from './ContextualMenuManager'
+import { ACTION_EXIT_CONTEXTUAL_MENU } from './utils'
 
 type PromiseResolutionCallback = (?string) => void;
 type Props = {};
 type State = {
-    menu_items: ContextualMenuItem[],
-    open: boolean,
-    resolve: PromiseResolutionCallback,
-    reject: PromiseResolutionCallback,
-    mouse_x: number,
-    mouse_y: number,
+  menu_items: ContextualMenuItem[],
+  open: boolean,
+  resolve: PromiseResolutionCallback,
+  reject: PromiseResolutionCallback,
+  mouse_x: number,
+  mouse_y: number,
 };
 
-const default_resolve: PromiseResolutionCallback = () => {
-    throw new Error('The default resolve was called, this means the dialog container was probably not correctly instantiated.');
-};
-const default_reject: PromiseResolutionCallback = () => {
-    throw new Error('The default reject was called, this means the dialog container was probably not correctly instantiated.');
-};
+const defaultResolve: PromiseResolutionCallback = () => {
+  throw new Error('The default resolve was called, this means the dialog container was probably not correctly instantiated.')
+}
+const defaultReject: PromiseResolutionCallback = () => {
+  throw new Error('The default reject was called, this means the dialog container was probably not correctly instantiated.')
+}
 
-export const default_state = {
-    menu_items: [],
-    open: false,
-    resolve: default_resolve,
-    reject: default_reject,
-};
+export const defaultState = {
+  menu_items: [],
+  open: false,
+  resolve: defaultResolve,
+  reject: defaultReject,
+}
 
 class ContextualMenuContainer extends React.Component<Props, State> {
+  anchorElement: HTMLElement | null
 
-    state = Object.assign({}, default_state);
-    anchor_element: HTMLElement | null;
+  constructor() {
+    super()
+    this.state = { ...defaultState }
+    ContextualMenuManager.register_populate_menu_callback(this.handle_populate_menu_request)
+  }
 
-    constructor() {
-        super();
-        ContextualMenuManager.register_populate_menu_callback(this.handle_populate_menu_request);
+  componentDidMount(): void {
+    if (this.anchorElement === null) {
+      throw new TypeError('There should be an anchor element for the contextual menu container. '
+        + 'It appears the DOM was not correctly constructed.')
     }
-
-    componentDidMount(): void {
-        if (this.anchor_element === null) {
-            throw new TypeError('There should be an anchor element for the contextual menu container. ' +
-                'It appears the DOM was not correctly constructed.');
-        }
-        /**
-         * $FlowFixMe
-         * We can't possibly know all the type of every handler we'll want to debounce
-         * ignore flow validation here
-         */
-        window.addEventListener('mousemove', debounced(50, this.set_mouse_position));
-    }
-
-    set_anchor_element = (element: HTMLElement | null) => {
-        this.anchor_element = element;
-    };
-
-    set_mouse_position = (event: MouseEvent) => {
-        this.setState({
-            mouse_x: event.clientX,
-            mouse_y: event.clientY,
-        });
-    };
-
     /**
-     * When destroying this component, we need to unregister our dialog creation callback from the manager.
-     * That way, if a container reappears in the future, we'll still be able to create dialogs.
+     * $FlowFixMe
+     * We can't possibly know all the type of every handler we'll want to debounce
+     * ignore flow validation here
      */
-    componentWillUnmount(): void {
-        ContextualMenuManager.remove_populate_menu_callback();
-    }
+    window.addEventListener('mousemove', debounced(50, this.set_mouse_position))
+  }
 
-    handle_populate_menu_request = async (menu_items: ContextualMenuItem[], resolve: PromiseResolutionCallback, reject: PromiseResolutionCallback) => {
-        this.setState({
-            open: true,
-            menu_items: menu_items,
-            resolve: resolve,
-            reject: reject,
-        });
-    };
+  /**
+   * When destroying this component, we need to unregister our dialog creation callback from the manager.
+   * That way, if a container reappears in the future, we'll still be able to create dialogs.
+   */
+  componentWillUnmount(): void {
+    ContextualMenuManager.remove_populate_menu_callback()
+  }
 
-    handle_outside_click = () => {
-        this.state.reject(ACTION_EXIT_CONTEXTUAL_MENU);
-        this.setState(Object.assign({}, default_state));
-    };
+  setAnchorElement = (element: HTMLElement | null) => {
+    this.anchorElement = element
+  }
+
+  set_mouse_position = (event: MouseEvent) => {
+    this.setState({
+      mouse_x: event.clientX,
+      mouse_y: event.clientY,
+    })
+  }
+
+  handle_populate_menu_request = async (menu_items: ContextualMenuItem[], resolve: PromiseResolutionCallback, reject: PromiseResolutionCallback) => {
+    this.setState({
+      open: true,
+      menu_items,
+      resolve,
+      reject,
+    })
+  }
+
+  handle_outside_click = () => {
+    const { reject } = this.state
+    reject(ACTION_EXIT_CONTEXTUAL_MENU)
+    this.setState({ ...defaultState })
+  }
 
 
-    create_onclick_handler = (item: ContextualMenuItem) => () => {
-        this.state.resolve(item.value);
-        this.setState(Object.assign({}, default_state));
-    };
+  create_onclick_handler = (item: ContextualMenuItem) => () => {
+    const { resolve } = this.state
+    resolve(item.value)
+    this.setState({ ...defaultState })
+  }
 
-    render() {
-        return (
-            <>
-                <div
-                    ref={this.set_anchor_element}
-                    style={{position: 'absolute', left: `${this.state.mouse_x}px`, top: `${this.state.mouse_y}px`}} />
-                <Menu
-                    onClose={this.handle_outside_click}
-                    open={this.state.open}
-                    anchorEl={this.anchor_element}>
-                    {
-                        this.state.menu_items.map((item, i) => (
-                            <MenuItem key={i} onClick={this.create_onclick_handler(item)}>{item.text}</MenuItem>
-                        ))
-                    }
-                </Menu>
-            </>
-        );
-    }
+  render() {
+    const {
+      mouse_x,
+      mouse_y,
+      open,
+      menu_items,
+    } = this.state
+    return (
+      <>
+        <div
+          ref={this.setAnchorElement}
+          style={{
+            position: 'absolute',
+            left: `${mouse_x}px`,
+            top: `${mouse_y}px`,
+          }}
+        />
+        <Menu
+          onClose={this.handle_outside_click}
+          open={open}
+          anchorEl={this.anchorElement}
+        >
+          {
+            menu_items.map((item: ContextualMenuItem, i) => (
+              <MenuItem key={`${item.value}_${i}`} onClick={this.create_onclick_handler(item)}>{item.text}</MenuItem>
+            ))
+          }
+        </Menu>
+      </>
+    )
+  }
 }
 
 export {
-    ContextualMenuContainer,
-};
+  ContextualMenuContainer,
+}

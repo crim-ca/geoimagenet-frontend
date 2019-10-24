@@ -2,7 +2,8 @@
   "env": {
     "browser": true,
     "node": true,
-    "es6": true
+    "es6": true,
+    "jest": true
   },
   "parserOptions": {
     "ecmaVersion": 6,
@@ -10,17 +11,44 @@
   },
   "parser": "babel-eslint",
   "rules": {
-    "semi": 2,
-    "react/display-name": 0
+    "class-methods-use-this": 1,
+    "no-shadow": 1,
+    "import/no-extraneous-dependencies": 1,
+    "no-param-reassign": 1,
+    "max-len": ["error", { "code": 200 }],
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "import/order": ["error", {"newlines-between": "never"}],
+    "camelcase": 0,
+    "semi": [2, "never"],
+    "linebreak-style": ["error", "windows"],
+    "no-console": 0,
+    "react/prefer-es6-class": [2, "always"],
+    "no-unused-vars": [1, { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
+    "react/jsx-no-bind": [1, {
+      "ignoreDOMComponents": false,
+      "ignoreRefs": false,
+      "allowArrowFunctions": false,
+      "allowFunctions":false,
+      "allowBind": false
+    }],
+    "react/no-unused-prop-types": 1,
+    "react/jsx-props-no-spreading": 1,
+    "react/state-in-constructor": 0,
+    "react/static-property-placement": 0,
+    "react/prefer-stateless-function": [0, { "ignorePureComponents": true }],
+    "react/default-props-match-prop-types": ["error", { "allowRequiredDefaults": true }]
   },
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
-    "plugin:jest/recommended",
-    "plugin:flowtype/recommended"
+    "plugin:flowtype/recommended",
+    "airbnb-base",
+    "airbnb/rules/react"
   ],
   "plugins": [
-    "flowtype"
+    "flowtype",
+    "react",
+    "graphql"
   ],
   "globals": {
     "GEOIMAGENET_API_URL": false,

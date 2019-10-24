@@ -1,6 +1,6 @@
 // @flow strict
 
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const MODELS = gql`
     query models {
@@ -11,7 +11,7 @@ export const MODELS = gql`
             created
         }
     }
-`;
+`
 
 export const DATASETS = gql`
     query datasets {
@@ -23,7 +23,7 @@ export const DATASETS = gql`
             created
         }
     }
-`;
+`
 
 export const PUBLIC_BENCHMARKS = gql`
     query fetch_jobs {
@@ -47,7 +47,7 @@ export const PUBLIC_BENCHMARKS = gql`
             }
         }
     }
-`;
+`
 
 export const UPLOAD_MODEL = gql`
     mutation upload_model($file: Upload!, $model_name: String!) {
@@ -59,7 +59,7 @@ export const UPLOAD_MODEL = gql`
             }
         }
     }
-`;
+`
 
 export const LAUNCH_TEST_JOB = gql`
     mutation launch_test_job($model_id: ID!) {
@@ -75,7 +75,7 @@ export const LAUNCH_TEST_JOB = gql`
             }
         }
     }
-`;
+`
 
 export const LAUNCH_DATASET_CREATION_JOB = gql`
     mutation batch {
@@ -84,7 +84,7 @@ export const LAUNCH_DATASET_CREATION_JOB = gql`
             message
         }
     }
-`;
+`
 
 export const BENCHMARKS_JOBS = gql`
     query fetch_jobs {
@@ -96,7 +96,7 @@ export const BENCHMARKS_JOBS = gql`
             visibility
         }
     }
-`;
+`
 
 export const DATASET_CREATION_JOBS = gql`
     query jobs {
@@ -107,7 +107,7 @@ export const DATASET_CREATION_JOBS = gql`
             progress
         }
     }
-`;
+`
 
 export const CHANGE_BENCHMARK_VISIBILITY = gql`
     mutation change_visibility($job_id: ID!, $visibility: Visibility!) {
@@ -116,4 +116,4 @@ export const CHANGE_BENCHMARK_VISIBILITY = gql`
             message
         }
     }
-`;
+`
