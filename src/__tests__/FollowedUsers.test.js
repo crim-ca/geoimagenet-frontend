@@ -1,4 +1,8 @@
 // @flow strict
+import React from 'react'
+import { mount, configure } from 'enzyme'
+import Adapter from 'enzyme-adapter-react-16'
+import { JSDOM } from 'jsdom'
 import { GeoImageNetStore } from '../store/GeoImageNetStore'
 import { StoreActions } from '../store/StoreActions'
 import { DataQueries } from '../domain/data-queries'
@@ -8,31 +12,18 @@ import { FollowedUsersList } from '../components/UserSettings/FollowedUsersList'
 import { AddFollowedUserForm } from '../components/UserSettings/AddFollowedUserForm'
 import { i18n as i18next } from '../utils/i18n'
 import { User } from '../domain/entities'
-import { wait } from './utils'
 import { TaxonomyStore } from '../store/TaxonomyStore'
+import { copyProps, wait } from './utils'
 
-const React = require('react')
-const { mount, configure } = require('enzyme')
-const Adapter = require('enzyme-adapter-react-16')
-const { JSDOM } = require('jsdom')
-const { window } = new JSDOM(`<!doctype html>`)
-
-function copyProps(src, target) {
-  Object.defineProperties(target, {
-    ...Object.getOwnPropertyDescriptors(src),
-    ...Object.getOwnPropertyDescriptors(target),
-  })
-}
+const { window } = new JSDOM('<!doctype html>')
 
 global.window = window
 global.document = window.document
 global.navigator = {
   userAgent: 'node.js',
 }
-global.requestAnimationFrame = function (callback) {
-  return setTimeout(callback, 0)
-}
-global.cancelAnimationFrame = function (id) {
+global.requestAnimationFrame = (callback) => setTimeout(callback, 0)
+global.cancelAnimationFrame = (id) => {
   clearTimeout(id)
 }
 copyProps(window, global)
@@ -47,7 +38,6 @@ data_queries.save_followed_user = jest.fn(() => null)
 data_queries.remove_followed_user = jest.fn(() => null)
 
 describe('Followed users form', () => {
-
   test('We can log a user on', () => {
     const state_proxy = new GeoImageNetStore()
     const taxonomy_store = new TaxonomyStore(state_proxy)
@@ -60,7 +50,6 @@ describe('Followed users form', () => {
     expect(state_proxy.logged_user.user_name)
       .toBe('user_name')
   })
-
 
   /**
    * we want to validate that the form will populate the logged_user's followed users list
@@ -133,5 +122,4 @@ describe('Followed users form', () => {
     expect(store.logged_user.followed_users.length)
       .toBe(0)
   })
-
 })
