@@ -23,49 +23,60 @@ type State = {
 
 @observer
 class Container extends React.Component<Props, State> {
-
-  state = {
-    open: false,
-    anchor: null,
-  };
+  constructor() {
+    super();
+    this.state = {
+      open: false,
+      anchor: null,
+    };
+  }
 
   toggle_filter_container = (event) => {
+    const { open } = this.state;
     this.setState({
-      open: !this.state.open,
-      anchor: event.currentTarget
+      open: !open,
+      anchor: event.currentTarget,
     });
   };
 
   toggle_status_filter = (annotation_status: AnnotationStatus) => (event) => {
-    this.props.store_actions.toggle_annotation_status_visibility(annotation_status, event.target.checked);
+    const { store_actions: { toggle_annotation_status_visibility } } = this.props;
+    toggle_annotation_status_visibility(annotation_status, event.target.checked);
   };
 
   toggle_ownership_filter = (ownership: string) => (event) => {
-    this.props.store_actions.toggle_annotation_ownership_filter(ownership, event.target.checked);
+    const { store_actions: { toggle_annotation_ownership_filter } } = this.props;
+    toggle_annotation_ownership_filter(ownership, event.target.checked);
   };
 
   render() {
-    const { anchor } = this.state;
+    const { anchor, open } = this.state;
     const { state_proxy, t } = this.props;
     return (
       <>
-        <Button variant='contained'
-                color='primary'
-                onClick={this.toggle_filter_container}>{t(`annotations:filters`)}</Button>
-        <FadingDialog open={this.state.open} anchor={anchor}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={this.toggle_filter_container}
+        >
+          {t('annotations:filters')}
+        </Button>
+        <FadingDialog open={open} anchor={anchor}>
           <FiltersPaper>
             <ul>
               {
                 Object.keys(state_proxy.annotation_status_filters)
-                  .map((status_text: string, i: number) => {
-                    const status_filter = state_proxy.annotation_status_filters[status_text];
-                    const unique_input_id = `status_${status_text}`;
+                  .map((statusText: string, i: number) => {
+                    const statusFilter = state_proxy.annotation_status_filters[statusText];
+                    const uniqueInputId = `status_${statusText}`;
                     return (
                       <li key={i}>
-                        <CheckboxLineInput unique_id={unique_input_id}
-                                           checked={status_filter.activated}
-                                           change_handler={this.toggle_status_filter(status_filter.text)}
-                                           label={t(`status:plural.${status_filter.text}`)} />
+                        <CheckboxLineInput
+                          unique_id={uniqueInputId}
+                          checked={statusFilter.activated}
+                          change_handler={this.toggle_status_filter(statusFilter.text)}
+                          label={t(`status:plural.${statusFilter.text}`)}
+                        />
                       </li>
                     );
                   })
@@ -75,14 +86,16 @@ class Container extends React.Component<Props, State> {
               {
                 Object.keys(state_proxy.annotation_ownership_filters)
                   .map((ownership: string, i: number) => {
-                    const ownership_filter = state_proxy.annotation_ownership_filters[ownership];
-                    const unique_input_id = `ownership_${ownership}`;
+                    const ownershipFilter = state_proxy.annotation_ownership_filters[ownership];
+                    const uniqueInputId = `ownership_${ownership}`;
                     return (
                       <li key={i}>
-                        <CheckboxLineInput unique_id={unique_input_id}
-                                           checked={ownership_filter.activated}
-                                           change_handler={this.toggle_ownership_filter(ownership_filter.text)}
-                                           label={t(`annotations:ownership.${ownership_filter.text}`)} />
+                        <CheckboxLineInput
+                          unique_id={uniqueInputId}
+                          checked={ownershipFilter.activated}
+                          change_handler={this.toggle_ownership_filter(ownershipFilter.text)}
+                          label={t(`annotations:ownership.${ownershipFilter.text}`)}
+                        />
                       </li>
                     );
                   })
@@ -96,5 +109,4 @@ class Container extends React.Component<Props, State> {
 }
 
 const component = withTranslation()(Container);
-
 export { component as Container };

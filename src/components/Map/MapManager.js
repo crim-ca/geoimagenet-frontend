@@ -306,30 +306,28 @@ export class MapManager {
       source,
       style: create_style_function(color, this.state_proxy, this.taxonomy_store),
       visible,
-      zIndex
+      zIndex,
     });
   }
 
   /**
    * When changing resolution we need to activate or deactivate user annotation. That is because after a certain distance,
    * objects are way too tiny on the screen to create a meaningful annotation.
-   * @private
-   * @param event
    */
   receive_resolution_change_event = (event: Event) => {
     const resolution = event.target.get('resolution');
-    const { selectedMode, set_mode } = this.ui_store;
+    const { selectedMode, setMode } = this.ui_store;
     if (resolution < VALID_OPENLAYERS_ANNOTATION_RESOLUTION) {
       this.storeActions.activate_actions();
       if (this.previousMode !== null) {
-        set_mode(this.previousMode);
+        setMode(this.previousMode);
         this.previousMode = null;
       }
     } else {
       this.storeActions.deactivate_actions();
       if (selectedMode !== MODE.VISUALIZE) {
         this.previousMode = selectedMode;
-        set_mode(MODE.VISUALIZE);
+        setMode(MODE.VISUALIZE);
       }
     }
   };

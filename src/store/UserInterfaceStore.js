@@ -5,9 +5,13 @@ import { MODE } from '../constants';
 const { VISUALIZE } = MODE;
 
 class UserInterfaceStore {
+
+  constructor() {
+    const bob = 1;
+  }
   @observable selectedMode: string = VISUALIZE;
 
-  @action setMode(mode: string) {
+  @action.bound setMode(mode: string) {
     this.selectedMode = mode;
   }
 }

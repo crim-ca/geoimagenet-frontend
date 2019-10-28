@@ -21,9 +21,9 @@ import {
   VALIDATIONS,
   WRITE,
 } from '../../constants';
-import { GeoImageNetStore } from '../../store/GeoImageNetStore';
+import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
 import { withUserInterfaceStore } from '../../store/HOCs';
-import { UserInterfaceStore } from '../../store/UserInterfaceStore';
+import type { UserInterfaceStore } from '../../store/UserInterfaceStore';
 
 const ACTIONS = [];
 ACTIONS.push({
@@ -112,13 +112,12 @@ type Props = {
 @observer
 class Actions extends Component<Props> {
   make_set_mode_callback = (mode: $Values<typeof MODE>) => () => {
-    const { ui_store: { set_mode } } = this.props;
-    set_mode(mode);
+    const { ui_store: { setMode } } = this.props;
+    setMode(mode);
   };
 
   render() {
     const { state_proxy, ui_store } = this.props;
-
     const visible_actions = ACTIONS.filter((action) => state_proxy.acl.can(action.permission_name, action.resource));
 
     return (

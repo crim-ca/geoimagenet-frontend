@@ -1,19 +1,26 @@
-import { GeoImageNetStore } from '../store/GeoImageNetStore';
+import { MuiThemeProvider } from '@material-ui/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
+import { action } from 'mobx';
+import { configure, mount } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import { JSDOM } from 'jsdom';
 import { Container as LabelsContainer } from '../components/Map/LabelsChoice/Container';
 import { TaxonomyStore } from '../store/TaxonomyStore';
 import { UserInterfaceStore } from '../store/UserInterfaceStore';
+import { Actions } from '../components/ModeSelection/Actions';
+import { theme } from '../utils/react';
+import {
+  ANNOTATIONS,
+  WRITE,
+  MODE,
+  ANNOTATION,
+} from '../constants';
+import { ui_store as uiStore } from '../store/instance_cache';
+import { StoreActions } from '../store/StoreActions';
+import { TaxonomyClass } from '../domain/entities';
+import { GeoImageNetStore } from '../store/GeoImageNetStore';
 
-const React = require('react');
-const { action } = require('mobx');
-
-const { MODE, ANNOTATION } = require('../constants');
-const { StoreActions } = require('../store/StoreActions');
-const { TaxonomyClass } = require('../domain/entities');
-
-const { configure, mount } = require('enzyme');
-const Adapter = require('enzyme-adapter-react-16');
-
-const { JSDOM } = require('jsdom');
 const { window } = new JSDOM(`<!doctype html>`);
 
 function copyProps(src, target) {
@@ -35,9 +42,9 @@ global.cancelAnimationFrame = function (id) {
   clearTimeout(id);
 };
 copyProps(window, global);
-
 configure({ adapter: new Adapter() });
 
+const geoImageNetStore = new GeoImageNetStore();
 
 describe('UI Elements correctly change the store', () => {
   test('Toggle annotators identifier off from default state', () => {
@@ -57,16 +64,70 @@ describe('UI Elements correctly change the store', () => {
   });
 });
 
+describe('Artificially granted write annotations permissions', () => {
+
+  test('By default there are no buttons', () => {
+    const wrapper = mount(
+      <MuiThemeProvider theme={theme}>
+        <Actions state_proxy={geoImageNetStore} />
+      </MuiThemeProvider>,
+    );
+    expect(wrapper.find(FontAwesomeIcon).length)
+      .toBe(0);
+  });
+
+  test('There are three buttons when we can write annotations', () => {
+    geoImageNetStore.acl.repository.permissions[ANNOTATIONS] = {
+      permission_names: [WRITE],
+    };
+    const wrapper = mount(
+      <MuiThemeProvider theme={theme}>
+        <Actions state_proxy={geoImageNetStore} />
+      </MuiThemeProvider>,
+    );
+    expect(wrapper.find(FontAwesomeIcon).length)
+      .toBe(3);
+  });
+
+  test('We can activate delete mode from a button', () => {
+    geoImageNetStore.acl.repository.permissions[ANNOTATIONS] = {
+      permission_names: [WRITE],
+    };
+    const wrapper = mount(
+      <MuiThemeProvider theme={theme}>
+        <Actions state_proxy={geoImageNetStore} />
+      </MuiThemeProvider>,
+    );
+    wrapper.find(FontAwesomeIcon)
+      .last()
+      .simulate('click');
+    expect(uiStore.selectedMode)
+      .toBe(MODE.DELETE);
+  });
+});
+
 describe('User interface store', () => {
   test('Default mode is visualize', () => {
-    const uiStore = new UserInterfaceStore();
-    expect(uiStore.selectedMode).toBe(MODE.VISUALIZE);
+    const customUiStore = new UserInterfaceStore();
+    expect(customUiStore.selectedMode)
+      .toBe(MODE.VISUALIZE);
   });
 
   test('We can change mode', () => {
-    const uiStore = new UserInterfaceStore();
-    uiStore.setMode(MODE.ASK_EXPERTISE);
-    expect(uiStore.selectedMode).toBe(MODE.ASK_EXPERTISE);
+    const customUiStore = new UserInterfaceStore();
+    customUiStore.setMode(MODE.ASK_EXPERTISE);
+    expect(customUiStore.selectedMode)
+      .toBe(MODE.ASK_EXPERTISE);
+  });
+
+  test('Delete mode specific filters', () => {
+    uiStore.setMode(MODE.DELETE);
+    expect(geoImageNetStore.annotation_status_filters[ANNOTATION.STATUS.NEW].activated).toBe(true);
+    expect(geoImageNetStore.annotation_status_filters[ANNOTATION.STATUS.RELEASED].activated).toBe(false);
+    expect(geoImageNetStore.annotation_status_filters[ANNOTATION.STATUS.PRE_RELEASED].activated).toBe(false);
+    expect(geoImageNetStore.annotation_status_filters[ANNOTATION.STATUS.VALIDATED].activated).toBe(false);
+    expect(geoImageNetStore.annotation_status_filters[ANNOTATION.STATUS.REJECTED].activated).toBe(false);
+    expect(geoImageNetStore.annotation_status_filters[ANNOTATION.STATUS.DELETED].activated).toBe(false);
   });
 });
 

@@ -17,6 +17,9 @@
     "airbnb-base",
     "airbnb/rules/react"
   ],
+  "rules": {
+    "react/jsx-filename-extension": 0
+  },
   "plugins": [
     "flowtype",
     "react",
