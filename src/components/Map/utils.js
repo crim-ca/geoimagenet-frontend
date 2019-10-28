@@ -1,7 +1,7 @@
 // @flow strict
 
-import { AnnotationFilter, User } from '../../domain/entities'
-import { ANNOTATION } from '../../constants'
+import { AnnotationFilter, User } from '../../domain/entities';
+import { ANNOTATION } from '../../constants';
 
 export function make_annotation_ownership_cql_filter(ownership_filters: AnnotationFilter[], logged_user: User | null): string {
   /**
@@ -16,42 +16,42 @@ export function make_annotation_ownership_cql_filter(ownership_filters: Annotati
    */
 
   if (logged_user === null) {
-    return ''
+    return '';
   }
 
   if (ownership_filters.every(filter => filter.activated)) {
-    return ''
+    return '';
   }
   if (ownership_filters.every(filter => filter.activated === false)) {
-    return 'annotator_id IN (-1)'
+    return 'annotator_id IN (-1)';
   }
 
-  const cql_bits = []
+  const cql_bits = [];
   ownership_filters.forEach(filter => {
     if (!filter.activated) {
-      return
+      return;
     }
     switch (filter.text) {
       case ANNOTATION.OWNERSHIP.OTHERS: {
-        const user_ids = logged_user.followed_users.map(user => user.id)
-        user_ids.push(logged_user.id)
-        cql_bits.push(`annotator_id NOT IN (${user_ids.join(',')})`)
-        break
+        const user_ids = logged_user.followed_users.map(user => user.id);
+        user_ids.push(logged_user.id);
+        cql_bits.push(`annotator_id NOT IN (${user_ids.join(',')})`);
+        break;
       }
       case ANNOTATION.OWNERSHIP.MINE:
-        cql_bits.push(`annotator_id IN (${logged_user.id})`)
-        break
+        cql_bits.push(`annotator_id IN (${logged_user.id})`);
+        break;
       case ANNOTATION.OWNERSHIP.FOLLOWED_USERS: {
         if (logged_user.followed_users.length === 0) {
-          return
+          return;
         }
-        const followed_users_ids = logged_user.followed_users.map(user => user.id)
-        cql_bits.push(`annotator_id IN (${followed_users_ids.join(',')})`)
-        break
+        const followed_users_ids = logged_user.followed_users.map(user => user.id);
+        cql_bits.push(`annotator_id IN (${followed_users_ids.join(',')})`);
+        break;
       }
       default:
-        throw new TypeError(`This annotation ownership filter is corrupted, we have an unrecognized type: [${filter.text}]`)
+        throw new TypeError(`This annotation ownership filter is corrupted, we have an unrecognized type: [${filter.text}]`);
     }
-  })
-  return cql_bits.join(' OR ')
+  });
+  return cql_bits.join(' OR ');
 }

@@ -5,21 +5,21 @@
  * @type {string}
  */
 
-export const BING_API_KEY = 'AtXX65CBBfZXBxm6oMyf_5idMAMI7W6a5GuZ5acVcrYi6lCQayiiBz7_aMHB7JR7'
+export const BING_API_KEY = 'AtXX65CBBfZXBxm6oMyf_5idMAMI7W6a5GuZ5acVcrYi6lCQayiiBz7_aMHB7JR7';
 
-export const CUSTOM_GEOIM_IMAGE_LAYER = 'custom_geiom_image_layer'
+export const CUSTOM_GEOIM_IMAGE_LAYER = 'custom_geiom_image_layer';
 
 /**
  * General configuration value of the notifications. Maybe get that from environment at some point?
  * @type {number}
  */
-export const NOTIFICATION_LIFE_SPAN_MS = 10000
+export const NOTIFICATION_LIFE_SPAN_MS = 10000;
 
 export const Z_INDEX = {
   BASEMAP: -10,
-}
+};
 
-export const VALID_OPENLAYERS_ANNOTATION_RESOLUTION = 20
+export const VALID_OPENLAYERS_ANNOTATION_RESOLUTION = 20;
 
 /**
  * These modes control what can be done in the platform. Each of them must be selected before its actions can be made by a user.
@@ -42,7 +42,7 @@ export const MODE = {
   ASK_EXPERTISE: 'ASK_EXPERTISE',
   VALIDATE: 'VALIDATE',
   REJECT: 'REJECT',
-}
+};
 
 /**
  * These represent the status an annotation can have and MUST be kept manually in sync with the status in the API.
@@ -62,7 +62,7 @@ export const ANNOTATION = {
     MINE: 'mine',
     FOLLOWED_USERS: 'followed_users',
   },
-}
+};
 
 export const ANNOTATION_STATUS_AS_ARRAY = [
   'new',
@@ -71,7 +71,7 @@ export const ANNOTATION_STATUS_AS_ARRAY = [
   'validated',
   'rejected',
   'deleted',
-]
+];
 
 export const ALLOWED_BING_MAPS = [
   {
@@ -84,7 +84,7 @@ export const ALLOWED_BING_MAPS = [
     imagerySet: 'Aerial',
     visible: true
   },
-]
+];
 
 /**
  * The default view used by the application, this represents a center around Canada.
@@ -95,46 +95,46 @@ export const ALLOWED_BING_MAPS = [
 export const VIEW_CENTER = {
   CENTRE: [-95, 57],
   ZOOM_LEVEL: 4,
-}
+};
 
 /**
  * Magpie permission name for get access
  * @type {string}
  */
-export const READ = 'read'
+export const READ = 'read';
 
 /**
  * Magpie permission name for put, post, editing access
  * @type {string}
  */
-export const WRITE = 'write'
+export const WRITE = 'write';
 
 
 /**
  * Magpie resource for datasets sections and interactions
  * @type {string}
  */
-export const DATASETS = 'datasets'
+export const DATASETS = 'datasets';
 
 /**
  * Magpie resource for annotations sections and interactions
  * @type {string}
  */
-export const ANNOTATIONS = 'annotations'
+export const ANNOTATIONS = 'annotations';
 
 /**
  * Magpie resource for annotation validation sections and interactions
  * @type {string}
  */
-export const VALIDATIONS = 'validations'
+export const VALIDATIONS = 'validations';
 
 /**
  * Magpie resource for reading the wms copyright protected images.
  * @type {string}
  */
-export const WMS = 'wms'
+export const WMS = 'wms';
 
 /**
  * Really just used in string concatenation for material-ui styling and geoserver requests, so we don't use an integer here
  */
-export const ANNOTATION_THUMBNAIL_SIZE: string = '75'
+export const ANNOTATION_THUMBNAIL_SIZE: string = '75';

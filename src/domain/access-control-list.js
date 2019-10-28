@@ -1,5 +1,5 @@
 // @flow strict
-import { ResourcePermissionRepository } from './entities'
+import { ResourcePermissionRepository } from './entities';
 
 /**
  * This class represents the actions an user can do in the platform. Certain buttons and interactions are dependant on
@@ -22,7 +22,7 @@ import { ResourcePermissionRepository } from './entities'
 
 export class AccessControlList {
 
-  repository: ResourcePermissionRepository
+  repository: ResourcePermissionRepository;
 
   /**
    * @readonly
@@ -31,11 +31,11 @@ export class AccessControlList {
    * while this technically could be easily overwritten by the user on the client, we don't rely on this to actually
    * protect password protected resources.
    */
-  authenticated: boolean
+  authenticated: boolean;
 
   constructor(resource_permission_repository: ResourcePermissionRepository, authenticated: boolean = false) {
-    this.repository = resource_permission_repository
-    this.authenticated = authenticated
+    this.repository = resource_permission_repository;
+    this.authenticated = authenticated;
   }
 
   /**
@@ -43,9 +43,9 @@ export class AccessControlList {
    */
   can(permission_name: string, resource: string): boolean {
     if (this.repository.permissions[resource]) {
-      const permissions_on_resource = this.repository.permissions[resource].permission_names
-      return permissions_on_resource.indexOf(permission_name) !== -1
+      const permissions_on_resource = this.repository.permissions[resource].permission_names;
+      return permissions_on_resource.indexOf(permission_name) !== -1;
     }
-    return false
+    return false;
   }
 }

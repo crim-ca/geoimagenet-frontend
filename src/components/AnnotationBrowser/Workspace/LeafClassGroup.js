@@ -1,13 +1,13 @@
 // @flow strict
 
-import React from 'react'
-import { PlatformListElement } from '../../Taxonomy/PlatformListElement'
-import { observer } from 'mobx-react'
-import withStyles from '@material-ui/core/styles/withStyles'
+import React from 'react';
+import { PlatformListElement } from '../../Taxonomy/PlatformListElement';
+import { observer } from 'mobx-react';
+import withStyles from '@material-ui/core/styles/withStyles';
 
-import type { LeafClassGroup as LeafClassGroupEntity } from '../../../Types'
-import type { UserInteractions } from '../../../domain'
-import type { GeoImageNetStore } from '../../../store/GeoImageNetStore'
+import type { LeafClassGroup as LeafClassGroupEntity } from '../../../Types';
+import type { UserInteractions } from '../../../domain';
+import type { GeoImageNetStore } from '../../../store/GeoImageNetStore';
 
 type Props = {
   class_group: LeafClassGroupEntity,
@@ -29,12 +29,12 @@ const style = theme => ({
     fontSize: '0.9rem',
     fontStyle: 'italic',
   },
-})
+});
 
 @observer
 class LeafClassGroup extends React.Component<Props> {
   render() {
-    const { class_group, classes } = this.props
+    const { class_group, classes } = this.props;
     return (
       <div className={classes.root}>
         <span className={classes.span}>{class_group.path}</span>
@@ -45,12 +45,12 @@ class LeafClassGroup extends React.Component<Props> {
                                key={j} />
         ))}
       </div>
-    )
+    );
   }
 }
 
-const component = withStyles(style)(LeafClassGroup)
+const component = withStyles(style)(LeafClassGroup);
 
 export {
   component as LeafClassGroup,
-}
+};

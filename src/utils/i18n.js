@@ -1,8 +1,8 @@
 // @flow strict
 
-import i18n from 'i18next'
-import LanguageDetector from 'i18next-browser-languagedetector'
-import { initReactI18next } from 'react-i18next'
+import i18n from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import { initReactI18next } from 'react-i18next';
 
 const resources = {
   en: {
@@ -480,7 +480,7 @@ const resources = {
       'empty_tooltip': 'Retirer toutes les classes de votre espace de travail.',
     },
   }
-}
+};
 
 i18n.use(LanguageDetector)
   .use(initReactI18next)
@@ -501,8 +501,8 @@ i18n.use(LanguageDetector)
       lookupFromSubdomainIndex: 0,
       caches: ['localStorage', 'cookie'],
     }
-  })
+  });
 
-i18n.t = i18n.t.bind(i18n)
+i18n.t = i18n.t.bind(i18n);
 
-export { i18n }
+export { i18n };

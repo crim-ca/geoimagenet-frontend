@@ -1,11 +1,11 @@
 // @flow strict
-import React, { Component } from 'react'
-import { observer } from 'mobx-react'
-import { PlatformListElement } from './PlatformListElement.js'
-import type { TaxonomyClass } from '../../domain/entities'
-import type { UserInteractions } from '../../domain'
-import type { GeoImageNetStore } from '../../store/GeoImageNetStore'
-import withStyles from '@material-ui/core/styles/withStyles'
+import React, { Component } from 'react';
+import { observer } from 'mobx-react';
+import { PlatformListElement } from './PlatformListElement.js';
+import type { TaxonomyClass } from '../../domain/entities';
+import type { UserInteractions } from '../../domain';
+import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
+import withStyles from '@material-ui/core/styles/withStyles';
 
 type Props = {
   taxonomy_classes: TaxonomyClass[],
@@ -21,7 +21,7 @@ const style = theme => ({
       paddingLeft: theme.values.gutterMedium,
     },
   },
-})
+});
 
 @observer
 class TaxonomyClasses extends Component<Props> {
@@ -36,9 +36,9 @@ class TaxonomyClasses extends Component<Props> {
                                user_interactions={this.props.user_interactions} />
         ))}
       </div>
-    )
+    );
   }
 }
 
-const component = withStyles(style)(TaxonomyClasses)
-export { component as Classes }
+const component = withStyles(style)(TaxonomyClasses);
+export { component as Classes };

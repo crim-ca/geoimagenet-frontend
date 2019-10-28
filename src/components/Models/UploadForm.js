@@ -1,11 +1,11 @@
 // @flow strict
 
-import { Button, CircularProgress, Link, TextField, Typography, withStyles } from '@material-ui/core'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { graphql } from 'react-apollo/graphql'
-import { NotificationManager } from 'react-notifications'
-import { UPLOAD_MODEL } from '../../domain/graphql_queries'
+import { Button, CircularProgress, Link, TextField, Typography, withStyles } from '@material-ui/core';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { graphql } from 'react-apollo/graphql';
+import { NotificationManager } from 'react-notifications';
+import { UPLOAD_MODEL } from '../../domain/graphql_queries';
 
 type Validity = {
   valid: boolean
@@ -37,7 +37,7 @@ const UploadFormContainer = withStyles(theme => ({
   }
 }))(({ classes, children }) => (
   <div className={classes.root}>{children}</div>
-))
+));
 
 type Props = {
   mutate: ({
@@ -63,69 +63,69 @@ class UploadFormComponent extends React.Component<Props, State> {
     validity: { valid: false },
     benchmarks_jobs: [],
     loading: false,
-  }
+  };
 
 
   upload_model = async () => {
-    const { file, validity, model_name } = this.state
-    const { mutate } = this.props
+    const { file, validity, model_name } = this.state;
+    const { mutate } = this.props;
     if (validity.valid) {
       try {
 
-        await this.setState({ loading: true })
+        await this.setState({ loading: true });
         const result = await mutate({
           variables: {
             file,
             model_name
           },
           update: () => {
-            console.log('in updateing...')
+            console.log('in updateing...');
           },
-        })
+        });
         this.setState({
           file: null,
           validity: { valid: false },
           loading: false
-        })
-        const { data: { upload_model: { message, success } } } = result
+        });
+        const { data: { upload_model: { message, success } } } = result;
 
         if (success) {
-          NotificationManager.success('Model testing was launched.')
+          NotificationManager.success('Model testing was launched.');
         } else {
-          NotificationManager.error(message)
+          NotificationManager.error(message);
         }
 
       } catch (e) {
-        console.log(e)
-        NotificationManager.error(`there was an error: ${e.message}. please try again later.`)
+        console.log(e);
+        NotificationManager.error(`there was an error: ${e.message}. please try again later.`);
       }
 
-      this.setState({ loading: false })
+      this.setState({ loading: false });
 
     }
-  }
+  };
 
   upload_is_valid = () => {
-    const { model_name, validity } = this.state
-    return model_name.length > 0 && validity.valid
-  }
+    const { model_name, validity } = this.state;
+    return model_name.length > 0 && validity.valid;
+  };
 
   file_changed = (event: UploadEvent) => {
-    const target: UploadEventTarget = event.target
-    const { validity, files: [file] } = target
+    const target: UploadEventTarget = event.target;
+    const { validity, files: [file] } = target;
     this.setState({
       file,
       validity
-    })
-  }
+    });
+  };
 
   change_value = name => event => {
-    this.setState({ [name]: event.target.value })
-  }
+    this.setState({ [name]: event.target.value });
+  };
 
   render() {
-    const { model_name, loading } = this.state
-    const { model_upload_instructions_url } = this.props
+    const { model_name, loading } = this.state;
+    const { model_upload_instructions_url } = this.props;
     return (
       <UploadFormContainer>
         <TextField
@@ -151,13 +151,13 @@ class UploadFormComponent extends React.Component<Props, State> {
           </React.Fragment>
         )}
       </UploadFormContainer>
-    )
+    );
   }
 }
 
 UploadFormComponent.propTypes = {
   mutate: PropTypes.func.isRequired,
   model_upload_instructions_url: PropTypes.string.isRequired,
-}
+};
 
-export const UploadForm = graphql(UPLOAD_MODEL)(UploadFormComponent)
+export const UploadForm = graphql(UPLOAD_MODEL)(UploadFormComponent);

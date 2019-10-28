@@ -16,7 +16,7 @@ export const TAXONOMY_RESPONSE = [{
     'version': '1'
   }],
   'name_en': 'Objects'
-}]
+}];
 export const TAXONOMY_CLASSES_RESPONSE = [{
   'id': 205,
   'name_fr': 'Couverture de sol',
@@ -1900,7 +1900,7 @@ export const TAXONOMY_CLASSES_RESPONSE = [{
       'children': []
     }]
   }]
-}]
+}];
 export const ANNOTATIONS_COUNTS_RESPONSE = {
   '14': {
     'new': 0,
@@ -3648,9 +3648,9 @@ export const ANNOTATIONS_COUNTS_RESPONSE = {
     'rejected': 0,
     'deleted': 0
   }
-}
+};
 
 test('Making api response file pass', () => {
   expect(true)
-    .toBe(true)
-})
+    .toBe(true);
+});

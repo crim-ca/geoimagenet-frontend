@@ -1,15 +1,15 @@
 // @flow strict
-import React from 'react'
-import { observer } from 'mobx-react'
-import { withStyles, Paper, CircularProgress, Typography } from '@material-ui/core'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import React from 'react';
+import { observer } from 'mobx-react';
+import { withStyles, Paper, CircularProgress, Typography } from '@material-ui/core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
-import type { UserInteractions } from '../domain'
-import type { GeoImageNetStore } from '../store/GeoImageNetStore'
+import type { UserInteractions } from '../domain';
+import type { GeoImageNetStore } from '../store/GeoImageNetStore';
 
 const SessionHandlePaper = withStyles(theme => {
-  const { values } = theme
+  const { values } = theme;
   return {
     root: {
       padding: values.gutterSmall,
@@ -18,29 +18,29 @@ const SessionHandlePaper = withStyles(theme => {
       gridGap: values.gutterSmall,
       alignItems: 'center',
     },
-  }
-})(Paper)
+  };
+})(Paper);
 
 const PresentationText = withStyles(theme => {
-  const { values } = theme
+  const { values } = theme;
   return {
     root: {
       marginRight: values.gutterSmall
     }
-  }
-})(Typography)
+  };
+})(Typography);
 
 const ClickableSpan = withStyles(theme => {
-  const { values } = theme
+  const { values } = theme;
   return {
     root: {
       cursor: 'pointer'
     }
-  }
+  };
 })(props => {
-  const { classes, children } = props
-  return <span className={classes.root}>{children}</span>
-})
+  const { classes, children } = props;
+  return <span className={classes.root}>{children}</span>;
+});
 
 type Props = {
   state_proxy: GeoImageNetStore,
@@ -59,10 +59,10 @@ class SessionHandle extends React.Component<Props> {
     /**
      * @type {User} logged_user
      */
-    const logged_user = this.props.state_proxy.logged_user
+    const logged_user = this.props.state_proxy.logged_user;
 
     if (!logged_user) {
-      return <CircularProgress />
+      return <CircularProgress />;
     }
 
     return (
@@ -74,8 +74,8 @@ class SessionHandle extends React.Component<Props> {
                            className='fa-2x' />
         </ClickableSpan>
       </SessionHandlePaper>
-    )
+    );
   }
 }
 
-export { SessionHandle }
+export { SessionHandle };

@@ -1,15 +1,15 @@
 // @flow strict
-import React, { Component } from 'react'
-import { withStyles } from '@material-ui/core'
-import { Link, withRouter } from 'react-router-dom'
+import React, { Component } from 'react';
+import { withStyles } from '@material-ui/core';
+import { Link, withRouter } from 'react-router-dom';
 
-import { SessionHandle } from './SessionHandle.js'
-import type { UserInteractions } from '../domain'
-import type { GeoImageNetStore } from '../store/GeoImageNetStore'
-import { compose } from 'react-apollo'
+import { SessionHandle } from './SessionHandle.js';
+import type { UserInteractions } from '../domain';
+import type { GeoImageNetStore } from '../store/GeoImageNetStore';
+import { compose } from 'react-apollo';
 
 const MenuContainerDiv = withStyles(theme => {
-  const { values } = theme
+  const { values } = theme;
   return {
     container: {
       padding: `0 ${values.gutterSmall}`,
@@ -22,11 +22,11 @@ const MenuContainerDiv = withStyles(theme => {
         gridColumnStart: 2,
       }
     }
-  }
+  };
 })((props) => {
-  const { classes, children } = props
-  return <div className={classes.container}>{children}</div>
-})
+  const { classes, children } = props;
+  return <div className={classes.container}>{children}</div>;
+});
 
 const style = theme => ({
   link: {
@@ -35,7 +35,7 @@ const style = theme => ({
   selected: {
     textDecoration: 'underline',
   },
-})
+});
 
 type Props = {
   state_proxy: GeoImageNetStore,
@@ -81,11 +81,11 @@ class Menu extends Component<Props> {
       title: 'Contact',
       href: `mailto:${this.props.contact_email}`
     },
-  ]
+  ];
 
   render() {
-    const { state_proxy, user_interactions, location, classes } = this.props
-    const current_url = location.pathname
+    const { state_proxy, user_interactions, location, classes } = this.props;
+    const current_url = location.pathname;
     return (
       <MenuContainerDiv>
         {this.menus.map((menu, i) => <Link to={menu.href}
@@ -94,12 +94,12 @@ class Menu extends Component<Props> {
         )}
         <SessionHandle state_proxy={state_proxy} user_interactions={user_interactions} />
       </MenuContainerDiv>
-    )
+    );
   }
 }
 
 const component = compose(
   withRouter,
   withStyles(style),
-)(Menu)
-export { component as Menu }
+)(Menu);
+export { component as Menu };

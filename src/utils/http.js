@@ -5,15 +5,15 @@ export const make_http_request = (url: string, options: RequestOptions = {}): Pr
       .then(
         response => {
           if (response.ok) {
-            resolve(response)
+            resolve(response);
           } else {
-            reject(response)
+            reject(response);
           }
         },
         error => reject(error),
-      )
-  })
-}
+      );
+  });
+};
 
 export const post_json = (url: string, payload: string) => {
   return make_http_request(url, {
@@ -22,8 +22,8 @@ export const post_json = (url: string, payload: string) => {
     headers: {
       'content-type': 'application/json',
     },
-  })
-}
+  });
+};
 
 export const put_json = async (url: string, payload: string) => {
   return make_http_request(url, {
@@ -32,5 +32,5 @@ export const put_json = async (url: string, payload: string) => {
     headers: {
       'content-type': 'application/json',
     },
-  })
-}
+  });
+};

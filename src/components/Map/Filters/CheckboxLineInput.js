@@ -1,7 +1,7 @@
 // @flow strict
 
-import React from 'react'
-import Typography from '@material-ui/core/Typography'
+import React from 'react';
+import Typography from '@material-ui/core/Typography';
 
 type Props = {
   unique_id: string,
@@ -16,7 +16,7 @@ type Props = {
 
 class CheckboxLineInput extends React.Component<Props> {
   render() {
-    const { unique_id, checked, change_handler, label } = this.props
+    const { unique_id, checked, change_handler, label } = this.props;
     return (
       <>
         <input type='checkbox'
@@ -28,8 +28,8 @@ class CheckboxLineInput extends React.Component<Props> {
                       variant='body2'>{label}</Typography>
         </label>
       </>
-    )
+    );
   }
 }
 
-export { CheckboxLineInput }
+export { CheckboxLineInput };

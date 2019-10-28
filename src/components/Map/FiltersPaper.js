@@ -1,13 +1,13 @@
 // @flow strict
 
-import React from 'react'
-import { observer } from 'mobx-react'
+import React from 'react';
+import { observer } from 'mobx-react';
 
-import withStyles from '@material-ui/core/styles/withStyles'
-import Paper from '@material-ui/core/Paper'
+import withStyles from '@material-ui/core/styles/withStyles';
+import Paper from '@material-ui/core/Paper';
 
 const style = theme => {
-  const { colors } = theme
+  const { colors } = theme;
   return {
     root: {
       border: `3px solid ${colors.turquoise}`,
@@ -39,8 +39,8 @@ const style = theme => {
         display: 'inline-block'
       }
     },
-  }
-}
+  };
+};
 
 type Props = {
   children: {},
@@ -52,17 +52,17 @@ type Props = {
 @observer
 class FiltersPaper extends React.Component<Props> {
   render() {
-    const { classes } = this.props
+    const { classes } = this.props;
     return (
       <Paper className={classes.root}>
         {this.props.children}
       </Paper>
-    )
+    );
   }
 }
 
-const component = withStyles(style)(FiltersPaper)
+const component = withStyles(style)(FiltersPaper);
 
 export {
   component as FiltersPaper
-}
+};

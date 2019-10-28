@@ -1,18 +1,18 @@
 // @flow strict
 
-import { observer } from 'mobx-react'
-import React from 'react'
-import { Link, Paper, Typography } from '@material-ui/core'
-import { Selector } from '../Taxonomy/Selector'
-import { Tree } from '../Taxonomy/Tree'
-import { withTranslation } from '../../utils'
-import { compose } from 'react-apollo'
-import { withTaxonomyStore } from '../../store/HOCs'
+import { observer } from 'mobx-react';
+import React from 'react';
+import { Link, Paper, Typography } from '@material-ui/core';
+import { Selector } from '../Taxonomy/Selector';
+import { Tree } from '../Taxonomy/Tree';
+import { withTranslation } from '../../utils';
+import { compose } from 'react-apollo';
+import { withTaxonomyStore } from '../../store/HOCs';
 
-import type { UserInteractions } from '../../domain'
-import type { GeoImageNetStore } from '../../store/GeoImageNetStore'
-import type { TFunction } from 'react-i18next'
-import type { TaxonomyStore } from '../../store/TaxonomyStore'
+import type { UserInteractions } from '../../domain';
+import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
+import type { TFunction } from 'react-i18next';
+import type { TaxonomyStore } from '../../store/TaxonomyStore';
 
 type Props = {
   user_interactions: UserInteractions,
@@ -24,9 +24,9 @@ type Props = {
 @observer
 class TaxonomyPresentation extends React.Component<Props> {
   render() {
-    const { state_proxy, taxonomy_store, user_interactions, t } = this.props
-    const taxonomy_class = taxonomy_store.flat_taxonomy_classes[state_proxy.root_taxonomy_class_id]
-    const classes = taxonomy_class ? [taxonomy_class] : []
+    const { state_proxy, taxonomy_store, user_interactions, t } = this.props;
+    const taxonomy_class = taxonomy_store.flat_taxonomy_classes[state_proxy.root_taxonomy_class_id];
+    const classes = taxonomy_class ? [taxonomy_class] : [];
     return (
       <React.Fragment>
         <Typography variant='body1'>{t('intro:taxonomy.par_1')}</Typography>
@@ -43,12 +43,12 @@ class TaxonomyPresentation extends React.Component<Props> {
             : null}
         </Paper>
       </React.Fragment>
-    )
+    );
   }
 }
 
 const component = compose(
   withTranslation(),
   withTaxonomyStore,
-)(TaxonomyPresentation)
-export { component as TaxonomyPresentation }
+)(TaxonomyPresentation);
+export { component as TaxonomyPresentation };

@@ -1,9 +1,9 @@
 // @flow strict
 
-import React from 'react'
-import { User } from '../../domain/entities'
-import { withTranslation } from '../../utils'
-import { TFunction } from 'react-i18next'
+import React from 'react';
+import { User } from '../../domain/entities';
+import { withTranslation } from '../../utils';
+import { TFunction } from 'react-i18next';
 
 type Props = {
   user: User,
@@ -12,7 +12,7 @@ type Props = {
 
 class UserInformation extends React.Component<Props> {
   render() {
-    const { user, t } = this.props
+    const { user, t } = this.props;
     return (
       <table>
         <tbody>
@@ -30,10 +30,10 @@ class UserInformation extends React.Component<Props> {
         </tr>
         </tbody>
       </table>
-    )
+    );
   }
 }
 
-const component = withTranslation()(UserInformation)
+const component = withTranslation()(UserInformation);
 
-export { component as UserInformation }
+export { component as UserInformation };

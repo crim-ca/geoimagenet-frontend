@@ -1,10 +1,10 @@
 // @flow strict
 
-import { withStyles } from '@material-ui/core'
-import React from 'react'
+import { withStyles } from '@material-ui/core';
+import React from 'react';
 
 export const ActiveFiltersBox = withStyles(theme => {
-  const { values } = theme
+  const { values } = theme;
   return {
     root: {
       marginRight: values.gutterSmall,
@@ -17,8 +17,8 @@ export const ActiveFiltersBox = withStyles(theme => {
         marginTop: values.gutterSmall
       },
     }
-  }
+  };
 })(props => {
-  const { classes, children } = props
-  return <div className={classes.root}>{children}</div>
-})
+  const { classes, children } = props;
+  return <div className={classes.root}>{children}</div>;
+});

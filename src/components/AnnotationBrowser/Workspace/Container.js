@@ -1,19 +1,19 @@
 // @flow strict
 
-import React from 'react'
-import { observer } from 'mobx-react'
-import { Typography, Button } from '@material-ui/core'
-import { TFunction } from 'i18next'
+import React from 'react';
+import { observer } from 'mobx-react';
+import { Typography, Button } from '@material-ui/core';
+import { TFunction } from 'i18next';
 
-import { withTaxonomyStore } from '../../../store/HOCs'
-import { LeafClassGroup } from './LeafClassGroup'
+import { withTaxonomyStore } from '../../../store/HOCs';
+import { LeafClassGroup } from './LeafClassGroup';
 
-import type { TaxonomyStore } from '../../../store/TaxonomyStore'
-import type { GeoImageNetStore } from '../../../store/GeoImageNetStore'
-import type { UserInteractions } from '../../../domain'
-import type { LeafClassGroup as leafClassGroupEntity } from '../../../Types'
-import { compose } from 'react-apollo'
-import { withTranslation } from '../../../utils'
+import type { TaxonomyStore } from '../../../store/TaxonomyStore';
+import type { GeoImageNetStore } from '../../../store/GeoImageNetStore';
+import type { UserInteractions } from '../../../domain';
+import type { LeafClassGroup as leafClassGroupEntity } from '../../../Types';
+import { compose } from 'react-apollo';
+import { withTranslation } from '../../../utils';
 
 type Props = {
   taxonomy_store: TaxonomyStore,
@@ -32,8 +32,8 @@ type Props = {
 class Container extends React.Component<Props> {
 
   render() {
-    const { t } = this.props
-    const { leaf_class_groups } = this.props.taxonomy_store
+    const { t } = this.props;
+    const { leaf_class_groups } = this.props.taxonomy_store;
     return (
       <>
         <Typography variant='h5'>{t('workspace:title')}</Typography>
@@ -42,7 +42,7 @@ class Container extends React.Component<Props> {
           : <Button>{t('workspace:empty')}</Button>}
         {leaf_class_groups
           .sort((class_group_left: leafClassGroupEntity, class_group_right: leafClassGroupEntity) => {
-            return class_group_left.path.localeCompare(class_group_right.path)
+            return class_group_left.path.localeCompare(class_group_right.path);
           })
           .map((class_group: leafClassGroupEntity, i) => {
             return (
@@ -50,15 +50,15 @@ class Container extends React.Component<Props> {
                               class_group={class_group}
                               state_proxy={this.props.state_proxy}
                               user_interactions={this.props.user_interactions} />
-            )
+            );
           })}
       </>
-    )
+    );
   }
 }
 
 const component = compose(
   withTaxonomyStore,
   withTranslation(),
-)(Container)
-export { component as Container }
+)(Container);
+export { component as Container };

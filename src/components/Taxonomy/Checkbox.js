@@ -1,7 +1,7 @@
 // @flow strict
 
-import { observer } from 'mobx-react'
-import React, { Component } from 'react'
+import { observer } from 'mobx-react';
+import React, { Component } from 'react';
 
 type Props = {
   value: number,
@@ -22,8 +22,8 @@ class Checkbox extends Component<Props> {
                onChange={this.props.change_handler} />
         <span />
       </label>
-    )
+    );
   }
 }
 
-export { Checkbox }
+export { Checkbox };

@@ -1,15 +1,15 @@
 // @flow strict
-import React from 'react'
-import { withStyles, Paper } from '@material-ui/core'
+import React from 'react';
+import { withStyles, Paper } from '@material-ui/core';
 
-import crim from '../img/logos/crim.png'
-import canarie from '../img/logos/canarie.gif'
-import UdeS from '../img/logos/UdeS.jpg'
-import effigis from '../img/logos/effigis.jpg'
-import nrcan from '../img/logos/nrcan.gif'
+import crim from '../img/logos/crim.png';
+import canarie from '../img/logos/canarie.gif';
+import UdeS from '../img/logos/UdeS.jpg';
+import effigis from '../img/logos/effigis.jpg';
+import nrcan from '../img/logos/nrcan.gif';
 
 const LogosContainer = withStyles(theme => {
-  const { values } = theme
+  const { values } = theme;
   return {
     root: {
       padding: values.gutterSmall,
@@ -21,8 +21,8 @@ const LogosContainer = withStyles(theme => {
         padding: `0 0 0 ${values.gutterSmall}`
       }
     },
-  }
-})(Paper)
+  };
+})(Paper);
 
 export function Logos() {
   return (
@@ -33,5 +33,5 @@ export function Logos() {
       <img alt='Logo NRCAN' src={nrcan} />
       <img alt='Logo Canarie' src={canarie} />
     </LogosContainer>
-  )
+  );
 }

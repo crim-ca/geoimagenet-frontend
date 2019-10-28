@@ -1,10 +1,10 @@
 // @flow strict
-import React from 'react'
-import { withStyles } from '@material-ui/core'
-import MaterialTable from 'material-table'
-import { tableIcons } from '../utils/react'
-import { PUBLIC_BENCHMARKS } from '../domain/graphql_queries'
-import { graphql } from 'react-apollo'
+import React from 'react';
+import { withStyles } from '@material-ui/core';
+import MaterialTable from 'material-table';
+import { tableIcons } from '../utils/react';
+import { PUBLIC_BENCHMARKS } from '../domain/graphql_queries';
+import { graphql } from 'react-apollo';
 
 const Grid = withStyles({
   root: {
@@ -18,7 +18,7 @@ const Grid = withStyles({
   <div className={classes.root}>
     <div className={classes.content}>{children}</div>
   </div>
-))
+));
 
 type Props = {
   data: {
@@ -29,7 +29,7 @@ type Props = {
 class BenchmarksComponent extends React.Component<Props> {
 
   render() {
-    const { data: { public_benchmarks } } = this.props
+    const { data: { public_benchmarks } } = this.props;
 
     return (
       <Grid>
@@ -69,8 +69,8 @@ class BenchmarksComponent extends React.Component<Props> {
           data={public_benchmarks}
         />
       </Grid>
-    )
+    );
   }
 }
 
-export const Benchmarks = graphql(PUBLIC_BENCHMARKS)(BenchmarksComponent)
+export const Benchmarks = graphql(PUBLIC_BENCHMARKS)(BenchmarksComponent);

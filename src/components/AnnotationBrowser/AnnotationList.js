@@ -1,16 +1,16 @@
 // @flow strict
 
-import React from 'react'
-import { observer } from 'mobx-react'
-import withStyles from '@material-ui/core/styles/withStyles'
-import { TFunction } from 'react-i18next'
-import { compose } from 'react-apollo'
+import React from 'react';
+import { observer } from 'mobx-react';
+import withStyles from '@material-ui/core/styles/withStyles';
+import { TFunction } from 'react-i18next';
+import { compose } from 'react-apollo';
 
-import { withTranslation } from '../../utils'
-import { GeoImageNetStore } from '../../store/GeoImageNetStore'
-import { ANNOTATION_THUMBNAIL_SIZE } from '../../constants'
+import { withTranslation } from '../../utils';
+import { GeoImageNetStore } from '../../store/GeoImageNetStore';
+import { ANNOTATION_THUMBNAIL_SIZE } from '../../constants';
 
-import type { Annotation, AnnotationStatus, BoundingBox } from '../../Types'
+import type { Annotation, AnnotationStatus, BoundingBox } from '../../Types';
 
 type Props = {
   annotations: Annotation[],
@@ -54,34 +54,34 @@ const style = (theme) => ({
     alignItems: 'start',
     justifyContent: 'start',
   },
-})
+});
 
 @observer
 class AnnotationList extends React.Component<Props> {
 
   make_animate_handler = (bounding_box: BoundingBox, status: AnnotationStatus, annotation_id: number) => () => {
-    this.props.fit_view_to_bounding_box(bounding_box, status, annotation_id)
-  }
+    this.props.fit_view_to_bounding_box(bounding_box, status, annotation_id);
+  };
 
   render() {
-    const { images_dictionary, nickname_map } = this.props.state_proxy
-    const { classes, t } = this.props
+    const { images_dictionary, nickname_map } = this.props.state_proxy;
+    const { classes, t } = this.props;
     return (
       <div className={classes.list}>
         {this.props.annotations.map((annotation, i) => {
-          const { image_id, bbox, id, status, taxonomy_class_id, annotator_id } = annotation.properties
-          const image = images_dictionary.find(image => image.id === image_id)
+          const { image_id, bbox, id, status, taxonomy_class_id, annotator_id } = annotation.properties;
+          const image = images_dictionary.find(image => image.id === image_id);
           if (image === undefined) {
-            return
+            return;
           }
-          const bounding_box = bbox.join(',')
+          const bounding_box = bbox.join(',');
           const image_url = `${this.props.geoserver_url}/wms?service=WMS&version=1.3.0&request=GetMap&format=image/png` +
             `&transparent=true&layers=${image.layer_name}&hints=quality` +
-            `&width=${ANNOTATION_THUMBNAIL_SIZE}&height=${ANNOTATION_THUMBNAIL_SIZE}&crs=EPSG:3857&bbox=${bounding_box}`
+            `&width=${ANNOTATION_THUMBNAIL_SIZE}&height=${ANNOTATION_THUMBNAIL_SIZE}&crs=EPSG:3857&bbox=${bounding_box}`;
           const feature_url = `${this.props.geoserver_url}/wms?request=GetMap&service=WMS&version=1.3.0` +
             `&transparent=true&layers=annotation&srs=EPSG:3857&WIDTH=${ANNOTATION_THUMBNAIL_SIZE}&HEIGHT=${ANNOTATION_THUMBNAIL_SIZE}` +
-            `&styles=annotations&format=image/png&BBOX=${bounding_box}&cql_filter=id=${id}`
-          const annotator = nickname_map[annotator_id] || annotator_id
+            `&styles=annotations&format=image/png&BBOX=${bounding_box}&cql_filter=id=${id}`;
+          const annotator = nickname_map[annotator_id] || annotator_id;
           return (
             <div key={i} className={classes.list_item}>
               <figure className={classes.figure} onClick={this.make_animate_handler(bbox, status, id)}>
@@ -94,18 +94,18 @@ class AnnotationList extends React.Component<Props> {
                 <span>{t('annotations:created_by', { annotator })}</span>
               </div>
             </div>
-          )
+          );
         })}
       </div>
-    )
+    );
   }
 }
 
 const component = compose(
   withStyles(style),
   withTranslation(),
-)(AnnotationList)
+)(AnnotationList);
 
 export {
   component as AnnotationList,
-}
+};

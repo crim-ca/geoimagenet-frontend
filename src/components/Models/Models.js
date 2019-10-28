@@ -1,10 +1,10 @@
 // @flow strict
 
-import React, { Component } from 'react'
-import { withStyles } from '@material-ui/core'
-import { ModelsTable } from './ModelsTable'
-import { UploadForm } from './UploadForm'
-import { BenchmarksTable } from './BenchmarksTable'
+import React, { Component } from 'react';
+import { withStyles } from '@material-ui/core';
+import { ModelsTable } from './ModelsTable';
+import { UploadForm } from './UploadForm';
+import { BenchmarksTable } from './BenchmarksTable';
 
 const Grid = withStyles(({ values }) => ({
   root: {
@@ -22,7 +22,7 @@ const Grid = withStyles(({ values }) => ({
   <div className={root}>
     <div className={content}>{children}</div>
   </div>
-))
+));
 
 type Props = {
   model_upload_instructions_url: string,
@@ -37,6 +37,6 @@ export class Models extends Component<Props> {
         <ModelsTable />
         <BenchmarksTable />
       </Grid>
-    )
+    );
   }
 }

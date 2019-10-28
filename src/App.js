@@ -1,29 +1,29 @@
 // @flow strict
 
-import React from 'react'
+import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route
-} from 'react-router-dom'
-import { Platform } from './components/Platform/Platform'
-import { Datasets } from './components/Datasets/Datasets'
-import { Models } from './components/Models/Models'
-import { Benchmarks } from './components/Benchmarks'
-import { theme, ThemedComponent } from './utils/react'
-import { PresentationContainer } from './components/Presentation/Presentation'
-import { NotificationContainer } from 'react-notifications'
+} from 'react-router-dom';
+import { Platform } from './components/Platform/Platform';
+import { Datasets } from './components/Datasets/Datasets';
+import { Models } from './components/Models/Models';
+import { Benchmarks } from './components/Benchmarks';
+import { theme, ThemedComponent } from './utils/react';
+import { PresentationContainer } from './components/Presentation/Presentation';
+import { NotificationContainer } from 'react-notifications';
 
-import type { OpenLayersStore } from './store/OpenLayersStore'
-import type { GeoImageNetStore } from './store/GeoImageNetStore'
-import type { StoreActions } from './store/StoreActions'
-import type { UserInteractions } from './domain'
-import { CssBaseline, MuiThemeProvider } from '@material-ui/core'
-import { ApolloProvider } from 'react-apollo'
-import { DialogContainer } from './components/Dialogs'
-import { ContextualMenuContainer } from './components/ContextualMenu/ContextualMenuContainer'
-import { LoggedLayout } from './components/LoggedLayout'
-import { ApolloClient } from 'apollo-client'
+import type { OpenLayersStore } from './store/OpenLayersStore';
+import type { GeoImageNetStore } from './store/GeoImageNetStore';
+import type { StoreActions } from './store/StoreActions';
+import type { UserInteractions } from './domain';
+import { CssBaseline, MuiThemeProvider } from '@material-ui/core';
+import { ApolloProvider } from 'react-apollo';
+import { DialogContainer } from './components/Dialogs';
+import { ContextualMenuContainer } from './components/ContextualMenu/ContextualMenuContainer';
+import { LoggedLayout } from './components/LoggedLayout';
+import { ApolloClient } from 'apollo-client';
 
 type Props = {
   open_layers_store: OpenLayersStore,
@@ -44,7 +44,7 @@ class App extends React.Component<Props> {
       user_interactions,
       thelper_model_upload_instructions_url,
       contact_email,
-    } = this.props
+    } = this.props;
     return (
       <Switch>
         <Route path='/platform'>
@@ -74,7 +74,7 @@ class App extends React.Component<Props> {
           </ThemedComponent>
         </Route>
       </Switch>
-    )
+    );
   }
 
   render() {
@@ -82,8 +82,8 @@ class App extends React.Component<Props> {
       client,
       state_proxy,
       user_interactions,
-    } = this.props
-    const { acl: { authenticated } } = state_proxy
+    } = this.props;
+    const { acl: { authenticated } } = state_proxy;
     return (
       <Router>
         <MuiThemeProvider theme={theme}>
@@ -102,8 +102,8 @@ class App extends React.Component<Props> {
           <ContextualMenuContainer />
         </MuiThemeProvider>
       </Router>
-    )
+    );
   }
 }
 
-export { App }
+export { App };

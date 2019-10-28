@@ -1,8 +1,8 @@
 // @flow strict
 
-import React from 'react'
-import Popper from '@material-ui/core/Popper'
-import Fade from '@material-ui/core/Fade'
+import React from 'react';
+import Popper from '@material-ui/core/Popper';
+import Fade from '@material-ui/core/Fade';
 
 type Props = {
   children: {},
@@ -26,8 +26,8 @@ class FadingDialog extends React.Component<Props> {
           ) : <div />
         }
       </Fade>
-    )
+    );
   }
 }
 
-export { FadingDialog }
+export { FadingDialog };

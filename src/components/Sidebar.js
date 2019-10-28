@@ -1,19 +1,19 @@
 // @flow strict
-import React from 'react'
-import { ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Paper, withStyles } from '@material-ui/core'
-import { ExpandMore } from '@material-ui/icons'
-import { compose } from 'react-apollo'
+import React from 'react';
+import { ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Paper, withStyles } from '@material-ui/core';
+import { ExpandMore } from '@material-ui/icons';
+import { compose } from 'react-apollo';
 
-import { Viewer } from './Taxonomy/Viewer'
-import { Container as SettingsContainer } from './UserSettings/Container'
-import { withTranslation } from '../utils'
-import { Container as AnnotationBrowserContainer } from './AnnotationBrowser/Container'
+import { Viewer } from './Taxonomy/Viewer';
+import { Container as SettingsContainer } from './UserSettings/Container';
+import { withTranslation } from '../utils';
+import { Container as AnnotationBrowserContainer } from './AnnotationBrowser/Container';
 
-import type { OpenLayersStore } from '../store/OpenLayersStore'
-import type { GeoImageNetStore } from '../store/GeoImageNetStore'
-import type { StoreActions } from '../store/StoreActions'
-import type { UserInteractions } from '../domain'
-import type { TFunction } from 'react-i18next'
+import type { OpenLayersStore } from '../store/OpenLayersStore';
+import type { GeoImageNetStore } from '../store/GeoImageNetStore';
+import type { StoreActions } from '../store/StoreActions';
+import type { UserInteractions } from '../domain';
+import type { TFunction } from 'react-i18next';
 
 type SidebarSectionData = {
   title: string,
@@ -55,16 +55,16 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, 
       slug: 'layers',
       content: (<div id='layer-switcher' className='layer-switcher-container' />),
     },
-  ]
+  ];
   if (state_proxy.logged_user !== null) {
     sections.push({
       title: 'Settings',
       slug: 'settings',
       content: (<SettingsContainer user={state_proxy.logged_user} user_interactions={user_interactions} />),
-    })
+    });
   }
-  return sections
-}
+  return sections;
+};
 
 type Props = {
   state_proxy: GeoImageNetStore,
@@ -94,29 +94,29 @@ const style = {
   details: {
     flexDirection: 'column',
   },
-}
+};
 
 class Sidebar extends React.Component<Props, State> {
 
   state = {
     opened_panel_title: '',
-  }
+  };
 
   create_open_panel_handler = (panel_title: string) => (event: Event, panel_should_open: boolean) => {
     this.setState({
       opened_panel_title: panel_should_open ? panel_title : '',
-    })
-  }
+    });
+  };
 
   render() {
-    const { opened_panel_title } = this.state
-    const { classes } = this.props
+    const { opened_panel_title } = this.state;
+    const { classes } = this.props;
     const sidebar_sections = make_sidebar_sections(
       this.props.user_interactions,
       this.props.state_proxy,
       this.props.store_actions,
       this.props.open_layers_store,
-      this.props.t)
+      this.props.t);
     return (
       <Paper className={classes.sidebar}>
         <div className={classes.bottom}>
@@ -133,13 +133,13 @@ class Sidebar extends React.Component<Props, State> {
           }
         </div>
       </Paper>
-    )
+    );
   }
 }
 
 const component = compose(
   withTranslation(),
   withStyles(style),
-)(Sidebar)
+)(Sidebar);
 
-export { component as Sidebar }
+export { component as Sidebar };

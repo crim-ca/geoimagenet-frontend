@@ -1,10 +1,10 @@
 // @flow strict
 
-import { observer } from 'mobx-react'
-import React, { Component } from 'react'
-import { Checkbox } from './Checkbox'
-import { ReleaseButton } from './ReleaseButton'
-import { TaxonomyClass } from '../../domain/entities'
+import { observer } from 'mobx-react';
+import React, { Component } from 'react';
+import { Checkbox } from './Checkbox';
+import { ReleaseButton } from './ReleaseButton';
+import { TaxonomyClass } from '../../domain/entities';
 
 type Props = {
   taxonomy_class: TaxonomyClass,
@@ -17,15 +17,15 @@ type Props = {
 class TaxonomyClassActions extends Component<Props> {
 
   make_change_handler = (taxonomy_class: TaxonomyClass) => () => {
-    this.props.invert_taxonomy_class_visibility(taxonomy_class)
-  }
+    this.props.invert_taxonomy_class_visibility(taxonomy_class);
+  };
 
   make_pinned_handler = (taxonomy_class: TaxonomyClass) => () => {
-    this.props.toggle_pinned_class(taxonomy_class)
-  }
+    this.props.toggle_pinned_class(taxonomy_class);
+  };
 
   render() {
-    const { pinned, visible, id } = this.props.taxonomy_class
+    const { pinned, visible, id } = this.props.taxonomy_class;
     return (
       <span className='actions'>
                 <Checkbox value={id}
@@ -38,8 +38,8 @@ class TaxonomyClassActions extends Component<Props> {
                           checked={pinned} />
                 <ReleaseButton onclick={this.props.release_handler} />
             </span>
-    )
+    );
   }
 }
 
-export { TaxonomyClassActions }
+export { TaxonomyClassActions };

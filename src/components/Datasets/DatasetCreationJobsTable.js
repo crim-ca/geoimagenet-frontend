@@ -1,30 +1,30 @@
 // @flow strict
-import MaterialTable from 'material-table'
-import { graphql, compose } from 'react-apollo'
-import { tableIcons } from '../../utils/react'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { DATASET_CREATION_JOBS, LAUNCH_DATASET_CREATION_JOB } from '../../domain/graphql_queries'
-import { Button } from '@material-ui/core'
-import { NotificationManager } from 'react-notifications'
+import MaterialTable from 'material-table';
+import { graphql, compose } from 'react-apollo';
+import { tableIcons } from '../../utils/react';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { DATASET_CREATION_JOBS, LAUNCH_DATASET_CREATION_JOB } from '../../domain/graphql_queries';
+import { Button } from '@material-ui/core';
+import { NotificationManager } from 'react-notifications';
 
 function DatasetCreationJobsTableComponent({ data: { jobs, refetch }, mutate }) {
 
   const launch_dataset_creation = async () => {
-    let result
+    let result;
     try {
-      result = await mutate()
+      result = await mutate();
     } catch (e) {
-      NotificationManager.error('We were unable to start the dataset creation job.')
-      throw e
+      NotificationManager.error('We were unable to start the dataset creation job.');
+      throw e;
     }
-    const { data: { launch_dataset_creation_job: { success, message } } } = result
+    const { data: { launch_dataset_creation_job: { success, message } } } = result;
     if (!success) {
-      NotificationManager.error(message)
-      return
+      NotificationManager.error(message);
+      return;
     }
-    await refetch()
-  }
+    await refetch();
+  };
 
   return (
     <React.Fragment>
@@ -58,15 +58,15 @@ function DatasetCreationJobsTableComponent({ data: { jobs, refetch }, mutate }) 
       />
     </React.Fragment>
 
-  )
+  );
 }
 
 DatasetCreationJobsTableComponent.propTypes = {
   data: PropTypes.object.isRequired,
   mutate: PropTypes.func.isRequired,
-}
+};
 
 export const DatasetCreationJobsTable = compose(
   graphql(DATASET_CREATION_JOBS),
   graphql(LAUNCH_DATASET_CREATION_JOB),
-)(DatasetCreationJobsTableComponent)
+)(DatasetCreationJobsTableComponent);

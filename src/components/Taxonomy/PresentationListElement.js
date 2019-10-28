@@ -1,32 +1,32 @@
 // @flow strict
 
-import { observer } from 'mobx-react'
-import React, { Component } from 'react'
-import { Collapse, List, ListItem, withStyles } from '@material-ui/core'
-import { Tree } from './Tree'
-import { TaxonomyClass } from '../../domain/entities'
-import { AnnotationCounts } from './AnnotationCounts'
-import { withTranslation } from '../../utils'
+import { observer } from 'mobx-react';
+import React, { Component } from 'react';
+import { Collapse, List, ListItem, withStyles } from '@material-ui/core';
+import { Tree } from './Tree';
+import { TaxonomyClass } from '../../domain/entities';
+import { AnnotationCounts } from './AnnotationCounts';
+import { withTranslation } from '../../utils';
 
-import type { UserInteractions } from '../../domain'
-import type { GeoImageNetStore } from '../../store/GeoImageNetStore'
-import type { TaxonomyStore } from '../../store/TaxonomyStore'
-import type { TFunction } from 'react-i18next'
-import { compose } from 'react-apollo'
-import { withTaxonomyStore } from '../../store/HOCs'
+import type { UserInteractions } from '../../domain';
+import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
+import type { TaxonomyStore } from '../../store/TaxonomyStore';
+import type { TFunction } from 'react-i18next';
+import { compose } from 'react-apollo';
+import { withTaxonomyStore } from '../../store/HOCs';
 
 const StyledList = withStyles({
   padding: {
     paddingTop: 0,
     paddingBottom: 0,
   }
-})(List)
+})(List);
 const StyledListItem = withStyles({
   root: {
     padding: '4px',
     justifyContent: 'space-between',
   },
-})(ListItem)
+})(ListItem);
 const StyledLabelAndCountSpan = withStyles({
   root: {
     display: 'flex',
@@ -34,9 +34,9 @@ const StyledLabelAndCountSpan = withStyles({
     flexDirection: 'row',
   }
 })(props => {
-  const { classes, children } = props
-  return <span className={classes.root}>{children}</span>
-})
+  const { classes, children } = props;
+  return <span className={classes.root}>{children}</span>;
+});
 
 type Props = {
   taxonomy_class: TaxonomyClass,
@@ -50,17 +50,17 @@ type Props = {
 @observer
 class PresentationListElement extends Component<Props> {
   render() {
-    const { taxonomy_class, state_proxy, user_interactions, t, selected, taxonomy_store } = this.props
+    const { taxonomy_class, state_proxy, user_interactions, t, selected, taxonomy_store } = this.props;
     if (taxonomy_class === undefined) {
-      return null
+      return null;
     }
-    const { children } = taxonomy_class
+    const { children } = taxonomy_class;
     const make_toggle_callback = elem => () => {
-      taxonomy_store.toggle_taxonomy_class_tree_element(elem)
-    }
+      taxonomy_store.toggle_taxonomy_class_tree_element(elem);
+    };
     const label_click_callback = children && children.length > 0
       ? make_toggle_callback(taxonomy_class)
-      : null
+      : null;
     return (
       <StyledList>
         <StyledListItem className='taxonomy_class_list_element'
@@ -86,12 +86,12 @@ class PresentationListElement extends Component<Props> {
           : null
         }
       </StyledList>
-    )
+    );
   }
 }
 
 const component = compose(
   withTranslation(),
   withTaxonomyStore,
-)(PresentationListElement)
-export { component as PresentationListElement }
+)(PresentationListElement);
+export { component as PresentationListElement };

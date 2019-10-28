@@ -1,2 +1,2 @@
 // @flow strict
-export * from './user-interactions.js'
+export * from './user-interactions.js';

@@ -1,13 +1,13 @@
 // @flow strict
-import React from 'react'
-import { withStyles } from '@material-ui/core'
-import { observer } from 'mobx-react'
+import React from 'react';
+import { withStyles } from '@material-ui/core';
+import { observer } from 'mobx-react';
 
-import { DatasetsTable } from './DatasetsTable'
-import { DatasetCreationJobsTable } from './DatasetCreationJobsTable'
-import { DATASETS, WRITE } from '../../constants.js'
+import { DatasetsTable } from './DatasetsTable';
+import { DatasetCreationJobsTable } from './DatasetCreationJobsTable';
+import { DATASETS, WRITE } from '../../constants.js';
 
-import type { GeoImageNetStore } from '../../store/GeoImageNetStore'
+import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
 
 const Layout = withStyles(({ values }) => ({
   grid: {
@@ -23,8 +23,8 @@ const Layout = withStyles(({ values }) => ({
 }))(({ classes, children }) => {
   return <div className={classes.grid}>
     <div className={classes.children}>{children}</div>
-  </div>
-})
+  </div>;
+});
 
 type Props = {
   state_proxy: GeoImageNetStore,
@@ -34,7 +34,7 @@ type Props = {
 class Datasets extends React.Component<Props> {
 
   render() {
-    const { acl } = this.props.state_proxy
+    const { acl } = this.props.state_proxy;
     return (
       <Layout>
         <DatasetsTable ml_endpoint={ML_ENDPOINT} />
@@ -47,8 +47,8 @@ class Datasets extends React.Component<Props> {
           : null
         }
       </Layout>
-    )
+    );
   }
 }
 
-export { Datasets }
+export { Datasets };

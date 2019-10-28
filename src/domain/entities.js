@@ -1,6 +1,6 @@
 // @flow strict
 
-import type { Counts, FollowedUser, MagpieResourceData, MagpieResourceDictionary } from '../Types'
+import type { Counts, FollowedUser, MagpieResourceData, MagpieResourceDictionary } from '../Types';
 
 /**
  * This is the basic unit of annotation for machine learning: the class.
@@ -9,27 +9,36 @@ import type { Counts, FollowedUser, MagpieResourceData, MagpieResourceDictionary
  */
 export class TaxonomyClass {
 
-  id: number
-  name_fr: string
-  name_en: string
-  taxonomy_id: number
-  parent_id: number | null
-  children: TaxonomyClass[]
+  id: number;
+
+  name_fr: string;
+
+  name_en: string;
+
+  taxonomy_id: number;
+
+  parent_id: number | null;
+
+  children: TaxonomyClass[];
+
   /**
    * The visible property controls whether or not annotations, counts and any related information about that specific class are to be displayed.
    * There are a priori no exceptions to this rule, if anything anywhere is to be shown on the screen about a class, it should appear or not based on this property.
    */
-  visible: boolean
+  visible: boolean;
+
   /**
    * In contrast to the visible property, the opened one is about the display of a class's children in the taxonomies and classes section of the sidebar
    */
-  opened: boolean
+  opened: boolean;
+
   /**
    * Being "pinned" in the context of an annotation class is being present in the "workspace" of the annotation browser.
    * Pinned classes are present in a second screen where only pinned classes are present, so that the user can see a limited amount of information at the same time.
    */
-  pinned: boolean
-  counts: Counts
+  pinned: boolean;
+
+  counts: Counts;
 
   /**
    * We only need four params from the api to make sure we have a class that will behave correctly in the application.
@@ -47,16 +56,16 @@ export class TaxonomyClass {
     pinned: boolean = false,
     counts: Counts = {}
   ) {
-    this.id = id
-    this.name_fr = name_fr
-    this.name_en = name_en
-    this.taxonomy_id = taxonomy_id
-    this.parent_id = parent_id
-    this.children = children
-    this.visible = visible
-    this.opened = opened
-    this.pinned = pinned
-    this.counts = counts
+    this.id = id;
+    this.name_fr = name_fr;
+    this.name_en = name_en;
+    this.taxonomy_id = taxonomy_id;
+    this.parent_id = parent_id;
+    this.children = children;
+    this.visible = visible;
+    this.opened = opened;
+    this.pinned = pinned;
+    this.counts = counts;
   }
 }
 
@@ -69,17 +78,20 @@ export class AnnotationCounts {
  */
 export class Taxonomy {
 
-  name_fr: string
-  name_en: string
-  slug: string
-  versions: TaxonomyVersion[]
+  name_fr: string;
+
+  name_en: string;
+
+  slug: string;
+
+  versions: TaxonomyVersion[];
 
   constructor(name_fr: string, name_en: string, slug: string, versions: TaxonomyVersion[]) {
 
-    this.name_fr = name_fr
-    this.name_en = name_en
-    this.slug = slug
-    this.versions = versions
+    this.name_fr = name_fr;
+    this.name_en = name_en;
+    this.slug = slug;
+    this.versions = versions;
   }
 }
 
@@ -88,15 +100,17 @@ export class Taxonomy {
  */
 export class TaxonomyVersion {
 
-  taxonomy_id: number
-  root_taxonomy_class_id: number
-  version: string
+  taxonomy_id: number;
+
+  root_taxonomy_class_id: number;
+
+  version: string;
 
   constructor(taxonomy_id: number, root_taxonomy_class_id: number, version: string) {
 
-    this.taxonomy_id = taxonomy_id
-    this.root_taxonomy_class_id = root_taxonomy_class_id
-    this.version = version
+    this.taxonomy_id = taxonomy_id;
+    this.root_taxonomy_class_id = root_taxonomy_class_id;
+    this.version = version;
   }
 }
 
@@ -111,7 +125,7 @@ export class ProbablyInvalidPermissions extends Error {
  */
 export class ResourcePermissionRepository {
 
-  permissions = {}
+  permissions = {};
 
   /**
    * Expects the value of the resources property of the /users/current/services/{service}/resources?inherit=true Magpie route.
@@ -121,13 +135,13 @@ export class ResourcePermissionRepository {
       if (Object.getOwnPropertyNames(resources).length === 0) {
         throw new ProbablyInvalidPermissions('No permissions are defined in the resources for the frontend service. ' +
           'While this is possibly intended, it most probably means that there is a misconfiguration for your user. ' +
-          'You will be unable to properly use the platform.')
+          'You will be unable to properly use the platform.');
       }
       Object.getOwnPropertyNames(resources)
         .forEach(resource_id => {
-          const resource = resources[parseInt(resource_id)]
-          this.permissions[resource.resource_name] = (new Permission(resource))
-        })
+          const resource = resources[parseInt(resource_id)];
+          this.permissions[resource.resource_name] = (new Permission(resource));
+        });
 
     }
   }
@@ -141,48 +155,59 @@ export class ResourcePermissionRepository {
  */
 export class Permission {
 
-  resource_id: number
-  resource_name: string
-  resource_display_name: string
-  permission_names: string[]
-  parent_id: number
-  root_service_id: number
-  resource_type: string
-  children: Permission[] = []
+  resource_id: number;
+
+  resource_name: string;
+
+  resource_display_name: string;
+
+  permission_names: string[];
+
+  parent_id: number;
+
+  root_service_id: number;
+
+  resource_type: string;
+
+  children: Permission[] = [];
 
   constructor(resource: MagpieResourceData) {
 
-    this.resource_id = resource.resource_id
-    this.resource_name = resource.resource_name
-    this.resource_display_name = resource.resource_display_name
-    this.permission_names = resource.permission_names
-    this.parent_id = resource.parent_id
-    this.root_service_id = resource.root_service_id
+    this.resource_id = resource.resource_id;
+    this.resource_name = resource.resource_name;
+    this.resource_display_name = resource.resource_display_name;
+    this.permission_names = resource.permission_names;
+    this.parent_id = resource.parent_id;
+    this.root_service_id = resource.root_service_id;
 
     if (resource.children && Object.getOwnPropertyNames(resource.children).length > 0) {
       Object.getOwnPropertyNames(resource.children)
         .forEach(children_id => {
-          const children = resource.children[parseInt(children_id)]
-          this.children.push(new Permission(children))
-        })
+          const children = resource.children[parseInt(children_id)];
+          this.children.push(new Permission(children));
+        });
     }
-    this.resource_type = resource.resource_type
+    this.resource_type = resource.resource_type;
   }
 }
 
 export class User {
-  user_name: string
-  email: string
-  group_names: string[]
-  id: number
-  followed_users: FollowedUser[]
+  user_name: string;
+
+  email: string;
+
+  group_names: string[];
+
+  id: number;
+
+  followed_users: FollowedUser[];
 
   constructor(user_name: string, email: string, group_names: string[], id: number, followed_users: FollowedUser[]) {
-    this.user_name = user_name
-    this.email = email
-    this.group_names = group_names
-    this.id = id
-    this.followed_users = followed_users
+    this.user_name = user_name;
+    this.email = email;
+    this.group_names = group_names;
+    this.id = id;
+    this.followed_users = followed_users;
   }
 }
 
@@ -194,20 +219,22 @@ export class AnnotationFilter {
   /**
    * The status text, as seen from the api.
    */
-  text: string
+  text: string;
+
   /**
    * A human readable more beautiful text for the anotation status.
    */
-  title: string
+  title: string;
+
   /**
    * Wether this annotation status should be active all across the platfrom.
    */
-  activated: boolean
+  activated: boolean;
 
   constructor(text: string, activated: boolean = false, title: string = '') {
-    this.text = text
-    this.activated = activated
-    this.title = title
+    this.text = text;
+    this.activated = activated;
+    this.title = title;
   }
 
 }
@@ -218,21 +245,27 @@ type Bits = 8 | 16;
 type Bands = 'RGB' | 'NRG' | 'RGBN';
 
 export class SatelliteImage {
-  bands: Bands
-  bits: Bits
-  extension: ImageExtension
-  filename: string
-  id: number
-  layer_name: string
-  sensor_name: Sensor
+  bands: Bands;
+
+  bits: Bits;
+
+  extension: ImageExtension;
+
+  filename: string;
+
+  id: number;
+
+  layer_name: string;
+
+  sensor_name: Sensor;
 
   constructor(bands: Bands, bits: Bits, extension: ImageExtension, filename: string, id: number, layer_name: string, sensor_name: Sensor) {
-    this.bands = bands
-    this.bits = bits
-    this.extension = extension
-    this.filename = filename
-    this.id = id
-    this.layer_name = layer_name
-    this.sensor_name = sensor_name
+    this.bands = bands;
+    this.bits = bits;
+    this.extension = extension;
+    this.filename = filename;
+    this.id = id;
+    this.layer_name = layer_name;
+    this.sensor_name = sensor_name;
   }
 }

@@ -1,14 +1,14 @@
 // @flow strict
-import { ANNOTATION, MODE } from '../constants.js'
-import { AccessControlList } from '../domain/access-control-list.js'
-import { AnnotationFilter, ResourcePermissionRepository } from '../domain/entities.js'
-import { observable, computed, action } from 'mobx'
-import { SatelliteImage, Taxonomy, User } from '../domain/entities'
-import typeof VectorLayer from 'ol/layer/Vector.js'
-import typeof VectorSource from 'ol/source/Vector'
-import { typeof Collection } from 'ol'
-import type { AnnotationOwnershipFilters, AnnotationStatusFilters, FollowedUser } from '../Types'
-import { configure } from 'mobx'
+import { ANNOTATION, MODE } from '../constants.js';
+import { AccessControlList } from '../domain/access-control-list.js';
+import { AnnotationFilter, ResourcePermissionRepository } from '../domain/entities.js';
+import { observable, computed, action } from 'mobx';
+import { SatelliteImage, Taxonomy, User } from '../domain/entities';
+import typeof VectorLayer from 'ol/layer/Vector.js';
+import typeof VectorSource from 'ol/source/Vector';
+import { typeof Collection } from 'ol';
+import type { AnnotationOwnershipFilters, AnnotationStatusFilters, FollowedUser } from '../Types';
+import { configure } from 'mobx';
 
 /**
  * this is relatively important in the sense that it constraints us to mutate the store only in actions
@@ -16,7 +16,7 @@ import { configure } from 'mobx'
  */
 configure({
   enforceActions: 'always',
-})
+});
 
 /**
  * The application state must, at each given time, fully represent what a user is seeing.
@@ -28,16 +28,17 @@ export class GeoImageNetStore {
   /**
    * Labels can be overwhelming when there are too much objects on the screen, this property should allow user to show them or not.
    */
-  @observable show_labels: boolean = true
-  @observable show_annotators_identifiers: boolean = true
+  @observable show_labels: boolean = true;
+
+  @observable show_annotators_identifiers: boolean = true;
 
   @action toggle_annotator_identifiers: (?boolean) => void = (override: ?boolean) => {
     if (override !== undefined && override !== null) {
-      this.show_annotators_identifiers = override
-      return
+      this.show_annotators_identifiers = override;
+      return;
     }
-    this.show_annotators_identifiers = !this.show_annotators_identifiers
-  }
+    this.show_annotators_identifiers = !this.show_annotators_identifiers;
+  };
 
   /**
    * The visible annotations types should federate every part of the platform that manages annotations, from the counts
@@ -50,44 +51,44 @@ export class GeoImageNetStore {
     [ANNOTATION.STATUS.VALIDATED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.VALIDATED, true)),
     [ANNOTATION.STATUS.REJECTED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.REJECTED, true)),
     [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.DELETED, true)),
-  }
+  };
 
   @observable annotation_ownership_filters: AnnotationOwnershipFilters = {
     [ANNOTATION.OWNERSHIP.OTHERS]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.OTHERS, true)),
     [ANNOTATION.OWNERSHIP.MINE]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.MINE, true)),
     [ANNOTATION.OWNERSHIP.FOLLOWED_USERS]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.FOLLOWED_USERS, true)),
-  }
+  };
 
   /**
    * When loading the platform, we by default put the user in a state of visualization.
    * @type {String}
    */
-  @observable mode: string = MODE.VISUALIZE
+  @observable mode: string = MODE.VISUALIZE;
 
   /**
    * An user is able to act on the annotations based on wether or not they are at a suitable zoom level.
    * @todo make this a computed mobx value
    * @type {boolean}
    */
-  @observable actions_activated: boolean = false
+  @observable actions_activated: boolean = false;
 
-  @observable acl: AccessControlList = new AccessControlList(new ResourcePermissionRepository())
+  @observable acl: AccessControlList = new AccessControlList(new ResourcePermissionRepository());
 
-  @observable taxonomies: Taxonomy[] = []
+  @observable taxonomies: Taxonomy[] = [];
 
   @computed get root_taxonomy_class_id(): number {
     if (this.selected_taxonomy === null) {
-      return -1
+      return -1;
     }
     if (this.selected_taxonomy.versions === undefined) {
-      return -1
+      return -1;
     }
-    return this.selected_taxonomy.versions[0].root_taxonomy_class_id || -1
+    return this.selected_taxonomy.versions[0].root_taxonomy_class_id || -1;
   }
 
-  @observable images_dictionary: SatelliteImage[]
+  @observable images_dictionary: SatelliteImage[];
 
-  @observable selected_taxonomy: Taxonomy | null = null
+  @observable selected_taxonomy: Taxonomy | null = null;
 
   /**
    * For the next three properties, we directly write the indexes because flojs does not support the use of the constants
@@ -104,7 +105,7 @@ export class GeoImageNetStore {
     'validated': Collection,
     'rejected': Collection,
     'deleted': Collection,
-  } = {}
+  } = {};
 
   /**
    * The Open Layers sources currently used in the map.
@@ -116,7 +117,7 @@ export class GeoImageNetStore {
     'validated': VectorSource,
     'rejected': VectorSource,
     'deleted': VectorSource,
-  } = {}
+  } = {};
 
   /**
    * The Open Layers layers currently used in the map.
@@ -129,31 +130,31 @@ export class GeoImageNetStore {
     'validated': VectorLayer,
     'rejected': VectorLayer,
     'deleted': VectorLayer,
-  } = {}
+  } = {};
 
   /**
    * An instance with the current user's information.
    */
-  @observable logged_user: User
+  @observable logged_user: User;
 
   /**
    * If there is a logged user (it's possible there isn't, people can access the map in anonymous mode)
    * then we should not be trying to substitute nicknames for ids
    */
   @computed get nickname_map() {
-    const map = {}
+    const map = {};
     if (this.logged_user === undefined) {
-      return {}
+      return {};
     }
-    map[this.logged_user.id] = this.logged_user.user_name
+    map[this.logged_user.id] = this.logged_user.user_name;
     if (this.logged_user.followed_users.length === 0) {
-      return map
+      return map;
     }
     const assign_followed_user = (user: FollowedUser) => {
-      map[user.id] = user.nickname
-    }
-    this.logged_user.followed_users.forEach(assign_followed_user)
-    return map
+      map[user.id] = user.nickname;
+    };
+    this.logged_user.followed_users.forEach(assign_followed_user);
+    return map;
   }
 
   /**
@@ -163,5 +164,5 @@ export class GeoImageNetStore {
   @observable current_annotation = {
     initialized: false,
     image_title: ''
-  }
+  };
 }

@@ -1,18 +1,18 @@
 // @flow strict
 
-import { tableIcons } from '../../utils/react'
-import Publish from '@material-ui/icons/Publish'
-import Lock from '@material-ui/icons/Lock'
-import MaterialTable from 'material-table'
-import { compose } from 'react-apollo'
-import { graphql } from 'react-apollo/graphql'
-import React from 'react'
-import { BENCHMARKS_JOBS, CHANGE_BENCHMARK_VISIBILITY } from '../../domain/graphql_queries'
-import { NotificationManager } from 'react-notifications'
-import type { Job } from '../../Types'
+import { tableIcons } from '../../utils/react';
+import Publish from '@material-ui/icons/Publish';
+import Lock from '@material-ui/icons/Lock';
+import MaterialTable from 'material-table';
+import { compose } from 'react-apollo';
+import { graphql } from 'react-apollo/graphql';
+import React from 'react';
+import { BENCHMARKS_JOBS, CHANGE_BENCHMARK_VISIBILITY } from '../../domain/graphql_queries';
+import { NotificationManager } from 'react-notifications';
+import type { Job } from '../../Types';
 
-const make_publish_icon = () => <Publish />
-const make_lock_icon = () => <Lock />
+const make_publish_icon = () => <Publish />;
+const make_lock_icon = () => <Lock />;
 
 type Props = {
   data: {
@@ -34,42 +34,42 @@ type Props = {
 class BenchmarksTableComponent extends React.Component<Props> {
 
   benchmark_visibility_handler = (job_id, visibility) => async () => {
-    const { data: { refetch } } = this.props
-    let result
+    const { data: { refetch } } = this.props;
+    let result;
     try {
       result = await this.props.mutate({
         variables: {
           job_id: job_id,
           visibility: visibility,
         }
-      })
+      });
     } catch (e) {
-      NotificationManager.error('There was a problem with the visibility change request.')
-      throw e
+      NotificationManager.error('There was a problem with the visibility change request.');
+      throw e;
     }
-    const { data: { benchmark_visibility: { success, message } } } = result
+    const { data: { benchmark_visibility: { success, message } } } = result;
     if (success) {
-      NotificationManager.success('Benchmark visibility updated.')
+      NotificationManager.success('Benchmark visibility updated.');
     } else {
-      NotificationManager.error(message)
+      NotificationManager.error(message);
     }
-    refetch()
-  }
+    refetch();
+  };
 
   pending_jobs() {
-    const { data: { jobs } } = this.props
+    const { data: { jobs } } = this.props;
     if (!jobs) {
-      return false
+      return false;
     }
-    return jobs.some(job => job.status === 'running' || job.status === 'accepted')
+    return jobs.some(job => job.status === 'running' || job.status === 'accepted');
   }
 
   render() {
-    const { data: { jobs, startPolling, stopPolling } } = this.props
+    const { data: { jobs, startPolling, stopPolling } } = this.props;
     if (this.pending_jobs()) {
-      startPolling(5 * 1000)
+      startPolling(5 * 1000);
     } else {
-      stopPolling()
+      stopPolling();
     }
     return (
       <MaterialTable
@@ -113,11 +113,11 @@ class BenchmarksTableComponent extends React.Component<Props> {
         ]}
         data={jobs}
       />
-    )
+    );
   }
 }
 
 export const BenchmarksTable = compose(
   graphql(BENCHMARKS_JOBS),
   graphql(CHANGE_BENCHMARK_VISIBILITY),
-)(BenchmarksTableComponent)
+)(BenchmarksTableComponent);

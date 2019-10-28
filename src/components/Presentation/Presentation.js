@@ -1,16 +1,16 @@
 // @flow strict
-import React, { useState } from 'react'
-import { withStyles, Link, Typography, Paper, Select, MenuItem, Dialog } from '@material-ui/core'
-import Clear from '@material-ui/icons/Clear'
-import { useTranslation } from '../../utils'
-import { TaxonomyPresentation } from './TaxonomyPresentation'
+import React, { useState } from 'react';
+import { withStyles, Link, Typography, Paper, Select, MenuItem, Dialog } from '@material-ui/core';
+import Clear from '@material-ui/icons/Clear';
+import { useTranslation } from '../../utils';
+import { TaxonomyPresentation } from './TaxonomyPresentation';
 
 
-import { Logos } from '../Logos.js'
-import { Login } from '../Login.js'
-import { Benchmarks } from '../Benchmarks'
+import { Logos } from '../Logos.js';
+import { Login } from '../Login.js';
+import { Benchmarks } from '../Benchmarks';
 
-import logo_gin from '../../img/logos/logo_trans_GIN.png'
+import logo_gin from '../../img/logos/logo_trans_GIN.png';
 
 const DarkDialog = withStyles(({ colors, values }) => ({
   paper: {
@@ -22,7 +22,7 @@ const DarkDialog = withStyles(({ colors, values }) => ({
       margin: values.gutterSmall
     },
   }
-}))(Dialog)
+}))(Dialog);
 
 const LessOpaquePaper = withStyles(({ values }) => ({
   root: {
@@ -47,13 +47,13 @@ const LessOpaquePaper = withStyles(({ values }) => ({
     justifyContent: 'space-between',
   },
 }))(({ classes, title, content, maxWidth = 'xl' }) => {
-  const [opened, setOpened] = useState(false)
+  const [opened, setOpened] = useState(false);
   const close = () => {
-    setOpened(false)
-  }
+    setOpened(false);
+  };
   const open = () => {
-    setOpened(true)
-  }
+    setOpened(true);
+  };
   return (
     <div className={classes.root}>
       <Paper className={classes.paper} onClick={open}><Typography variant='h3'>{title}</Typography></Paper>
@@ -68,8 +68,8 @@ const LessOpaquePaper = withStyles(({ values }) => ({
         {content}
       </DarkDialog>
     </div>
-  )
-})
+  );
+});
 
 const WhiteSelect = withStyles({
   root: {
@@ -78,24 +78,24 @@ const WhiteSelect = withStyles({
   icon: {
     color: 'white',
   },
-})(Select)
+})(Select);
 
 function ChangeLanguage() {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation();
   const change_language = event => {
-    const language = event.target.value
-    i18n.changeLanguage(language)
-  }
+    const language = event.target.value;
+    i18n.changeLanguage(language);
+  };
   return (
     <WhiteSelect value={i18n.language} onChange={change_language}>
       <MenuItem value='fr'>{t('util:french')}</MenuItem>
       <MenuItem value='en'>{t('util:english')}</MenuItem>
     </WhiteSelect>
-  )
+  );
 }
 
 function BenchmarksPanel() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <React.Fragment>
       <ul>
@@ -105,11 +105,11 @@ function BenchmarksPanel() {
         <li>{t('intro:benchmarks.item_4')}</li>
       </ul>
     </React.Fragment>
-  )
+  );
 }
 
 function Platform() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <React.Fragment>
       <Typography variant='body1'>{t('intro:platform.par_1')}</Typography>
@@ -131,11 +131,11 @@ function Platform() {
         <li>{t('intro:platform.section_3.item_4')}</li>
       </ul>
     </React.Fragment>
-  )
+  );
 }
 
 function Publications() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <React.Fragment>
       <Typography variant='h5'>{t('intro:publications.section_1.header')}</Typography>
@@ -199,22 +199,22 @@ function Publications() {
         <li>{t('intro:publications.section_3.item_1')}</li>
       </ul>
     </React.Fragment>
-  )
+  );
 }
 
 function Mission() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <React.Fragment>
       <Typography variant='body1' dangerouslySetInnerHTML={{ __html: t('intro:mission.what') }} />
       <Typography variant='body1' dangerouslySetInnerHTML={{ __html: t('intro:mission.how') }} />
       <Typography variant='body1' dangerouslySetInnerHTML={{ __html: t('intro:mission.why') }} />
     </React.Fragment>
-  )
+  );
 }
 
 function Team() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <React.Fragment>
       <Typography variant='h6'>{t('intro:team.section_1.header')}</Typography>
@@ -245,11 +245,11 @@ function Team() {
         <li>{t('intro:team.section_4.item_1')}</li>
       </ul>
     </React.Fragment>
-  )
+  );
 }
 
 function Collaborators() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return (
     <React.Fragment>
       <Typography variant='body1'>{t('intro:collaborators.item_1')}</Typography>
@@ -263,7 +263,7 @@ function Collaborators() {
       <Typography variant='body1'>{t('intro:collaborators.item_9')}</Typography>
       <Typography variant='body1'>{t('intro:collaborators.item_10')}</Typography>
     </React.Fragment>
-  )
+  );
 }
 
 export const PresentationContainer = withStyles(({ values }) => ({
@@ -335,11 +335,11 @@ export const PresentationContainer = withStyles(({ values }) => ({
   }
 }))(({ classes, state_proxy, user_interactions, contact_email }) => {
 
-  const { t } = useTranslation()
-  const [dialog_open, change_dialog_openness] = useState(false)
+  const { t } = useTranslation();
+  const [dialog_open, change_dialog_openness] = useState(false);
   const toggle_dialog = () => {
-    change_dialog_openness(!dialog_open)
-  }
+    change_dialog_openness(!dialog_open);
+  };
 
   return (
     <div className={classes.container}>
@@ -391,6 +391,6 @@ export const PresentationContainer = withStyles(({ values }) => ({
         } />
       </div>
     </div>
-  )
+  );
 
-})
+});

@@ -1,15 +1,15 @@
 // @flow strict
 
-import React from 'react'
-import Button from '@material-ui/core/Button'
-import Typography from '@material-ui/core/Typography'
-import withStyles from '@material-ui/core/styles/withStyles'
-import { TFunction } from 'react-i18next'
+import React from 'react';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import withStyles from '@material-ui/core/styles/withStyles';
+import { TFunction } from 'react-i18next';
 
-import { withTranslation } from '../../utils'
+import { withTranslation } from '../../utils';
 
-import type { AnnotationBrowserStore } from '../../store/AnnotationBrowserStore'
-import { compose } from 'react-apollo'
+import type { AnnotationBrowserStore } from '../../store/AnnotationBrowserStore';
+import { compose } from 'react-apollo';
 
 const style = (theme) => ({
   root: {
@@ -24,7 +24,7 @@ const style = (theme) => ({
       marginLeft: theme.values.gutterMedium,
     }
   }
-})
+});
 type Props = {
   page_number: number,
   total_pages: number,
@@ -40,7 +40,7 @@ type Props = {
 
 class Paginator extends React.Component<Props> {
   render() {
-    const { classes: { root, buttons }, t } = this.props
+    const { classes: { root, buttons }, t } = this.props;
     return (
       <div className={root}>
         <Typography variant='body2'>{this.props.total_features} annotations</Typography>
@@ -61,13 +61,13 @@ class Paginator extends React.Component<Props> {
             onClick={this.props.next_page}>{t('annotations:pagination.next')}</Button>
         </div>
       </div>
-    )
+    );
   }
 }
 
 const component = compose(
   withStyles(style),
   withTranslation(),
-)(Paginator)
+)(Paginator);
 
-export { component as Paginator }
+export { component as Paginator };

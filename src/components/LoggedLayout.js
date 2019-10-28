@@ -1,15 +1,15 @@
 // @flow strict
-import React from 'react'
-import { withStyles } from '@material-ui/core'
-import { NotificationContainer } from 'react-notifications'
+import React from 'react';
+import { withStyles } from '@material-ui/core';
+import { NotificationContainer } from 'react-notifications';
 
-import { Menu } from './Menu.js'
+import { Menu } from './Menu.js';
 
-import type { UserInteractions } from '../domain'
-import type { GeoImageNetStore } from '../store/GeoImageNetStore'
+import type { UserInteractions } from '../domain';
+import type { GeoImageNetStore } from '../store/GeoImageNetStore';
 
 const LayoutGrid = withStyles(theme => {
-  const { values } = theme
+  const { values } = theme;
   return {
     grid: {
       height: '100%',
@@ -17,25 +17,25 @@ const LayoutGrid = withStyles(theme => {
       gridTemplateColumns: `1fr`,
       gridTemplateRows: `${values.heightAppBar} calc(100% - ${values.heightAppBar})`
     },
-  }
+  };
 })(props => {
-  const { classes, children } = props
-  return <div className={classes.grid}>{children}</div>
-})
+  const { classes, children } = props;
+  return <div className={classes.grid}>{children}</div>;
+});
 
 const Bottom = withStyles({
   root: {
     gridRow: '2/3',
     gridColumn: '1/2',
   }
-})(({ classes, children }) => (<div className={classes.root}>{children}</div>))
+})(({ classes, children }) => (<div className={classes.root}>{children}</div>));
 
 const Top = withStyles({
   root: {
     gridRow: '1/2',
     gridColumn: '1/2',
   }
-})(({ classes, children }) => (<div className={classes.root}>{children}</div>))
+})(({ classes, children }) => (<div className={classes.root}>{children}</div>));
 
 type Props = {
   state_proxy: GeoImageNetStore,
@@ -51,7 +51,7 @@ type Props = {
 class LoggedLayout extends React.Component<Props> {
 
   render() {
-    const { children, state_proxy, user_interactions } = this.props
+    const { children, state_proxy, user_interactions } = this.props;
     /**
      * Wrapping both menu and children in divs so that the grid is respected whatever the other structures are.
      */
@@ -68,8 +68,8 @@ class LoggedLayout extends React.Component<Props> {
           <NotificationContainer />
         </Bottom>
       </LayoutGrid>
-    )
+    );
   }
 }
 
-export { LoggedLayout }
+export { LoggedLayout };

@@ -1,18 +1,18 @@
 // @flow strict
-import React, { Component } from 'react'
-import { observer } from 'mobx-react'
-import { withStyles, Paper } from '@material-ui/core'
-import { MapContainer } from '../Map/MapContainer'
-import { UserInteractions } from '../../domain/user-interactions.js'
-import { StoreActions } from '../../store/StoreActions'
-import { Sidebar } from '../Sidebar'
-import type { GeoImageNetStore } from '../../store/GeoImageNetStore'
-import type { OpenLayersStore } from '../../store/OpenLayersStore'
-import { Container as FiltersContainer } from '../Map/Filters/Container'
-import { Container as LabelsContainer } from '../Map/LabelsChoice/Container'
-import { ActiveFiltersBox } from '../Map/ActiveFiltersBox'
-import type { TaxonomyStore } from '../../store/TaxonomyStore'
-import { withTaxonomyStore } from '../../store/HOCs'
+import React, { Component } from 'react';
+import { observer } from 'mobx-react';
+import { withStyles, Paper } from '@material-ui/core';
+import { MapContainer } from '../Map/MapContainer';
+import { UserInteractions } from '../../domain/user-interactions.js';
+import { StoreActions } from '../../store/StoreActions';
+import { Sidebar } from '../Sidebar';
+import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
+import type { OpenLayersStore } from '../../store/OpenLayersStore';
+import { Container as FiltersContainer } from '../Map/Filters/Container';
+import { Container as LabelsContainer } from '../Map/LabelsChoice/Container';
+import { ActiveFiltersBox } from '../Map/ActiveFiltersBox';
+import type { TaxonomyStore } from '../../store/TaxonomyStore';
+import { withTaxonomyStore } from '../../store/HOCs';
 
 const PlatformContainer = withStyles(({ values }) => ({
   root: {
@@ -21,7 +21,7 @@ const PlatformContainer = withStyles(({ values }) => ({
     gridTemplateColumns: `1fr min-content ${values.widthSidebar}`,
     gridTemplateRows: '64px calc(100% - 64px)'
   }
-}))(({ classes, children }) => (<div className={classes.root}>{children}</div>))
+}))(({ classes, children }) => (<div className={classes.root}>{children}</div>));
 
 const Coordinates = withStyles(({ values, zIndex }) => ({
   root: {
@@ -32,7 +32,7 @@ const Coordinates = withStyles(({ values, zIndex }) => ({
     margin: values.gutterSmall,
     width: '300px',
   }
-}))(Paper)
+}))(Paper);
 
 type Props = {|
   state_proxy: GeoImageNetStore,
@@ -70,11 +70,11 @@ class Platform extends Component<Props> {
           user_interactions={this.props.user_interactions}
           store_actions={this.props.store_actions} />
       </PlatformContainer>
-    )
+    );
   }
 }
 
-const component = withTaxonomyStore(Platform)
+const component = withTaxonomyStore(Platform);
 export {
   component as Platform
-}
+};

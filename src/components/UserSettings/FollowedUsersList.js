@@ -1,13 +1,13 @@
 // @flow strict
 
-import React from 'react'
-import type { FollowedUser } from '../../Types'
-import MaterialTable from 'material-table'
-import { TFunction } from 'react-i18next'
-import { withTranslation } from '../../utils'
-import { tableIcons } from '../../utils/react'
-import ClearIcon from '@material-ui/icons/Clear'
-import { observer } from 'mobx-react'
+import React from 'react';
+import type { FollowedUser } from '../../Types';
+import MaterialTable from 'material-table';
+import { TFunction } from 'react-i18next';
+import { withTranslation } from '../../utils';
+import { tableIcons } from '../../utils/react';
+import ClearIcon from '@material-ui/icons/Clear';
+import { observer } from 'mobx-react';
 
 type Props = {
   followed_users: FollowedUser[],
@@ -15,17 +15,17 @@ type Props = {
   t: TFunction,
 };
 
-const clear_icon = () => <ClearIcon />
+const clear_icon = () => <ClearIcon />;
 
 @observer
 class FollowedUsersList extends React.Component<Props> {
   render() {
-    const { t, followed_users } = this.props
+    const { t, followed_users } = this.props;
     /**
      * followed users is an mobx managed collection. since we are in strict mode, mobx prevents modifications to the value
      * however, it seems that material-table adds meta data to the data we pass to it. so we make a clone and pass that to the table
      */
-    const followed_users_clone = followed_users.map(user => Object.assign({}, user))
+    const followed_users_clone = followed_users.map(user => Object.assign({}, user));
     return (
       <div style={{ maxWidth: '100%' }}>
         <MaterialTable
@@ -53,9 +53,9 @@ class FollowedUsersList extends React.Component<Props> {
           }}
           title={t('annotations:ownership.followed_users')} />
       </div>
-    )
+    );
   }
 }
 
-const component = withTranslation()(FollowedUsersList)
-export { component as FollowedUsersList }
+const component = withTranslation()(FollowedUsersList);
+export { component as FollowedUsersList };

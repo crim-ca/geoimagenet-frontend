@@ -1,6 +1,6 @@
 // @flow strict
 
-import type { AnnotationFilter, TaxonomyClass } from './domain/entities'
+import type { AnnotationFilter, TaxonomyClass } from './domain/entities';
 
 export type TaxonomyClassFromAPI = {
   children: TaxonomyClassFromAPI[],
