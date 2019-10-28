@@ -6,9 +6,13 @@ import {UserInteractions} from "../domain";
 import {Container as UserSettingsContainer} from '../components/UserSettings/Container';
 import {FollowedUsersList} from '../components/UserSettings/FollowedUsersList';
 import {AddFollowedUserForm} from '../components/UserSettings/AddFollowedUserForm';
+import {Sidebar} from '../components/Sidebar';
 import {i18n as i18next} from '../utils/i18n';
 import {User} from '../domain/entities';
 import {wait} from "./utils";
+import { OpenLayersStore } from '../store/OpenLayersStore';
+import { MuiThemeProvider } from "@material-ui/core";
+import { theme } from '../utils/react';
 import {TaxonomyStore} from "../store/TaxonomyStore";
 
 const React = require('react');
@@ -47,6 +51,19 @@ data_queries.save_followed_user = jest.fn(() => null);
 data_queries.remove_followed_user = jest.fn(() => null);
 
 describe('Followed users form', () => {
+
+    test('Anonymous user does not have settings section', () => {
+        const state_proxy = new GeoImageNetStore();
+        const store_actions = new StoreActions(state_proxy);
+        const user_interactions = new UserInteractions();
+        const open_layers_store = new OpenLayersStore(null);
+        const wrapper = mount(
+            <MuiThemeProvider theme={theme}>
+                <Sidebar state_proxy={state_proxy} store_actions={store_actions} user_interactions={user_interactions} open_layers_store={open_layers_store} />
+            </MuiThemeProvider>
+        );
+        expect(wrapper.find(FollowedUsersList).length).toBe(0);
+    });
 
     test('We can log a user on', () => {
         const state_proxy = new GeoImageNetStore();

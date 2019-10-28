@@ -56,7 +56,7 @@ const make_sidebar_sections: (UserInteractions, GeoImageNetStore, StoreActions, 
             content: (<div id='layer-switcher' className='layer-switcher-container' />),
         },
     ];
-    if (state_proxy.logged_user !== null) {
+    if (state_proxy.logged_user !== undefined) {
         sections.push({
             title: 'Settings',
             slug: 'settings',
