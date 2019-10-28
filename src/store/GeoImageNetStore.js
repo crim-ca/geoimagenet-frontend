@@ -152,16 +152,17 @@ export class GeoImageNetStore {
     @computed get nickname_map() {
         const map = {};
         if (this.logged_user === null) {
-            return {};
-        }
-        map[this.logged_user.id] = this.logged_user.user_name;
-        if (this.logged_user.followed_users.length === 0) {
             return map;
         }
-        const assign_followed_user = (user: FollowedUser) => {
-            map[user.id] = user.nickname;
+        const {followed_users, id, user_name} = this.logged_user;
+        map[id] = user_name;
+        if (!Array.isArray(followed_users) || followed_users.length === 0) {
+            return map;
+        }
+        const assign_followed_user = (followedUser: FollowedUser) => {
+            map[followedUser.id] = followedUser.nickname;
         };
-        this.logged_user.followed_users.forEach(assign_followed_user);
+        followed_users.forEach(assign_followed_user);
         return map;
     }
 

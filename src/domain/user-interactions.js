@@ -361,12 +361,11 @@ export class UserInteractions {
      * @returns {Promise<void>}
      */
     refresh_user_resources_permissions = async () => {
-        /**
-         *
-         * @type {Object}
-         */
         const magpie_session_json: MagpieMergedSessionInformation = await this.data_queries.current_user_session();
         const {user, authenticated} = magpie_session_json;
+        if (!authenticated) {
+            return;
+        }
         const followed_users: FollowedUser[] = await this.get_followed_users_collection();
         const user_instance = new User(user.user_name, user.email, user.group_names, user.user_id, followed_users);
         this.store_actions.set_session_user(user_instance);
