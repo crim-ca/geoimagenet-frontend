@@ -6,13 +6,14 @@ import {UserInteractions} from "../domain";
 import {Container as UserSettingsContainer} from '../components/UserSettings/Container';
 import {FollowedUsersList} from '../components/UserSettings/FollowedUsersList';
 import {AddFollowedUserForm} from '../components/UserSettings/AddFollowedUserForm';
-import {Sidebar} from '../components/Platform/Sidebar';
+import {Sidebar} from '../components/Sidebar';
 import {i18n as i18next} from '../utils/i18n';
 import {User} from '../domain/entities';
 import {wait} from "./utils";
 import { OpenLayersStore } from '../store/OpenLayersStore';
 import { MuiThemeProvider } from "@material-ui/core";
 import { theme } from '../utils/react';
+import {TaxonomyStore} from "../store/TaxonomyStore";
 
 const React = require('react');
 const {mount, configure} = require('enzyme');
@@ -65,14 +66,15 @@ describe('Followed users form', () => {
     });
 
     test('We can log a user on', () => {
-        const store = new GeoImageNetStore();
-        const store_actions = new StoreActions(store);
+        const state_proxy = new GeoImageNetStore();
+        const taxonomy_store = new TaxonomyStore(state_proxy);
+        const store_actions = new StoreActions(state_proxy, taxonomy_store);
         store_actions.set_session_user(user_without_followed_users);
         /**
          * $FlowFixMe
          * We are in a controlled situation, the logged user is not null
          */
-        expect(store.logged_user.user_name).toBe('user_name');
+        expect(state_proxy.logged_user.user_name).toBe('user_name');
     });
 
 
@@ -82,8 +84,9 @@ describe('Followed users form', () => {
      */
     test('Add followed user form validates input, adds and removes user', async () => {
         const store = new GeoImageNetStore();
-        const store_actions = new StoreActions(store);
-        const user_interactions = new UserInteractions(store_actions, data_queries, i18next, store);
+        const taxonomy_store = new TaxonomyStore(store);
+        const store_actions = new StoreActions(store, taxonomy_store);
+        const user_interactions = new UserInteractions(store_actions, taxonomy_store, data_queries, i18next, store);
         store_actions.set_session_user(user_without_followed_users);
         const wrapper = mount(<UserSettingsContainer user={store.logged_user} user_interactions={user_interactions} />);
         expect(wrapper.find(FollowedUsersList)).toHaveLength(1);

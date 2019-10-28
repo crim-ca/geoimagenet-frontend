@@ -234,6 +234,12 @@ const resources = {
             'username': "Username",
             'password': 'Password',
         },
+        workspace: {
+            'title': 'Workspace',
+            'no_data': 'There is nothing in your workspace. Open the taxonomies tab and pin classes to begin.',
+            'empty': 'Empty',
+            'empty_tooltip': 'Remove all classes from your workspace.',
+        },
     },
     fr: {
         status: {
@@ -467,6 +473,12 @@ const resources = {
             'username': "Nom d'usager",
             'password': 'Mot de passe',
         },
+        workspace: {
+            'title': 'Espace de travail',
+            'no_data': "Il n'y a rien dans votre espace de travail. Ouvrez l'onglet des taxonomies et épinglez une classe pour commencer.",
+            'empty': 'Vider',
+            'empty_tooltip': 'Retirer toutes les classes de votre espace de travail.',
+        },
     }
 };
 
@@ -490,5 +502,7 @@ i18n.use(LanguageDetector)
             caches: ['localStorage', 'cookie'],
         }
     });
+
+i18n.t = i18n.t.bind(i18n);
 
 export {i18n};

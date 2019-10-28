@@ -1,10 +1,11 @@
-import {Component} from 'react';
+// @flow strict
 import React from 'react';
-import PropTypes from 'prop-types';
+import {TextField, Button, withStyles} from '@material-ui/core';
+
 import {withTranslation} from '../utils';
 
-import {TextField, Button, withStyles} from '@material-ui/core';
-import {UserInteractions} from '../domain/user-interactions.js';
+import type {UserInteractions} from '../domain/user-interactions.js';
+import type {TFunction} from 'react-i18next';
 
 const LoginContainer = withStyles({
     root: {
@@ -25,24 +26,26 @@ const AccessButton = withStyles(theme => {
     };
 })(Button);
 
+type Props = {
+    user_interactions: UserInteractions,
+    t: TFunction,
+};
+type State = {
+    user_name: string,
+    password: string,
+    provider_name: string,
+    key_listener: boolean,
+};
+
 /**
  * A regular login component that should notify user of login progress and redirect to the platform on sucess.
  */
-class LoginComponent extends Component {
-    static propTypes = {
-        user_interactions: PropTypes.instanceOf(UserInteractions).isRequired,
-        t: PropTypes.func
-    };
+class LoginComponent extends React.Component<Props, State> {
 
     /**
      * Local storage for text inputs values before sending it to the user interactions services.
-     * @private
-     * @type {Object}
-     * @property {String} user_name
-     * @property {String} password
-     * @property {String} provider_name=ziggurat Hardcoded to ziggurat (built in login provider for magpie) until we decide
-     * @property {Boolean} key_listener=false keep track of the existence or not of the listener so we don't register a billion of them
-     * to support other login providers.
+     * provider_Name Hardcoded to ziggurat (built in login provider for magpie) until we decide
+     * key_listener keeps track of the existence or not of the listener so we don't register a billion of them to support other login providers.
      */
     state = {
         user_name: '',
@@ -83,7 +86,7 @@ class LoginComponent extends Component {
      */
     listen_to_enter = () => {
         this.setState({key_listener: true}, () => {
-            addEventListener('keydown', this.log_user_on_enter);
+            window.addEventListener('keydown', this.log_user_on_enter);
         });
 
     };
@@ -93,7 +96,7 @@ class LoginComponent extends Component {
      */
     stop_listening_to_enter = () => {
         this.setState({key_listener: false}, () => {
-            removeEventListener('keydown', this.log_user_on_enter);
+            window.removeEventListener('keydown', this.log_user_on_enter);
         });
     };
 
@@ -132,12 +135,12 @@ class LoginComponent extends Component {
                 <TextField label={t('login:username')}
                            id='user_name'
                            onChange={this.handle_change('user_name')}
-                           value={this.state.user_name}/>
+                           value={this.state.user_name} />
                 <TextField label={t('login:password')}
                            id='password'
                            type='password'
                            onChange={this.handle_change('password')}
-                           value={this.state.password}/>
+                           value={this.state.password} />
                 <AccessButton variant='contained'
                               color='primary'
                               onClick={this.send_login}

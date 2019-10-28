@@ -27,6 +27,18 @@ export class DataQueries {
         this.ml_endpoint = ml_endpoint;
     }
 
+    get_annotations_browser_page = async (type_name: string, cql_filter: string, page_size: string, offset: string) => {
+        let url = `${this.geoserver_endpoint}/wfs?service=WFS&` +
+            `version=1.1.0&request=GetFeature&typeName=${type_name}&` +
+            `outputFormat=application/json&srsname=EPSG:3857&`;
+        if (cql_filter.length > 0) {
+            url += cql_filter;
+        }
+        url += `&maxfeatures=${page_size}&startindex=${offset}`;
+        const response = await make_http_request(url);
+        return await response.json();
+    };
+
     fetch_images_dictionary = async () => {
         const response = await make_http_request(`${this.geoimagenet_api_endpoint}/images`);
         const images = await response.json();
@@ -62,6 +74,23 @@ export class DataQueries {
         const response = await make_http_request(url);
         const json = await response.json();
         return json.features[0];
+    };
+
+    /**
+     * Returns a GeoJson FeatureCollection with the images that contain a specific wkt geometry
+     */
+    get_annotation_images = async (feature_wkt) => {
+        let url = `${this.geoserver_endpoint}/wfs?service=WFS&` +
+            "exceptions=application/json&" +
+            "request=GetFeature&" +
+            "typeNames=GeoImageNet:image&" +
+            "outputFormat=application/json&" +
+            "srsName=EPSG:3857&" +
+            "propertyName=id,layer_name&" +
+            `cql_filter=CONTAINS(trace_simplified, ${feature_wkt}) AND bands IN ('RGB', 'NRG') AND bits=8`;
+
+        const response = await make_http_request(url);
+        return await response.json();
     };
 
     logout_request() {

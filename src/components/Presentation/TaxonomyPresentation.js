@@ -6,21 +6,26 @@ import {Link, Paper, Typography} from "@material-ui/core";
 import {Selector} from "../Taxonomy/Selector";
 import {Tree} from "../Taxonomy/Tree";
 import {withTranslation} from "../../utils";
-import {UserInteractions} from "../../domain";
-import {GeoImageNetStore} from "../../store/GeoImageNetStore";
+import {compose} from "react-apollo";
+import {withTaxonomyStore} from "../../store/HOCs";
+
+import type {UserInteractions} from "../../domain";
+import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 import type {TFunction} from "react-i18next";
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
 type Props = {
     user_interactions: UserInteractions,
     state_proxy: GeoImageNetStore,
+    taxonomy_store: TaxonomyStore,
     t: TFunction,
 };
 
 @observer
 class TaxonomyPresentation extends React.Component<Props> {
     render() {
-        const {state_proxy, user_interactions, t} = this.props;
-        const taxonomy_class = state_proxy.flat_taxonomy_classes[state_proxy.root_taxonomy_class_id];
+        const {state_proxy, taxonomy_store, user_interactions, t} = this.props;
+        const taxonomy_class = taxonomy_store.flat_taxonomy_classes[state_proxy.root_taxonomy_class_id];
         const classes = taxonomy_class ? [taxonomy_class] : [];
         return (
             <React.Fragment>
@@ -42,5 +47,8 @@ class TaxonomyPresentation extends React.Component<Props> {
     }
 }
 
-const component = withTranslation()(TaxonomyPresentation);
+const component = compose(
+    withTranslation(),
+    withTaxonomyStore,
+)(TaxonomyPresentation);
 export {component as TaxonomyPresentation};

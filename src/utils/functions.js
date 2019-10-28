@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 import type {BoundingBox} from "../Types";
 
 export function websocketify_uri(http_uri: string) {

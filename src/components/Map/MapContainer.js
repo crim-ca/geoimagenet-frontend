@@ -7,18 +7,19 @@ import {fromLonLat} from "ol/proj";
 
 import {Interactions} from "./Interactions";
 import {MapManager} from "./MapManager";
-import {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import {StoreActions} from "../../store/StoreActions";
 import {LayerSwitcher} from "../../LayerSwitcher";
-import {UserInteractions} from "../../domain";
-import {TaxonomyStore} from '../../store/TaxonomyStore';
-import {OpenLayersStore} from "../../store/OpenLayersStore";
-import {VIEW_CENTER} from "../../domain/constants";
 import {autorun} from "mobx";
+
+import type {TaxonomyStore} from '../../store/TaxonomyStore';
+import type {UserInteractions} from "../../domain";
+import type {StoreActions} from "../../store/StoreActions";
+import type {OpenLayersStore} from "../../store/OpenLayersStore";
+import type {GeoImageNetStore} from "../../store/GeoImageNetStore";
 
 type Props = {
     classes: { root: {} },
     state_proxy: GeoImageNetStore,
+    taxonomy_store: TaxonomyStore,
     store_actions: StoreActions,
     user_interactions: UserInteractions,
     open_layers_store: OpenLayersStore,
@@ -40,7 +41,7 @@ class MapContainer extends React.Component<Props> {
      * callback and create the map manager only when the dom is correctly created.
      */
     componentDidMount(): void {
-        const {state_proxy, store_actions, user_interactions, open_layers_store} = this.props;
+        const {state_proxy, store_actions, taxonomy_store, user_interactions, open_layers_store} = this.props;
 
         user_interactions.populate_image_dictionary();
 
@@ -79,10 +80,10 @@ class MapContainer extends React.Component<Props> {
             store_actions,
             layer_switcher,
             user_interactions,
-            new TaxonomyStore(state_proxy),
+            taxonomy_store,
         );
 
-        new Interactions(this.map_manager.map, state_proxy, user_interactions, open_layers_store, this.map_manager.formatGeoJson, ANNOTATION_LAYER);
+        new Interactions(this.map_manager.map, state_proxy, user_interactions, open_layers_store, taxonomy_store, this.map_manager.formatGeoJson, this.map_manager.formatWKT, ANNOTATION_LAYER);
     }
 
     render() {

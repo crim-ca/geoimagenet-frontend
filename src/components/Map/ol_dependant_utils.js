@@ -3,7 +3,8 @@
 import {Feature} from "ol/Feature";
 import {Circle, Fill, Stroke, Style, Text} from "ol/style";
 import {GeoImageNetStore} from "../../store/GeoImageNetStore";
-import type {FollowedUser} from "../../Types";
+import {features as activated_features} from '../../../features';
+import type {TaxonomyStore} from "../../store/TaxonomyStore";
 
 type StyleFunction = (Feature, number) => Style | Style[];
 
@@ -37,7 +38,7 @@ function select_style(): Style {
     });
 }
 
-export function create_style_function(color: string, state_proxy: GeoImageNetStore, create_for_select_interaction: boolean = false): StyleFunction {
+export function create_style_function(color: string, state_proxy: GeoImageNetStore, taxonomy_store: TaxonomyStore, create_for_select_interaction: boolean = false): StyleFunction {
 
     return (feature: Feature, resolution: number) => {
 
@@ -48,7 +49,10 @@ export function create_style_function(color: string, state_proxy: GeoImageNetSto
         const {nickname_map} = state_proxy;
 
         const {show_labels, show_annotators_identifiers} = state_proxy;
-        const taxonomy_class = state_proxy.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
+        if (!feature.get('taxonomy_class_id')) {
+            return new Style();
+        }
+        const taxonomy_class = taxonomy_store.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
         const label = taxonomy_class.name_en || taxonomy_class.name_fr;
         /**
          * theoretically, all features would have annotator ids. but y'know, theory and reality sometimes disagree.
@@ -80,7 +84,7 @@ export function create_style_function(color: string, state_proxy: GeoImageNetSto
                 }),
             }));
         }
-        if (feature.get('review_requested')) {
+        if (activated_features.expertise && feature.get('review_requested')) {
             styles.push(new Style({
                 text: new Text({
                     font: '36px Calibri, sans-serif',
@@ -92,6 +96,7 @@ export function create_style_function(color: string, state_proxy: GeoImageNetSto
                 }),
             }));
         }
+
         return styles;
     };
 }

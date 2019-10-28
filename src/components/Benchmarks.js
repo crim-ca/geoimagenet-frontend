@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+// @flow strict
+import React from 'react';
 import {withStyles} from '@material-ui/core';
-import PropTypes from 'prop-types';
 import MaterialTable from 'material-table';
 import {tableIcons} from '../utils/react';
 import {PUBLIC_BENCHMARKS} from "../domain/graphql_queries";
@@ -20,11 +20,13 @@ const Grid = withStyles({
     </div>
 ));
 
-class BenchmarksComponent extends Component {
+type Props = {
+    data: {
+        public_benchmarks: []
+    }
+};
 
-    static propTypes = {
-        data: PropTypes.object.isRequired,
-    };
+class BenchmarksComponent extends React.Component<Props> {
 
     render() {
         const {data: {public_benchmarks}} = this.props;

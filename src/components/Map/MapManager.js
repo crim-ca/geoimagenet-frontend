@@ -16,7 +16,7 @@ import {toStringHDMS} from 'ol/coordinate';
 import VectorSource from 'ol/source/Vector';
 import {bbox} from 'ol/loadingstrategy';
 import {Circle, Fill, Stroke, Style, Text} from 'ol/style';
-import {GeoJSON, WMSCapabilities} from 'ol/format';
+import {GeoJSON, WMSCapabilities, WKT} from 'ol/format';
 import TileLayer from 'ol/layer/Tile';
 import {BingMaps, Cluster, OSM, TileWMS} from 'ol/source';
 import TileGrid from 'ol/tilegrid/TileGrid';
@@ -35,7 +35,7 @@ import {
     VALID_OPENLAYERS_ANNOTATION_RESOLUTION,
     READ,
     WMS
-} from '../../domain/constants.js';
+} from '../../constants.js';
 import {debounced} from '../../utils/event_handling.js';
 import {NotificationManager} from 'react-notifications';
 import {StoreActions} from "../../store/StoreActions";
@@ -160,6 +160,11 @@ export class MapManager {
     formatGeoJson: GeoJSON;
 
     /**
+     * @private
+     */
+    formatWKT: WKT;
+
+    /**
      * Reference to the OL map instance.
      * @private
      * @type {Map}
@@ -216,6 +221,8 @@ export class MapManager {
             geometryName: 'geometry',
         });
 
+        this.formatWKT = new WKT();
+
         this.view = view;
 
         this.map = new Map({
@@ -261,7 +268,7 @@ export class MapManager {
         autorun(() => {
             const {annotation_status_filters, annotation_ownership_filters} = this.state_proxy;
 
-            this.cql_taxonomy_class_id = this.taxonomy_store.taxonomy_class_id_selection;
+            this.cql_taxonomy_class_id = this.taxonomy_store.taxonomy_class_id_selection_cql;
 
             const ownership_filters_array = Object.values(annotation_ownership_filters);
             // $FlowFixMe
@@ -320,7 +327,7 @@ export class MapManager {
         return new Vector({
             title: title,
             source: source,
-            style: create_style_function(color, this.state_proxy),
+            style: create_style_function(color, this.state_proxy, this.taxonomy_store),
             visible: visible,
             zIndex: zIndex
         });
@@ -482,6 +489,7 @@ export class MapManager {
             // generate resolutions
             resolutions[z] = size / Math.pow(2, z);
         }
+        const layer_names_zindex = {};
         try {
             const result = await geoserver_capabilities(`${this.geoserver_url}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
             const capability = result.Capability;
@@ -531,7 +539,9 @@ export class MapManager {
                         } else if (reg_date.test(keyword)) {
                             // The date should be in the YYYYMMDD format
                             // So newer images will be on top
-                            lyr.setZIndex(parseInt(keyword));
+                            let zindex = parseInt(keyword);
+                            lyr.setZIndex(zindex);
+                            layer_names_zindex[layer.Name] = zindex;
                         }
                     });
 
@@ -542,40 +552,62 @@ export class MapManager {
         }
 
 
-        let bboxFeatures = new Collection();
-        let bboxSource = new VectorSource({
-            features: bboxFeatures
+        let bbox_features = new Collection();
+
+        let contours_source = new VectorSource({
+            format: this.formatGeoJson,
+            url: (extent) => {
+                let baseUrl = `${this.geoserver_url}/wfs?service=WFS&` +
+                  "exceptions=application/json&request=GetFeature&" +
+                  "typeNames=GeoImageNet:image&outputFormat=application/json&" +
+                  "srsName=EPSG:3857&" +
+                  "propertyName=id,sensor_name,bands,bits,filename,layer_name,trace_simplified&" +
+                  `cql_filter=BBOX(trace_simplified, ${extent.join(',')}) AND bands='RGB' AND bits=8`;
+                return baseUrl;
+            },
+            features: bbox_features,
+            strategy: bbox
         });
-        let bboxClusterSource = new Cluster({
+
+        const styleFunction = (feature, resolution) => {
+            if (resolution < 700) {
+                let zIndex = layer_names_zindex[feature.get('layer_name')] || 99999999;
+                return new Style({
+                    stroke: new Stroke({
+                        color: 'orange',
+                        width: 3
+                    }),
+                    zIndex: zIndex
+                });
+            } else {
+                return new Style();
+            }
+        };
+        let contours_layer = new VectorLayer({
+            title: "Image traces",
+            source: contours_source,
+            style: styleFunction,
+            visible: true,
+            zIndex: 0
+        });
+
+        let bbox_source = new VectorSource({
+            features: bbox_features
+        });
+        let bbox_cluster_source = new Cluster({
             distance: 10,
-            source: bboxSource,
+            source: bbox_source,
             geometryFunction: feature => {
                 return feature.getGeometry().getInteriorPoint();
             }
         });
-        let zoomedInStyle = new Style({
-            stroke: new Stroke({
-                color: 'orange',
-                width: 3
-            }),
-            fill: new Fill({
-                color: 'rgba(255, 165, 0, 0.3)'
-            }),
-            geometry: function (feature) {
-                let originalFeature = feature.get('features');
-                return originalFeature[0].getGeometry();
-            }
-        });
 
-        let bboxClusterLayer = new VectorLayer({
-            source: bboxClusterSource,
+        let bbox_cluster_layer = new VectorLayer({
+            source: bbox_cluster_source,
             title: 'Image Markers',
             style: (feature, resolution) => {
                 let size = feature.get('features').length;
-                if (resolution < 25) {
-                    // don't display anything
-                    return new Style();
-                } else if (resolution > 700) {
+                if (resolution >= 700) {
                     return new Style({
                         image: new Circle({
                             radius: 12,
@@ -595,32 +627,23 @@ export class MapManager {
                         })
                     });
                 } else {
-                    return zoomedInStyle;
+                    // don't display anything
+                    return new Style();
                 }
             },
             visible: true,
         });
 
-        // TODO there is a hard client requirement that every NRG or RGB image has their counterpart of either type
-        // as such, here I take a shortcut and only loop over one of the layers to create the image markers
-        // should that requirement ever change, some logic and autorun magic should be added to regenerate the image markers layer
-        // when we select either type of images
-        const maxArea = 10 ** 13; // if the extent is to large (most likely the world), don't display it
-        NRG_layers.forEach(layer => {
-            let extent = layer.get('extent');
-            let area = getArea(extent);
-            if (area < maxArea) {
-                let feature = new Feature({
-                    geometry: fromExtent(extent)
-                });
-                bboxFeatures.push(feature);
-            }
-        });
-
+        let contours_layers = [contours_layer, bbox_cluster_layer];
 
         const annotation_layers = [];
         ANNOTATION_STATUS_AS_ARRAY.forEach((status) => {
             annotation_layers.unshift(this.state_proxy.annotations_layers[status]);
+        });
+
+        const contours_group = new Group({
+            title: 'BBOX',
+            layers: contours_layers,
         });
 
         const RGB_group = new Group({
@@ -634,10 +657,6 @@ export class MapManager {
             layers: NRG_layers,
             combine: true,
         });
-        const image_markers_group = new Group({
-            title: 'Image Markers',
-            layers: [bboxClusterLayer],
-        });
         const base_maps_group = new Group({
             title: 'Base maps',
             layers: base_maps,
@@ -650,7 +669,7 @@ export class MapManager {
         if (this.state_proxy.acl.can(READ, WMS)) {
             this.map.addLayer(RGB_group);
             this.map.addLayer(NRG_group);
-            this.map.addLayer(image_markers_group);
+            this.map.addLayer(contours_group);
         }
         this.map.addLayer(base_maps_group);
         this.map.addLayer(annotations_group);

@@ -1,3 +1,4 @@
+// @flow strict
 import React from 'react';
 import MaterialTable from 'material-table';
 import PropTypes from 'prop-types';

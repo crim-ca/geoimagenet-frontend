@@ -1,3 +1,4 @@
+// @flow strict
 import {ApolloClient} from 'apollo-client';
 import {WebSocketLink} from 'apollo-link-ws';
 import {split, from} from 'apollo-link';
@@ -14,10 +15,8 @@ import {captureException} from '@sentry/browser';
 /**
  * Creates an apollo client with a link supporting websockets for the subscriptions (feature flag based), http queries for normal
  * queries as well as uploading files.
- * @param GRAPHQL_ENDPOINT String
- * @returns ApolloClient
  */
-export function create_client(GRAPHQL_ENDPOINT) {
+export function create_client<TCacheShape: {}>(GRAPHQL_ENDPOINT: string): ApolloClient<TCacheShape> {
 
     /**
      * @TODO at some point move this inside MobX?

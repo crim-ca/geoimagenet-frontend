@@ -1,3 +1,4 @@
+// @flow strict
 import React from 'react';
 import {withStyles, Paper} from '@material-ui/core';
 
