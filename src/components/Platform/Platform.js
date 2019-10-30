@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withStyles, Paper } from '@material-ui/core';
 import { MapContainer } from '../Map/MapContainer';
-import { UserInteractions } from '../../domain/user-interactions.js';
+import { UserInteractions } from '../../domain/user-interactions';
 import { StoreActions } from '../../store/StoreActions';
 import { Sidebar } from '../Sidebar';
 import type { GeoImageNetStore } from '../../store/GeoImageNetStore';

@@ -57,18 +57,18 @@ import { make_http_request } from '../../utils/http';
 import { UserInteractions } from '../../domain';
 import type { TaxonomyStore } from '../../store/TaxonomyStore';
 import type { OpenLayersStore } from '../../store/OpenLayersStore';
-import { create_style_function } from './ol_dependant_utils';
+import { createStyleFunction } from './ol_dependant_utils';
 import { make_annotation_ownership_cql_filter } from './utils';
 import { UserInterfaceStore } from '../../store/UserInterfaceStore';
 
-async function geoserver_capabilities(url) {
+async function geoserverCapabilities(url) {
   const parser = new WMSCapabilities();
   const res = await make_http_request(url);
   const text = await res.text();
   return parser.read(text);
 }
 
-function navigate_to_clicked_feature_group(features: Array<Feature>, view: View) {
+function navigateToClickedFeatureGroup(features: Feature[], view: View) {
   features.forEach((globalFeatureLayer) => {
     // cluster source features regroup all individual features in one
     if (globalFeatureLayer.get('features')) {
@@ -112,7 +112,7 @@ export class MapManager {
   /**
    * The deployment's Geoserver endpoint
    */
-  geoserverUrl: string;
+  geoserverURL: string;
 
   /**
    * Geoserver classifies annotations in namespaces, we need it to construct urls.
@@ -126,11 +126,9 @@ export class MapManager {
    */
   annotationLayer: string;
 
-  cqlForTaxonomyClassId: string = '';
+  CQLForTaxonomyClassId: string = '';
 
-  cqlForOwnership: string = '';
-
-  previousMode: string | null;
+  CQLForOwnership: string = '';
 
   layerSwitcher: LayerSwitcher;
 
@@ -139,17 +137,17 @@ export class MapManager {
   /**
    * We use MobX as state manager, this is our top level MobX observable store.
    */
-  state_proxy: GeoImageNetStore;
+  stateProxy: GeoImageNetStore;
 
-  ui_store: UserInterfaceStore;
+  uiStore: UserInterfaceStore;
 
-  open_layers_store: OpenLayersStore;
+  openLayersStore: OpenLayersStore;
 
-  taxonomy_store: TaxonomyStore;
+  taxonomyStore: TaxonomyStore;
 
-  formatGeoJson: GeoJSON;
+  GeoJSONFormat: GeoJSON;
 
-  formatWKT: WKT;
+  WKTFormat: WKT;
 
   /**
    * Reference to the OL map instance, that we keep to act upon when needed
@@ -166,39 +164,38 @@ export class MapManager {
    */
   mousePosition: Control;
 
-  user_interactions: UserInteractions;
+  userInteractions: UserInteractions;
 
   constructor(
-    geoserverUrl: string,
+    geoserverURL: string,
     annotationNamespace: string,
     annotationLayer: string,
     mapDivId: string,
     view: View,
-    state_proxy: GeoImageNetStore,
-    ui_store: UserInterfaceStore,
-    open_layers_store: OpenLayersStore,
-    store_actions: StoreActions,
-    layer_switcher: LayerSwitcher,
-    user_interactions: UserInteractions,
-    taxonomy_store: TaxonomyStore,
+    stateProxy: GeoImageNetStore,
+    uiStore: UserInterfaceStore,
+    openLayersStore: OpenLayersStore,
+    storeActions: StoreActions,
+    layerSwitcher: LayerSwitcher,
+    userInteractions: UserInteractions,
+    taxonomyStore: TaxonomyStore,
   ) {
-    this.geoserverUrl = geoserverUrl;
+    this.geoserverURL = geoserverURL;
     this.annotationNamespace = annotationNamespace;
     this.annotationLayer = annotationLayer;
-    this.state_proxy = state_proxy;
-    this.ui_store = ui_store;
-    this.open_layers_store = open_layers_store;
-    this.taxonomy_store = taxonomy_store;
-    this.storeActions = store_actions;
-    this.layerSwitcher = layer_switcher;
-    this.user_interactions = user_interactions;
-    this.previousMode = null;
-    this.formatGeoJson = new GeoJSON({
+    this.stateProxy = stateProxy;
+    this.uiStore = uiStore;
+    this.openLayersStore = openLayersStore;
+    this.taxonomyStore = taxonomyStore;
+    this.storeActions = storeActions;
+    this.layerSwitcher = layerSwitcher;
+    this.userInteractions = userInteractions;
+    this.GeoJSONFormat = new GeoJSON({
       dataProjection: 'EPSG:3857',
       featureProjection: 'EPSG:3857',
       geometryName: 'geometry',
     });
-    this.formatWKT = new WKT();
+    this.WKTFormat = new WKT();
     this.view = view;
     this.map = new Map({
       target: mapDivId,
@@ -217,7 +214,7 @@ export class MapManager {
     }
     const style = getComputedStyle(document.body);
 
-    const { annotations_collections, annotations_sources } = this.state_proxy;
+    const { annotations_collections, annotations_sources } = this.stateProxy;
 
     /**
      * this innocent looking piece of code is actually very central to the map, here we create the Open Layers sources and collections that will hold the features
@@ -228,12 +225,12 @@ export class MapManager {
     ANNOTATION_STATUS_AS_ARRAY.forEach((key) => {
       const color = style.getPropertyValue(`--color-${key}`);
       this.storeActions.set_annotation_collection(key, new Collection());
-      this.storeActions.set_annotation_source(key, this.create_vector_source(annotations_collections[key], key));
-      const vectorLayer = this.create_vector_layer(key, annotations_sources[key], color, true);
+      this.storeActions.set_annotation_source(key, this.createVectorSource(annotations_collections[key], key));
+      const vectorLayer = this.createVectorLayer(key, annotations_sources[key], color, true);
       this.storeActions.set_annotation_layer(key, vectorLayer);
     });
 
-    this.state_proxy.annotations_collections[ANNOTATION.STATUS.NEW].on('add', (e) => {
+    this.stateProxy.annotations_collections[ANNOTATION.STATUS.NEW].on('add', (e) => {
       e.element.revision_ = 0;
     });
 
@@ -242,26 +239,26 @@ export class MapManager {
      * We need to show the layers that are activated in the filters, and refresh them when we change the visible classes selection
      */
     autorun(() => {
-      const { annotation_status_filters, annotation_ownership_filters } = this.state_proxy;
+      const { annotation_status_filters, annotation_ownership_filters } = this.stateProxy;
 
-      this.cqlForTaxonomyClassId = this.taxonomy_store.taxonomy_class_id_selection_cql;
+      this.CQLForTaxonomyClassId = this.taxonomyStore.taxonomy_class_id_selection_cql;
 
       const ownershipFiltersArray = Object.values(annotation_ownership_filters);
       // $FlowFixMe
-      this.cqlForOwnership = make_annotation_ownership_cql_filter(ownershipFiltersArray, state_proxy.logged_user);
+      this.CQLForOwnership = make_annotation_ownership_cql_filter(ownershipFiltersArray, stateProxy.logged_user);
 
       Object.keys(annotation_status_filters)
         .forEach((k) => {
           const { activated, text } = annotation_status_filters[k];
-          this.state_proxy.annotations_layers[text].setVisible(activated);
+          this.stateProxy.annotations_layers[text].setVisible(activated);
           if (activated) {
-            this.user_interactions.refresh_source_by_status(text);
+            this.userInteractions.refresh_source_by_status(text);
           }
         });
     });
 
     // We set the layers and the layer switcher here
-    this.make_layers();
+    this.makeLayers();
 
     this.mousePosition = new MousePosition({
       coordinateFormat: toStringHDMS,
@@ -271,10 +268,10 @@ export class MapManager {
     });
     this.map.addControl(this.mousePosition);
 
-    this.map.addEventListener('click', this.receive_map_viewport_click_event);
+    this.map.addEventListener('click', this.receiveMapViewportClickEvent);
 
     autorun(() => {
-      const { show_labels, show_annotators_identifiers, annotation_status_filters } = this.state_proxy;
+      const { show_labels, show_annotators_identifiers, annotation_status_filters } = this.stateProxy;
       /**
        * This clunky switch is used so that MobX registers the access to the show_labels property.
        * we assign noise only for mobx to rerun this function as well.
@@ -288,9 +285,9 @@ export class MapManager {
         default:
           Object.keys(annotation_status_filters)
             .forEach((k) => {
-              const annotation_status = annotation_status_filters[k];
-              if (annotation_status.activated) {
-                this.user_interactions.refresh_source_by_status(annotation_status.text);
+              const annotationStatusFilter = annotation_status_filters[k];
+              if (annotationStatusFilter.activated) {
+                this.userInteractions.refresh_source_by_status(annotationStatusFilter.text);
               }
             });
       }
@@ -300,37 +297,21 @@ export class MapManager {
   /**
    * Convenience factory function to create layers.
    */
-  create_vector_layer(title: string, source: VectorSource, color: string, visible: boolean = true, zIndex: number = 99999999) {
+  createVectorLayer(
+    title: string,
+    source: VectorSource,
+    color: string,
+    visible: boolean = true,
+    zIndex: number = 99999999,
+  ) {
     return new Vector({
       title,
       source,
-      style: create_style_function(color, this.state_proxy, this.taxonomy_store),
+      style: createStyleFunction(color, this.stateProxy, this.taxonomyStore),
       visible,
       zIndex,
     });
   }
-
-  /**
-   * When changing resolution we need to activate or deactivate user annotation. That is because after a certain distance,
-   * objects are way too tiny on the screen to create a meaningful annotation.
-   */
-  receive_resolution_change_event = (event: Event) => {
-    const resolution = event.target.get('resolution');
-    const { selectedMode, setMode } = this.ui_store;
-    if (resolution < VALID_OPENLAYERS_ANNOTATION_RESOLUTION) {
-      this.storeActions.activate_actions();
-      if (this.previousMode !== null) {
-        setMode(this.previousMode);
-        this.previousMode = null;
-      }
-    } else {
-      this.storeActions.deactivate_actions();
-      if (selectedMode !== MODE.VISUALIZE) {
-        this.previousMode = selectedMode;
-        setMode(MODE.VISUALIZE);
-      }
-    }
-  };
 
   /**
    * When handling clicks we sometimes need to get an aggregation of all features under the cursor.
@@ -338,7 +319,7 @@ export class MapManager {
    * @param event
    * @returns {Array}
    */
-  aggregate_features_at_cursor(event: Event) {
+  aggregateFeaturesAtCursor(event: Event) {
     const features = [];
     this.map.forEachFeatureAtPixel(event.pixel, (feature) => {
       features.push(feature);
@@ -346,7 +327,7 @@ export class MapManager {
     return features;
   }
 
-  get_aggregated_feature_ids(features: Feature[]) {
+  getAggregatedFeatureIds(features: Feature[]) {
     const featureIds = [];
     features.forEach((f) => {
       if (f.getId() !== undefined) {
@@ -360,63 +341,63 @@ export class MapManager {
    * OpenLayers allows us to register a single event handler for the click event on the map. From there, we need to infer
    * the user's intent and dispatch the click to relevant more specialized handlers.
    */
-  receive_map_viewport_click_event = (event: Event): void => {
-    const features = this.aggregate_features_at_cursor(event);
-    const feature_ids = this.get_aggregated_feature_ids(features);
+  receiveMapViewportClickEvent = (event: Event): void => {
+    const features = this.aggregateFeaturesAtCursor(event);
+    const featureIds = this.getAggregatedFeatureIds(features);
 
-    switch (this.ui_store.selectedMode) {
+    switch (this.uiStore.selectedMode) {
       case MODE.VISUALIZE:
-        return navigate_to_clicked_feature_group(features, this.view);
+        return navigateToClickedFeatureGroup(features, this.view);
 
       case MODE.DELETE:
         if (!(features.length > 0)) {
           return;
         }
-        return this.user_interactions.delete_annotation_under_click(features, feature_ids);
+        return this.userInteractions.delete_annotation_under_click(features, featureIds);
 
       case MODE.VALIDATE:
         if (!(features.length > 0)) {
           return;
         }
-        return this.user_interactions.validate_features_under_click(features, feature_ids);
+        return this.userInteractions.validate_features_under_click(features, featureIds);
 
       case MODE.REJECT:
         if (!(features.length > 0)) {
           return;
         }
-        return this.user_interactions.reject_features_under_click(features, feature_ids);
+        return this.userInteractions.reject_features_under_click(features, featureIds);
 
       case MODE.CREATION:
-        return this.user_interactions.validate_creation_event_has_features();
+        return this.userInteractions.validate_creation_event_has_features();
 
       case MODE.ASK_EXPERTISE:
         if (!(features.length > 0)) {
           return;
         }
-        return this.user_interactions.ask_expertise_for_features(feature_ids, features);
+        return this.userInteractions.ask_expertise_for_features(featureIds, features);
     }
   };
 
-  create_vector_source(features: Array<Feature>, status: string) {
+  createVectorSource(features: Array<Feature>, status: string) {
     return new VectorSource({
-      format: this.formatGeoJson,
+      format: this.GeoJSONFormat,
       features,
       url: (extent) => {
-        let baseUrl = `${this.geoserverUrl}/wfs?service=WFS&`
+        let baseUrl = `${this.geoserverURL}/wfs?service=WFS&`
           + `version=1.1.0&request=GetFeature&typeName=${this.annotationNamespace}:${this.annotationLayer}&`
           + 'outputFormat=application/json&srsname=EPSG:3857&'
           + `cql_filter=status='${status}' AND BBOX(geometry, ${extent.join(',')})`;
-        if (this.cqlForTaxonomyClassId.length > 0) {
-          baseUrl += ` AND ${this.cqlForTaxonomyClassId}`;
+        if (this.CQLForTaxonomyClassId.length > 0) {
+          baseUrl += ` AND ${this.CQLForTaxonomyClassId}`;
         } else {
           baseUrl += ' AND taxonomy_class_id IN (-1)';
         }
-        if (this.cqlForOwnership.length > 0) {
-          baseUrl += ` AND (${this.cqlForOwnership})`;
+        if (this.CQLForOwnership.length > 0) {
+          baseUrl += ` AND (${this.CQLForOwnership})`;
         }
         return baseUrl;
       },
-      strategy: bbox
+      strategy: bbox,
     });
   }
 
@@ -426,10 +407,9 @@ export class MapManager {
    * @todo refactor this in smaller functions
    * @returns {Promise<void>}
    */
-  async make_layers() {
-
-    const base_maps = [];
-    base_maps.push(new TileLayer({
+  async makeLayers() {
+    const baseMaps = [];
+    baseMaps.push(new TileLayer({
       title: 'OSM',
       type: 'base',
       source: new OSM(),
@@ -438,7 +418,7 @@ export class MapManager {
     }));
 
     ALLOWED_BING_MAPS.forEach(function (bing_map) {
-      base_maps.push(new TileLayer({
+      baseMaps.push(new TileLayer({
         title: bing_map.title,
         type: 'base',
         preload: Infinity,
@@ -468,7 +448,7 @@ export class MapManager {
     }
     const layer_names_zindex = {};
     try {
-      const result = await geoserver_capabilities(`${this.geoserverUrl}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
+      const result = await geoserverCapabilities(`${this.geoserverURL}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
       const capability = result.Capability;
       capability.Layer.Layer.forEach((layer) => {
         if (layer.KeywordList.some((keyword) => keyword === 'GEOIMAGENET')) {
@@ -489,7 +469,7 @@ export class MapManager {
             title: layer.Name,
             type: CUSTOM_GEOIM_IMAGE_LAYER,
             source: new TileWMS({
-              url: `${this.geoserverUrl}/wms`,
+              url: `${this.geoserverURL}/wms`,
               params: {
                 LAYERS: layer.Name,
                 TILED: true,
@@ -531,12 +511,11 @@ export class MapManager {
       NotificationManager.error('We could not interrogate Geoserver capabilities. No images will be available.');
     }
 
-
     const bbox_features = new Collection();
 
     const contours_source = new VectorSource({
-      format: this.formatGeoJson,
-      url: (extent) => `${this.geoserverUrl}/wfs?service=WFS&`
+      format: this.GeoJSONFormat,
+      url: (extent) => `${this.geoserverURL}/wfs?service=WFS&`
         + 'exceptions=application/json&request=GetFeature&'
         + 'typeNames=GeoImageNet:image&outputFormat=application/json&'
         + 'srsName=EPSG:3857&'
@@ -579,43 +558,42 @@ export class MapManager {
       }
     });
 
-    let bbox_cluster_layer = new VectorLayer({
+    const boundingBoxClusterLayer = new VectorLayer({
       source: bbox_cluster_source,
       title: 'Image Markers',
       style: (feature, resolution) => {
-        let size = feature.get('features').length;
+        const collectionLength = feature.get('features').length;
         if (resolution >= 700) {
           return new Style({
             image: new Circle({
               radius: 12,
               stroke: new Stroke({
-                color: '#fff'
+                color: '#fff',
               }),
               fill: new Fill({
-                color: '#3399CC'
-              })
+                color: '#3399CC',
+              }),
             }),
             text: new Text({
-              text: size.toString(),
+              text: collectionLength.toString(),
               fill: new Fill({
-                color: '#fff'
+                color: '#fff',
               }),
-              font: '12px sans-serif'
-            })
+              font: '12px sans-serif',
+            }),
           });
-        } else {
-          // don't display anything
-          return new Style();
         }
+        // don't display anything
+        return new Style();
       },
       visible: true,
     });
 
-    let contours_layers = [contours_layer, bbox_cluster_layer];
+    let contours_layers = [contours_layer, boundingBoxClusterLayer];
 
     const annotation_layers = [];
     ANNOTATION_STATUS_AS_ARRAY.forEach((status) => {
-      annotation_layers.unshift(this.state_proxy.annotations_layers[status]);
+      annotation_layers.unshift(this.stateProxy.annotations_layers[status]);
     });
 
     const contours_group = new Group({
@@ -636,14 +614,14 @@ export class MapManager {
     });
     const base_maps_group = new Group({
       title: 'Base maps',
-      layers: base_maps,
+      layers: baseMaps,
     });
     const annotations_group = new Group({
       title: 'Annotations',
       layers: annotation_layers,
     });
 
-    if (this.state_proxy.acl.can(READ, WMS)) {
+    if (this.stateProxy.acl.can(READ, WMS)) {
       this.map.addLayer(RGB_group);
       this.map.addLayer(NRG_group);
       this.map.addLayer(contours_group);
@@ -652,18 +630,5 @@ export class MapManager {
     this.map.addLayer(annotations_group);
 
     this.map.addControl(this.layerSwitcher);
-
   }
-
-  /**
-   * @private
-   * @param error
-   * @returns {Promise<void>}
-   */
-  static async geojsonLogError(error: Response) {
-    const text = await error.text();
-    NotificationManager.error(text);
-  }
-
-
 }

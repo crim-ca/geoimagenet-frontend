@@ -105,30 +105,33 @@ type Props = {
 };
 
 /**
- * This component renders the different buttons that represent the modes in which an user can do actions upon the annotations.
+ * The different buttons that represent the modes in which an user can act upon the annotations.
  * It should filter the actions based on the access control list.
  */
 
 @observer
 class Actions extends Component<Props> {
-  make_set_mode_callback = (mode: $Values<typeof MODE>) => () => {
+  makeSetModeCallback = (mode: $Values<typeof MODE>) => () => {
     const { ui_store: { setMode } } = this.props;
     setMode(mode);
   };
 
   render() {
     const { state_proxy, ui_store } = this.props;
-    const visible_actions = ACTIONS.filter((action) => state_proxy.acl.can(action.permission_name, action.resource));
+    const visibleActions = ACTIONS.filter((action) => state_proxy.acl.can(
+      action.permission_name,
+      action.resource,
+    ));
 
     return (
       <ActionsContainer>
         {
-          visible_actions.map((action) => (
+          visibleActions.map((action) => (
             <FontAwesomeIcon
               key={`${action.mode}`}
               icon={action.icon}
               className={action.mode === ui_store.selectedMode ? 'fa-2x active' : 'fa-2x'}
-              onClick={this.make_set_mode_callback(action.mode)}
+              onClick={this.makeSetModeCallback(action.mode)}
             />
           ))
         }

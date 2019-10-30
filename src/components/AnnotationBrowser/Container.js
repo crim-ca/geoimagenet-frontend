@@ -10,7 +10,7 @@ import { AnnotationList } from './AnnotationList';
 import { OpenLayersStore } from '../../store/OpenLayersStore';
 import { Container as WorkspaceContainer } from './Workspace/Container';
 import { withAnnotationBrowserStore } from '../../store/HOCs';
-import { Actions } from '../ModeSelection/Actions';
+import { Container as ModeSelectionContainer } from '../ModeSelection/Container';
 
 import type { AnnotationBrowserStore } from '../../store/AnnotationBrowserStore';
 import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
@@ -65,13 +65,24 @@ class Container extends React.Component<Props> {
   };
 
   render() {
-    const { annotation_browser_store: { page_number, total_pages, total_features, next_page, previous_page, current_page_content } } = this.props;
+    const {
+      state_proxy,
+      user_interactions,
+      annotation_browser_store: {
+        page_number,
+        total_pages,
+        total_features,
+        next_page,
+        previous_page,
+        current_page_content,
+      },
+    } = this.props;
     return (
       <div className={this.props.classes.root}>
-        <WorkspaceContainer user_interactions={this.props.user_interactions}
-                            state_proxy={this.props.state_proxy} />
-        <Actions state_proxy={this.props.state_proxy}
-                 store_actions={this.props.store_actions} />
+        <WorkspaceContainer user_interactions={user_interactions}
+                            state_proxy={state_proxy}
+        />
+        <ModeSelectionContainer state_proxy={state_proxy} />
         <hr />
         <AnnotationList
           fit_view_to_bounding_box={this.navigate}

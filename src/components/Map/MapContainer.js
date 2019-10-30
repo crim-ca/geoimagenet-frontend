@@ -94,8 +94,8 @@ class MapContainer extends React.Component<Props> {
       open_layers_store,
       ui_store,
       taxonomy_store,
-      this.map_manager.formatGeoJson,
-      this.map_manager.formatWKT,
+      this.map_manager.GeoJSONFormat,
+      this.map_manager.WKTFormat,
       ANNOTATION_LAYER,
     );
   }

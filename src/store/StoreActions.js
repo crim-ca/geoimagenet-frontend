@@ -84,22 +84,6 @@ export class StoreActions {
     }
   }
 
-  /**
-   * The annotation actions can only be done under a specific zoom level. This should be called when we are passed that threshold.
-   */
-  @action.bound
-  activate_actions() {
-    this.geoImageNetStore.actions_activated = true;
-  }
-
-  /**
-   * This should be called when we change resolution in a way that prohibits relevant annotations to be created.
-   */
-  @action.bound
-  deactivate_actions() {
-    this.geoImageNetStore.actions_activated = false;
-  }
-
   @action.bound
   set_session_user(user: User) {
     this.geoImageNetStore.logged_user = observable.object(user);

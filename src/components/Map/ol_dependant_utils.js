@@ -1,66 +1,75 @@
 // @flow strict
 
 import { Feature } from 'ol/Feature';
-import { Circle, Fill, Stroke, Style, Text } from 'ol/style';
+import {
+  Circle,
+  Fill,
+  Stroke,
+  Style,
+  Text,
+} from 'ol/style';
 import { GeoImageNetStore } from '../../store/GeoImageNetStore';
-import { features as activated_features } from '../../../features';
+import { features as activatedFeatures } from '../../../features';
 import type { TaxonomyStore } from '../../store/TaxonomyStore';
 
 type StyleFunction = (Feature, number) => Style | Style[];
 
-function base_style(color: string): Style {
+function baseStyle(color: string): Style {
   return new Style({
     fill: new Fill({
       color: 'rgba(255, 255, 255, 0.25)',
     }),
     stroke: new Stroke({
-      color: color,
-      width: 2
+      color,
+      width: 2,
     }),
     image: new Circle({
       radius: 7,
       fill: new Fill({
-        color: color,
-      })
+        color,
+      }),
     }),
   });
 }
 
-function select_style(): Style {
+function selectStyle(): Style {
   return new Style({
     fill: new Fill({
       color: 'rgba(255, 255, 255, 0.4)',
     }),
     stroke: new Stroke({
       color: 'blue',
-      width: 4
+      width: 4,
     }),
   });
 }
 
-export function create_style_function(color: string, state_proxy: GeoImageNetStore, taxonomy_store: TaxonomyStore, create_for_select_interaction: boolean = false): StyleFunction {
-
+export function createStyleFunction(
+  color: string,
+  geoImageNetStore: GeoImageNetStore,
+  taxonomyStore: TaxonomyStore,
+  create_for_select_interaction: boolean = false,
+): StyleFunction {
   return (feature: Feature, resolution: number) => {
-
     /**
      * While one might be tempted to move these variable access outside of the callback,
      * we must keep this code *inside* the callback otherwise the list is not updated in accordance to the changes to the followed users
      */
-    const { nickname_map } = state_proxy;
-
-    const { show_labels, show_annotators_identifiers } = state_proxy;
+    const { show_labels, show_annotators_identifiers, nickname_map } = geoImageNetStore;
     if (!feature.get('taxonomy_class_id')) {
       return new Style();
     }
-    const taxonomy_class = taxonomy_store.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
-    const label = taxonomy_class.name_en || taxonomy_class.name_fr;
+    const taxonomyClass = taxonomyStore.flat_taxonomy_classes[feature.get('taxonomy_class_id')];
+    const label = taxonomyClass.name_en || taxonomyClass.name_fr;
     /**
      * theoretically, all features would have annotator ids. but y'know, theory and reality sometimes disagree.
      */
-    const annotator_id = feature.get('annotator_id') ? feature.get('annotator_id')
-      .toString() : '-1';
+    const annotatorId = feature.get('annotator_id')
+      ? feature.get('annotator_id')
+        .toString()
+      : '-1';
     // TODO if we need performance of styling, this check could happen at the create style level, and return a different function instead of making the check here
-    const identifier = nickname_map.hasOwnProperty(annotator_id) ? nickname_map[annotator_id] : annotator_id;
+    const identifier = nickname_map.hasOwnProperty(annotatorId) ? nickname_map[annotatorId] : annotatorId;
 
     const bits = [];
     if (show_labels) {
@@ -69,10 +78,10 @@ export function create_style_function(color: string, state_proxy: GeoImageNetSto
     if (show_annotators_identifiers) {
       bits.push(`user ${identifier}`);
     }
-    const final_text = bits.join(' : ');
+    const finalText = bits.join(' : ');
 
     const styles = [
-      create_for_select_interaction ? select_style() : base_style(color),
+      create_for_select_interaction ? selectStyle() : baseStyle(color),
     ];
     if (bits.length > 0) {
       styles.push(new Style({
@@ -83,12 +92,12 @@ export function create_style_function(color: string, state_proxy: GeoImageNetSto
             color: '#FFF',
             width: 2
           }),
-          text: resolution > 100 ? '' : final_text,
+          text: resolution > 100 ? '' : finalText,
           overflow: true,
         }),
       }));
     }
-    if (activated_features.expertise && feature.get('review_requested')) {
+    if (activatedFeatures.expertise && feature.get('review_requested')) {
       styles.push(new Style({
         text: new Text({
           font: '36px Calibri, sans-serif',
