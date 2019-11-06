@@ -173,7 +173,7 @@ export class Interactions {
           }
           this.map.removeInteraction(this.modify);
           break;
-        case MODE.MODIFY:
+        case MODE.MODIFICATION:
           this.map.removeInteraction(this.modify);
           this.map.addInteraction(this.modify);
           this.map.removeInteraction(this.draw);

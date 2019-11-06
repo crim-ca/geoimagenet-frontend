@@ -102,7 +102,7 @@ describe('Artificially granted write annotations permissions', () => {
       .last()
       .simulate('click');
     expect(uiStore.selectedMode)
-      .toBe(MODE.DELETE);
+      .toBe(MODE.DELETION);
   });
 });
 
@@ -110,7 +110,7 @@ describe('User interface store', () => {
   test('Default mode is visualize', () => {
     const customUiStore = new UserInterfaceStore();
     expect(customUiStore.selectedMode)
-      .toBe(MODE.VISUALIZE);
+      .toBe(MODE.VISUALIZATION);
   });
 
   test('We can change mode', () => {
@@ -121,7 +121,7 @@ describe('User interface store', () => {
   });
 
   test('Delete mode specific filters', () => {
-    uiStore.setMode(MODE.DELETE);
+    uiStore.setMode(MODE.DELETION);
     expect(geoImageNetStore.annotation_status_filters[ANNOTATION.STATUS.NEW].activated).toBe(true);
     expect(geoImageNetStore.annotation_status_filters[ANNOTATION.STATUS.RELEASED].activated).toBe(false);
     expect(geoImageNetStore.annotation_status_filters[ANNOTATION.STATUS.PRE_RELEASED].activated).toBe(false);

@@ -344,16 +344,16 @@ export class MapManager {
     const featureIds = this.getAggregatedFeatureIds(features);
 
     switch (this.uiStore.selectedMode) {
-      case MODE.VISUALIZE:
+      case MODE.VISUALIZATION:
         return navigateToClickedFeatureGroup(features, this.view);
 
-      case MODE.DELETE:
+      case MODE.DELETION:
         if (!(features.length > 0)) {
           return;
         }
         return this.userInteractions.delete_annotation_under_click(features, featureIds);
 
-      case MODE.VALIDATE:
+      case MODE.VALIDATION:
         if (!(features.length > 0)) {
           return;
         }

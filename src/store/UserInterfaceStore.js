@@ -2,14 +2,14 @@
 import { action, observable } from 'mobx';
 import { MODE } from '../constants';
 
-const { VISUALIZE } = MODE;
+const { VISUALIZATION } = MODE;
 
 class UserInterfaceStore {
 
   constructor() {
     const bob = 1;
   }
-  @observable selectedMode: string = VISUALIZE;
+  @observable selectedMode: string = VISUALIZATION;
 
   @action.bound setMode(mode: string) {
     this.selectedMode = mode;

@@ -63,7 +63,7 @@ export class GeoImageNetStore {
    * When loading the platform, we by default put the user in a state of visualization.
    * @type {String}
    */
-  @observable mode: string = MODE.VISUALIZE;
+  @observable mode: string = MODE.VISUALIZATION;
 
   /**
    * An user is able to act on the annotations based on wether or not they are at a suitable zoom level.

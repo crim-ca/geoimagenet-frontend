@@ -4,14 +4,14 @@ import { observer } from 'mobx-react';
 import { withStyles } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faEye,
   faPlusSquare,
   faCopy,
   faEdit,
   faTrashAlt,
   faQuestionCircle,
   faCheck,
-  faTimes,
+  faPaperPlane,
+  faMousePointer,
 } from '@fortawesome/free-solid-svg-icons';
 import { features } from '../../../features';
 import {
@@ -25,15 +25,15 @@ import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
 import { withUserInterfaceStore } from '../../store/HOCs';
 import type { UserInterfaceStore } from '../../store/UserInterfaceStore';
 
-const ACTIONS = [];
-ACTIONS.push({
+const modes = [];
+modes.push({
   name: 'eye',
-  icon: faEye,
-  mode: MODE.VISUALIZE,
+  icon: faMousePointer,
+  mode: MODE.VISUALIZATION,
   permission_name: READ,
   resource: ANNOTATIONS,
 });
-ACTIONS.push({
+modes.push({
   name: 'creation',
   icon: faPlusSquare,
   mode: MODE.CREATION,
@@ -41,30 +41,30 @@ ACTIONS.push({
   resource: ANNOTATIONS,
 });
 if (features.duplicate) {
-  ACTIONS.push({
+  modes.push({
     name: 'duplicate',
     icon: faCopy,
-    mode: MODE.DUPLICATE,
+    mode: MODE.DUPLICATION,
     permission_name: WRITE,
     resource: ANNOTATIONS,
   });
 }
-ACTIONS.push({
+modes.push({
   name: 'modify',
   icon: faEdit,
-  mode: MODE.MODIFY,
+  mode: MODE.MODIFICATION,
   permission_name: WRITE,
   resource: ANNOTATIONS,
 });
-ACTIONS.push({
+modes.push({
   name: 'delete',
   icon: faTrashAlt,
-  mode: MODE.DELETE,
+  mode: MODE.DELETION,
   permission_name: WRITE,
   resource: ANNOTATIONS,
 });
 if (features.expertise) {
-  ACTIONS.push({
+  modes.push({
     name: 'ask_expertise',
     icon: faQuestionCircle,
     mode: MODE.ASK_EXPERTISE,
@@ -72,17 +72,17 @@ if (features.expertise) {
     resource: ANNOTATIONS,
   });
 }
-ACTIONS.push({
+modes.push({
+  name: 'release',
+  icon: faPaperPlane,
+  mode: MODE.RELEASE,
+  permission_name: WRITE,
+  resource: ANNOTATIONS,
+});
+modes.push({
   name: 'validate',
   icon: faCheck,
-  mode: MODE.VALIDATE,
-  permission_name: WRITE,
-  resource: VALIDATIONS,
-});
-ACTIONS.push({
-  name: 'refuse',
-  icon: faTimes,
-  mode: MODE.REJECT,
+  mode: MODE.VALIDATION,
   permission_name: WRITE,
   resource: VALIDATIONS,
 });
@@ -111,14 +111,14 @@ type Props = {
 
 @observer
 class Actions extends Component<Props> {
-  makeSetModeCallback = (mode: $Values<typeof MODE>) => () => {
+  setModeCallback = (mode: $Values<typeof MODE>) => () => {
     const { ui_store: { setMode } } = this.props;
     setMode(mode);
   };
 
   render() {
-    const { state_proxy, ui_store } = this.props;
-    const visibleActions = ACTIONS.filter((action) => state_proxy.acl.can(
+    const { state_proxy, ui_store: { selectedMode } } = this.props;
+    const visibleModes = modes.filter((action) => state_proxy.acl.can(
       action.permission_name,
       action.resource,
     ));
@@ -126,12 +126,12 @@ class Actions extends Component<Props> {
     return (
       <ActionsContainer>
         {
-          visibleActions.map((action) => (
+          visibleModes.map((action) => (
             <FontAwesomeIcon
               key={`${action.mode}`}
               icon={action.icon}
-              className={action.mode === ui_store.selectedMode ? 'fa-2x active' : 'fa-2x'}
-              onClick={this.makeSetModeCallback(action.mode)}
+              className={action.mode === selectedMode ? 'fa-2x active' : 'fa-2x'}
+              onClick={this.setModeCallback(action.mode)}
             />
           ))
         }
