@@ -44,7 +44,7 @@ export class GeoImageNetStore {
    * The visible annotations types should federate every part of the platform that manages annotations, from the counts
    * in the classes hierarchies to the visible annotations on the map, and every future annotations interactions.
    */
-  @observable annotation_status_filters: AnnotationStatusFilters = {
+  @observable annotationStatusFilters: AnnotationStatusFilters = {
     [ANNOTATION.STATUS.NEW]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.NEW, true)),
     [ANNOTATION.STATUS.PRE_RELEASED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.PRE_RELEASED, true)),
     [ANNOTATION.STATUS.RELEASED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.RELEASED, true)),
@@ -53,7 +53,7 @@ export class GeoImageNetStore {
     [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.DELETED, true)),
   };
 
-  @observable annotation_ownership_filters: AnnotationOwnershipFilters = {
+  @observable annotationOwnershipFilters: AnnotationOwnershipFilters = {
     [ANNOTATION.OWNERSHIP.OTHERS]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.OTHERS, true)),
     [ANNOTATION.OWNERSHIP.MINE]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.MINE, true)),
     [ANNOTATION.OWNERSHIP.FOLLOWED_USERS]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.FOLLOWED_USERS, true)),

@@ -6,7 +6,7 @@ import { NotificationContainer } from 'react-notifications';
 import { Menu } from './Menu.js';
 
 import type { UserInteractions } from '../domain';
-import type { GeoImageNetStore } from '../store/GeoImageNetStore';
+import type { GeoImageNetStore } from '../model/GeoImageNetStore';
 
 const LayoutGrid = withStyles(theme => {
   const { values } = theme;
@@ -38,8 +38,8 @@ const Top = withStyles({
 })(({ classes, children }) => (<div className={classes.root}>{children}</div>));
 
 type Props = {
-  state_proxy: GeoImageNetStore,
-  user_interactions: UserInteractions,
+  geoImageNetStore: GeoImageNetStore,
+  userInteractions: UserInteractions,
   children: {},
 };
 
@@ -51,7 +51,7 @@ type Props = {
 class LoggedLayout extends React.Component<Props> {
 
   render() {
-    const { children, state_proxy, user_interactions } = this.props;
+    const { children, geoImageNetStore, userInteractions } = this.props;
     /**
      * Wrapping both menu and children in divs so that the grid is respected whatever the other structures are.
      */
@@ -59,8 +59,8 @@ class LoggedLayout extends React.Component<Props> {
       <LayoutGrid>
         <Top>
           <Menu
-            state_proxy={state_proxy}
-            user_interactions={user_interactions}
+            geoImageNetStore={geoImageNetStore}
+            userInteractions={userInteractions}
             contact_email={CONTACT_EMAIL} />
         </Top>
         <Bottom>

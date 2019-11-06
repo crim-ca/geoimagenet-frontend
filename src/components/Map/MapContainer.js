@@ -5,22 +5,22 @@ import View from 'ol/View';
 import { fromLonLat } from 'ol/proj';
 import { autorun } from 'mobx';
 import { LayerSwitcher } from '../../LayerSwitcher';
-import { ui_store } from '../../store/instance_cache';
-import type { TaxonomyStore } from '../../store/TaxonomyStore';
+import { uiStore } from '../../model/instance_cache';
+import type { TaxonomyStore } from '../../model/TaxonomyStore';
 import type { UserInteractions } from '../../domain';
-import type { StoreActions } from '../../store/StoreActions';
-import type { OpenLayersStore } from '../../store/OpenLayersStore';
-import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
+import type { StoreActions } from '../../model/StoreActions';
+import type { OpenLayersStore } from '../../model/OpenLayersStore';
+import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
 import { MapManager } from './MapManager';
 import { Interactions } from './Interactions';
 
 type Props = {
   classes: { root: {} },
-  state_proxy: GeoImageNetStore,
-  taxonomy_store: TaxonomyStore,
-  store_actions: StoreActions,
-  user_interactions: UserInteractions,
-  open_layers_store: OpenLayersStore,
+  geoImageNetStore: GeoImageNetStore,
+  taxonomyStore: TaxonomyStore,
+  storeActions: StoreActions,
+  userInteractions: UserInteractions,
+  openLayersStore: OpenLayersStore,
 };
 
 const styles = {
@@ -39,31 +39,31 @@ class MapContainer extends React.Component<Props> {
    */
   componentDidMount(): void {
     const {
-      state_proxy,
-      store_actions,
-      taxonomy_store,
-      user_interactions,
-      open_layers_store,
+      geoImageNetStore,
+      storeActions,
+      taxonomyStore,
+      userInteractions,
+      openLayersStore,
     } = this.props;
 
-    user_interactions.populate_image_dictionary();
+    userInteractions.populate_image_dictionary();
 
     /**
      * The Layer Switcher is paramount to the map: it should allow easy access and toggling to the various displayed layers.
      */
     const layer_switcher = new LayerSwitcher(
       { target: 'layer-switcher' },
-      store_actions.toggle_annotation_status_visibility,
+      storeActions.toggle_annotation_status_visibility,
     );
 
     const view = new View({
-      center: fromLonLat(open_layers_store.center),
-      zoom: open_layers_store.zoom_level,
+      center: fromLonLat(openLayersStore.center),
+      zoom: openLayersStore.zoom_level,
     });
 
     let first = true;
     autorun(() => {
-      const { extent } = open_layers_store;
+      const { extent } = openLayersStore;
       if (first === true) {
         first = false;
         return;
@@ -78,22 +78,22 @@ class MapContainer extends React.Component<Props> {
       ANNOTATION_LAYER,
       'map',
       view,
-      state_proxy,
-      ui_store,
-      open_layers_store,
-      store_actions,
+      geoImageNetStore,
+      uiStore,
+      openLayersStore,
+      storeActions,
       layer_switcher,
-      user_interactions,
-      taxonomy_store,
+      userInteractions,
+      taxonomyStore,
     );
 
     new Interactions(
       this.map_manager.map,
-      state_proxy,
-      user_interactions,
-      open_layers_store,
-      ui_store,
-      taxonomy_store,
+      geoImageNetStore,
+      userInteractions,
+      openLayersStore,
+      uiStore,
+      taxonomyStore,
       this.map_manager.GeoJSONFormat,
       this.map_manager.WKTFormat,
       ANNOTATION_LAYER,

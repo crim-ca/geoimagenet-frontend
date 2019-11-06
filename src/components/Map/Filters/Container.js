@@ -3,17 +3,21 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Button from '@material-ui/core/Button';
 import { TFunction } from 'react-i18next';
-import { GeoImageNetStore } from '../../../store/GeoImageNetStore';
-import { StoreActions } from '../../../store/StoreActions';
+import { compose } from 'react-apollo';
+import type{ GeoImageNetStore } from '../../../model/GeoImageNetStore';
+import { StoreActions } from '../../../model/StoreActions';
 import { withTranslation } from '../../../utils';
 import type { AnnotationStatus } from '../../../Types';
 import { FiltersPaper } from '../FiltersPaper';
 import { FadingDialog } from '../FadingDialog';
 import { CheckboxLineInput } from './CheckboxLineInput';
+import { withUserInterfaceStore } from '../../../model/HOCs';
+import type { UserInterfaceStore } from '../../../model/UserInterfaceStore';
 
 type Props = {
-  state_proxy: GeoImageNetStore,
-  store_actions: StoreActions,
+  geoImageNetStore: GeoImageNetStore,
+  storeActions: StoreActions,
+  uiStore: UserInterfaceStore,
   t: TFunction,
 };
 type State = {
@@ -31,7 +35,7 @@ class Container extends React.Component<Props, State> {
     };
   }
 
-  toggle_filter_container = (event) => {
+  toggleContainer = (event) => {
     const { open } = this.state;
     this.setState({
       open: !open,
@@ -39,25 +43,25 @@ class Container extends React.Component<Props, State> {
     });
   };
 
-  toggle_status_filter = (annotation_status: AnnotationStatus) => (event) => {
-    const { store_actions: { toggle_annotation_status_visibility } } = this.props;
-    toggle_annotation_status_visibility(annotation_status, event.target.checked);
+  toggleStatusFilter = (annotationStatus: AnnotationStatus) => (event) => {
+    const { storeActions: { toggle_annotation_status_visibility } } = this.props;
+    toggle_annotation_status_visibility(annotationStatus, event.target.checked);
   };
 
-  toggle_ownership_filter = (ownership: string) => (event) => {
-    const { store_actions: { toggle_annotation_ownership_filter } } = this.props;
+  toggleOwnershipFilter = (ownership: string) => (event) => {
+    const { storeActions: { toggle_annotation_ownership_filter } } = this.props;
     toggle_annotation_ownership_filter(ownership, event.target.checked);
   };
 
   render() {
     const { anchor, open } = this.state;
-    const { state_proxy, t } = this.props;
+    const { geoImageNetStore: {annotationStatusFilters, annotationOwnershipFilters}, t } = this.props;
     return (
       <>
         <Button
           variant="contained"
           color="primary"
-          onClick={this.toggle_filter_container}
+          onClick={this.toggleContainer}
         >
           {t('annotations:filters')}
         </Button>
@@ -65,16 +69,16 @@ class Container extends React.Component<Props, State> {
           <FiltersPaper>
             <ul>
               {
-                Object.keys(state_proxy.annotation_status_filters)
-                  .map((statusText: string, i: number) => {
-                    const statusFilter = state_proxy.annotation_status_filters[statusText];
+                Object.keys(annotationStatusFilters)
+                  .map((statusText: string) => {
+                    const statusFilter = annotationStatusFilters[statusText];
                     const uniqueInputId = `status_${statusText}`;
                     return (
-                      <li key={i}>
+                      <li key={uniqueInputId}>
                         <CheckboxLineInput
-                          unique_id={uniqueInputId}
+                          uniqueId={uniqueInputId}
                           checked={statusFilter.activated}
-                          change_handler={this.toggle_status_filter(statusFilter.text)}
+                          changeHandler={this.toggleStatusFilter(statusFilter.text)}
                           label={t(`status:plural.${statusFilter.text}`)}
                         />
                       </li>
@@ -84,16 +88,16 @@ class Container extends React.Component<Props, State> {
             </ul>
             <ul>
               {
-                Object.keys(state_proxy.annotation_ownership_filters)
-                  .map((ownership: string, i: number) => {
-                    const ownershipFilter = state_proxy.annotation_ownership_filters[ownership];
+                Object.keys(annotationOwnershipFilters)
+                  .map((ownership: string) => {
+                    const ownershipFilter = annotationOwnershipFilters[ownership];
                     const uniqueInputId = `ownership_${ownership}`;
                     return (
-                      <li key={i}>
+                      <li key={uniqueInputId}>
                         <CheckboxLineInput
-                          unique_id={uniqueInputId}
+                          uniqueId={uniqueInputId}
                           checked={ownershipFilter.activated}
-                          change_handler={this.toggle_ownership_filter(ownershipFilter.text)}
+                          changeHandler={this.toggleOwnershipFilter(ownershipFilter.text)}
                           label={t(`annotations:ownership.${ownershipFilter.text}`)}
                         />
                       </li>
@@ -108,5 +112,8 @@ class Container extends React.Component<Props, State> {
   }
 }
 
-const component = withTranslation()(Container);
+const component = compose(
+  withTranslation(),
+  withUserInterfaceStore,
+)(Container);
 export { component as Container };

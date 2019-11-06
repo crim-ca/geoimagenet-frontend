@@ -4,9 +4,9 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 
 type Props = {
-  unique_id: string,
+  uniqueId: string,
   checked: boolean,
-  change_handler: (event: {
+  changeHandler: (event: {
     target: {
       checked: boolean
     }
@@ -14,22 +14,31 @@ type Props = {
   label: string,
 };
 
-class CheckboxLineInput extends React.Component<Props> {
-  render() {
-    const { unique_id, checked, change_handler, label } = this.props;
-    return (
-      <>
-        <input type='checkbox'
-               id={unique_id}
-               checked={checked}
-               onChange={change_handler} />
-        <label htmlFor={unique_id}>
-          <Typography style={{ cursor: 'pointer' }}
-                      variant='body2'>{label}</Typography>
-        </label>
-      </>
-    );
-  }
+function CheckboxLineInput(props: Props) {
+  const {
+    uniqueId,
+    checked,
+    changeHandler,
+    label,
+  } = props;
+  return (
+    <>
+      <input
+        type="checkbox"
+        id={uniqueId}
+        checked={checked}
+        onChange={changeHandler}
+      />
+      <label htmlFor={uniqueId}>
+        <Typography
+          style={{ cursor: 'pointer' }}
+          variant="body2"
+        >
+          {label}
+        </Typography>
+      </label>
+    </>
+  );
 }
 
 export { CheckboxLineInput };

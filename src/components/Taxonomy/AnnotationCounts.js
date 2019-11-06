@@ -14,17 +14,17 @@ export const SpacedChip = withStyles({
 type Props = {
   name_en: string,
   counts: Counts,
-  annotation_status_filters: AnnotationStatusFilters,
+  annotationStatusFilters: AnnotationStatusFilters,
 };
 
 @observer
 class AnnotationCounts extends React.Component<Props> {
   render() {
-    const { counts, name_en, annotation_status_filters } = this.props;
+    const { counts, name_en, annotationStatusFilters } = this.props;
     return (
       <>
         {ANNOTATION_STATUS_AS_ARRAY.map((status, i) => (
-          annotation_status_filters[status].activated && counts[status]
+          annotationStatusFilters[status].activated && counts[status]
             ? (
               <Tooltip key={i} title={`${counts[status]} ${status} annotations of class ${name_en}`}>
                 <SpacedChip label={counts[status]}

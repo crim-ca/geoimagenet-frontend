@@ -333,7 +333,7 @@ export const PresentationContainer = withStyles(({ values }) => ({
   input: {
     color: 'white',
   }
-}))(({ classes, state_proxy, user_interactions, contact_email }) => {
+}))(({ classes, geoImageNetStore, userInteractions, contact_email }) => {
 
   const { t } = useTranslation();
   const [dialog_open, change_dialog_openness] = useState(false);
@@ -350,7 +350,7 @@ export const PresentationContainer = withStyles(({ values }) => ({
         }} variant='body1'
                     onClick={toggle_dialog}>{t('login:login')}</Typography>
         <Dialog open={dialog_open} onClose={toggle_dialog}>
-          <Login user_interactions={user_interactions} />
+          <Login userInteractions={userInteractions} />
         </Dialog>
         <Typography style={{
           cursor: 'pointer',
@@ -387,7 +387,7 @@ export const PresentationContainer = withStyles(({ values }) => ({
       </div>
       <div className={classes.taxonomy}>
         <LessOpaquePaper title={t('title:taxonomy')} content={
-          <TaxonomyPresentation state_proxy={state_proxy} user_interactions={user_interactions} />
+          <TaxonomyPresentation geoImageNetStore={geoImageNetStore} userInteractions={userInteractions} />
         } />
       </div>
     </div>

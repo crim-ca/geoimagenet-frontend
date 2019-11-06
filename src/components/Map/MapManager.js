@@ -50,16 +50,16 @@ import {
   WMS,
 } from '../../constants';
 import { debounced } from '../../utils/event_handling';
-import { StoreActions } from '../../store/StoreActions';
+import { StoreActions } from '../../model/StoreActions';
 import { LayerSwitcher } from '../../LayerSwitcher';
-import { GeoImageNetStore } from '../../store/GeoImageNetStore';
+import { GeoImageNetStore } from '../../model/GeoImageNetStore';
 import { make_http_request } from '../../utils/http';
 import { UserInteractions } from '../../domain';
-import type { TaxonomyStore } from '../../store/TaxonomyStore';
-import type { OpenLayersStore } from '../../store/OpenLayersStore';
+import type { TaxonomyStore } from '../../model/TaxonomyStore';
+import type { OpenLayersStore } from '../../model/OpenLayersStore';
 import { createStyleFunction } from './ol_dependant_utils';
 import { make_annotation_ownership_cql_filter } from './utils';
-import { UserInterfaceStore } from '../../store/UserInterfaceStore';
+import { UserInterfaceStore } from '../../model/UserInterfaceStore';
 
 async function geoserverCapabilities(url) {
   const parser = new WMSCapabilities();
@@ -137,7 +137,7 @@ export class MapManager {
   /**
    * We use MobX as state manager, this is our top level MobX observable store.
    */
-  stateProxy: GeoImageNetStore;
+  geoImageNetStore: GeoImageNetStore;
 
   uiStore: UserInterfaceStore;
 
@@ -172,7 +172,7 @@ export class MapManager {
     annotationLayer: string,
     mapDivId: string,
     view: View,
-    stateProxy: GeoImageNetStore,
+    geoImageNetStore: GeoImageNetStore,
     uiStore: UserInterfaceStore,
     openLayersStore: OpenLayersStore,
     storeActions: StoreActions,
@@ -183,7 +183,7 @@ export class MapManager {
     this.geoserverURL = geoserverURL;
     this.annotationNamespace = annotationNamespace;
     this.annotationLayer = annotationLayer;
-    this.stateProxy = stateProxy;
+    this.geoImageNetStore = geoImageNetStore;
     this.uiStore = uiStore;
     this.openLayersStore = openLayersStore;
     this.taxonomyStore = taxonomyStore;
@@ -212,7 +212,7 @@ export class MapManager {
     }
     const style = getComputedStyle(document.body);
 
-    const { annotations_collections, annotations_sources } = this.stateProxy;
+    const { annotations_collections, annotations_sources } = this.geoImageNetStore;
 
     /**
      * this innocent looking piece of code is actually very central to the map, here we create the Open Layers sources and collections that will hold the features
@@ -228,7 +228,7 @@ export class MapManager {
       this.storeActions.set_annotation_layer(key, vectorLayer);
     });
 
-    this.stateProxy.annotations_collections[ANNOTATION.STATUS.NEW].on('add', (e) => {
+    this.geoImageNetStore.annotations_collections[ANNOTATION.STATUS.NEW].on('add', (e) => {
       e.element.revision_ = 0;
     });
 
@@ -237,18 +237,19 @@ export class MapManager {
      * We need to show the layers that are activated in the filters, and refresh them when we change the visible classes selection
      */
     autorun(() => {
-      const { annotation_status_filters, annotation_ownership_filters } = this.stateProxy;
+      const { annotationStatusFilters, annotationOwnershipFilters } = this.geoImageNetStore;
 
       this.CQLForTaxonomyClassId = this.taxonomyStore.taxonomy_class_id_selection_cql;
 
-      const ownershipFiltersArray = Object.values(annotation_ownership_filters);
+      const ownershipFiltersArray = Object.values(annotationOwnershipFilters);
       // $FlowFixMe
-      this.CQLForOwnership = make_annotation_ownership_cql_filter(ownershipFiltersArray, stateProxy.logged_user);
+      this.CQLForOwnership = make_annotation_ownership_cql_filter(ownershipFiltersArray, geoImageNetStore.logged_user);
 
-      Object.keys(annotation_status_filters)
+      Object.keys(annotationStatusFilters)
         .forEach((k) => {
-          const { activated, text } = annotation_status_filters[k];
-          this.stateProxy.annotations_layers[text].setVisible(activated);
+          const { activated, text } = annotationStatusFilters[k];
+          const annotations_layers = this.geoImageNetStore;
+          this.geoImageNetStore.annotations_layers[text].setVisible(activated);
           if (activated) {
             this.userInteractions.refresh_source_by_status(text);
           }
@@ -269,7 +270,7 @@ export class MapManager {
     this.map.addEventListener('click', this.receiveMapViewportClickEvent);
 
     autorun(() => {
-      const { show_labels, show_annotators_identifiers, annotation_status_filters } = this.stateProxy;
+      const { show_labels, show_annotators_identifiers, annotationStatusFilters } = this.geoImageNetStore;
       /**
        * This clunky switch is used so that MobX registers the access to the show_labels property.
        * we assign noise only for mobx to rerun this function as well.
@@ -281,9 +282,9 @@ export class MapManager {
       const noise = show_annotators_identifiers;
       switch (show_labels) {
         default:
-          Object.keys(annotation_status_filters)
+          Object.keys(annotationStatusFilters)
             .forEach((k) => {
-              const annotationStatusFilter = annotation_status_filters[k];
+              const annotationStatusFilter = annotationStatusFilters[k];
               if (annotationStatusFilter.activated) {
                 this.userInteractions.refresh_source_by_status(annotationStatusFilter.text);
               }
@@ -305,7 +306,7 @@ export class MapManager {
     return new Vector({
       title,
       source,
-      style: createStyleFunction(color, this.stateProxy, this.taxonomyStore),
+      style: createStyleFunction(color, this.geoImageNetStore, this.taxonomyStore),
       visible,
       zIndex,
     });
@@ -589,9 +590,10 @@ export class MapManager {
 
     let contours_layers = [contours_layer, boundingBoxClusterLayer];
 
-    const annotation_layers = [];
+    const annotationLayers = [];
+    // I have no idea what I am trying to have been doing here
     ANNOTATION_STATUS_AS_ARRAY.forEach((status) => {
-      annotation_layers.unshift(this.stateProxy.annotations_layers[status]);
+      annotationLayers.unshift(this.geoImageNetStore.annotations_layers[status]);
     });
 
     const contours_group = new Group({
@@ -616,10 +618,10 @@ export class MapManager {
     });
     const annotations_group = new Group({
       title: 'Annotations',
-      layers: annotation_layers,
+      layers: annotationLayers,
     });
 
-    if (this.stateProxy.acl.can(READ, WMS)) {
+    if (this.geoImageNetStore.acl.can(READ, WMS)) {
       this.map.addLayer(RGB_group);
       this.map.addLayer(NRG_group);
       this.map.addLayer(contours_group);

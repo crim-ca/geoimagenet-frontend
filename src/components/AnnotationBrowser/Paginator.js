@@ -8,7 +8,7 @@ import { TFunction } from 'react-i18next';
 
 import { withTranslation } from '../../utils';
 
-import type { AnnotationBrowserStore } from '../../store/AnnotationBrowserStore';
+import type { AnnotationBrowserStore } from '../../model/AnnotationBrowserStore';
 import { compose } from 'react-apollo';
 
 const style = (theme) => ({

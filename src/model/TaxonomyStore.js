@@ -7,10 +7,10 @@ import type { TaxonomyClass } from '../domain/entities';
 import type { GeoImageNetStore } from './GeoImageNetStore';
 
 export class TaxonomyStore {
-  state_proxy: GeoImageNetStore;
+  geoImageNetStore: GeoImageNetStore;
 
-  constructor(state_proxy: GeoImageNetStore) {
-    this.state_proxy = state_proxy;
+  constructor(geoImageNetStore: GeoImageNetStore) {
+    this.geoImageNetStore = geoImageNetStore;
   }
 
   /**
@@ -152,7 +152,7 @@ export class TaxonomyStore {
   }
 
   @computed get activated_status_filters_cql(): string {
-    const activated_filters = Object.values(this.state_proxy.annotation_status_filters)
+    const activated_filters = Object.values(this.geoImageNetStore.annotationStatusFilters)
     // $FlowFixMe
       .filter((filter) => filter.activated)
       // $FlowFixMe

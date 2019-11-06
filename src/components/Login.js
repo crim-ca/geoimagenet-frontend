@@ -27,7 +27,7 @@ const AccessButton = withStyles(theme => {
 })(Button);
 
 type Props = {
-  user_interactions: UserInteractions,
+  userInteractions: UserInteractions,
   t: TFunction,
 };
 type State = {
@@ -125,7 +125,7 @@ class LoginComponent extends React.Component<Props, State> {
    * @returns {Promise<void>}
    */
   send_login = async () => {
-    await this.props.user_interactions.login_form_submission(this.state);
+    await this.props.userInteractions.login_form_submission(this.state);
   };
 
   render() {

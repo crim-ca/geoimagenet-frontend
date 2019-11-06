@@ -14,9 +14,9 @@ import { Viewer } from './Taxonomy/Viewer';
 import { Container as SettingsContainer } from './UserSettings/Container';
 import { withTranslation } from '../utils';
 import { Container as AnnotationBrowserContainer } from './AnnotationBrowser/Container';
-import type { OpenLayersStore } from '../store/OpenLayersStore';
-import type { GeoImageNetStore } from '../store/GeoImageNetStore';
-import type { StoreActions } from '../store/StoreActions';
+import type { OpenLayersStore } from '../model/OpenLayersStore';
+import type { GeoImageNetStore } from '../model/GeoImageNetStore';
+import type { StoreActions } from '../model/StoreActions';
 import type { UserInteractions } from '../domain';
 
 type SidebarSectionData = {
@@ -33,7 +33,7 @@ const makeSidebarSections: (
   TFunction
 ) => SidebarSectionData[] = (
   userInteractions,
-  stateProxy,
+  geoImageNetStore,
   storeActions,
   openLayersStore,
   t,
@@ -45,8 +45,8 @@ const makeSidebarSections: (
       content: (
         <Viewer
           refresh_source_by_status={userInteractions.refresh_source_by_status}
-          state_proxy={stateProxy}
-          user_interactions={userInteractions}
+          geoImageNetStore={geoImageNetStore}
+          userInteractions={userInteractions}
         />
       ),
     },
@@ -55,10 +55,10 @@ const makeSidebarSections: (
       slug: 'annotation-browser',
       content: (
         <AnnotationBrowserContainer
-          user_interactions={userInteractions}
-          open_layers_store={openLayersStore}
-          store_actions={storeActions}
-          state_proxy={stateProxy}
+          userInteractions={userInteractions}
+          openLayersStore={openLayersStore}
+          storeActions={storeActions}
+          geoImageNetStore={geoImageNetStore}
         />
       ),
     },
@@ -68,21 +68,21 @@ const makeSidebarSections: (
       content: (<div id="layer-switcher" className="layer-switcher-container" />),
     },
   ];
-  if (stateProxy.logged_user !== null) {
+  if (geoImageNetStore.logged_user !== null) {
     sections.push({
       title: 'Settings',
       slug: 'settings',
-      content: (<SettingsContainer user={stateProxy.logged_user} user_interactions={userInteractions} />),
+      content: (<SettingsContainer user={geoImageNetStore.logged_user} userInteractions={userInteractions} />),
     });
   }
   return sections;
 };
 
 type Props = {
-  state_proxy: GeoImageNetStore,
-  store_actions: StoreActions,
-  user_interactions: UserInteractions,
-  open_layers_store: OpenLayersStore,
+  geoImageNetStore: GeoImageNetStore,
+  storeActions: StoreActions,
+  userInteractions: UserInteractions,
+  openLayersStore: OpenLayersStore,
   classes: {
     sidebar: {},
     bottom: {},
@@ -124,10 +124,10 @@ class Sidebar extends React.Component<Props, State> {
     const { opened_panel_title } = this.state;
     const { classes } = this.props;
     const sidebar_sections = makeSidebarSections(
-      this.props.user_interactions,
-      this.props.state_proxy,
-      this.props.store_actions,
-      this.props.open_layers_store,
+      this.props.userInteractions,
+      this.props.geoImageNetStore,
+      this.props.storeActions,
+      this.props.openLayersStore,
       this.props.t);
     return (
       <Paper className={classes.sidebar}>

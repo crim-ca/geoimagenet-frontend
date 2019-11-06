@@ -1,11 +1,11 @@
 // @flow strict
 import * as React from 'react';
-import { taxonomy_store, annotation_browser_store, ui_store } from './instance_cache';
+import { taxonomyStore, annotationBrowserStore, uiStore } from './instance_cache';
 import type { TaxonomyStore } from './TaxonomyStore';
 import type { AnnotationBrowserStore } from './AnnotationBrowserStore';
 import { UserInterfaceStore } from './UserInterfaceStore';
 
-type InjectedForTaxonomy = {| taxonomy_store: TaxonomyStore |};
+type InjectedForTaxonomy = {| taxonomyStore: TaxonomyStore |};
 
 function withTaxonomyStore<Config>(
   InnerComponent: React.AbstractComponent<{| ...Config, ...InjectedForTaxonomy |}>,
@@ -13,12 +13,12 @@ function withTaxonomyStore<Config>(
   return function WrapperComponent(props: Config) {
     return (
       // eslint-disable-next-line react/jsx-props-no-spreading
-      <InnerComponent {...props} taxonomy_store={taxonomy_store} />
+      <InnerComponent {...props} taxonomyStore={taxonomyStore} />
     );
   };
 }
 
-type InjectedForAnnotationBrowser = {| annotation_browser_store: AnnotationBrowserStore |};
+type InjectedForAnnotationBrowser = {| annotationBrowserStore: AnnotationBrowserStore |};
 
 function withAnnotationBrowserStore<Config>(
   InnerComponent: React.AbstractComponent<{| ...Config, ...InjectedForAnnotationBrowser |}>,
@@ -26,12 +26,12 @@ function withAnnotationBrowserStore<Config>(
   return function WrapperComponent(props: Config) {
     return (
       // eslint-disable-next-line react/jsx-props-no-spreading
-      <InnerComponent {...props} annotation_browser_store={annotation_browser_store} />
+      <InnerComponent {...props} annotationBrowserStore={annotationBrowserStore} />
     );
   };
 }
 
-type InjectedForUserInterface = {| ui_store: UserInterfaceStore |};
+type InjectedForUserInterface = {| uiStore: UserInterfaceStore |};
 
 function withUserInterfaceStore<Config>(
   InnerComponent: React.AbstractComponent<{| ...Config, ...InjectedForUserInterface |}>,
@@ -39,7 +39,7 @@ function withUserInterfaceStore<Config>(
   return function WrapperComponent(props: Config) {
     return (
       // eslint-disable-next-line react/jsx-props-no-spreading
-      <InnerComponent {...props} ui_store={ui_store} />
+      <InnerComponent {...props} uiStore={uiStore} />
     );
   };
 }

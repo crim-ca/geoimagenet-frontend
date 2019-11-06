@@ -4,15 +4,15 @@ import { observer } from 'mobx-react';
 import { withStyles, Paper } from '@material-ui/core';
 import { MapContainer } from '../Map/MapContainer';
 import { UserInteractions } from '../../domain/user-interactions';
-import { StoreActions } from '../../store/StoreActions';
+import { StoreActions } from '../../model/StoreActions';
 import { Sidebar } from '../Sidebar';
-import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
-import type { OpenLayersStore } from '../../store/OpenLayersStore';
+import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import type { OpenLayersStore } from '../../model/OpenLayersStore';
 import { Container as FiltersContainer } from '../Map/Filters/Container';
 import { Container as LabelsContainer } from '../Map/LabelsChoice/Container';
 import { ActiveFiltersBox } from '../Map/ActiveFiltersBox';
-import type { TaxonomyStore } from '../../store/TaxonomyStore';
-import { withTaxonomyStore } from '../../store/HOCs';
+import type { TaxonomyStore } from '../../model/TaxonomyStore';
+import { withTaxonomyStore } from '../../model/HOCs';
 
 const PlatformContainer = withStyles(({ values }) => ({
   root: {
@@ -35,11 +35,11 @@ const Coordinates = withStyles(({ values, zIndex }) => ({
 }))(Paper);
 
 type Props = {|
-  state_proxy: GeoImageNetStore,
-  store_actions: StoreActions,
-  taxonomy_store: TaxonomyStore,
-  user_interactions: UserInteractions,
-  open_layers_store: OpenLayersStore,
+  geoImageNetStore: GeoImageNetStore,
+  storeActions: StoreActions,
+  taxonomyStore: TaxonomyStore,
+  userInteractions: UserInteractions,
+  openLayersStore: OpenLayersStore,
 |};
 
 /**
@@ -54,21 +54,21 @@ class Platform extends Component<Props> {
     return (
       <PlatformContainer>
         <MapContainer
-          open_layers_store={this.props.open_layers_store}
-          state_proxy={this.props.state_proxy}
-          taxonomy_store={this.props.taxonomy_store}
-          store_actions={this.props.store_actions}
-          user_interactions={this.props.user_interactions} />
+          openLayersStore={this.props.openLayersStore}
+          geoImageNetStore={this.props.geoImageNetStore}
+          taxonomyStore={this.props.taxonomyStore}
+          storeActions={this.props.storeActions}
+          userInteractions={this.props.userInteractions} />
         <Coordinates id='coordinates' />
         <ActiveFiltersBox>
-          <LabelsContainer state_proxy={this.props.state_proxy} store_actions={this.props.store_actions} />
-          <FiltersContainer state_proxy={this.props.state_proxy} store_actions={this.props.store_actions} />
+          <LabelsContainer geoImageNetStore={this.props.geoImageNetStore} storeActions={this.props.storeActions} />
+          <FiltersContainer geoImageNetStore={this.props.geoImageNetStore} storeActions={this.props.storeActions} />
         </ActiveFiltersBox>
         <Sidebar
-          open_layers_store={this.props.open_layers_store}
-          state_proxy={this.props.state_proxy}
-          user_interactions={this.props.user_interactions}
-          store_actions={this.props.store_actions} />
+          openLayersStore={this.props.openLayersStore}
+          geoImageNetStore={this.props.geoImageNetStore}
+          userInteractions={this.props.userInteractions}
+          storeActions={this.props.storeActions} />
       </PlatformContainer>
     );
   }

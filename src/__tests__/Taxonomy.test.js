@@ -1,6 +1,6 @@
 //@flow
 
-import { StoreActions } from '../store/StoreActions';
+import { StoreActions } from '../model/StoreActions';
 import { UserInteractions } from '../domain';
 import { ANNOTATIONS_COUNTS_RESPONSE, TAXONOMY_CLASSES_RESPONSE, TAXONOMY_RESPONSE } from './api_responses';
 import { ANNOTATION } from '../constants';
@@ -21,7 +21,7 @@ const { window } = new JSDOM(`<!doctype html>`);
 const { i18n } = require('../utils');
 const { wait } = require('./utils');
 const { TaxonomyPresentation } = require('../components/Presentation/TaxonomyPresentation');
-const { state_proxy, taxonomy_store, data_queries } = require('../store/instance_cache');
+const { geoImageNetStore, taxonomyStore, dataQueries } = require('../model/instance_cache');
 
 function copyProps(src, target) {
   Object.defineProperties(target, {
@@ -46,13 +46,13 @@ copyProps(window, global);
 configure({ adapter: new Adapter() });
 type Props = {};
 
-data_queries.fetch_taxonomies = jest.fn(() => TAXONOMY_RESPONSE);
-data_queries.fetch_taxonomy_classes = jest.fn(() => TAXONOMY_CLASSES_RESPONSE);
-data_queries.flat_taxonomy_classes_counts = jest.fn(() => ANNOTATIONS_COUNTS_RESPONSE);
-data_queries.get_annotations_browser_page = jest.fn(() => ({}));
+dataQueries.fetch_taxonomies = jest.fn(() => TAXONOMY_RESPONSE);
+dataQueries.fetch_taxonomy_classes = jest.fn(() => TAXONOMY_CLASSES_RESPONSE);
+dataQueries.flat_taxonomy_classes_counts = jest.fn(() => ANNOTATIONS_COUNTS_RESPONSE);
+dataQueries.get_annotations_browser_page = jest.fn(() => ({}));
 
-const store_actions = new StoreActions(state_proxy, taxonomy_store);
-const user_interactions = new UserInteractions(store_actions, taxonomy_store, data_queries, i18n, state_proxy);
+const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
+const userInteractions = new UserInteractions(storeActions, taxonomyStore, dataQueries, i18n, geoImageNetStore);
 
 const refresh_source_callback_mock = () => {
 };
@@ -63,9 +63,9 @@ class TestableTaxonomyViewer extends React.Component<Props> {
     return (
       <MuiThemeProvider theme={theme}>
         <Viewer
-          state_proxy={state_proxy}
-          user_interactions={user_interactions}
-          store_actions={store_actions}
+          geoImageNetStore={geoImageNetStore}
+          userInteractions={userInteractions}
+          storeActions={storeActions}
           refresh_source_by_status={refresh_source_callback_mock} />
       </MuiThemeProvider>
     );
@@ -75,12 +75,12 @@ class TestableTaxonomyViewer extends React.Component<Props> {
 describe('Taxonomy viewer', () => {
 
   beforeEach(async () => {
-    await user_interactions.fetch_taxonomies();
-    await user_interactions.select_taxonomy(state_proxy.taxonomies[1]);
+    await userInteractions.fetch_taxonomies();
+    await userInteractions.select_taxonomy(geoImageNetStore.taxonomies[1]);
   });
 
   test('Default data has new annotations', () => {
-    expect(taxonomy_store.flat_taxonomy_classes[1].counts['new'])
+    expect(taxonomyStore.flat_taxonomy_classes[1].counts['new'])
       .toBeGreaterThan(0);
   });
 
@@ -105,20 +105,20 @@ describe('Taxonomy viewer', () => {
   test('Taxonomy viewer from presentation page shows taxonomy.', async () => {
     const wrapper = mount(
       <TaxonomyPresentation
-        state_proxy={state_proxy}
-        user_interactions={user_interactions} />
+        geoImageNetStore={geoImageNetStore}
+        userInteractions={userInteractions} />
     );
     expect(wrapper.find(PresentationListElement).length)
       .toBeGreaterThan(0);
   });
 
   test('When all filters are off there are no count chips', () => {
-    store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.NEW, false);
-    store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.RELEASED, false);
-    store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.VALIDATED, false);
-    store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.PRE_RELEASED, false);
-    store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.REJECTED, false);
-    store_actions.toggle_annotation_status_visibility(ANNOTATION.STATUS.DELETED, false);
+    storeActions.toggle_annotation_status_visibility(ANNOTATION.STATUS.NEW, false);
+    storeActions.toggle_annotation_status_visibility(ANNOTATION.STATUS.RELEASED, false);
+    storeActions.toggle_annotation_status_visibility(ANNOTATION.STATUS.VALIDATED, false);
+    storeActions.toggle_annotation_status_visibility(ANNOTATION.STATUS.PRE_RELEASED, false);
+    storeActions.toggle_annotation_status_visibility(ANNOTATION.STATUS.REJECTED, false);
+    storeActions.toggle_annotation_status_visibility(ANNOTATION.STATUS.DELETED, false);
     const wrapper = mount(<TestableTaxonomyViewer />);
     expect(wrapper.find(SpacedChip).length)
       .toEqual(0);

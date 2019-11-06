@@ -14,20 +14,20 @@ import { withTranslation } from '../../utils';
 
 type Props = {
   user: User,
-  user_interactions: UserInteractions,
+  userInteractions: UserInteractions,
   t: TFunction,
 };
 
 class Container extends React.Component<Props> {
 
   save_followed_user_callback = (form_data: FollowedUser): Promise<boolean> => {
-    const { t, user_interactions } = this.props;
+    const { t, userInteractions } = this.props;
     return new Promise((resolve) => {
-      user_interactions.save_followed_user(form_data)
+      userInteractions.save_followed_user(form_data)
         .then(
           async () => {
             NotificationManager.success(t('settings:save_followed_users_success'));
-            user_interactions.refresh_all_sources();
+            userInteractions.refresh_all_sources();
             resolve(true);
           },
           error => {
@@ -45,12 +45,12 @@ class Container extends React.Component<Props> {
   };
 
   remove_followed_user = async (id: number): Promise<void> => {
-    const { t, user_interactions } = this.props;
-    user_interactions.remove_followed_user(id)
+    const { t, userInteractions } = this.props;
+    userInteractions.remove_followed_user(id)
       .then(
         () => {
           NotificationManager.success(t('settings:remove_followed_user_success'));
-          user_interactions.refresh_all_sources();
+          userInteractions.refresh_all_sources();
         },
         error => {
           captureException(error);

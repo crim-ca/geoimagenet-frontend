@@ -8,9 +8,9 @@ import {
   Style,
   Text,
 } from 'ol/style';
-import { GeoImageNetStore } from '../../store/GeoImageNetStore';
 import { features as activatedFeatures } from '../../../features';
-import type { TaxonomyStore } from '../../store/TaxonomyStore';
+import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import type { TaxonomyStore } from '../../model/TaxonomyStore';
 
 type StyleFunction = (Feature, number) => Style | Style[];
 

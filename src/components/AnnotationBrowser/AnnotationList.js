@@ -7,7 +7,7 @@ import { TFunction } from 'react-i18next';
 import { compose } from 'react-apollo';
 
 import { withTranslation } from '../../utils';
-import { GeoImageNetStore } from '../../store/GeoImageNetStore';
+import { GeoImageNetStore } from '../../model/GeoImageNetStore';
 import { ANNOTATION_THUMBNAIL_SIZE } from '../../constants';
 
 import type { Annotation, AnnotationStatus, BoundingBox } from '../../Types';
@@ -15,7 +15,7 @@ import type { Annotation, AnnotationStatus, BoundingBox } from '../../Types';
 type Props = {
   annotations: Annotation[],
   geoserver_url: string,
-  state_proxy: GeoImageNetStore,
+  geoImageNetStore: GeoImageNetStore,
   fit_view_to_bounding_box: (BoundingBox, AnnotationStatus, number) => void,
   classes: {
     list: {},
@@ -64,7 +64,7 @@ class AnnotationList extends React.Component<Props> {
   };
 
   render() {
-    const { images_dictionary, nickname_map } = this.props.state_proxy;
+    const { images_dictionary, nickname_map } = this.props.geoImageNetStore;
     const { classes, t } = this.props;
     return (
       <div className={classes.list}>

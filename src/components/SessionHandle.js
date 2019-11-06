@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 import type { UserInteractions } from '../domain';
-import type { GeoImageNetStore } from '../store/GeoImageNetStore';
+import type { GeoImageNetStore } from '../model/GeoImageNetStore';
 
 const SessionHandlePaper = withStyles(theme => {
   const { values } = theme;
@@ -43,8 +43,8 @@ const ClickableSpan = withStyles(theme => {
 });
 
 type Props = {
-  state_proxy: GeoImageNetStore,
-  user_interactions: UserInteractions,
+  geoImageNetStore: GeoImageNetStore,
+  userInteractions: UserInteractions,
 };
 
 /**
@@ -59,7 +59,7 @@ class SessionHandle extends React.Component<Props> {
     /**
      * @type {User} logged_user
      */
-    const logged_user = this.props.state_proxy.logged_user;
+    const logged_user = this.props.geoImageNetStore.logged_user;
 
     if (!logged_user) {
       return <CircularProgress />;
@@ -67,11 +67,16 @@ class SessionHandle extends React.Component<Props> {
 
     return (
       <SessionHandlePaper>
-        <PresentationText>Hello {logged_user.user_name}.</PresentationText>
-        <FontAwesomeIcon icon={faUserCog} className='fa-2x' />
+        <PresentationText>
+          {`Hello ${logged_user.user_name}.`}
+        </PresentationText>
+        <FontAwesomeIcon icon={faUserCog} className="fa-2x" />
         <ClickableSpan>
-          <FontAwesomeIcon onClick={this.props.user_interactions.logout} icon={faSignOutAlt}
-                           className='fa-2x' />
+          <FontAwesomeIcon
+            onClick={this.props.userInteractions.logout}
+            icon={faSignOutAlt}
+            className="fa-2x"
+          />
         </ClickableSpan>
       </SessionHandlePaper>
     );

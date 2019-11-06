@@ -21,9 +21,9 @@ import {
   VALIDATIONS,
   WRITE,
 } from '../../constants';
-import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
-import { withUserInterfaceStore } from '../../store/HOCs';
-import type { UserInterfaceStore } from '../../store/UserInterfaceStore';
+import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import { withUserInterfaceStore } from '../../model/HOCs';
+import type { UserInterfaceStore } from '../../model/UserInterfaceStore';
 
 const modes = [];
 modes.push({
@@ -100,8 +100,8 @@ const ActionsContainer = withStyles((theme) => {
 });
 
 type Props = {
-  state_proxy: GeoImageNetStore,
-  ui_store: UserInterfaceStore,
+  geoImageNetStore: GeoImageNetStore,
+  uiStore: UserInterfaceStore,
 };
 
 /**
@@ -112,13 +112,13 @@ type Props = {
 @observer
 class Actions extends Component<Props> {
   setModeCallback = (mode: $Values<typeof MODE>) => () => {
-    const { ui_store: { setMode } } = this.props;
+    const { uiStore: { setMode } } = this.props;
     setMode(mode);
   };
 
   render() {
-    const { state_proxy, ui_store: { selectedMode } } = this.props;
-    const visibleModes = modes.filter((action) => state_proxy.acl.can(
+    const { geoImageNetStore, uiStore: { selectedMode } } = this.props;
+    const visibleModes = modes.filter((action) => geoImageNetStore.acl.can(
       action.permission_name,
       action.resource,
     ));

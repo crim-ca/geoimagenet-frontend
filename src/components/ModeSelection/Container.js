@@ -1,16 +1,16 @@
 // @flow strict
 import React from 'react';
 import { Actions } from './Actions';
-import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
+import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
 
 type Props = {
-  state_proxy: GeoImageNetStore,
+  geoImageNetStore: GeoImageNetStore,
 };
 
 const Container = (props: Props) => {
-  const { state_proxy } = props;
+  const { geoImageNetStore } = props;
   return (
-    <Actions state_proxy={state_proxy} />
+    <Actions geoImageNetStore={geoImageNetStore} />
   );
 };
 

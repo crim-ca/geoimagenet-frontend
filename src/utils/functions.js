@@ -1,8 +1,8 @@
 // @flow strict
 import type { BoundingBox } from '../Types';
 
-export function websocketify_uri(http_uri: string) {
-  return http_uri.replace(/^https?:\/\//i, 'ws://');
+export function websocketifyUri(httpUri: string) {
+  return httpUri.replace(/^https?:\/\//i, 'ws://');
 }
 
 export function get_center_of_bbox(bounding_box: BoundingBox) {

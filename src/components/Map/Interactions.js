@@ -12,13 +12,13 @@ import { MapBrowserEvent } from 'ol/events';
 import type Event from 'ol/events/Event';
 import type { Feature } from 'ol';
 import { ANNOTATION, CUSTOM_GEOIM_IMAGE_LAYER, MODE, VALID_OPENLAYERS_ANNOTATION_RESOLUTION } from '../../constants';
-import { GeoImageNetStore } from '../../store/GeoImageNetStore';
+import { GeoImageNetStore } from '../../model/GeoImageNetStore';
 import { UserInteractions } from '../../domain';
 import { ContextualMenuManager } from '../ContextualMenu/ContextualMenuManager';
-import type { OpenLayersStore } from '../../store/OpenLayersStore';
-import type { TaxonomyStore } from '../../store/TaxonomyStore';
+import type { OpenLayersStore } from '../../model/OpenLayersStore';
+import type { TaxonomyStore } from '../../model/TaxonomyStore';
 import { createStyleFunction } from './ol_dependant_utils';
-import { UserInterfaceStore } from '../../store/UserInterfaceStore';
+import { UserInterfaceStore } from '../../model/UserInterfaceStore';
 
 function selectableFeatures(features: Feature[]) {
   /**
@@ -85,7 +85,7 @@ const makeFeatureSelectionCondition = (
 export class Interactions {
   map: Map;
 
-  stateProxy: GeoImageNetStore;
+  geoImageNetStore: GeoImageNetStore;
 
   taxonomyStore: TaxonomyStore;
 
@@ -109,7 +109,7 @@ export class Interactions {
 
   constructor(
     map: Map,
-    stateProxy: GeoImageNetStore,
+    geoImageNetStore: GeoImageNetStore,
     userInteractions: UserInteractions,
     openLayersStore: OpenLayersStore,
     uiStore: UserInterfaceStore,
@@ -119,7 +119,7 @@ export class Interactions {
     annotationLayer: string,
   ) {
     this.map = map;
-    this.stateProxy = stateProxy;
+    this.geoImageNetStore = geoImageNetStore;
     this.userInteractions = userInteractions;
     this.openLayersStore = openLayersStore;
     this.uiStore = uiStore;
@@ -128,15 +128,15 @@ export class Interactions {
     this.WKTFormat = WKTFormat;
     this.annotationLayer = annotationLayer;
 
-    const layers = Object.keys(this.stateProxy.annotations_layers)
-      .map((key) => this.stateProxy.annotations_layers[key]);
+    const layers = Object.keys(this.geoImageNetStore.annotations_layers)
+      .map((key) => this.geoImageNetStore.annotations_layers[key]);
     /**
      * We can select layers from any and all layers, so we activate it on all layers by default.
      */
     this.select = new Select({
       condition: makeFeatureSelectionCondition(map, this.taxonomyStore, this.openLayersStore),
       layers,
-      style: createStyleFunction('white', this.stateProxy, this.taxonomyStore, true),
+      style: createStyleFunction('white', this.geoImageNetStore, this.taxonomyStore, true),
       features: this.openLayersStore.selected_features,
     });
     this.map.addInteraction(this.select);
@@ -145,13 +145,13 @@ export class Interactions {
      * Map interaction to modify existing annotations. To be disabled when zoomed out too far.
      */
     this.modify = new Modify({
-      features: this.stateProxy.annotations_collections[ANNOTATION.STATUS.NEW],
+      features: this.geoImageNetStore.annotations_collections[ANNOTATION.STATUS.NEW],
     });
     /**
      * Map interaction to create new annotations. To be disabled when zoomed out too far.
      */
     this.draw = new Draw({
-      source: this.stateProxy.annotations_sources[ANNOTATION.STATUS.NEW],
+      source: this.geoImageNetStore.annotations_sources[ANNOTATION.STATUS.NEW],
       type: 'Polygon',
       condition: this.draw_condition_callback,
     });
@@ -216,7 +216,7 @@ export class Interactions {
     }, options);
 
     if (!layers.length) {
-      if (this.stateProxy.current_annotation.initialized) {
+      if (this.geoImageNetStore.current_annotation.initialized) {
         NotificationManager.warning('All corners of an annotation polygon must be on an image.');
       } else {
         NotificationManager.warning('You must select an image to begin creating annotations.');

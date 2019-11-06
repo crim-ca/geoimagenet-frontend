@@ -9,11 +9,11 @@ import { AnnotationCounts } from './AnnotationCounts';
 import { withTranslation } from '../../utils';
 
 import type { UserInteractions } from '../../domain';
-import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
-import type { TaxonomyStore } from '../../store/TaxonomyStore';
+import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import type { TaxonomyStore } from '../../model/TaxonomyStore';
 import type { TFunction } from 'react-i18next';
 import { compose } from 'react-apollo';
-import { withTaxonomyStore } from '../../store/HOCs';
+import { withTaxonomyStore } from '../../model/HOCs';
 
 const StyledList = withStyles({
   padding: {
@@ -40,23 +40,23 @@ const StyledLabelAndCountSpan = withStyles({
 
 type Props = {
   taxonomy_class: TaxonomyClass,
-  state_proxy: GeoImageNetStore,
-  taxonomy_store: TaxonomyStore,
+  geoImageNetStore: GeoImageNetStore,
+  taxonomyStore: TaxonomyStore,
   selected: boolean,
-  user_interactions: UserInteractions,
+  userInteractions: UserInteractions,
   t: TFunction,
 };
 
 @observer
 class PresentationListElement extends Component<Props> {
   render() {
-    const { taxonomy_class, state_proxy, user_interactions, t, selected, taxonomy_store } = this.props;
+    const { taxonomy_class, geoImageNetStore, userInteractions, t, selected, taxonomyStore } = this.props;
     if (taxonomy_class === undefined) {
       return null;
     }
     const { children } = taxonomy_class;
     const make_toggle_callback = elem => () => {
-      taxonomy_store.toggle_taxonomy_class_tree_element(elem);
+      taxonomyStore.toggle_taxonomy_class_tree_element(elem);
     };
     const label_click_callback = children && children.length > 0
       ? make_toggle_callback(taxonomy_class)
@@ -72,15 +72,15 @@ class PresentationListElement extends Component<Props> {
             <AnnotationCounts
               name_en={taxonomy_class.name_en}
               counts={taxonomy_class.counts}
-              annotation_status_filters={state_proxy.annotation_status_filters} />
+              annotationStatusFilters={geoImageNetStore.annotationStatusFilters} />
           </StyledLabelAndCountSpan>
         </StyledListItem>
         {children
           ? (
             <Collapse in={taxonomy_class.opened}>
               <Tree taxonomy_classes={children}
-                    state_proxy={state_proxy}
-                    user_interactions={user_interactions}
+                    geoImageNetStore={geoImageNetStore}
+                    userInteractions={userInteractions}
                     t={t} />
             </Collapse>)
           : null

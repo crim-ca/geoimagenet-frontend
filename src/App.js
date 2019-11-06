@@ -14,9 +14,9 @@ import { theme, ThemedComponent } from './utils/react';
 import { PresentationContainer } from './components/Presentation/Presentation';
 import { NotificationContainer } from 'react-notifications';
 
-import type { OpenLayersStore } from './store/OpenLayersStore';
-import type { GeoImageNetStore } from './store/GeoImageNetStore';
-import type { StoreActions } from './store/StoreActions';
+import type { OpenLayersStore } from './model/OpenLayersStore';
+import type { GeoImageNetStore } from './model/GeoImageNetStore';
+import type { StoreActions } from './model/StoreActions';
 import type { UserInteractions } from './domain';
 import { CssBaseline, MuiThemeProvider } from '@material-ui/core';
 import { ApolloProvider } from 'react-apollo';
@@ -26,10 +26,10 @@ import { LoggedLayout } from './components/LoggedLayout';
 import { ApolloClient } from 'apollo-client';
 
 type Props = {
-  open_layers_store: OpenLayersStore,
-  state_proxy: GeoImageNetStore,
-  store_actions: StoreActions,
-  user_interactions: UserInteractions,
+  openLayersStore: OpenLayersStore,
+  geoImageNetStore: GeoImageNetStore,
+  storeActions: StoreActions,
+  userInteractions: UserInteractions,
   thelper_model_upload_instructions_url: string,
   contact_email: string,
   client: ApolloClient,
@@ -38,10 +38,10 @@ type Props = {
 class App extends React.Component<Props> {
   content() {
     const {
-      open_layers_store,
-      state_proxy,
-      store_actions,
-      user_interactions,
+      openLayersStore,
+      geoImageNetStore,
+      storeActions,
+      userInteractions,
       thelper_model_upload_instructions_url,
       contact_email,
     } = this.props;
@@ -49,14 +49,14 @@ class App extends React.Component<Props> {
       <Switch>
         <Route path='/platform'>
           <Platform
-            open_layers_store={open_layers_store}
-            state_proxy={state_proxy}
-            store_actions={store_actions}
-            user_interactions={user_interactions} />
+            openLayersStore={openLayersStore}
+            geoImageNetStore={geoImageNetStore}
+            storeActions={storeActions}
+            userInteractions={userInteractions} />
         </Route>
         <Route path='/datasets'>
           <Datasets
-            state_proxy={state_proxy} />
+            geoImageNetStore={geoImageNetStore} />
         </Route>
         <Route path='/models'>
           <Models model_upload_instructions_url={thelper_model_upload_instructions_url} />
@@ -66,9 +66,9 @@ class App extends React.Component<Props> {
           <ThemedComponent>
             <div style={{ height: '100%' }}>
               <PresentationContainer
-                state_proxy={state_proxy}
+                geoImageNetStore={geoImageNetStore}
                 contact_email={contact_email}
-                user_interactions={user_interactions} />
+                userInteractions={userInteractions} />
               <NotificationContainer />
             </div>
           </ThemedComponent>
@@ -80,10 +80,10 @@ class App extends React.Component<Props> {
   render() {
     const {
       client,
-      state_proxy,
-      user_interactions,
+      geoImageNetStore,
+      userInteractions,
     } = this.props;
-    const { acl: { authenticated } } = state_proxy;
+    const { acl: { authenticated } } = geoImageNetStore;
     return (
       <Router>
         <MuiThemeProvider theme={theme}>
@@ -91,7 +91,7 @@ class App extends React.Component<Props> {
           <ApolloProvider client={client}>
             {authenticated
               ? (
-                <LoggedLayout state_proxy={state_proxy} user_interactions={user_interactions}>
+                <LoggedLayout geoImageNetStore={geoImageNetStore} userInteractions={userInteractions}>
                   {this.content()}
                 </LoggedLayout>
               ) : this.content()

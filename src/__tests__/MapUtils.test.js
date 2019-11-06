@@ -4,19 +4,19 @@ import { action } from 'mobx';
 import { ANNOTATION } from '../constants';
 import { AnnotationFilter, User } from '../domain/entities';
 import { make_annotation_ownership_cql_filter } from '../components/Map/utils';
-import { GeoImageNetStore } from '../store/GeoImageNetStore';
-import { TaxonomyStore } from '../store/TaxonomyStore';
+import { GeoImageNetStore } from '../model/GeoImageNetStore';
+import { TaxonomyStore } from '../model/TaxonomyStore';
 
 describe('Annotation status filter cql generation', () => {
 
-  let state_proxy;
-  let taxonomy_store;
+  let geoImageNetStore;
+  let taxonomyStore;
 
   beforeEach(action(() => {
-    state_proxy = new GeoImageNetStore();
-    taxonomy_store = new TaxonomyStore(state_proxy);
+    geoImageNetStore = new GeoImageNetStore();
+    taxonomyStore = new TaxonomyStore(geoImageNetStore);
     action(() => {
-      Object.values(state_proxy.annotation_status_filters)
+      Object.values(geoImageNetStore.annotationStatusFilters)
         .forEach(status => {
           // $FlowFixMe
           status.activated = false;
@@ -26,22 +26,22 @@ describe('Annotation status filter cql generation', () => {
 
   test('Single filter', () => {
     action(() => {
-      state_proxy.annotation_status_filters[ANNOTATION.STATUS.NEW].activated = true;
+      geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].activated = true;
     })();
-    expect(taxonomy_store.activated_status_filters_cql)
+    expect(taxonomyStore.activated_status_filters_cql)
       .toBe(`status IN ('${ANNOTATION.STATUS.NEW}')`);
   });
   test('Multiple filters', () => {
     action(() => {
-      state_proxy.annotation_status_filters[ANNOTATION.STATUS.NEW].activated = true;
-      state_proxy.annotation_status_filters[ANNOTATION.STATUS.PRE_RELEASED].activated = true;
-      state_proxy.annotation_status_filters[ANNOTATION.STATUS.REJECTED].activated = true;
+      geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].activated = true;
+      geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.PRE_RELEASED].activated = true;
+      geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].activated = true;
     })();
-    expect(taxonomy_store.activated_status_filters_cql)
+    expect(taxonomyStore.activated_status_filters_cql)
       .toBe(`status IN ('${ANNOTATION.STATUS.NEW}','${ANNOTATION.STATUS.PRE_RELEASED}','${ANNOTATION.STATUS.REJECTED}')`);
   });
   test('No filters', () => {
-    expect(taxonomy_store.activated_status_filters_cql)
+    expect(taxonomyStore.activated_status_filters_cql)
       .toBe('true=false');
   });
 });

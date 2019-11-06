@@ -5,7 +5,7 @@ import { Link, withRouter } from 'react-router-dom';
 
 import { SessionHandle } from './SessionHandle.js';
 import type { UserInteractions } from '../domain';
-import type { GeoImageNetStore } from '../store/GeoImageNetStore';
+import type { GeoImageNetStore } from '../model/GeoImageNetStore';
 import { compose } from 'react-apollo';
 
 const MenuContainerDiv = withStyles(theme => {
@@ -38,8 +38,8 @@ const style = theme => ({
 });
 
 type Props = {
-  state_proxy: GeoImageNetStore,
-  user_interactions: UserInteractions,
+  geoImageNetStore: GeoImageNetStore,
+  userInteractions: UserInteractions,
   contact_email: string,
   location: { pathname: string },
   classes: { link: string, selected: '' },
@@ -84,7 +84,7 @@ class Menu extends Component<Props> {
   ];
 
   render() {
-    const { state_proxy, user_interactions, location, classes } = this.props;
+    const { geoImageNetStore, userInteractions, location, classes } = this.props;
     const current_url = location.pathname;
     return (
       <MenuContainerDiv>
@@ -92,7 +92,7 @@ class Menu extends Component<Props> {
                                            key={i}
                                            className={menu.href === current_url ? `${classes.link} ${classes.selected}` : classes.link}>{menu.title}</Link>
         )}
-        <SessionHandle state_proxy={state_proxy} user_interactions={user_interactions} />
+        <SessionHandle geoImageNetStore={geoImageNetStore} userInteractions={userInteractions} />
       </MenuContainerDiv>
     );
   }

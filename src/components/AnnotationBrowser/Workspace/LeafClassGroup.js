@@ -7,12 +7,12 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 import type { LeafClassGroup as LeafClassGroupEntity } from '../../../Types';
 import type { UserInteractions } from '../../../domain';
-import type { GeoImageNetStore } from '../../../store/GeoImageNetStore';
+import type { GeoImageNetStore } from '../../../model/GeoImageNetStore';
 
 type Props = {
   class_group: LeafClassGroupEntity,
-  user_interactions: UserInteractions,
-  state_proxy: GeoImageNetStore,
+  userInteractions: UserInteractions,
+  geoImageNetStore: GeoImageNetStore,
   classes: {
     root: {},
     span: {},
@@ -39,8 +39,8 @@ class LeafClassGroup extends React.Component<Props> {
       <div className={classes.root}>
         <span className={classes.span}>{class_group.path}</span>
         {class_group.children.map((taxonomy_class, j) => (
-          <PlatformListElement user_interactions={this.props.user_interactions}
-                               state_proxy={this.props.state_proxy}
+          <PlatformListElement userInteractions={this.props.userInteractions}
+                               geoImageNetStore={this.props.geoImageNetStore}
                                taxonomy_class={taxonomy_class}
                                key={j} />
         ))}

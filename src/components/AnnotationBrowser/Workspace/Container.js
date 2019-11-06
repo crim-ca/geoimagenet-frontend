@@ -5,20 +5,20 @@ import { observer } from 'mobx-react';
 import { Typography, Button } from '@material-ui/core';
 import { TFunction } from 'i18next';
 
-import { withTaxonomyStore } from '../../../store/HOCs';
+import { withTaxonomyStore } from '../../../model/HOCs';
 import { LeafClassGroup } from './LeafClassGroup';
 
-import type { TaxonomyStore } from '../../../store/TaxonomyStore';
-import type { GeoImageNetStore } from '../../../store/GeoImageNetStore';
+import type { TaxonomyStore } from '../../../model/TaxonomyStore';
+import type { GeoImageNetStore } from '../../../model/GeoImageNetStore';
 import type { UserInteractions } from '../../../domain';
 import type { LeafClassGroup as leafClassGroupEntity } from '../../../Types';
 import { compose } from 'react-apollo';
 import { withTranslation } from '../../../utils';
 
 type Props = {
-  taxonomy_store: TaxonomyStore,
-  state_proxy: GeoImageNetStore,
-  user_interactions: UserInteractions,
+  taxonomyStore: TaxonomyStore,
+  geoImageNetStore: GeoImageNetStore,
+  userInteractions: UserInteractions,
   t: TFunction
 };
 
@@ -33,7 +33,7 @@ class Container extends React.Component<Props> {
 
   render() {
     const { t } = this.props;
-    const { leaf_class_groups } = this.props.taxonomy_store;
+    const { leaf_class_groups } = this.props.taxonomyStore;
     return (
       <>
         <Typography variant='h5'>{t('workspace:title')}</Typography>
@@ -48,8 +48,8 @@ class Container extends React.Component<Props> {
             return (
               <LeafClassGroup key={i}
                               class_group={class_group}
-                              state_proxy={this.props.state_proxy}
-                              user_interactions={this.props.user_interactions} />
+                              geoImageNetStore={this.props.geoImageNetStore}
+                              userInteractions={this.props.userInteractions} />
             );
           })}
       </>

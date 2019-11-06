@@ -3,8 +3,8 @@ import React from 'react';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { JSDOM } from 'jsdom';
-import { GeoImageNetStore } from '../store/GeoImageNetStore';
-import { StoreActions } from '../store/StoreActions';
+import { GeoImageNetStore } from '../model/GeoImageNetStore';
+import { StoreActions } from '../model/StoreActions';
 import { DataQueries } from '../domain/data-queries';
 import { UserInteractions } from '../domain';
 import { Container as UserSettingsContainer } from '../components/UserSettings/Container';
@@ -12,7 +12,7 @@ import { FollowedUsersList } from '../components/UserSettings/FollowedUsersList'
 import { AddFollowedUserForm } from '../components/UserSettings/AddFollowedUserForm';
 import { i18n as i18next } from '../utils/i18n';
 import { User } from '../domain/entities';
-import { TaxonomyStore } from '../store/TaxonomyStore';
+import { TaxonomyStore } from '../model/TaxonomyStore';
 import { copyProps, wait } from './utils';
 
 const { window } = new JSDOM('<!doctype html>');
@@ -30,24 +30,24 @@ copyProps(window, global);
 
 configure({ adapter: new Adapter() });
 
-const data_queries = new DataQueries('', '', '', '');
+const dataQueries = new DataQueries('', '', '', '');
 const user_without_followed_users = new User('user_name', 'email', [], 1, []);
 // $FlowFixMe
-data_queries.save_followed_user = jest.fn(() => null);
+dataQueries.save_followed_user = jest.fn(() => null);
 // $FlowFixMe
-data_queries.remove_followed_user = jest.fn(() => null);
+dataQueries.remove_followed_user = jest.fn(() => null);
 
 describe('Followed users form', () => {
   test('We can log a user on', () => {
-    const state_proxy = new GeoImageNetStore();
-    const taxonomy_store = new TaxonomyStore(state_proxy);
-    const store_actions = new StoreActions(state_proxy, taxonomy_store);
-    store_actions.set_session_user(user_without_followed_users);
+    const geoImageNetStore = new GeoImageNetStore();
+    const taxonomyStore = new TaxonomyStore(geoImageNetStore);
+    const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
+    storeActions.set_session_user(user_without_followed_users);
     /**
      * $FlowFixMe
      * We are in a controlled situation, the logged user is not null
      */
-    expect(state_proxy.logged_user.user_name)
+    expect(geoImageNetStore.logged_user.user_name)
       .toBe('user_name');
   });
 
@@ -57,11 +57,11 @@ describe('Followed users form', () => {
    */
   test('Add followed user form validates input, adds and removes user', async () => {
     const store = new GeoImageNetStore();
-    const taxonomy_store = new TaxonomyStore(store);
-    const store_actions = new StoreActions(store, taxonomy_store);
-    const user_interactions = new UserInteractions(store_actions, taxonomy_store, data_queries, i18next, store);
-    store_actions.set_session_user(user_without_followed_users);
-    const wrapper = mount(<UserSettingsContainer user={store.logged_user} user_interactions={user_interactions} />);
+    const taxonomyStore = new TaxonomyStore(store);
+    const storeActions = new StoreActions(store, taxonomyStore);
+    const userInteractions = new UserInteractions(storeActions, taxonomyStore, dataQueries, i18next, store);
+    storeActions.set_session_user(user_without_followed_users);
+    const wrapper = mount(<UserSettingsContainer user={store.logged_user} userInteractions={userInteractions} />);
     expect(wrapper.find(FollowedUsersList))
       .toHaveLength(1);
     let id_input = wrapper.find(AddFollowedUserForm)

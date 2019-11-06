@@ -7,7 +7,7 @@ import { DatasetsTable } from './DatasetsTable';
 import { DatasetCreationJobsTable } from './DatasetCreationJobsTable';
 import { DATASETS, WRITE } from '../../constants.js';
 
-import type { GeoImageNetStore } from '../../store/GeoImageNetStore';
+import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
 
 const Layout = withStyles(({ values }) => ({
   grid: {
@@ -27,14 +27,14 @@ const Layout = withStyles(({ values }) => ({
 });
 
 type Props = {
-  state_proxy: GeoImageNetStore,
+  geoImageNetStore: GeoImageNetStore,
 };
 
 @observer
 class Datasets extends React.Component<Props> {
 
   render() {
-    const { acl } = this.props.state_proxy;
+    const { acl } = this.props.geoImageNetStore;
     return (
       <Layout>
         <DatasetsTable ml_endpoint={ML_ENDPOINT} />

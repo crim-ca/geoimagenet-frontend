@@ -4,7 +4,7 @@ import type { Collection } from 'ol';
 import type { Source } from 'ol/source';
 import type { Vector } from 'ol/layer';
 import { observable, action } from 'mobx';
-import { TaxonomyClass } from '../domain/entities';
+import { TaxonomyClass } from './TaxonomyClass';
 import { ANNOTATION, MODE } from '../constants';
 import type { AccessControlList } from '../domain/access-control-list';
 import type { SatelliteImage, Taxonomy, User } from '../domain/entities';
@@ -55,10 +55,10 @@ export class StoreActions {
    */
   @action.bound
   toggle_annotation_status_visibility(annotationStatusText: AnnotationStatus, overrideActivated: boolean | null = null) {
-    if (!(annotationStatusText in this.geoImageNetStore.annotation_status_filters)) {
+    if (!(annotationStatusText in this.geoImageNetStore.annotationStatusFilters)) {
       throw new TypeError(`Invalid annotation status: [${annotationStatusText}]`);
     }
-    const annotationFilter = this.geoImageNetStore.annotation_status_filters[annotationStatusText];
+    const annotationFilter = this.geoImageNetStore.annotationStatusFilters[annotationStatusText];
     if (overrideActivated !== null) {
       annotationFilter.activated = overrideActivated;
     } else {
@@ -72,15 +72,15 @@ export class StoreActions {
    * simply filter the annotations in said layer, based on a user id condition.
    */
   @action.bound
-  toggle_annotation_ownership_filter(annotation_ownership: string, override_activated: boolean | null = null) {
-    if (!(annotation_ownership in this.geoImageNetStore.annotation_ownership_filters)) {
-      throw new TypeError(`Invalid annotation ownership: [${annotation_ownership}]`);
+  toggle_annotation_ownership_filter(annotationOwnership: string, overrideActivated: boolean | null = null) {
+    if (!(annotationOwnership in this.geoImageNetStore.annotationOwnershipFilters)) {
+      throw new TypeError(`Invalid annotation ownership: [${annotationOwnership}]`);
     }
-    const annotation_filter = this.geoImageNetStore.annotation_ownership_filters[annotation_ownership];
-    if (override_activated !== null) {
-      annotation_filter.activated = override_activated;
+    const annotationFilter = this.geoImageNetStore.annotationOwnershipFilters[annotationOwnership];
+    if (overrideActivated !== null) {
+      annotationFilter.activated = overrideActivated;
     } else {
-      annotation_filter.activated = !annotation_filter.activated;
+      annotationFilter.activated = !annotationFilter.activated;
     }
   }
 
@@ -252,7 +252,7 @@ export class StoreActions {
    */
   @action.bound
   set_annotation_layer_visibility(key: string, visible: boolean) {
-    this.geoImageNetStore.annotation_status_filters[key].activated = visible;
+    this.geoImageNetStore.annotationStatusFilters[key].activated = visible;
   }
 
   @action.bound
