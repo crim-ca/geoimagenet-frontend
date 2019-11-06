@@ -206,8 +206,6 @@ export class MapManager {
     });
 
     this.map.addControl(new ScaleLine());
-    this.map.getView()
-      .on('change:resolution', debounced(200, this.receive_resolution_change_event));
 
     if (document.body === null) {
       throw new Error('We need a DOM document to execute this code.');
