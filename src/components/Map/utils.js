@@ -1,6 +1,6 @@
 // @flow strict
 
-import { AnnotationFilter, User } from '../../domain/entities';
+import { AnnotationFilter, User } from '../../model/entities';
 import { ANNOTATION } from '../../constants';
 
 export function make_annotation_ownership_cql_filter(ownership_filters: AnnotationFilter[], logged_user: User | null): string {

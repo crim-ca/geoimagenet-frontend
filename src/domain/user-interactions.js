@@ -2,7 +2,7 @@
 
 import { DialogManager } from '../components/Dialogs';
 import { action } from 'mobx';
-import { InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionRepository, User } from './entities.js';
+import { InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionRepository, User } from '../model/entities.js';
 import { AccessControlList } from './access-control-list.js';
 import { NotificationManager } from 'react-notifications';
 
@@ -15,7 +15,7 @@ import type { DataQueries } from './data-queries';
 import type { StoreActions } from '../model/StoreActions';
 import type { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 import type { Feature, ModifyEvent } from 'ol';
-import type { SatelliteImage, Taxonomy } from './entities';
+import type { SatelliteImage, Taxonomy } from '../model/entities';
 import type { Map } from 'ol/Map';
 import type { Event } from 'ol/events';
 import type { GeoJSON, WKT } from 'ol/format';

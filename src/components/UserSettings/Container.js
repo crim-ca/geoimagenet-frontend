@@ -1,7 +1,7 @@
 // @flow strict
 
 import React from 'react';
-import type { User } from '../../domain/entities';
+import type { User } from '../../model/entities';
 import { UserInformation } from './UserInformation';
 import { AddFollowedUserForm } from './AddFollowedUserForm';
 import { FollowedUsersList } from './FollowedUsersList';

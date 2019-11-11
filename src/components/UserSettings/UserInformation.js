@@ -1,7 +1,7 @@
 // @flow strict
 
 import React from 'react';
-import { User } from '../../domain/entities';
+import { User } from '../../model/entities';
 import { withTranslation } from '../../utils';
 import { TFunction } from 'react-i18next';
 

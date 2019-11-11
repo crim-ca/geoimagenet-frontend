@@ -1,7 +1,7 @@
 // @flow strict
 
 import { make_http_request, post_json, put_json } from '../utils/http.js';
-import { SatelliteImage } from './entities';
+import { SatelliteImage } from '../model/entities';
 import type { FollowedUser, MagpieMergedSessionInformation } from '../Types';
 import Sentry from '@sentry/browser';
 import { i18n } from '../utils';

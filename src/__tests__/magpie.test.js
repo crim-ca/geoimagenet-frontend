@@ -1,4 +1,4 @@
-const { Permission, ResourcePermissionRepository } = require('../domain/entities.js');
+const { Permission, ResourcePermissionRepository } = require('../model/entities.js');
 const { AccessControlList } = require('../domain/access-control-list.js');
 
 test('Creates Permission from hardcoded data structure.', () => {

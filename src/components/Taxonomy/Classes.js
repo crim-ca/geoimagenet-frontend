@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { PlatformListElement } from './PlatformListElement.js';
-import type { TaxonomyClass } from '../../domain/entities';
+import type { TaxonomyClass } from '../../model/entities';
 import type { UserInteractions } from '../../domain';
 import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import withStyles from '@material-ui/core/styles/withStyles';

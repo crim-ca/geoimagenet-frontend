@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { Checkbox } from './Checkbox';
 import { ReleaseButton } from './ReleaseButton';
-import { TaxonomyClass } from '../../domain/entities';
+import { TaxonomyClass } from '../../model/entities';
 
 type Props = {
   taxonomy_class: TaxonomyClass,

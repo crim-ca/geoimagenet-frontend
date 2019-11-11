@@ -1,6 +1,6 @@
 // @flow strict
 
-import type { TaxonomyClass } from './domain/entities';
+import type { TaxonomyClass } from './model/entities';
 
 export type TaxonomyClassFromAPI = {
   children: TaxonomyClassFromAPI[],

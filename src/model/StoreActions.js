@@ -7,7 +7,7 @@ import { observable, action } from 'mobx';
 import { TaxonomyClass } from './TaxonomyClass';
 import { ANNOTATION, MODE } from '../constants';
 import type { AccessControlList } from '../domain/access-control-list';
-import type { SatelliteImage, Taxonomy, User } from '../domain/entities';
+import type { SatelliteImage, Taxonomy, User } from './entities';
 import type { GeoImageNetStore } from './store/GeoImageNetStore';
 import type { TaxonomyClassFromAPI, AnnotationStatus, FollowedUser } from '../Types';
 import type { TaxonomyStore } from './store/TaxonomyStore';

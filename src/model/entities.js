@@ -1,5 +1,4 @@
 // @flow strict
-
 import type { FollowedUser, MagpieResourceData, MagpieResourceDictionary } from '../Types';
 
 export class AnnotationCounts {

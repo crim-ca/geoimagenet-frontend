@@ -14,7 +14,7 @@ import {
   SatelliteImage,
   Taxonomy,
   User,
-} from '../../domain/entities';
+} from '../entities';
 import type { AnnotationOwnershipFilters, AnnotationStatusFilters, FollowedUser } from '../../Types';
 import { ANNOTATION, MODE } from '../../constants';
 import { AccessControlList } from '../../domain/access-control-list';

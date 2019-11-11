@@ -2,7 +2,7 @@
 import { action, observable } from 'mobx';
 import { ANNOTATION, MODE } from '../../constants';
 import type { AnnotationOwnershipFilters, AnnotationStatusFilters } from '../../Types';
-import { AnnotationFilter } from '../../domain/entities';
+import { AnnotationFilter } from '../entities';
 
 const { VISUALIZATION } = MODE;
 

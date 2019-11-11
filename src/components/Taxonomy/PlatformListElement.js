@@ -14,7 +14,7 @@ import { AnnotationCounts } from './AnnotationCounts';
 import { TaxonomyClassActions } from './TaxonomyClassActions';
 import { Classes } from './Classes';
 import { ANNOTATION } from '../../constants';
-import type { TaxonomyClass } from '../../domain/entities';
+import type { TaxonomyClass } from '../../model/entities';
 import type { UserInteractions } from '../../domain';
 import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import type { TaxonomyStore } from '../../model/store/TaxonomyStore';

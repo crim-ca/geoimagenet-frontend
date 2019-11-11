@@ -237,7 +237,7 @@ export class MapManager {
      * We need to show the layers that are activated in the filters, and refresh them when we change the visible classes selection
      */
     autorun(() => {
-      const { annotationStatusFilters, annotationOwnershipFilters } = this.geoImageNetStore;
+      const { annotationStatusFilters, annotationOwnershipFilters } = this.uiStore;
 
       this.CQLForTaxonomyClassId = this.taxonomyStore.taxonomy_class_id_selection_cql;
 

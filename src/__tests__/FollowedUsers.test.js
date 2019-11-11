@@ -11,7 +11,7 @@ import { Container as UserSettingsContainer } from '../components/UserSettings/C
 import { FollowedUsersList } from '../components/UserSettings/FollowedUsersList';
 import { AddFollowedUserForm } from '../components/UserSettings/AddFollowedUserForm';
 import { i18n as i18next } from '../utils/i18n';
-import { User } from '../domain/entities';
+import { User } from '../model/entities';
 import { TaxonomyStore } from '../model/store/TaxonomyStore';
 import { copyProps, wait } from './utils';
 import { UserInterfaceStore } from '../model/store/UserInterfaceStore';

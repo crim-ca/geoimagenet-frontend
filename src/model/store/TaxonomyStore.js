@@ -2,7 +2,7 @@
 import { action, computed, observable } from 'mobx';
 import { i18n } from '../../utils/index';
 import type { LeafClassGroup } from '../../Types';
-import type { TaxonomyClass } from '../../domain/entities';
+import type { TaxonomyClass } from '../entities';
 import type { UserInterfaceStore } from './UserInterfaceStore';
 
 export class TaxonomyStore {

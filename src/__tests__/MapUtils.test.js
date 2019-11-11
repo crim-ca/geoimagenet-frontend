@@ -2,7 +2,7 @@
 
 import { action } from 'mobx';
 import { ANNOTATION } from '../constants';
-import { AnnotationFilter, User } from '../domain/entities';
+import { AnnotationFilter, User } from '../model/entities';
 import { make_annotation_ownership_cql_filter } from '../components/Map/utils';
 import { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 import { TaxonomyStore } from '../model/store/TaxonomyStore';
