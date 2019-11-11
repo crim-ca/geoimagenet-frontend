@@ -270,17 +270,18 @@ export class MapManager {
     this.map.addEventListener('click', this.receiveMapViewportClickEvent);
 
     autorun(() => {
-      const { show_labels, show_annotators_identifiers, annotationStatusFilters } = this.geoImageNetStore;
+      const { showLabels, show_annotators_identifiers } = this.geoImageNetStore;
+      const { annotationStatusFilters } = this.uiStore;
       /**
-       * This clunky switch is used so that MobX registers the access to the show_labels property.
+       * This clunky switch is used so that MobX registers the access to the showLabels property.
        * we assign noise only for mobx to rerun this function as well.
        *
        * this is horrible, there must be a way to change the style globally without reloading everything, I can't believe it's the only way
        *
-       * We could directly refresh the layers without regard to the actual value in show_labels, the style function picks it up, but that would mean even more useless api calls
+       * We could directly refresh the layers without regard to the actual value in showLabels, the style function picks it up, but that would mean even more useless api calls
        */
       const noise = show_annotators_identifiers;
-      switch (show_labels) {
+      switch (showLabels) {
         default:
           Object.keys(annotationStatusFilters)
             .forEach((k) => {

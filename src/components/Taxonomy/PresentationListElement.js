@@ -1,25 +1,29 @@
 // @flow strict
-
 import { observer } from 'mobx-react';
-import React, { Component } from 'react';
-import { Collapse, List, ListItem, withStyles } from '@material-ui/core';
-import { Tree } from './Tree';
-import { TaxonomyClass } from '../../domain/entities';
+import React from 'react';
+import {
+  Collapse,
+  List,
+  ListItem,
+  withStyles,
+} from '@material-ui/core';
+import type { TFunction } from 'react-i18next';
+import { compose } from 'react-apollo';
+import { TaxonomyClass } from '../../model/TaxonomyClass';
 import { AnnotationCounts } from './AnnotationCounts';
 import { withTranslation } from '../../utils';
-
 import type { UserInteractions } from '../../domain';
 import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
-import type { TFunction } from 'react-i18next';
-import { compose } from 'react-apollo';
-import { withTaxonomyStore } from '../../model/HOCs';
+import { Tree } from './Tree';
+import { withTaxonomyStore, withUserInterfaceStore } from '../../model/HOCs';
+import type { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
 
 const StyledList = withStyles({
   padding: {
     paddingTop: 0,
     paddingBottom: 0,
-  }
+  },
 })(List);
 const StyledListItem = withStyles({
   root: {
@@ -32,8 +36,8 @@ const StyledLabelAndCountSpan = withStyles({
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'row',
-  }
-})(props => {
+  },
+})((props) => {
   const { classes, children } = props;
   return <span className={classes.root}>{children}</span>;
 });
@@ -44,47 +48,61 @@ type Props = {
   taxonomyStore: TaxonomyStore,
   selected: boolean,
   userInteractions: UserInteractions,
+  uiStore: UserInterfaceStore,
   t: TFunction,
 };
 
 @observer
-class PresentationListElement extends Component<Props> {
+class PresentationListElement extends React.Component<Props> {
+  toggleListElementCallback = (elem) => () => {
+    const { taxonomyStore, taxonomy_class: { children } } = this.props;
+    if (children && children.length > 0) {
+      taxonomyStore.toggle_taxonomy_class_tree_element(elem);
+    }
+  };
+
   render() {
-    const { taxonomy_class, geoImageNetStore, userInteractions, t, selected, taxonomyStore } = this.props;
+    const {
+      taxonomy_class,
+      geoImageNetStore,
+      userInteractions,
+      t,
+      selected,
+      uiStore,
+    } = this.props;
     if (taxonomy_class === undefined) {
       return null;
     }
     const { children } = taxonomy_class;
-    const make_toggle_callback = elem => () => {
-      taxonomyStore.toggle_taxonomy_class_tree_element(elem);
-    };
-    const label_click_callback = children && children.length > 0
-      ? make_toggle_callback(taxonomy_class)
-      : null;
     return (
       <StyledList>
-        <StyledListItem className='taxonomy_class_list_element'
-                        onClick={label_click_callback}
-                        selected={selected}
-                        button>
+        <StyledListItem
+          className="taxonomy_class_list_element"
+          onClick={this.toggleListElementCallback(taxonomy_class)}
+          selected={selected}
+          button
+        >
           <StyledLabelAndCountSpan>
             <span>{t(`taxonomy_classes:${taxonomy_class.id}`)}</span>
             <AnnotationCounts
               name_en={taxonomy_class.name_en}
               counts={taxonomy_class.counts}
-              annotationStatusFilters={geoImageNetStore.annotationStatusFilters} />
+              annotationStatusFilters={uiStore.annotationStatusFilters}
+            />
           </StyledLabelAndCountSpan>
         </StyledListItem>
         {children
           ? (
             <Collapse in={taxonomy_class.opened}>
-              <Tree taxonomy_classes={children}
-                    geoImageNetStore={geoImageNetStore}
-                    userInteractions={userInteractions}
-                    t={t} />
-            </Collapse>)
-          : null
-        }
+              <Tree
+                taxonomy_classes={children}
+                geoImageNetStore={geoImageNetStore}
+                userInteractions={userInteractions}
+                t={t}
+              />
+            </Collapse>
+          )
+          : null}
       </StyledList>
     );
   }
@@ -93,5 +111,6 @@ class PresentationListElement extends Component<Props> {
 const component = compose(
   withTranslation(),
   withTaxonomyStore,
+  withUserInterfaceStore,
 )(PresentationListElement);
 export { component as PresentationListElement };

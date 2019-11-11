@@ -141,23 +141,27 @@ describe('User interface store', () => {
   });
 
   test('Delete mode specific filters', () => {
+    /*
+    when interacting with the annotation browser in deletion mode, we only want to see the new annotations,
+    because new annotations are the only ones that can be deleted.
+     */
     uiStore.setMode(MODE.DELETION);
-    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].activated)
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].activated)
       .toBe(true);
-    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.RELEASED].activated)
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.RELEASED].activated)
       .toBe(false);
-    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.VALIDATED].activated)
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.VALIDATED].activated)
       .toBe(false);
-    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].activated)
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].activated)
       .toBe(false);
-    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.DELETED].activated)
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.DELETED].activated)
       .toBe(false);
   });
 });
 
 test('builds flat taxonomy_classes list', () => {
-  const taxonomyStore = new TaxonomyStore(geoImageNetStore);
-  const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
+  const taxonomyStore = new TaxonomyStore(uiStore);
+  const storeActions = new StoreActions(geoImageNetStore, taxonomyStore, uiStore);
   storeActions.build_taxonomy_classes_structures(classesFromApi);
   expect(taxonomyStore.flat_taxonomy_classes[1].children[0].name_fr)
     .toEqual('children name');
@@ -166,8 +170,8 @@ test('builds flat taxonomy_classes list', () => {
 });
 
 test('accessing flat classes changes nested ones', () => {
-  const taxonomyStore = new TaxonomyStore(geoImageNetStore);
-  const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
+  const taxonomyStore = new TaxonomyStore(uiStore);
+  const storeActions = new StoreActions(geoImageNetStore, taxonomyStore, uiStore);
   storeActions.build_taxonomy_classes_structures(classesFromApi);
   action(() => {
     taxonomyStore.flat_taxonomy_classes[1].children[0].name = 'test_name';
@@ -178,8 +182,8 @@ test('accessing flat classes changes nested ones', () => {
 
 describe('Annotation counts', () => {
   test('changing annotation counts actually changes annotation counts', () => {
-    const taxonomyStore = new TaxonomyStore(geoImageNetStore);
-    const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
+    const taxonomyStore = new TaxonomyStore(uiStore);
+    const storeActions = new StoreActions(geoImageNetStore, taxonomyStore, uiStore);
 
     expect(taxonomyStore.flat_taxonomy_classes[1])
       .toBe(undefined);
@@ -219,8 +223,8 @@ describe('Annotation counts', () => {
 
 describe('Annotation visibility toggling.', () => {
   test('toggle_annotation_status_visibility refuses incorrect input.', () => {
-    const taxonomyStore = new TaxonomyStore(geoImageNetStore);
-    const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
+    const taxonomyStore = new TaxonomyStore(uiStore);
+    const storeActions = new StoreActions(geoImageNetStore, taxonomyStore, uiStore);
     expect(() => {
       storeActions.toggle_annotation_status_visibility('not_a_real_status');
     })
@@ -228,13 +232,13 @@ describe('Annotation visibility toggling.', () => {
   });
 
   test('toggle_annotation_status_visibility toggles existent annotation status visibility', () => {
-    const taxonomyStore = new TaxonomyStore(geoImageNetStore);
-    const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
+    const taxonomyStore = new TaxonomyStore(uiStore);
+    const storeActions = new StoreActions(geoImageNetStore, taxonomyStore, uiStore);
     const status = 'new';
-    expect(geoImageNetStore.annotationStatusFilters[status].activated)
+    expect(uiStore.annotationStatusFilters[status].activated)
       .toBe(true);
     storeActions.toggle_annotation_status_visibility(status);
-    expect(geoImageNetStore.annotationStatusFilters[status].activated)
+    expect(uiStore.annotationStatusFilters[status].activated)
       .toBe(false);
   });
 });

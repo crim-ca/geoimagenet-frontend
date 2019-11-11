@@ -1,14 +1,23 @@
 // @flow strict
-import { ANNOTATION, MODE } from '../../constants.js';
-import { AccessControlList } from '../../domain/access-control-list.js';
-import { AnnotationFilter, ResourcePermissionRepository } from '../../domain/entities.js';
-import { observable, computed, action } from 'mobx';
-import { SatelliteImage, Taxonomy, User } from '../../domain/entities';
-import typeof VectorLayer from 'ol/layer/Vector.js';
-import typeof VectorSource from 'ol/source/Vector';
 import { typeof Collection } from 'ol';
+import {
+  observable,
+  computed,
+  action,
+  configure,
+} from 'mobx';
+import typeof VectorLayer from 'ol/layer/Vector';
+import typeof VectorSource from 'ol/source/Vector';
+import {
+  AnnotationFilter,
+  ResourcePermissionRepository,
+  SatelliteImage,
+  Taxonomy,
+  User,
+} from '../../domain/entities';
 import type { AnnotationOwnershipFilters, AnnotationStatusFilters, FollowedUser } from '../../Types';
-import { configure } from 'mobx';
+import { ANNOTATION, MODE } from '../../constants';
+import { AccessControlList } from '../../domain/access-control-list';
 
 /**
  * this is relatively important in the sense that it constraints us to mutate the store only in actions
@@ -21,14 +30,15 @@ configure({
 /**
  * The application state must, at each given time, fully represent what a user is seeing.
  * This is the central piece of information of the application, the single most important object that defines its state.
- * All rendering components must tie to its properties, and rerender themselves according to it. We use MobX ties to react
- * through the observer construct (the @observer) decorator present on react components.
+ * All rendering components must tie to its properties, and rerender themselves according to it.
+ * We use MobX ties to react through the observer construct (the @observer) decorator present on react components.
  */
 export class GeoImageNetStore {
   /**
-   * Labels can be overwhelming when there are too much objects on the screen, this property should allow user to show them or not.
+   * Labels can be overwhelming when there are too much objects on the screen,
+   * this property should allow user to show them or not.
    */
-  @observable show_labels: boolean = true;
+  @observable showLabels: boolean = true;
 
   @observable show_annotators_identifiers: boolean = true;
 
@@ -38,25 +48,6 @@ export class GeoImageNetStore {
       return;
     }
     this.show_annotators_identifiers = !this.show_annotators_identifiers;
-  };
-
-  /**
-   * The visible annotations types should federate every part of the platform that manages annotations, from the counts
-   * in the classes hierarchies to the visible annotations on the map, and every future annotations interactions.
-   */
-  @observable annotationStatusFilters: AnnotationStatusFilters = {
-    [ANNOTATION.STATUS.NEW]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.NEW, true)),
-    [ANNOTATION.STATUS.PRE_RELEASED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.PRE_RELEASED, true)),
-    [ANNOTATION.STATUS.RELEASED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.RELEASED, true)),
-    [ANNOTATION.STATUS.VALIDATED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.VALIDATED, true)),
-    [ANNOTATION.STATUS.REJECTED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.REJECTED, true)),
-    [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.DELETED, true)),
-  };
-
-  @observable annotationOwnershipFilters: AnnotationOwnershipFilters = {
-    [ANNOTATION.OWNERSHIP.OTHERS]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.OTHERS, true)),
-    [ANNOTATION.OWNERSHIP.MINE]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.MINE, true)),
-    [ANNOTATION.OWNERSHIP.FOLLOWED_USERS]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.FOLLOWED_USERS, true)),
   };
 
   /**

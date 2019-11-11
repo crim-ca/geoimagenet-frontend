@@ -19,7 +19,7 @@ import './img/background.hack.jpg';
 
 import { LoadingSplashCircle } from './components/LoadingSplashCircle';
 import { OpenLayersStore } from './model/store/OpenLayersStore';
-import { geoImageNetStore, taxonomyStore } from './model/instance_cache';
+import { geoImageNetStore, taxonomyStore, uiStore } from './model/instance_cache';
 
 import { App } from './App';
 import type { TaxonomyStore } from './model/store/TaxonomyStore';
@@ -59,7 +59,7 @@ export class PlatformLoader {
     this.geoImageNetStore = geoImageNetStore;
     this.taxonomyStore = taxonomyStore;
     this.openLayersStore = new OpenLayersStore(new Collection());
-    this.storeActions = new StoreActions(this.geoImageNetStore, this.taxonomyStore);
+    this.storeActions = new StoreActions(this.geoImageNetStore, this.taxonomyStore, uiStore);
     this.dataQueries = new DataQueries(geoimagenet_api_endpoint, geoserver_endpoint, magpie_endpoint, ml_endpoint);
     this.userInteractions = new UserInteractions(this.storeActions, this.taxonomyStore, this.dataQueries, i18next_instance, this.geoImageNetStore);
   }

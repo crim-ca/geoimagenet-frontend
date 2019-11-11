@@ -21,7 +21,7 @@ const { window } = new JSDOM(`<!doctype html>`);
 const { i18n } = require('../utils');
 const { wait } = require('./utils');
 const { TaxonomyPresentation } = require('../components/Presentation/TaxonomyPresentation');
-const { geoImageNetStore, taxonomyStore, dataQueries } = require('../model/instance_cache');
+const { geoImageNetStore, taxonomyStore, uiStore, dataQueries } = require('../model/instance_cache');
 
 function copyProps(src, target) {
   Object.defineProperties(target, {
@@ -51,7 +51,7 @@ dataQueries.fetch_taxonomy_classes = jest.fn(() => TAXONOMY_CLASSES_RESPONSE);
 dataQueries.flat_taxonomy_classes_counts = jest.fn(() => ANNOTATIONS_COUNTS_RESPONSE);
 dataQueries.get_annotations_browser_page = jest.fn(() => ({}));
 
-const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
+const storeActions = new StoreActions(geoImageNetStore, taxonomyStore, uiStore);
 const userInteractions = new UserInteractions(storeActions, taxonomyStore, dataQueries, i18n, geoImageNetStore);
 
 const refresh_source_callback_mock = () => {

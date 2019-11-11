@@ -55,7 +55,7 @@ export function createStyleFunction(
      * While one might be tempted to move these variable access outside of the callback,
      * we must keep this code *inside* the callback otherwise the list is not updated in accordance to the changes to the followed users
      */
-    const { show_labels, show_annotators_identifiers, nickname_map } = geoImageNetStore;
+    const { showLabels, show_annotators_identifiers, nickname_map } = geoImageNetStore;
     if (!feature.get('taxonomy_class_id')) {
       return new Style();
     }
@@ -72,7 +72,7 @@ export function createStyleFunction(
     const identifier = nickname_map.hasOwnProperty(annotatorId) ? nickname_map[annotatorId] : annotatorId;
 
     const bits = [];
-    if (show_labels) {
+    if (showLabels) {
       bits.push(label);
     }
     if (show_annotators_identifiers) {
@@ -108,7 +108,7 @@ export function createStyleFunction(
           }),
           text: resolution > 100 ? '' : '?',
           overflow: true,
-          offsetY: show_labels ? 36 : 0,
+          offsetY: showLabels ? 36 : 0,
         }),
       }));
     }

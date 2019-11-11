@@ -6,18 +6,20 @@ import { AnnotationFilter, User } from '../domain/entities';
 import { make_annotation_ownership_cql_filter } from '../components/Map/utils';
 import { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 import { TaxonomyStore } from '../model/store/TaxonomyStore';
+import { UserInterfaceStore } from '../model/store/UserInterfaceStore';
 
 describe('Annotation status filter cql generation', () => {
-
   let geoImageNetStore;
   let taxonomyStore;
+  let uiStore;
 
   beforeEach(action(() => {
     geoImageNetStore = new GeoImageNetStore();
-    taxonomyStore = new TaxonomyStore(geoImageNetStore);
+    uiStore = new UserInterfaceStore();
+    taxonomyStore = new TaxonomyStore(uiStore);
     action(() => {
-      Object.values(geoImageNetStore.annotationStatusFilters)
-        .forEach(status => {
+      Object.values(uiStore.annotationStatusFilters)
+        .forEach((status: AnnotationFilter) => {
           // $FlowFixMe
           status.activated = false;
         });
@@ -26,16 +28,16 @@ describe('Annotation status filter cql generation', () => {
 
   test('Single filter', () => {
     action(() => {
-      geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].activated = true;
+      uiStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].activated = true;
     })();
     expect(taxonomyStore.activated_status_filters_cql)
       .toBe(`status IN ('${ANNOTATION.STATUS.NEW}')`);
   });
   test('Multiple filters', () => {
     action(() => {
-      geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].activated = true;
-      geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.PRE_RELEASED].activated = true;
-      geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].activated = true;
+      uiStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].activated = true;
+      uiStore.annotationStatusFilters[ANNOTATION.STATUS.PRE_RELEASED].activated = true;
+      uiStore.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].activated = true;
     })();
     expect(taxonomyStore.activated_status_filters_cql)
       .toBe(`status IN ('${ANNOTATION.STATUS.NEW}','${ANNOTATION.STATUS.PRE_RELEASED}','${ANNOTATION.STATUS.REJECTED}')`);

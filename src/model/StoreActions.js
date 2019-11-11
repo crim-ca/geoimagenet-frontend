@@ -29,13 +29,6 @@ type AnnotationCounts = {
 };
 
 export class StoreActions {
-
-  geoImageNetStore: GeoImageNetStore;
-
-  taxonomyStore: TaxonomyStore;
-
-  uiStore: UserInterfaceStore;
-
   /**
    * We use MobX as our state manager, hence our store is the primary dependency of our store actions.
    */
@@ -47,7 +40,7 @@ export class StoreActions {
 
   @action.bound
   toggle_show_labels() {
-    this.geoImageNetStore.show_labels = !this.geoImageNetStore.show_labels;
+    this.geoImageNetStore.showLabels = !this.geoImageNetStore.showLabels;
   }
 
   /**
@@ -55,10 +48,10 @@ export class StoreActions {
    */
   @action.bound
   toggle_annotation_status_visibility(annotationStatusText: AnnotationStatus, overrideActivated: boolean | null = null) {
-    if (!(annotationStatusText in this.geoImageNetStore.annotationStatusFilters)) {
+    if (!(annotationStatusText in this.uiStore.annotationStatusFilters)) {
       throw new TypeError(`Invalid annotation status: [${annotationStatusText}]`);
     }
-    const annotationFilter = this.geoImageNetStore.annotationStatusFilters[annotationStatusText];
+    const annotationFilter = this.uiStore.annotationStatusFilters[annotationStatusText];
     if (overrideActivated !== null) {
       annotationFilter.activated = overrideActivated;
     } else {
@@ -252,7 +245,7 @@ export class StoreActions {
    */
   @action.bound
   set_annotation_layer_visibility(key: string, visible: boolean) {
-    this.geoImageNetStore.annotationStatusFilters[key].activated = visible;
+    this.uiStore.annotationStatusFilters[key].activated = visible;
   }
 
   @action.bound

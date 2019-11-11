@@ -1,16 +1,13 @@
 // @flow strict
-
 import { action, computed, observable } from 'mobx';
 import { i18n } from '../../utils/index';
 import type { LeafClassGroup } from '../../Types';
 import type { TaxonomyClass } from '../../domain/entities';
-import type { GeoImageNetStore } from './GeoImageNetStore';
+import type { UserInterfaceStore } from './UserInterfaceStore';
 
 export class TaxonomyStore {
-  geoImageNetStore: GeoImageNetStore;
-
-  constructor(geoImageNetStore: GeoImageNetStore) {
-    this.geoImageNetStore = geoImageNetStore;
+  constructor(uiStore: UserInterfaceStore) {
+    this.uiStore = uiStore;
   }
 
   /**
@@ -152,14 +149,14 @@ export class TaxonomyStore {
   }
 
   @computed get activated_status_filters_cql(): string {
-    const activated_filters = Object.values(this.geoImageNetStore.annotationStatusFilters)
+    const activatedFilters = Object.values(this.uiStore.annotationStatusFilters)
     // $FlowFixMe
       .filter((filter) => filter.activated)
       // $FlowFixMe
       .map((filter) => filter.text);
-    if (activated_filters.length === 0) {
+    if (activatedFilters.length === 0) {
       return 'true=false';
     }
-    return `status IN ('${activated_filters.join('\',\'')}')`;
+    return `status IN ('${activatedFilters.join('\',\'')}')`;
   }
 }

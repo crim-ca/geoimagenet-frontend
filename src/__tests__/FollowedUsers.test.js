@@ -14,6 +14,7 @@ import { i18n as i18next } from '../utils/i18n';
 import { User } from '../domain/entities';
 import { TaxonomyStore } from '../model/store/TaxonomyStore';
 import { copyProps, wait } from './utils';
+import { UserInterfaceStore } from '../model/store/UserInterfaceStore';
 
 const { window } = new JSDOM('<!doctype html>');
 
@@ -40,8 +41,9 @@ dataQueries.remove_followed_user = jest.fn(() => null);
 describe('Followed users form', () => {
   test('We can log a user on', () => {
     const geoImageNetStore = new GeoImageNetStore();
-    const taxonomyStore = new TaxonomyStore(geoImageNetStore);
-    const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
+    const uiStore = new UserInterfaceStore();
+    const taxonomyStore = new TaxonomyStore(uiStore);
+    const storeActions = new StoreActions(geoImageNetStore, taxonomyStore, uiStore);
     storeActions.set_session_user(user_without_followed_users);
     /**
      * $FlowFixMe
@@ -57,8 +59,9 @@ describe('Followed users form', () => {
    */
   test('Add followed user form validates input, adds and removes user', async () => {
     const store = new GeoImageNetStore();
-    const taxonomyStore = new TaxonomyStore(store);
-    const storeActions = new StoreActions(store, taxonomyStore);
+    const uiStore = new UserInterfaceStore();
+    const taxonomyStore = new TaxonomyStore(uiStore);
+    const storeActions = new StoreActions(store, taxonomyStore, uiStore);
     const userInteractions = new UserInteractions(storeActions, taxonomyStore, dataQueries, i18next, store);
     storeActions.set_session_user(user_without_followed_users);
     const wrapper = mount(<UserSettingsContainer user={store.logged_user} userInteractions={userInteractions} />);

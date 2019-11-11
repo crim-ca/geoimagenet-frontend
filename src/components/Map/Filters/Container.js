@@ -55,7 +55,7 @@ class Container extends React.Component<Props, State> {
 
   render() {
     const { anchor, open } = this.state;
-    const { geoImageNetStore: {annotationStatusFilters, annotationOwnershipFilters}, t } = this.props;
+    const { uiStore: { annotationStatusFilters, annotationOwnershipFilters }, t } = this.props;
     return (
       <>
         <Button
