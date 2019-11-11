@@ -222,22 +222,23 @@ export class UserInteractions {
    *   for every layer under the point
    *     reject the modification if the layer does not correspond to either image name of the image id
    */
-  feature_respects_its_original_image = async (feature: Feature, wkt_format: WKT) => {
-    const image_id = feature.get('image_id');
-    const feature_wkt = wkt_format.writeFeature(feature);
+  feature_respects_its_original_image = async (feature: Feature, wktFormat: WKT) => {
+    const imageId = feature.get('image_id');
+    const wktFeature = wktFormat.writeFeature(feature);
 
-    const this_satellite_image: SatelliteImage | typeof undefined = this.geoImageNetStore.images_dictionary.find(image => {
-      return image.id === image_id;
-    });
-    if (this_satellite_image === undefined) {
+    const thisSatelliteImage: SatelliteImage | typeof undefined = this.geoImageNetStore.images_dictionary
+      .find((image) => (
+        image.id === imageId
+      ));
+    if (thisSatelliteImage === undefined) {
       NotificationManager.error('The image you are trying to annotate does not seem to be referenced by the aip. ' +
         'You may try to reload the platform but this seem to be an internal error, you may want to contact ' +
         'your platform administrator.');
       return false;
     }
 
-    const json = await this.dataQueries.get_annotation_images(feature_wkt);
-    return json.features.some(f => f.properties.id === image_id);
+    const json = await this.dataQueries.get_annotation_images(wktFeature);
+    return json.features.some((f) => f.properties.id === imageId);
   };
 
   modifystart_handler = (event: Event) => {
@@ -264,7 +265,7 @@ export class UserInteractions {
     });
 
     await Promise.all(all_modified_features.map(async (feature: Feature) => {
-      let valid = await this.feature_respects_its_original_image(feature, format_wkt, map);
+      let valid = await this.feature_respects_its_original_image(feature, format_wkt);
       if (!valid) {
         modified_features_to_reset.push(feature);
       } else {

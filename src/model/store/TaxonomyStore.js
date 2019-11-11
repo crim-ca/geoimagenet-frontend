@@ -155,6 +155,9 @@ export class TaxonomyStore {
       // $FlowFixMe
       .map((filter) => filter.text);
     if (activatedFilters.length === 0) {
+      /**
+       * if there are not activated filters, we don't want to see anything, so hide them all with a faulty condition
+       */
       return 'true=false';
     }
     return `status IN ('${activatedFilters.join('\',\'')}')`;

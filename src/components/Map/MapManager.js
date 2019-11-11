@@ -49,7 +49,6 @@ import {
   READ,
   WMS,
 } from '../../constants';
-import { debounced } from '../../utils/event_handling';
 import { StoreActions } from '../../model/StoreActions';
 import { LayerSwitcher } from '../../LayerSwitcher';
 import { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
@@ -248,7 +247,6 @@ export class MapManager {
       Object.keys(annotationStatusFilters)
         .forEach((k) => {
           const { activated, text } = annotationStatusFilters[k];
-          const annotations_layers = this.geoImageNetStore;
           this.geoImageNetStore.annotations_layers[text].setVisible(activated);
           if (activated) {
             this.userInteractions.refresh_source_by_status(text);

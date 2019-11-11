@@ -29,6 +29,11 @@ type AnnotationCounts = {
 };
 
 export class StoreActions {
+  geoImageNetStore: GeoImageNetStore;
+
+  uiStore: UserInterfaceStore;
+
+  taxonomyStore: TaxonomyStore;
   /**
    * We use MobX as our state manager, hence our store is the primary dependency of our store actions.
    */
@@ -66,10 +71,10 @@ export class StoreActions {
    */
   @action.bound
   toggle_annotation_ownership_filter(annotationOwnership: string, overrideActivated: boolean | null = null) {
-    if (!(annotationOwnership in this.geoImageNetStore.annotationOwnershipFilters)) {
+    if (!(annotationOwnership in this.uiStore.annotationOwnershipFilters)) {
       throw new TypeError(`Invalid annotation ownership: [${annotationOwnership}]`);
     }
-    const annotationFilter = this.geoImageNetStore.annotationOwnershipFilters[annotationOwnership];
+    const annotationFilter = this.uiStore.annotationOwnershipFilters[annotationOwnership];
     if (overrideActivated !== null) {
       annotationFilter.activated = overrideActivated;
     } else {

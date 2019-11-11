@@ -1,11 +1,16 @@
 // @flow strict
-import { configure, observable, computed, action } from 'mobx';
+import {
+  configure,
+  observable,
+  computed,
+  action,
+} from 'mobx';
 import { make_annotation_ownership_cql_filter } from '../../components/Map/utils';
-
 import type { GeoImageNetStore } from './GeoImageNetStore';
 import type { TaxonomyStore } from './TaxonomyStore';
 import type { Annotation, WfsResponse } from '../../Types';
 import type { DataQueries } from '../../domain/data-queries';
+import type { UserInterfaceStore } from './UserInterfaceStore';
 
 /**
  * this is relatively important in the sense that it constraints us to mutate the store only in actions
@@ -24,6 +29,8 @@ export class AnnotationBrowserStore {
 
   geoImageNetStore: GeoImageNetStore;
 
+  uiStore: UserInterfaceStore;
+
   taxonomyStore: TaxonomyStore;
 
   dataQueries: DataQueries;
@@ -33,6 +40,7 @@ export class AnnotationBrowserStore {
     annotation_namespace: string,
     annotation_layer: string,
     geoImageNetStore: GeoImageNetStore,
+    uiStore: UserInterfaceStore,
     taxonomyStore: TaxonomyStore,
     dataQueries: DataQueries,
   ) {
@@ -40,6 +48,7 @@ export class AnnotationBrowserStore {
     this.annotation_namespace = annotation_namespace;
     this.annotation_layer = annotation_layer;
     this.geoImageNetStore = geoImageNetStore;
+    this.uiStore = uiStore;
     this.taxonomyStore = taxonomyStore;
     this.dataQueries = dataQueries;
   }
@@ -92,7 +101,7 @@ export class AnnotationBrowserStore {
     if (this.taxonomyStore.taxonomy_class_id_selection_cql.length > 0) {
       bits.push(this.taxonomyStore.taxonomy_class_id_selection_cql);
     }
-    const ownershipFiltersArray = Object.values(this.geoImageNetStore.annotationOwnershipFilters);
+    const ownershipFiltersArray = Object.values(this.uiStore.annotationOwnershipFilters);
     if (this.geoImageNetStore.logged_user) {
       // $FlowFixMe
       const cqlOwnership = make_annotation_ownership_cql_filter(ownershipFiltersArray, this.geoImageNetStore.logged_user);
