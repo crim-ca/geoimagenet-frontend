@@ -7,13 +7,13 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 import { Paginator } from './Paginator';
 import { AnnotationList } from './AnnotationList';
-import { OpenLayersStore } from '../../model/OpenLayersStore';
+import { OpenLayersStore } from '../../model/store/OpenLayersStore';
 import { Container as WorkspaceContainer } from './Workspace/Container';
 import { withAnnotationBrowserStore } from '../../model/HOCs';
 import { Container as ModeSelectionContainer } from '../ModeSelection/Container';
 
-import type { AnnotationBrowserStore } from '../../model/AnnotationBrowserStore';
-import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import type { AnnotationBrowserStore } from '../../model/store/AnnotationBrowserStore';
+import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import type { AnnotationStatus, BoundingBox } from '../../Types';
 import type { UserInteractions } from '../../domain';
 import type { StoreActions } from '../../model/StoreActions';

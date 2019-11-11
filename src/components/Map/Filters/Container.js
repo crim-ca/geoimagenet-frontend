@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import Button from '@material-ui/core/Button';
 import { TFunction } from 'react-i18next';
 import { compose } from 'react-apollo';
-import type{ GeoImageNetStore } from '../../../model/GeoImageNetStore';
+import type{ GeoImageNetStore } from '../../../model/store/GeoImageNetStore';
 import { StoreActions } from '../../../model/StoreActions';
 import { withTranslation } from '../../../utils';
 import type { AnnotationStatus } from '../../../Types';
@@ -12,7 +12,7 @@ import { FiltersPaper } from '../FiltersPaper';
 import { FadingDialog } from '../FadingDialog';
 import { CheckboxLineInput } from './CheckboxLineInput';
 import { withUserInterfaceStore } from '../../../model/HOCs';
-import type { UserInterfaceStore } from '../../../model/UserInterfaceStore';
+import type { UserInterfaceStore } from '../../../model/store/UserInterfaceStore';
 
 type Props = {
   geoImageNetStore: GeoImageNetStore,

@@ -1,6 +1,6 @@
 // @flow strict
 import { action, observable } from 'mobx';
-import { MODE } from '../constants';
+import { MODE } from '../../constants';
 
 const { VISUALIZATION } = MODE;
 

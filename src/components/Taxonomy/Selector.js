@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { Tab, Tabs } from '@material-ui/core';
 import type { TFunction } from 'react-i18next';
 import { UserInteractions } from '../../domain';
-import { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import { withTranslation } from '../../utils';
 
 type Props = {

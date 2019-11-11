@@ -5,7 +5,7 @@ import { Link, withRouter } from 'react-router-dom';
 
 import { SessionHandle } from './SessionHandle.js';
 import type { UserInteractions } from '../domain';
-import type { GeoImageNetStore } from '../model/GeoImageNetStore';
+import type { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 import { compose } from 'react-apollo';
 
 const MenuContainerDiv = withStyles(theme => {

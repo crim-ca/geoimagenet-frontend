@@ -1,9 +1,9 @@
 // @flow strict
 
 import { action, computed, observable } from 'mobx';
-import { i18n } from '../utils';
-import type { LeafClassGroup } from '../Types';
-import type { TaxonomyClass } from '../domain/entities';
+import { i18n } from '../../utils/index';
+import type { LeafClassGroup } from '../../Types';
+import type { TaxonomyClass } from '../../domain/entities';
 import type { GeoImageNetStore } from './GeoImageNetStore';
 
 export class TaxonomyStore {

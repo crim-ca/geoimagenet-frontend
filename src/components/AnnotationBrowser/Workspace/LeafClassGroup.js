@@ -7,7 +7,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 import type { LeafClassGroup as LeafClassGroupEntity } from '../../../Types';
 import type { UserInteractions } from '../../../domain';
-import type { GeoImageNetStore } from '../../../model/GeoImageNetStore';
+import type { GeoImageNetStore } from '../../../model/store/GeoImageNetStore';
 
 type Props = {
   class_group: LeafClassGroupEntity,

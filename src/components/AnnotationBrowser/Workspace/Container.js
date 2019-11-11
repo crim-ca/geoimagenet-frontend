@@ -8,8 +8,8 @@ import { TFunction } from 'i18next';
 import { withTaxonomyStore } from '../../../model/HOCs';
 import { LeafClassGroup } from './LeafClassGroup';
 
-import type { TaxonomyStore } from '../../../model/TaxonomyStore';
-import type { GeoImageNetStore } from '../../../model/GeoImageNetStore';
+import type { TaxonomyStore } from '../../../model/store/TaxonomyStore';
+import type { GeoImageNetStore } from '../../../model/store/GeoImageNetStore';
 import type { UserInteractions } from '../../../domain';
 import type { LeafClassGroup as leafClassGroupEntity } from '../../../Types';
 import { compose } from 'react-apollo';

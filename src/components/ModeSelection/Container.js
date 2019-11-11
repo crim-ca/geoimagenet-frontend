@@ -1,7 +1,7 @@
 // @flow strict
 import React from 'react';
 import { Actions } from './Actions';
-import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 
 type Props = {
   geoImageNetStore: GeoImageNetStore,

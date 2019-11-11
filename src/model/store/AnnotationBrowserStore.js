@@ -1,11 +1,11 @@
 // @flow strict
 import { configure, observable, computed, action } from 'mobx';
-import { make_annotation_ownership_cql_filter } from '../components/Map/utils';
+import { make_annotation_ownership_cql_filter } from '../../components/Map/utils';
 
 import type { GeoImageNetStore } from './GeoImageNetStore';
 import type { TaxonomyStore } from './TaxonomyStore';
-import type { Annotation, WfsResponse } from '../Types';
-import type { DataQueries } from '../domain/data-queries';
+import type { Annotation, WfsResponse } from '../../Types';
+import type { DataQueries } from '../../domain/data-queries';
 
 /**
  * this is relatively important in the sense that it constraints us to mutate the store only in actions
@@ -16,7 +16,6 @@ configure({
 });
 
 export class AnnotationBrowserStore {
-
   geoserver_endpoint: string;
 
   annotation_namespace: string;

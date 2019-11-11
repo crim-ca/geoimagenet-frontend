@@ -8,10 +8,10 @@ import { TaxonomyClass } from './TaxonomyClass';
 import { ANNOTATION, MODE } from '../constants';
 import type { AccessControlList } from '../domain/access-control-list';
 import type { SatelliteImage, Taxonomy, User } from '../domain/entities';
-import type { GeoImageNetStore } from './GeoImageNetStore';
+import type { GeoImageNetStore } from './store/GeoImageNetStore';
 import type { TaxonomyClassFromAPI, AnnotationStatus, FollowedUser } from '../Types';
-import type { TaxonomyStore } from './TaxonomyStore';
-import { UserInterfaceStore } from './UserInterfaceStore';
+import type { TaxonomyStore } from './store/TaxonomyStore';
+import { UserInterfaceStore } from './store/UserInterfaceStore';
 
 /**
  * The store actions are lower level action handlers, in the sense that they are not directly related to a user's actions,

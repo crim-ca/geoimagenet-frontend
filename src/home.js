@@ -18,12 +18,12 @@ import './img/icons/favicon.ico';
 import './img/background.hack.jpg';
 
 import { LoadingSplashCircle } from './components/LoadingSplashCircle';
-import { OpenLayersStore } from './model/OpenLayersStore';
+import { OpenLayersStore } from './model/store/OpenLayersStore';
 import { geoImageNetStore, taxonomyStore } from './model/instance_cache';
 
 import { App } from './App';
-import type { TaxonomyStore } from './model/TaxonomyStore';
-import type { GeoImageNetStore } from './model/GeoImageNetStore';
+import type { TaxonomyStore } from './model/store/TaxonomyStore';
+import type { GeoImageNetStore } from './model/store/GeoImageNetStore';
 import { createClient } from './utils/apollo';
 
 Sentry.init({

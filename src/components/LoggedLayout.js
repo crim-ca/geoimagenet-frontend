@@ -6,7 +6,7 @@ import { NotificationContainer } from 'react-notifications';
 import { Menu } from './Menu.js';
 
 import type { UserInteractions } from '../domain';
-import type { GeoImageNetStore } from '../model/GeoImageNetStore';
+import type { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 
 const LayoutGrid = withStyles(theme => {
   const { values } = theme;

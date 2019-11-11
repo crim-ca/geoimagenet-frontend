@@ -10,8 +10,8 @@ import { Tree } from '../Taxonomy/Tree';
 import { withTranslation } from '../../utils';
 import { withTaxonomyStore } from '../../model/HOCs';
 import type { UserInteractions } from '../../domain';
-import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
-import type { TaxonomyStore } from '../../model/TaxonomyStore';
+import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
+import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 
 type Props = {
   userInteractions: UserInteractions,

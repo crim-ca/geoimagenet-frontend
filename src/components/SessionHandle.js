@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 import type { UserInteractions } from '../domain';
-import type { GeoImageNetStore } from '../model/GeoImageNetStore';
+import type { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 
 const SessionHandlePaper = withStyles(theme => {
   const { values } = theme;

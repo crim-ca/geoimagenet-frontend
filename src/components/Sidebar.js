@@ -14,8 +14,8 @@ import { Viewer } from './Taxonomy/Viewer';
 import { Container as SettingsContainer } from './UserSettings/Container';
 import { withTranslation } from '../utils';
 import { Container as AnnotationBrowserContainer } from './AnnotationBrowser/Container';
-import type { OpenLayersStore } from '../model/OpenLayersStore';
-import type { GeoImageNetStore } from '../model/GeoImageNetStore';
+import type { OpenLayersStore } from '../model/store/OpenLayersStore';
+import type { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 import type { StoreActions } from '../model/StoreActions';
 import type { UserInteractions } from '../domain';
 

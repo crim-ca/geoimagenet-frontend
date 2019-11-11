@@ -52,14 +52,14 @@ import {
 import { debounced } from '../../utils/event_handling';
 import { StoreActions } from '../../model/StoreActions';
 import { LayerSwitcher } from '../../LayerSwitcher';
-import { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import { make_http_request } from '../../utils/http';
 import { UserInteractions } from '../../domain';
-import type { TaxonomyStore } from '../../model/TaxonomyStore';
-import type { OpenLayersStore } from '../../model/OpenLayersStore';
+import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
+import type { OpenLayersStore } from '../../model/store/OpenLayersStore';
 import { createStyleFunction } from './ol_dependant_utils';
 import { make_annotation_ownership_cql_filter } from './utils';
-import { UserInterfaceStore } from '../../model/UserInterfaceStore';
+import { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
 
 async function geoserverCapabilities(url) {
   const parser = new WMSCapabilities();

@@ -6,9 +6,9 @@ import { withTranslation } from '../../utils';
 import { observer } from 'mobx-react';
 
 import type { UserInteractions } from '../../domain';
-import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import type { TFunction } from 'react-i18next';
-import type { TaxonomyStore } from '../../model/TaxonomyStore';
+import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 import { compose } from 'react-apollo';
 import { withTaxonomyStore } from '../../model/HOCs';
 

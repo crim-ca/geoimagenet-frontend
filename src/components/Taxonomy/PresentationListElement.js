@@ -9,8 +9,8 @@ import { AnnotationCounts } from './AnnotationCounts';
 import { withTranslation } from '../../utils';
 
 import type { UserInteractions } from '../../domain';
-import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
-import type { TaxonomyStore } from '../../model/TaxonomyStore';
+import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
+import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 import type { TFunction } from 'react-i18next';
 import { compose } from 'react-apollo';
 import { withTaxonomyStore } from '../../model/HOCs';

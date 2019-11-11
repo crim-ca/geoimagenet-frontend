@@ -14,8 +14,8 @@ import { theme, ThemedComponent } from './utils/react';
 import { PresentationContainer } from './components/Presentation/Presentation';
 import { NotificationContainer } from 'react-notifications';
 
-import type { OpenLayersStore } from './model/OpenLayersStore';
-import type { GeoImageNetStore } from './model/GeoImageNetStore';
+import type { OpenLayersStore } from './model/store/OpenLayersStore';
+import type { GeoImageNetStore } from './model/store/GeoImageNetStore';
 import type { StoreActions } from './model/StoreActions';
 import type { UserInteractions } from './domain';
 import { CssBaseline, MuiThemeProvider } from '@material-ui/core';

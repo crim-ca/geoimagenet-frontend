@@ -7,7 +7,7 @@ import { TFunction } from 'react-i18next';
 import { compose } from 'react-apollo';
 
 import { withTranslation } from '../../utils';
-import { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import { ANNOTATION_THUMBNAIL_SIZE } from '../../constants';
 
 import type { Annotation, AnnotationStatus, BoundingBox } from '../../Types';

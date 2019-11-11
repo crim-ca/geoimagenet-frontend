@@ -1,9 +1,9 @@
 // @flow strict
 import { DataQueries } from '../domain/data-queries';
-import { GeoImageNetStore } from './GeoImageNetStore';
-import { TaxonomyStore } from './TaxonomyStore';
-import { AnnotationBrowserStore } from './AnnotationBrowserStore';
-import { UserInterfaceStore } from './UserInterfaceStore';
+import { GeoImageNetStore } from './store/GeoImageNetStore';
+import { TaxonomyStore } from './store/TaxonomyStore';
+import { AnnotationBrowserStore } from './store/AnnotationBrowserStore';
+import { UserInterfaceStore } from './store/UserInterfaceStore';
 
 export const dataQueries = new DataQueries(GEOIMAGENET_API_URL, GEOSERVER_URL, MAGPIE_ENDPOINT, ML_ENDPOINT);
 export const geoImageNetStore = new GeoImageNetStore();

@@ -6,7 +6,7 @@ import { observer } from 'mobx-react';
 
 import { withTranslation } from '../../../utils';
 import { TFunction } from 'react-i18next';
-import { GeoImageNetStore } from '../../../model/GeoImageNetStore';
+import { GeoImageNetStore } from '../../../model/store/GeoImageNetStore';
 
 type Props = {
   t: TFunction,

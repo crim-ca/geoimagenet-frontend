@@ -3,7 +3,7 @@ import React from 'react';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { JSDOM } from 'jsdom';
-import { GeoImageNetStore } from '../model/GeoImageNetStore';
+import { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 import { StoreActions } from '../model/StoreActions';
 import { DataQueries } from '../domain/data-queries';
 import { UserInteractions } from '../domain';
@@ -12,7 +12,7 @@ import { FollowedUsersList } from '../components/UserSettings/FollowedUsersList'
 import { AddFollowedUserForm } from '../components/UserSettings/AddFollowedUserForm';
 import { i18n as i18next } from '../utils/i18n';
 import { User } from '../domain/entities';
-import { TaxonomyStore } from '../model/TaxonomyStore';
+import { TaxonomyStore } from '../model/store/TaxonomyStore';
 import { copyProps, wait } from './utils';
 
 const { window } = new JSDOM('<!doctype html>');

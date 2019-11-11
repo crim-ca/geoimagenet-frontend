@@ -6,12 +6,12 @@ import { MapContainer } from '../Map/MapContainer';
 import { UserInteractions } from '../../domain/user-interactions';
 import { StoreActions } from '../../model/StoreActions';
 import { Sidebar } from '../Sidebar';
-import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
-import type { OpenLayersStore } from '../../model/OpenLayersStore';
+import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
+import type { OpenLayersStore } from '../../model/store/OpenLayersStore';
 import { Container as FiltersContainer } from '../Map/Filters/Container';
 import { Container as LabelsContainer } from '../Map/LabelsChoice/Container';
 import { ActiveFiltersBox } from '../Map/ActiveFiltersBox';
-import type { TaxonomyStore } from '../../model/TaxonomyStore';
+import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 import { withTaxonomyStore } from '../../model/HOCs';
 
 const PlatformContainer = withStyles(({ values }) => ({

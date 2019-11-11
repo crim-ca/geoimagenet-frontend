@@ -13,14 +13,14 @@ import { i18n } from '../utils';
 
 import type { DataQueries } from './data-queries';
 import type { StoreActions } from '../model/StoreActions';
-import type { GeoImageNetStore } from '../model/GeoImageNetStore';
+import type { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 import type { Feature, ModifyEvent } from 'ol';
 import type { SatelliteImage, Taxonomy } from './entities';
 import type { Map } from 'ol/Map';
 import type { Event } from 'ol/events';
 import type { GeoJSON, WKT } from 'ol/format';
 import type { FollowedUser, MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI } from '../Types';
-import type { TaxonomyStore } from '../model/TaxonomyStore';
+import type { TaxonomyStore } from '../model/store/TaxonomyStore';
 
 const { t } = i18n;
 

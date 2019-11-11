@@ -6,11 +6,11 @@ import { fromLonLat } from 'ol/proj';
 import { autorun } from 'mobx';
 import { LayerSwitcher } from '../../LayerSwitcher';
 import { uiStore } from '../../model/instance_cache';
-import type { TaxonomyStore } from '../../model/TaxonomyStore';
+import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 import type { UserInteractions } from '../../domain';
 import type { StoreActions } from '../../model/StoreActions';
-import type { OpenLayersStore } from '../../model/OpenLayersStore';
-import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import type { OpenLayersStore } from '../../model/store/OpenLayersStore';
+import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import { MapManager } from './MapManager';
 import { Interactions } from './Interactions';
 

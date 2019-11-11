@@ -5,8 +5,8 @@ import { observer } from 'mobx-react';
 import { PresentationListElement } from './PresentationListElement';
 import type { UserInteractions } from '../../domain';
 import type { TaxonomyClass } from '../../domain/entities';
-import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
-import type { TaxonomyStore } from '../../model/TaxonomyStore';
+import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
+import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 import { withTaxonomyStore } from '../../model/HOCs';
 
 /**

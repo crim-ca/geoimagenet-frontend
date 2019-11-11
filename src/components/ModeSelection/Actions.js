@@ -21,9 +21,9 @@ import {
   VALIDATIONS,
   WRITE,
 } from '../../constants';
-import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import { withUserInterfaceStore } from '../../model/HOCs';
-import type { UserInterfaceStore } from '../../model/UserInterfaceStore';
+import type { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
 
 const modes = [];
 modes.push({

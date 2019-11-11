@@ -1,13 +1,13 @@
 // @flow strict
-import { ANNOTATION, MODE } from '../constants.js';
-import { AccessControlList } from '../domain/access-control-list.js';
-import { AnnotationFilter, ResourcePermissionRepository } from '../domain/entities.js';
+import { ANNOTATION, MODE } from '../../constants.js';
+import { AccessControlList } from '../../domain/access-control-list.js';
+import { AnnotationFilter, ResourcePermissionRepository } from '../../domain/entities.js';
 import { observable, computed, action } from 'mobx';
-import { SatelliteImage, Taxonomy, User } from '../domain/entities';
+import { SatelliteImage, Taxonomy, User } from '../../domain/entities';
 import typeof VectorLayer from 'ol/layer/Vector.js';
 import typeof VectorSource from 'ol/source/Vector';
 import { typeof Collection } from 'ol';
-import type { AnnotationOwnershipFilters, AnnotationStatusFilters, FollowedUser } from '../Types';
+import type { AnnotationOwnershipFilters, AnnotationStatusFilters, FollowedUser } from '../../Types';
 import { configure } from 'mobx';
 
 /**

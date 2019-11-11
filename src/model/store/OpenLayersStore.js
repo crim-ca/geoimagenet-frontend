@@ -2,8 +2,8 @@
 
 import { action, observable, configure } from 'mobx';
 
-import type { BoundingBox, Coordinate } from '../Types';
-import { VIEW_CENTER } from '../constants';
+import type { BoundingBox, Coordinate } from '../../Types';
+import { VIEW_CENTER } from '../../constants';
 import type Collection from 'ol/Collection';
 import type Feature from 'ol/Feature';
 

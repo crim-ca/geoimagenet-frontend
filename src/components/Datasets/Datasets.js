@@ -7,7 +7,7 @@ import { DatasetsTable } from './DatasetsTable';
 import { DatasetCreationJobsTable } from './DatasetCreationJobsTable';
 import { DATASETS, WRITE } from '../../constants.js';
 
-import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 
 const Layout = withStyles(({ values }) => ({
   grid: {

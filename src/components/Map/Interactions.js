@@ -12,13 +12,13 @@ import { MapBrowserEvent } from 'ol/events';
 import type Event from 'ol/events/Event';
 import type { Feature } from 'ol';
 import { ANNOTATION, CUSTOM_GEOIM_IMAGE_LAYER, MODE, VALID_OPENLAYERS_ANNOTATION_RESOLUTION } from '../../constants';
-import { GeoImageNetStore } from '../../model/GeoImageNetStore';
+import { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import { UserInteractions } from '../../domain';
 import { ContextualMenuManager } from '../ContextualMenu/ContextualMenuManager';
-import type { OpenLayersStore } from '../../model/OpenLayersStore';
-import type { TaxonomyStore } from '../../model/TaxonomyStore';
+import type { OpenLayersStore } from '../../model/store/OpenLayersStore';
+import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 import { createStyleFunction } from './ol_dependant_utils';
-import { UserInterfaceStore } from '../../model/UserInterfaceStore';
+import { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
 
 function selectableFeatures(features: Feature[]) {
   /**

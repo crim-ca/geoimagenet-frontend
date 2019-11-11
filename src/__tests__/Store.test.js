@@ -6,8 +6,8 @@ import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { JSDOM } from 'jsdom';
 import { Container as LabelsContainer } from '../components/Map/LabelsChoice/Container';
-import { TaxonomyStore } from '../model/TaxonomyStore';
-import { UserInterfaceStore } from '../model/UserInterfaceStore';
+import { TaxonomyStore } from '../model/store/TaxonomyStore';
+import { UserInterfaceStore } from '../model/store/UserInterfaceStore';
 import { Actions } from '../components/ModeSelection/Actions';
 import { theme } from '../utils/react';
 import {
@@ -19,7 +19,7 @@ import {
 import { uiStore } from '../model/instance_cache';
 import { StoreActions } from '../model/StoreActions';
 import { TaxonomyClass } from '../model/TaxonomyClass';
-import { GeoImageNetStore } from '../model/GeoImageNetStore';
+import { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 
 const { window } = new JSDOM(`<!doctype html>`);
 

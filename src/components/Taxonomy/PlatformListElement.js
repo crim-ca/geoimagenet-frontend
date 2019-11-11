@@ -15,8 +15,8 @@ import { ANNOTATION } from '../../constants.js';
 
 import type { TaxonomyClass } from '../../domain/entities';
 import type { UserInteractions } from '../../domain';
-import type { GeoImageNetStore } from '../../model/GeoImageNetStore';
-import type { TaxonomyStore } from '../../model/TaxonomyStore';
+import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
+import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 import { withTaxonomyStore } from '../../model/HOCs';
 import { compose } from 'react-apollo';
 import { TFunction } from 'react-i18next';
