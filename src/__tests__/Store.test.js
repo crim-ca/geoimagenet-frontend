@@ -46,6 +46,25 @@ configure({ adapter: new Adapter() });
 
 const geoImageNetStore = new GeoImageNetStore();
 
+const subChildren = [
+  { id: 4 },
+  { id: 5 },
+];
+const children = [
+  {
+    id: 2,
+    name_fr: 'children name',
+  },
+  {
+    id: 3,
+    children: subChildren,
+  },
+];
+const classesFromApi = {
+  id: 1,
+  children,
+};
+
 describe('UI Elements correctly change the store', () => {
   test('Toggle annotators identifier off from default state', () => {
     const wrapper = mount(<LabelsContainer geoImageNetStore={geoImageNetStore} />);
@@ -74,7 +93,10 @@ describe('Artificially granted write annotations permissions', () => {
       .toBe(0);
   });
 
-  test('There are three buttons when we can write annotations', () => {
+  test('There are four buttons when we can write annotations', () => {
+    /**
+     * this is quite an arbitrary number, but it's the number of buttons that correspond to the simple annotator role
+     */
     geoImageNetStore.acl.repository.permissions[ANNOTATIONS] = {
       permission_names: [WRITE],
     };
@@ -84,10 +106,10 @@ describe('Artificially granted write annotations permissions', () => {
       </MuiThemeProvider>,
     );
     expect(wrapper.find(FontAwesomeIcon).length)
-      .toBe(3);
+      .toBe(4);
   });
 
-  test('We can activate delete mode from a button', () => {
+  test('We can activate release mode from a button', () => {
     geoImageNetStore.acl.repository.permissions[ANNOTATIONS] = {
       permission_names: [WRITE],
     };
@@ -100,7 +122,7 @@ describe('Artificially granted write annotations permissions', () => {
       .last()
       .simulate('click');
     expect(uiStore.selectedMode)
-      .toBe(MODE.DELETION);
+      .toBe(MODE.RELEASE);
   });
 });
 
@@ -120,85 +142,53 @@ describe('User interface store', () => {
 
   test('Delete mode specific filters', () => {
     uiStore.setMode(MODE.DELETION);
-    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].activated).toBe(true);
-    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.RELEASED].activated).toBe(false);
-    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.PRE_RELEASED].activated).toBe(false);
-    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.VALIDATED].activated).toBe(false);
-    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].activated).toBe(false);
-    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.DELETED].activated).toBe(false);
+    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].activated)
+      .toBe(true);
+    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.RELEASED].activated)
+      .toBe(false);
+    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.VALIDATED].activated)
+      .toBe(false);
+    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].activated)
+      .toBe(false);
+    expect(geoImageNetStore.annotationStatusFilters[ANNOTATION.STATUS.DELETED].activated)
+      .toBe(false);
   });
 });
 
 test('builds flat taxonomy_classes list', () => {
-  const geoImageNetStore = new GeoImageNetStore();
   const taxonomyStore = new TaxonomyStore(geoImageNetStore);
   const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
-  const sub_children = [
-    { id: 4 },
-    { id: 5 },
-  ];
-  const children = [
-    {
-      id: 2,
-      name_fr: 'children name'
-    },
-    {
-      id: 3,
-      children: sub_children
-    },
-  ];
-  const classes_from_api = {
-    id: 1,
-    children: children
-  };
-  storeActions.build_taxonomy_classes_structures(classes_from_api);
-  expect(taxonomyStore.flat_taxonomy_classes[1]['children'][0]['name_fr'])
+  storeActions.build_taxonomy_classes_structures(classesFromApi);
+  expect(taxonomyStore.flat_taxonomy_classes[1].children[0].name_fr)
     .toEqual('children name');
-  expect(taxonomyStore.flat_taxonomy_classes[2]['name_fr'])
+  expect(taxonomyStore.flat_taxonomy_classes[2].name_fr)
     .toEqual('children name');
 });
 
 test('accessing flat classes changes nested ones', () => {
-  const geoImageNetStore = new GeoImageNetStore();
   const taxonomyStore = new TaxonomyStore(geoImageNetStore);
   const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
-  const sub_children = [
-    { id: 4 },
-    { id: 5 },
-  ];
-  const children = [
-    { id: 2 },
-    {
-      id: 3,
-      children: sub_children
-    },
-  ];
-  const classes_from_api = {
-    id: 1,
-    children: children
-  };
-  storeActions.build_taxonomy_classes_structures(classes_from_api);
+  storeActions.build_taxonomy_classes_structures(classesFromApi);
   action(() => {
-    taxonomyStore.flat_taxonomy_classes[1]['children'][0]['name'] = 'test_name';
-    expect(taxonomyStore.flat_taxonomy_classes[2]['name'])
+    taxonomyStore.flat_taxonomy_classes[1].children[0].name = 'test_name';
+    expect(taxonomyStore.flat_taxonomy_classes[2].name)
       .toEqual('test_name');
   });
 });
 
 describe('Annotation counts', () => {
   test('changing annotation counts actually changes annotation counts', () => {
-    const geoImageNetStore = new GeoImageNetStore();
     const taxonomyStore = new TaxonomyStore(geoImageNetStore);
     const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
 
     expect(taxonomyStore.flat_taxonomy_classes[1])
       .toBe(undefined);
-    const taxonomy_class = new TaxonomyClass(1, 'name_fr', 'name_en', 1, null);
+    const taxonomyClass = new TaxonomyClass(1, 'name_fr', 'name_en', 1, null);
 
-    const add_taxonomy = action(() => {
-      taxonomyStore.flat_taxonomy_classes[1] = taxonomy_class;
+    const addTaxonomy = action(() => {
+      taxonomyStore.flat_taxonomy_classes[1] = taxonomyClass;
     });
-    add_taxonomy();
+    addTaxonomy();
 
     expect(taxonomyStore.flat_taxonomy_classes[1].counts[ANNOTATION.STATUS.NEW])
       .toBe(undefined);
@@ -224,13 +214,11 @@ describe('Annotation counts', () => {
       storeActions.change_annotation_status_count(-10, ANNOTATION.STATUS.NEW, 1);
     })
       .toThrow('Trying to change the counts of a non-existent taxonomy class.');
-
   });
 });
 
 describe('Annotation visibility toggling.', () => {
   test('toggle_annotation_status_visibility refuses incorrect input.', () => {
-    const geoImageNetStore = new GeoImageNetStore();
     const taxonomyStore = new TaxonomyStore(geoImageNetStore);
     const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
     expect(() => {
@@ -238,8 +226,8 @@ describe('Annotation visibility toggling.', () => {
     })
       .toThrow('Invalid annotation status: [not_a_real_status]');
   });
+
   test('toggle_annotation_status_visibility toggles existent annotation status visibility', () => {
-    const geoImageNetStore = new GeoImageNetStore();
     const taxonomyStore = new TaxonomyStore(geoImageNetStore);
     const storeActions = new StoreActions(geoImageNetStore, taxonomyStore);
     const status = 'new';
