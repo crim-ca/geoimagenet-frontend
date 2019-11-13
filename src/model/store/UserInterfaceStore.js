@@ -1,8 +1,9 @@
 // @flow strict
 import { action, observable } from 'mobx';
-import { ANNOTATION, MODE } from '../../constants';
+import { MODE } from '../../constants';
 import type { AnnotationOwnershipFilters, AnnotationStatusFilters } from '../../Types';
-import { AnnotationFilter } from '../entities';
+import { AnnotationFilter } from '../AnnotationFilter';
+import { ANNOTATION } from '../../Types';
 
 const { VISUALIZATION } = MODE;
 
@@ -18,18 +19,24 @@ class UserInterfaceStore {
    * in the classes hierarchies to the visible annotations on the map, and every future annotations interactions.
    */
   @observable annotationStatusFilters: AnnotationStatusFilters = {
-    [ANNOTATION.STATUS.NEW]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.NEW, true)),
-    [ANNOTATION.STATUS.PRE_RELEASED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.PRE_RELEASED, true)),
-    [ANNOTATION.STATUS.RELEASED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.RELEASED, true)),
-    [ANNOTATION.STATUS.VALIDATED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.VALIDATED, true)),
-    [ANNOTATION.STATUS.REJECTED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.REJECTED, true)),
-    [ANNOTATION.STATUS.DELETED]: observable.object(new AnnotationFilter(ANNOTATION.STATUS.DELETED, true)),
+    [ANNOTATION.STATUS.NEW]: new AnnotationFilter(ANNOTATION.FILTER.STATUS, ANNOTATION.STATUS.NEW),
+    [ANNOTATION.STATUS.PRE_RELEASED]: new AnnotationFilter(
+      ANNOTATION.FILTER.STATUS,
+      ANNOTATION.STATUS.PRE_RELEASED,
+    ),
+    [ANNOTATION.STATUS.RELEASED]: new AnnotationFilter(ANNOTATION.FILTER.STATUS, ANNOTATION.STATUS.RELEASED),
+    [ANNOTATION.STATUS.VALIDATED]: new AnnotationFilter(ANNOTATION.FILTER.STATUS, ANNOTATION.STATUS.VALIDATED),
+    [ANNOTATION.STATUS.REJECTED]: new AnnotationFilter(ANNOTATION.FILTER.STATUS, ANNOTATION.STATUS.REJECTED),
+    [ANNOTATION.STATUS.DELETED]: new AnnotationFilter(ANNOTATION.FILTER.STATUS, ANNOTATION.STATUS.DELETED),
   };
 
   @observable annotationOwnershipFilters: AnnotationOwnershipFilters = {
-    [ANNOTATION.OWNERSHIP.OTHERS]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.OTHERS, true)),
-    [ANNOTATION.OWNERSHIP.MINE]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.MINE, true)),
-    [ANNOTATION.OWNERSHIP.FOLLOWED_USERS]: observable.object(new AnnotationFilter(ANNOTATION.OWNERSHIP.FOLLOWED_USERS, true)),
+    [ANNOTATION.OWNERSHIP.OTHERS]: new AnnotationFilter(ANNOTATION.FILTER.OWNERSHIP, ANNOTATION.OWNERSHIP.OTHERS),
+    [ANNOTATION.OWNERSHIP.MINE]: new AnnotationFilter(ANNOTATION.FILTER.OWNERSHIP, ANNOTATION.OWNERSHIP.MINE),
+    [ANNOTATION.OWNERSHIP.FOLLOWED_USERS]: new AnnotationFilter(
+      ANNOTATION.FILTER.OWNERSHIP,
+      ANNOTATION.OWNERSHIP.FOLLOWED_USERS,
+    ),
   };
 }
 

@@ -13,13 +13,13 @@ import { withTranslation } from '../../utils';
 import { AnnotationCounts } from './AnnotationCounts';
 import { TaxonomyClassActions } from './TaxonomyClassActions';
 import { Classes } from './Classes';
-import { ANNOTATION } from '../../constants';
 import type { TaxonomyClass } from '../../model/entities';
 import type { UserInteractions } from '../../domain';
 import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 import { withTaxonomyStore, withUserInterfaceStore } from '../../model/HOCs';
 import type { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
+import { ANNOTATION } from '../../Types';
 
 const StyledListItem = withStyles({
   root: {

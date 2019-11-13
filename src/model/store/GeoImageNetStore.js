@@ -9,14 +9,13 @@ import {
 import typeof VectorLayer from 'ol/layer/Vector';
 import typeof VectorSource from 'ol/source/Vector';
 import {
-  AnnotationFilter,
   ResourcePermissionRepository,
   SatelliteImage,
   Taxonomy,
   User,
 } from '../entities';
-import type { AnnotationOwnershipFilters, AnnotationStatusFilters, FollowedUser } from '../../Types';
-import { ANNOTATION, MODE } from '../../constants';
+import type { FollowedUser } from '../../Types';
+import { MODE } from '../../constants';
 import { AccessControlList } from '../../domain/access-control-list';
 
 /**

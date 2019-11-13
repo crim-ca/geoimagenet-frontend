@@ -40,26 +40,6 @@ export const MODE = {
   RELEASE: 'RELEASE',
 };
 
-/**
- * These represent the status an annotation can have and MUST be kept manually in sync with the status in the API.
- * @type {Object}
- */
-export const ANNOTATION = {
-  STATUS: {
-    NEW: 'new',
-    PRE_RELEASED: 'pre_released',
-    RELEASED: 'released',
-    VALIDATED: 'validated',
-    REJECTED: 'rejected',
-    DELETED: 'deleted',
-  },
-  OWNERSHIP: {
-    OTHERS: 'others',
-    MINE: 'mine',
-    FOLLOWED_USERS: 'followed_users',
-  },
-};
-
 export const ANNOTATION_STATUS_AS_ARRAY = [
   'new',
   'pre_released',

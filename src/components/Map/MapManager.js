@@ -39,7 +39,6 @@ import {
 import { NotificationManager } from 'react-notifications';
 import {
   MODE,
-  ANNOTATION,
   BING_API_KEY,
   Z_INDEX,
   ANNOTATION_STATUS_AS_ARRAY,
@@ -59,6 +58,7 @@ import type { OpenLayersStore } from '../../model/store/OpenLayersStore';
 import { createStyleFunction } from './ol_dependant_utils';
 import { make_annotation_ownership_cql_filter } from './utils';
 import { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
+import { ANNOTATION } from '../../Types';
 
 async function geoserverCapabilities(url) {
   const parser = new WMSCapabilities();

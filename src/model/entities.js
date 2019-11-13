@@ -143,34 +143,6 @@ export class User {
   }
 }
 
-/**
- * While an annotation status is only a string and represents a status (yes), we need the actual state of that status across the platform.
- * This will in turn influence wether or not we see the counts, annotations, and actions (?) related to these annotation statuses.
- */
-export class AnnotationFilter {
-  /**
-   * The status text, as seen from the api.
-   */
-  text: string;
-
-  /**
-   * A human readable more beautiful text for the anotation status.
-   */
-  title: string;
-
-  /**
-   * Wether this annotation status should be active all across the platfrom.
-   */
-  activated: boolean;
-
-  constructor(text: string, activated: boolean = false, title: string = '') {
-    this.text = text;
-    this.activated = activated;
-    this.title = title;
-  }
-
-}
-
 type Sensor = 'PLEIADES';
 type ImageExtension = '.tif' | '.png';
 type Bits = 8 | 16;

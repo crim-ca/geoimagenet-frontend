@@ -14,12 +14,13 @@ import {
   ANNOTATIONS,
   WRITE,
   MODE,
-  ANNOTATION,
+
 } from '../constants';
 import { uiStore } from '../model/instance_cache';
 import { StoreActions } from '../model/StoreActions';
 import { TaxonomyClass } from '../model/TaxonomyClass';
 import { GeoImageNetStore } from '../model/store/GeoImageNetStore';
+import { ANNOTATION } from '../Types';
 
 const { window } = new JSDOM(`<!doctype html>`);
 

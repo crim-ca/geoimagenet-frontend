@@ -1,6 +1,30 @@
 // @flow strict
 
 import type { TaxonomyClass } from './model/entities';
+import type { AnnotationFilter } from './model/AnnotationFilter';
+
+/**
+ * These represent the status an annotation can have and MUST be kept manually in sync with the status in the API.
+ */
+export const ANNOTATION = {
+  STATUS: {
+    NEW: 'new',
+    PRE_RELEASED: 'pre_released',
+    RELEASED: 'released',
+    VALIDATED: 'validated',
+    REJECTED: 'rejected',
+    DELETED: 'deleted',
+  },
+  OWNERSHIP: {
+    OTHERS: 'others',
+    MINE: 'mine',
+    FOLLOWED_USERS: 'followed_users',
+  },
+  FILTER: {
+    STATUS: 'status',
+    OWNERSHIP: 'ownership',
+  },
+};
 
 export type TaxonomyClassFromAPI = {
   children: TaxonomyClassFromAPI[],
@@ -14,15 +38,7 @@ export type TaxonomyClassesDataFromAPI = TaxonomyClassFromAPI[];
 
 export type AnnotationStatus = 'new' | 'pre_released' | 'released' | 'validated' | 'rejected' | 'deleted';
 
-export type AnnotationFilterType = 'status' | 'ownership';
-
-export type AnnotationFilter = {
-  type: AnnotationFilterType,
-  text: string,
-  title: string,
-  active: boolean,
-  enabled: boolean,
-};
+export type AnnotationFilterType = ANNOTATION.FILTER.STATUS | ANNOTATION.FILTER.OWNERSHIP;
 
 export type AnnotationStatusFilters = {
   'new': AnnotationFilter,

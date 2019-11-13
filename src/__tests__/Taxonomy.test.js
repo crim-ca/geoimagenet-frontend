@@ -3,11 +3,11 @@
 import { StoreActions } from '../model/StoreActions';
 import { UserInteractions } from '../domain';
 import { ANNOTATIONS_COUNTS_RESPONSE, TAXONOMY_CLASSES_RESPONSE, TAXONOMY_RESPONSE } from './api_responses';
-import { ANNOTATION } from '../constants';
 import { theme } from '../utils/react';
 import { MuiThemeProvider } from '@material-ui/core';
 
 import Tab from '@material-ui/core/Tab';
+import { ANNOTATION } from '../Types';
 
 const React = require('react');
 const { mount, configure } = require('enzyme');
@@ -106,7 +106,8 @@ describe('Taxonomy viewer', () => {
     const wrapper = mount(
       <TaxonomyPresentation
         geoImageNetStore={geoImageNetStore}
-        userInteractions={userInteractions} />
+        userInteractions={userInteractions}
+      />
     );
     expect(wrapper.find(PresentationListElement).length)
       .toBeGreaterThan(0);

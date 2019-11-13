@@ -1,6 +1,6 @@
 // @flow strict
-
 import React from 'react';
+import { observer } from 'mobx-react';
 import Typography from '@material-ui/core/Typography';
 
 type Props = {
@@ -14,31 +14,34 @@ type Props = {
   label: string,
 };
 
-function CheckboxLineInput(props: Props) {
-  const {
-    uniqueId,
-    checked,
-    changeHandler,
-    label,
-  } = props;
-  return (
-    <>
-      <input
-        type="checkbox"
-        id={uniqueId}
-        checked={checked}
-        onChange={changeHandler}
-      />
-      <label htmlFor={uniqueId}>
-        <Typography
-          style={{ cursor: 'pointer' }}
-          variant="body2"
-        >
-          {label}
-        </Typography>
-      </label>
-    </>
-  );
+@observer
+class CheckboxLineInput extends React.Component<Props> {
+  render() {
+    const {
+      uniqueId,
+      checked,
+      changeHandler,
+      label,
+    } = this.props;
+    return (
+      <>
+        <input
+          type="checkbox"
+          id={uniqueId}
+          checked={checked}
+          onChange={changeHandler}
+        />
+        <label htmlFor={uniqueId}>
+          <Typography
+            style={{ cursor: 'pointer' }}
+            variant="body2"
+          >
+            {label}
+          </Typography>
+        </label>
+      </>
+    );
+  }
 }
 
 export { CheckboxLineInput };

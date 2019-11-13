@@ -4,19 +4,15 @@ import { observer } from 'mobx-react';
 import Button from '@material-ui/core/Button';
 import { TFunction } from 'react-i18next';
 import { compose } from 'react-apollo';
-import type{ GeoImageNetStore } from '../../../model/store/GeoImageNetStore';
-import { StoreActions } from '../../../model/StoreActions';
 import { withTranslation } from '../../../utils';
-import type { AnnotationStatus } from '../../../Types';
 import { FiltersPaper } from '../FiltersPaper';
 import { FadingDialog } from '../FadingDialog';
-import { CheckboxLineInput } from './CheckboxLineInput';
 import { withUserInterfaceStore } from '../../../model/HOCs';
 import type { UserInterfaceStore } from '../../../model/store/UserInterfaceStore';
+import type { AnnotationFilter as AnnotationFilterEntity } from '../../../model/AnnotationFilter';
+import { AnnotationFilter as AnnotationFilterComponent } from './AnnotationFilter';
 
 type Props = {
-  geoImageNetStore: GeoImageNetStore,
-  storeActions: StoreActions,
   uiStore: UserInterfaceStore,
   t: TFunction,
 };
@@ -43,19 +39,9 @@ class Container extends React.Component<Props, State> {
     });
   };
 
-  toggleStatusFilter = (annotationStatus: AnnotationStatus) => (event) => {
-    const { storeActions: { toggle_annotation_status_visibility } } = this.props;
-    toggle_annotation_status_visibility(annotationStatus, event.target.checked);
-  };
-
-  toggleOwnershipFilter = (ownership: string) => (event) => {
-    const { storeActions: { toggle_annotation_ownership_filter } } = this.props;
-    toggle_annotation_ownership_filter(ownership, event.target.checked);
-  };
-
   render() {
     const { anchor, open } = this.state;
-    const { uiStore: { annotationStatusFilters, annotationOwnershipFilters }, t } = this.props;
+    const { uiStore, t } = this.props;
     return (
       <>
         <Button
@@ -69,38 +55,22 @@ class Container extends React.Component<Props, State> {
           <FiltersPaper>
             <ul>
               {
-                Object.keys(annotationStatusFilters)
-                  .map((statusText: string) => {
-                    const statusFilter = annotationStatusFilters[statusText];
-                    const uniqueInputId = `status_${statusText}`;
+                Object.keys(uiStore.annotationStatusFilters)
+                  .map((statusText: string, i) => {
+                    const statusFilter: AnnotationFilterEntity = uiStore.annotationStatusFilters[statusText];
                     return (
-                      <li key={uniqueInputId}>
-                        <CheckboxLineInput
-                          uniqueId={uniqueInputId}
-                          checked={statusFilter.activated}
-                          changeHandler={this.toggleStatusFilter(statusFilter.text)}
-                          label={t(`status:plural.${statusFilter.text}`)}
-                        />
-                      </li>
+                      <AnnotationFilterComponent key={i} filter={statusFilter} />
                     );
                   })
               }
             </ul>
             <ul>
               {
-                Object.keys(annotationOwnershipFilters)
-                  .map((ownership: string) => {
-                    const ownershipFilter = annotationOwnershipFilters[ownership];
-                    const uniqueInputId = `ownership_${ownership}`;
+                Object.keys(uiStore.annotationOwnershipFilters)
+                  .map((ownership: string, i) => {
+                    const ownershipFilter = uiStore.annotationOwnershipFilters[ownership];
                     return (
-                      <li key={uniqueInputId}>
-                        <CheckboxLineInput
-                          uniqueId={uniqueInputId}
-                          checked={ownershipFilter.activated}
-                          changeHandler={this.toggleOwnershipFilter(ownershipFilter.text)}
-                          label={t(`annotations:ownership.${ownershipFilter.text}`)}
-                        />
-                      </li>
+                      <AnnotationFilterComponent key={i} filter={ownershipFilter} />
                     );
                   })
               }

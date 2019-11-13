@@ -6,7 +6,7 @@ import { InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionRepos
 import { AccessControlList } from './access-control-list.js';
 import { NotificationManager } from 'react-notifications';
 
-import { ANNOTATION, ANNOTATION_STATUS_AS_ARRAY } from '../constants';
+import { ANNOTATION_STATUS_AS_ARRAY } from '../constants';
 import { captureException } from '@sentry/browser';
 
 import { i18n } from '../utils';
@@ -21,6 +21,7 @@ import type { Event } from 'ol/events';
 import type { GeoJSON, WKT } from 'ol/format';
 import type { FollowedUser, MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI } from '../Types';
 import type { TaxonomyStore } from '../model/store/TaxonomyStore';
+import { ANNOTATION } from '../Types';
 
 const { t } = i18n;
 

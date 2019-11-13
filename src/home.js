@@ -80,7 +80,7 @@ export class PlatformLoader {
     ReactDOM.render(<LoadingSplashCircle />, div);
 
     await this.userInteractions.refresh_user_resources_permissions();
-    const { userInteractions, geoImageNetStore } = this;
+    const { userInteractions } = this;
     try {
       // dirtily select the first taxonomy in the list.
       await userInteractions.fetch_taxonomies();
