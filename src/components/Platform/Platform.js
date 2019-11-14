@@ -49,7 +49,6 @@ type Props = {|
  */
 @observer
 class Platform extends Component<Props> {
-
   render() {
     return (
       <PlatformContainer>

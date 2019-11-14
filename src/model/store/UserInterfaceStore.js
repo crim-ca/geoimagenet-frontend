@@ -1,5 +1,5 @@
 // @flow strict
-import { action, observable } from 'mobx';
+import { action, observable, autorun } from 'mobx';
 import { MODE } from '../../constants';
 import type { AnnotationOwnershipFilters, AnnotationStatusFilters } from '../../Types';
 import { AnnotationFilter } from '../AnnotationFilter';
@@ -12,6 +12,35 @@ class UserInterfaceStore {
 
   @action.bound setMode(mode: string) {
     this.selectedMode = mode;
+  }
+
+  constructor() {
+    autorun(() => {
+      switch (this.selectedMode) {
+        case MODE.DELETION:
+        case MODE.RELEASE:
+          this.disableAllFilters();
+          this.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleEnabled(true);
+          this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].toggleEnabled(true);
+          break;
+        case MODE.VALIDATION:
+          this.disableAllFilters();
+          this.annotationStatusFilters[ANNOTATION.STATUS.RELEASED].toggleEnabled(true);
+          this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].toggleEnabled(true);
+          this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.FOLLOWED_USERS].toggleEnabled(true);
+      }
+    });
+  }
+
+  @action disableAllFilters() {
+    this.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleEnabled(false);
+    this.annotationStatusFilters[ANNOTATION.STATUS.RELEASED].toggleEnabled(false);
+    this.annotationStatusFilters[ANNOTATION.STATUS.DELETED].toggleEnabled(false);
+    this.annotationStatusFilters[ANNOTATION.STATUS.VALIDATED].toggleEnabled(false);
+    this.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].toggleEnabled(false);
+    this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].toggleEnabled(false);
+    this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.OTHERS].toggleEnabled(false);
+    this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.FOLLOWED_USERS].toggleEnabled(false);
   }
 
   /**

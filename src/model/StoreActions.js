@@ -59,9 +59,9 @@ export class StoreActions {
     }
     const annotationFilter = this.uiStore.annotationStatusFilters[annotationStatusText];
     if (overrideActivated !== null) {
-      annotationFilter.activated = overrideActivated;
+      annotationFilter.toggleActivated(overrideActivated);
     } else {
-      annotationFilter.activated = !annotationFilter.activated;
+      annotationFilter.toggleActivated();
     }
     this.set_annotation_layer_visibility(annotationStatusText, annotationFilter.activated);
   }
@@ -77,9 +77,9 @@ export class StoreActions {
     }
     const annotationFilter = this.uiStore.annotationOwnershipFilters[annotationOwnership];
     if (overrideActivated !== null) {
-      annotationFilter.activated = overrideActivated;
+      annotationFilter.toggleActivated(overrideActivated);
     } else {
-      annotationFilter.activated = !annotationFilter.activated;
+      annotationFilter.toggleActivated();
     }
   }
 
@@ -251,7 +251,7 @@ export class StoreActions {
    */
   @action.bound
   set_annotation_layer_visibility(key: string, visible: boolean) {
-    this.uiStore.annotationStatusFilters[key].activated = visible;
+    this.uiStore.annotationStatusFilters[key].toggleActivated(visible);
   }
 
   @action.bound

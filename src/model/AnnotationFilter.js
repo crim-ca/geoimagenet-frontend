@@ -24,12 +24,17 @@ export class AnnotationFilter {
   /**
    * Whether this annotation status should be active all across the platform.
    */
-  @observable activated: boolean;
+  @computed get activated(): boolean {
+    if (this.enabled) {
+      return this.activatedInternal;
+    }
+    return false;
+  }
 
   /**
    * private container of the actual activated value.
    */
-  activatedInternal: boolean;
+  @observable activatedInternal: boolean;
 
   /**
    * While activated is about the filters, enabled is about whether or not the user can interact at all with the filter.
@@ -40,9 +45,9 @@ export class AnnotationFilter {
 
   @action toggleActivated(override?: boolean) {
     if (override !== undefined) {
-      this.activated = override;
+      this.activatedInternal = override;
     } else {
-      this.activated = !this.activated;
+      this.activatedInternal = !this.activatedInternal;
     }
   }
 
@@ -63,9 +68,8 @@ export class AnnotationFilter {
   ) {
     this.filterType = filterType;
     this.text = text;
-    this.activatedInternal = activated;
-    this.toggleActivated(activated);
     this.toggleEnabled(enabled);
+    this.toggleActivated(activated);
     this.title = title;
   }
 }

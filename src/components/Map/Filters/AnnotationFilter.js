@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { TFunction } from 'react-i18next';
 import { withTranslation } from '../../../utils';
 import { CheckboxLineInput } from './CheckboxLineInput';
-import { AnnotationFilter as AnnotationFilterEntity } from '../../../model/AnnotationFilter';
+import type { AnnotationFilter as AnnotationFilterEntity } from '../../../model/AnnotationFilter';
 
 type Props = {
   filter: AnnotationFilterEntity,
@@ -15,7 +15,9 @@ type Props = {
 @observer
 class AnnotationFilter extends React.Component<Props> {
   toggleFilterActivation = (filter: AnnotationFilterEntity) => (event) => {
-    filter.toggleActivated(event.target.checked);
+    if (filter.enabled) {
+      filter.toggleActivated(event.target.checked);
+    }
   };
 
   render() {

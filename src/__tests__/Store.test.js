@@ -127,39 +127,6 @@ describe('Artificially granted write annotations permissions', () => {
   });
 });
 
-describe('User interface store', () => {
-  test('Default mode is visualize', () => {
-    const customUiStore = new UserInterfaceStore();
-    expect(customUiStore.selectedMode)
-      .toBe(MODE.VISUALIZATION);
-  });
-
-  test('We can change mode', () => {
-    const customUiStore = new UserInterfaceStore();
-    customUiStore.setMode(MODE.ASK_EXPERTISE);
-    expect(customUiStore.selectedMode)
-      .toBe(MODE.ASK_EXPERTISE);
-  });
-
-  test('Delete mode specific filters', () => {
-    /*
-    when interacting with the annotation browser in deletion mode, we only want to see the new annotations,
-    because new annotations are the only ones that can be deleted.
-     */
-    uiStore.setMode(MODE.DELETION);
-    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].activated)
-      .toBe(true);
-    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.RELEASED].activated)
-      .toBe(false);
-    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.VALIDATED].activated)
-      .toBe(false);
-    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].activated)
-      .toBe(false);
-    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.DELETED].activated)
-      .toBe(false);
-  });
-});
-
 test('builds flat taxonomy_classes list', () => {
   const taxonomyStore = new TaxonomyStore(uiStore);
   const storeActions = new StoreActions(geoImageNetStore, taxonomyStore, uiStore);

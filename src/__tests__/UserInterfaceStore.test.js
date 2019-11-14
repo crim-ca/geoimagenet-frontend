@@ -13,6 +13,8 @@ import { UserInterfaceStore } from '../model/store/UserInterfaceStore';
 import { AnnotationFilter as AnnotationFilterComponent } from '../components/Map/Filters/AnnotationFilter';
 import { wait } from './utils';
 import { ANNOTATION } from '../Types';
+import { MODE } from '../constants';
+import { uiStore } from '../model/instance_cache';
 
 const { window } = new JSDOM('<!doctype html>');
 
@@ -54,6 +56,17 @@ describe('Annotation filter entity', () => {
     expect(filter.activated)
       .toBe(false);
   });
+  test('Can be disabled', () => {
+    const filter = new AnnotationFilter(ANNOTATION.FILTER.STATUS, 'text');
+    filter.toggleEnabled(false);
+    expect(filter.enabled)
+      .toBe(false);
+  });
+  test('Deactivated when activated but disabled', () => {
+    const filter = new AnnotationFilter(ANNOTATION.FILTER.STATUS, 'text', true, false);
+    expect(filter.activated)
+      .toBe(false);
+  });
 });
 
 describe('User interface store', () => {
@@ -61,6 +74,92 @@ describe('User interface store', () => {
     const store = new UserInterfaceStore();
     store.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleActivated(false);
     expect(store.annotationStatusFilters[ANNOTATION.STATUS.NEW].activated)
+      .toBe(false);
+  });
+
+
+  test('Default mode is visualize', () => {
+    const customUiStore = new UserInterfaceStore();
+    expect(customUiStore.selectedMode)
+      .toBe(MODE.VISUALIZATION);
+  });
+
+  test('We can change mode', () => {
+    const customUiStore = new UserInterfaceStore();
+    customUiStore.setMode(MODE.ASK_EXPERTISE);
+    expect(customUiStore.selectedMode)
+      .toBe(MODE.ASK_EXPERTISE);
+  });
+
+  test('Delete specific annotation filters', () => {
+    /*
+    when interacting with the annotation browser in deletion mode, we only want to see the new annotations,
+    because new annotations are the only ones that can be deleted.
+     */
+    uiStore.setMode(MODE.DELETION);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].enabled)
+      .toBe(true);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.RELEASED].enabled)
+      .toBe(false);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.VALIDATED].enabled)
+      .toBe(false);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].enabled)
+      .toBe(false);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.DELETED].enabled)
+      .toBe(false);
+    expect(uiStore.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].enabled)
+      .toBe(true);
+    expect(uiStore.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.FOLLOWED_USERS].enabled)
+      .toBe(false);
+    expect(uiStore.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.OTHERS].enabled)
+      .toBe(false);
+  });
+
+  test('Release specific annotation filters', () => {
+    /*
+    when interacting with the annotation browser in release mode, we only want to see the new and owned annotations,
+    because these are the only ones that can be released.
+     */
+    uiStore.setMode(MODE.RELEASE);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].enabled)
+      .toBe(true);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.RELEASED].enabled)
+      .toBe(false);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.VALIDATED].enabled)
+      .toBe(false);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].enabled)
+      .toBe(false);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.DELETED].enabled)
+      .toBe(false);
+    expect(uiStore.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].enabled)
+      .toBe(true);
+    expect(uiStore.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.FOLLOWED_USERS].enabled)
+      .toBe(false);
+    expect(uiStore.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.OTHERS].enabled)
+      .toBe(false);
+  });
+
+  test('Validation specific annotation filters', () => {
+    /**
+     * When validating, we only want to see owned and followed users released annotations
+     * Only these can be validated or rejected
+     */
+    uiStore.setMode(MODE.VALIDATION);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].enabled)
+      .toBe(false);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.RELEASED].enabled)
+      .toBe(true);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.VALIDATED].enabled)
+      .toBe(false);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].enabled)
+      .toBe(false);
+    expect(uiStore.annotationStatusFilters[ANNOTATION.STATUS.DELETED].enabled)
+      .toBe(false);
+    expect(uiStore.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].enabled)
+      .toBe(true);
+    expect(uiStore.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.FOLLOWED_USERS].enabled)
+      .toBe(true);
+    expect(uiStore.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.OTHERS].enabled)
       .toBe(false);
   });
 });
@@ -89,10 +188,8 @@ describe('Annotation filter component', () => {
 
 describe('Annotation filter cql generation', () => {
   let taxonomyStore;
-  let uiStore;
 
   beforeEach(action(() => {
-    uiStore = new UserInterfaceStore();
     taxonomyStore = new TaxonomyStore(uiStore);
     action(() => {
       Object.values(uiStore.annotationStatusFilters)
@@ -106,6 +203,7 @@ describe('Annotation filter cql generation', () => {
   test('Single filter', () => {
     action(() => {
       uiStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleActivated(true);
+      uiStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleEnabled(true);
     })();
     expect(taxonomyStore.activated_status_filters_cql)
       .toBe(`status IN ('${ANNOTATION.STATUS.NEW}')`);
@@ -113,12 +211,15 @@ describe('Annotation filter cql generation', () => {
   test('Multiple filters', () => {
     action(() => {
       uiStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleActivated(true);
-      uiStore.annotationStatusFilters[ANNOTATION.STATUS.PRE_RELEASED].toggleActivated(true);
+      uiStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleEnabled(true);
       uiStore.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].toggleActivated(true);
+      uiStore.annotationStatusFilters[ANNOTATION.STATUS.REJECTED].toggleEnabled(true);
+      uiStore.annotationStatusFilters[ANNOTATION.STATUS.DELETED].toggleActivated(true);
+      uiStore.annotationStatusFilters[ANNOTATION.STATUS.DELETED].toggleEnabled(true);
     })();
     expect(taxonomyStore.activated_status_filters_cql)
       .toBe(
-        `status IN ('${ANNOTATION.STATUS.NEW}','${ANNOTATION.STATUS.PRE_RELEASED}','${ANNOTATION.STATUS.REJECTED}')`,
+        `status IN ('${ANNOTATION.STATUS.NEW}','${ANNOTATION.STATUS.REJECTED}','${ANNOTATION.STATUS.DELETED}')`,
       );
   });
   test('No filters', () => {
