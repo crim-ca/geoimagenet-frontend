@@ -3,7 +3,7 @@ import * as React from 'react';
 import { taxonomyStore, annotationBrowserStore, uiStore } from './instance_cache';
 import type { TaxonomyStore } from './store/TaxonomyStore';
 import type { AnnotationBrowserStore } from './store/AnnotationBrowserStore';
-import { UserInterfaceStore } from './store/UserInterfaceStore';
+import type { UserInterfaceStore } from './store/UserInterfaceStore';
 
 type InjectedForTaxonomy = {| taxonomyStore: TaxonomyStore |};
 

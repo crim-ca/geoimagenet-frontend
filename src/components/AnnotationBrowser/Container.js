@@ -41,11 +41,6 @@ const style = theme => ({
 
 @observer
 class Container extends React.Component<Props> {
-
-  componentDidMount(): void {
-    autorun(this.props.annotationBrowserStore.refresh_content);
-  }
-
   navigate = (bounding_box: BoundingBox, status: AnnotationStatus, annotation_id: number) => {
     this.props.openLayersStore.set_extent(bounding_box);
     /**

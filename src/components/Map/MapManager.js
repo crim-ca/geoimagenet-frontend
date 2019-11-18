@@ -359,12 +359,6 @@ export class MapManager {
         }
         return this.userInteractions.validate_features_under_click(features, featureIds);
 
-      case MODE.REJECT:
-        if (!(features.length > 0)) {
-          return;
-        }
-        return this.userInteractions.reject_features_under_click(features, featureIds);
-
       case MODE.CREATION:
         return this.userInteractions.validate_creation_event_has_features();
 

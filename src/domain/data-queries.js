@@ -88,7 +88,7 @@ export class DataQueries {
   /**
    * Returns a GeoJson FeatureCollection with the images that contain a specific wkt geometry
    */
-  get_annotation_images = async (feature_wkt) => {
+  get_annotation_images = async (wktFeature: string) => {
     let url = `${this.geoserver_endpoint}/wfs?service=WFS&` +
       'exceptions=application/json&' +
       'request=GetFeature&' +
@@ -96,7 +96,7 @@ export class DataQueries {
       'outputFormat=application/json&' +
       'srsName=EPSG:3857&' +
       'propertyName=id,layer_name&' +
-      `cql_filter=CONTAINS(trace_simplified, ${feature_wkt}) AND bands IN ('RGB', 'NRG') AND bits=8`;
+      `cql_filter=CONTAINS(trace_simplified, ${wktFeature}) AND bands IN ('RGB', 'NRG') AND bits=8`;
 
     const response = await make_http_request(url);
     return await response.json();

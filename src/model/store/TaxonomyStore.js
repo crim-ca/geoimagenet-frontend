@@ -2,10 +2,12 @@
 import { action, computed, observable } from 'mobx';
 import { i18n } from '../../utils/index';
 import type { LeafClassGroup } from '../../Types';
-import type { TaxonomyClass } from '../entities';
+import type { TaxonomyClass } from '../TaxonomyClass';
 import type { UserInterfaceStore } from './UserInterfaceStore';
 
 export class TaxonomyStore {
+  uiStore: UserInterfaceStore;
+
   constructor(uiStore: UserInterfaceStore) {
     this.uiStore = uiStore;
   }
@@ -17,8 +19,8 @@ export class TaxonomyStore {
 
   @observable selected_taxonomy_class: TaxonomyClass;
 
-  @action.bound select_taxonomy_class(taxonomy_class: TaxonomyClass) {
-    this.selected_taxonomy_class = taxonomy_class;
+  @action.bound select_taxonomy_class(taxonomyClass: TaxonomyClass) {
+    this.selected_taxonomy_class = taxonomyClass;
   }
 
   @action toggle_pinned_class(taxonomy_class: TaxonomyClass, override?: boolean): void {

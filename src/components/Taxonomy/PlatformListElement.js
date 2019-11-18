@@ -13,7 +13,7 @@ import { withTranslation } from '../../utils';
 import { AnnotationCounts } from './AnnotationCounts';
 import { TaxonomyClassActions } from './TaxonomyClassActions';
 import { Classes } from './Classes';
-import type { TaxonomyClass } from '../../model/entities';
+import type { TaxonomyClass } from '../../model/TaxonomyClass';
 import type { UserInteractions } from '../../domain';
 import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import type { TaxonomyStore } from '../../model/store/TaxonomyStore';

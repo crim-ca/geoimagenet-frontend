@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { PresentationListElement } from './PresentationListElement';
 import type { UserInteractions } from '../../domain';
-import type { TaxonomyClass } from '../../model/entities';
+import type { TaxonomyClass } from '../../model/TaxonomyClass';
 import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 import { withTaxonomyStore } from '../../model/HOCs';

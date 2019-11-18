@@ -4,6 +4,7 @@ import {
   observable,
   computed,
   action,
+  autorun,
 } from 'mobx';
 import { make_annotation_ownership_cql_filter } from '../../components/Map/utils';
 import type { GeoImageNetStore } from './GeoImageNetStore';
@@ -21,11 +22,11 @@ configure({
 });
 
 export class AnnotationBrowserStore {
-  geoserver_endpoint: string;
+  geoserverEndpoint: string;
 
-  annotation_namespace: string;
+  annotationNamespace: string;
 
-  annotation_layer: string;
+  annotationLayer: string;
 
   geoImageNetStore: GeoImageNetStore;
 
@@ -36,32 +37,38 @@ export class AnnotationBrowserStore {
   dataQueries: DataQueries;
 
   constructor(
-    geoserver_endpoint: string,
-    annotation_namespace: string,
-    annotation_layer: string,
+    geoserverEndpoint: string,
+    annotationNamespace: string,
+    annotationLayer: string,
     geoImageNetStore: GeoImageNetStore,
     uiStore: UserInterfaceStore,
     taxonomyStore: TaxonomyStore,
     dataQueries: DataQueries,
   ) {
-    this.geoserver_endpoint = geoserver_endpoint;
-    this.annotation_namespace = annotation_namespace;
-    this.annotation_layer = annotation_layer;
+    this.geoserverEndpoint = geoserverEndpoint;
+    this.annotationNamespace = annotationNamespace;
+    this.annotationLayer = annotationLayer;
     this.geoImageNetStore = geoImageNetStore;
     this.uiStore = uiStore;
     this.taxonomyStore = taxonomyStore;
     this.dataQueries = dataQueries;
+    autorun(this.refreshContent);
   }
 
-  refresh_content = async () => {
-    const type_name = `${this.annotation_namespace}:${this.annotation_layer}`;
-    const json: WfsResponse = await this.dataQueries.get_annotations_browser_page(type_name, this.cql_filter, this.page_size, this.offset);
-    this.set_wfs_response(json);
+  refreshContent = async () => {
+    const typeName = `${this.annotationNamespace}:${this.annotationLayer}`;
+    const json = await this.dataQueries.get_annotations_browser_page(
+      typeName,
+      this.cql_filter,
+      this.page_size.toString(10),
+      this.offset.toString(10),
+    );
+    this.setWfsResponse(json);
   };
 
-  @action set_wfs_response = (response: WfsResponse) => {
-    this.wfs_response = response;
-  };
+  @action setWfsResponse(wfsResponse: WfsResponse) {
+    this.wfsResponse = wfsResponse;
+  }
 
   @action next_page = () => {
     this.page_number = Math.min(this.total_pages, this.page_number + 1);
@@ -71,14 +78,14 @@ export class AnnotationBrowserStore {
     this.page_number = Math.max(1, this.page_number - 1);
   };
 
-  @observable wfs_response: WfsResponse;
+  @observable wfsResponse: WfsResponse;
 
   @observable page_number: number = 1;
 
   @observable page_size: number = 10;
 
   @computed get total_features(): number {
-    return this.wfs_response ? this.wfs_response.totalFeatures : 0;
+    return this.wfsResponse ? this.wfsResponse.totalFeatures : 0;
   }
 
   @computed get total_pages(): number {
@@ -86,7 +93,7 @@ export class AnnotationBrowserStore {
   }
 
   @computed get current_page_content(): Annotation[] {
-    return this.wfs_response && this.wfs_response.features ? this.wfs_response.features : [];
+    return this.wfsResponse && this.wfsResponse.features ? this.wfsResponse.features : [];
   }
 
   @computed get offset(): number {

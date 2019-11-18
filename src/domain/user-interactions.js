@@ -180,7 +180,8 @@ export class UserInteractions {
       try {
         [newFeatureId] = await this.dataQueries.create_geojson_feature(payload);
       } catch (error) {
-        NotificationManager.error('We were unable to create the feature.');
+        NotificationManager.error('We were unable to save the feature remotely.');
+        return;
       }
       feature.setId(`${annotationLayer}.${newFeatureId}`);
       if (this.geoImageNetStore.logged_user) {
