@@ -69,26 +69,81 @@ describe('Annotation filter entity', () => {
   });
 });
 
+describe('Mode selection', () => {
+  let customUiStore: UserInterfaceStore;
+
+  beforeEach(() => {
+    customUiStore = new UserInterfaceStore();
+  });
+
+  test('Default mode is visualize', () => {
+    expect(customUiStore.selectedMode)
+      .toBe(MODE.VISUALIZATION);
+  });
+
+  test('We can change mode', () => {
+    customUiStore.setMode(MODE.ASK_EXPERTISE);
+    expect(customUiStore.selectedMode)
+      .toBe(MODE.ASK_EXPERTISE);
+  });
+
+  test('Constraining modes correctly activate manually deactivated filters', () => {
+    customUiStore.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleActivated(false);
+    customUiStore.setMode(MODE.DELETION);
+    expect(customUiStore.filterActivationMap).toStrictEqual([
+      [ANNOTATION.STATUS.NEW, true],
+      [ANNOTATION.STATUS.RELEASED, false],
+      [ANNOTATION.STATUS.DELETED, false],
+      [ANNOTATION.STATUS.VALIDATED, false],
+      [ANNOTATION.STATUS.REJECTED, false],
+      [ANNOTATION.OWNERSHIP.MINE, true],
+      [ANNOTATION.OWNERSHIP.OTHERS, false],
+      [ANNOTATION.OWNERSHIP.FOLLOWED_USERS, false],
+    ]);
+  });
+
+  test('Constraint to non-constraint mode restores selection', () => {
+    const initialFilterMap = customUiStore.filterActivationMap;
+    customUiStore.setMode(MODE.VALIDATION);
+    expect(customUiStore.filterActivationMap).not.toBe(initialFilterMap);
+    customUiStore.setMode(MODE.VISUALIZATION);
+    expect(customUiStore.filterActivationMap).toStrictEqual(initialFilterMap);
+  });
+
+  test('Builds filter map as expected', () => {
+    expect(customUiStore.filterActivationMap).toStrictEqual([
+      [ANNOTATION.STATUS.NEW, true],
+      [ANNOTATION.STATUS.RELEASED, true],
+      [ANNOTATION.STATUS.DELETED, true],
+      [ANNOTATION.STATUS.VALIDATED, true],
+      [ANNOTATION.STATUS.REJECTED, true],
+      [ANNOTATION.OWNERSHIP.MINE, true],
+      [ANNOTATION.OWNERSHIP.OTHERS, true],
+      [ANNOTATION.OWNERSHIP.FOLLOWED_USERS, true],
+    ]);
+  });
+
+  test('Correct filter map for deletion mode', () => {
+    customUiStore.setMode(MODE.DELETION);
+    expect(customUiStore.filterActivationMap).toStrictEqual([
+      [ANNOTATION.STATUS.NEW, true],
+      [ANNOTATION.STATUS.RELEASED, false],
+      [ANNOTATION.STATUS.DELETED, false],
+      [ANNOTATION.STATUS.VALIDATED, false],
+      [ANNOTATION.STATUS.REJECTED, false],
+      [ANNOTATION.OWNERSHIP.MINE, true],
+      [ANNOTATION.OWNERSHIP.OTHERS, false],
+      [ANNOTATION.OWNERSHIP.FOLLOWED_USERS, false],
+    ]);
+  });
+});
+
 describe('User interface store', () => {
   test('Collections allow access to instances', () => {
     const store = new UserInterfaceStore();
     store.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleActivated(false);
     expect(store.annotationStatusFilters[ANNOTATION.STATUS.NEW].activated)
       .toBe(false);
-  });
-
-
-  test('Default mode is visualize', () => {
-    const customUiStore = new UserInterfaceStore();
-    expect(customUiStore.selectedMode)
-      .toBe(MODE.VISUALIZATION);
-  });
-
-  test('We can change mode', () => {
-    const customUiStore = new UserInterfaceStore();
-    customUiStore.setMode(MODE.ASK_EXPERTISE);
-    expect(customUiStore.selectedMode)
-      .toBe(MODE.ASK_EXPERTISE);
   });
 
   test('Delete specific annotation filters', () => {
