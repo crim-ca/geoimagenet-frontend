@@ -152,37 +152,49 @@ export class UserInteractions {
    * Launch the creation of a new annotation. This should also update the "new" annotations count of the relevant
    * taxonomy class.
    */
-  create_drawend_handler = (format_geojson: GeoJSON, wkt_format: WKT, annotation_layer: string) => async (event: Event) => {
+  createDrawendHandler = (geojsonFormat: GeoJSON, wktFormat: WKT, annotationLayer: string) => async (event: Event) => {
     const { feature }: { feature: Feature } = event;
-    const { selected_taxonomy_class_id } = this.geoImageNetStore;
+    const { selected_taxonomy_class_id } = this.taxonomyStore;
 
-    const feature_wkt = wkt_format.writeFeature(feature);
-    const json = await this.dataQueries.get_annotation_images(feature_wkt);
+    const wktFeature = wktFormat.writeFeature(feature);
+    const json = await this.dataQueries.get_annotation_images(wktFeature);
 
-    let image_title = this.geoImageNetStore.current_annotation.image_title;
-    const image_feature = json.features.filter(f => f.properties.layer_name === image_title)
+    const imageTitle = this.geoImageNetStore.current_annotation.image_title;
+    const imageFeature = json.features.filter((f) => f.properties.layer_name === imageTitle)
       .pop();
 
-    if (image_feature === undefined) {
+    if (imageFeature === undefined) {
       NotificationManager.warning('The annotation must be entirely located on an image.');
       event.preventDefault();
     } else {
       feature.setProperties({
         taxonomy_class_id: selected_taxonomy_class_id,
-        image_id: image_feature.properties.id,
+        image_id: imageFeature.properties.id,
       });
-      const payload = format_geojson.writeFeature(feature);
+      const payload = geojsonFormat.writeFeature(feature);
+      /**
+       * here we send the feature to the backend
+       * then, with the information that is sent back, we set some information on the local values
+       */
+      let newFeatureId;
       try {
-        const [new_feature_id] = await this.dataQueries.create_geojson_feature(payload);
-        feature.setId(`${annotation_layer}.${new_feature_id}`);
-        if (this.geoImageNetStore.logged_user) {
-          feature.set('annotator_id', this.geoImageNetStore.logged_user.id);
-        }
-        this.storeActions.change_annotation_status_count(this.geoImageNetStore.selected_taxonomy_class_id, ANNOTATION.STATUS.NEW, 1);
-        this.storeActions.invert_taxonomy_class_visibility(this.geoImageNetStore.flat_taxonomy_classes[selected_taxonomy_class_id], true);
+        [newFeatureId] = await this.dataQueries.create_geojson_feature(payload);
       } catch (error) {
-        NotificationManager.error(error.message);
+        NotificationManager.error('We were unable to create the feature.');
       }
+      feature.setId(`${annotationLayer}.${newFeatureId}`);
+      if (this.geoImageNetStore.logged_user) {
+        feature.set('annotator_id', this.geoImageNetStore.logged_user.id);
+      }
+      this.storeActions.change_annotation_status_count(
+        this.taxonomyStore.selected_taxonomy_class_id,
+        ANNOTATION.STATUS.NEW,
+        1,
+      );
+      this.taxonomyStore.invert_taxonomy_class_visibility(
+        this.taxonomyStore.flat_taxonomy_classes[selected_taxonomy_class_id],
+        true,
+      );
     }
 
     this.storeActions.end_annotation();

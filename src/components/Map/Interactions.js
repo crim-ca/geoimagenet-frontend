@@ -154,11 +154,11 @@ export class Interactions {
     this.draw = new Draw({
       source: this.geoImageNetStore.annotations_sources[ANNOTATION.STATUS.NEW],
       type: 'Polygon',
-      condition: this.draw_condition_callback,
+      condition: this.drawConditionCallback,
     });
 
     this.draw.on('drawstart', () => this.select.setActive(false));
-    this.draw.on('drawend', this.userInteractions.create_drawend_handler(this.GeoJSONFormat, this.WKTFormat, this.annotationLayer));
+    this.draw.on('drawend', this.userInteractions.createDrawendHandler(this.GeoJSONFormat, this.WKTFormat, this.annotationLayer));
     this.draw.on('drawend', () => this.select.setActive(true));
     this.modify.on('modifystart', this.userInteractions.modifystart_handler);
     this.modify.on('modifyend', this.userInteractions.create_modifyend_handler(this.GeoJSONFormat, this.WKTFormat, this.map));
@@ -191,7 +191,7 @@ export class Interactions {
    * This callback should check domain conditions for the click to be valid and return a boolean to that effect.
    * Domain prevalidation of annotations should happen here.
    */
-  draw_condition_callback = (event: Event): boolean => {
+  drawConditionCallback = (event: Event): boolean => {
     /**
      * make sure that each click is correct to create the annotation
      * in all events reject the click if the resolution is too far away
@@ -226,9 +226,9 @@ export class Interactions {
     }
 
     // forEachLayerAtPixel should return the topmost layer first
-    const top_layer = layers[0];
+    const topLayer = layers[0];
 
-    this.userInteractions.start_annotation(top_layer.get('title'));
+    this.userInteractions.start_annotation(topLayer.get('title'));
 
     return true;
   };
