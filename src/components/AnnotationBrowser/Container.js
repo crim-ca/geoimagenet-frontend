@@ -41,8 +41,17 @@ const style = theme => ({
 
 @observer
 class Container extends React.Component<Props> {
-  navigate = (bounding_box: BoundingBox, status: AnnotationStatus, annotation_id: number) => {
-    this.props.openLayersStore.set_extent(bounding_box);
+  componentDidMount(): void {
+    const { annotationBrowserStore: { refreshContent } } = this.props;
+    this.disposer = autorun(refreshContent);
+  }
+
+  componentWillUnmount(): void {
+    this.disposer();
+  }
+
+  navigate = (boundingBox: BoundingBox, status: AnnotationStatus, annotationId: number) => {
+    this.props.openLayersStore.set_extent(boundingBox);
     /**
      * TODO ugly hack so that the feature is actually in the viewport when we try to select it
      *
@@ -51,7 +60,7 @@ class Container extends React.Component<Props> {
     setTimeout(() => {
       const { annotations_collections } = this.props.geoImageNetStore;
       const feature = annotations_collections[status].getArray()
-        .find(candidate => candidate.get('id') === annotation_id);
+        .find(candidate => candidate.get('id') === annotationId);
       if (feature === undefined) {
         return;
       }

@@ -1,27 +1,31 @@
-//@flow
-
-import { StoreActions } from '../model/StoreActions';
+// @flow strict
+import { MuiThemeProvider } from '@material-ui/core';
+import Tab from '@material-ui/core/Tab';
 import { UserInteractions } from '../domain';
 import { ANNOTATIONS_COUNTS_RESPONSE, TAXONOMY_CLASSES_RESPONSE, TAXONOMY_RESPONSE } from './api_responses';
 import { theme } from '../utils/react';
-import { MuiThemeProvider } from '@material-ui/core';
-
-import Tab from '@material-ui/core/Tab';
 import { ANNOTATION } from '../Types';
+import { StoreActions } from '../model/StoreActions';
 
 const React = require('react');
 const { mount, configure } = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
+const { JSDOM } = require('jsdom');
 const { Viewer } = require('../components/Taxonomy/Viewer');
 const { Classes } = require('../components/Taxonomy/Classes');
 const { SpacedChip } = require('../components/Taxonomy/AnnotationCounts');
 const { PresentationListElement } = require('../components/Taxonomy/PresentationListElement');
-const { JSDOM } = require('jsdom');
-const { window } = new JSDOM(`<!doctype html>`);
 const { i18n } = require('../utils');
 const { wait } = require('./utils');
 const { TaxonomyPresentation } = require('../components/Presentation/TaxonomyPresentation');
-const { geoImageNetStore, taxonomyStore, uiStore, dataQueries } = require('../model/instance_cache');
+const {
+  geoImageNetStore,
+  taxonomyStore,
+  uiStore,
+  dataQueries,
+} = require('../model/instance_cache');
+
+const { window } = new JSDOM('<!doctype html>');
 
 function copyProps(src, target) {
   Object.defineProperties(target, {
@@ -54,11 +58,10 @@ dataQueries.get_annotations_browser_page = jest.fn(() => ({}));
 const storeActions = new StoreActions(geoImageNetStore, taxonomyStore, uiStore);
 const userInteractions = new UserInteractions(storeActions, taxonomyStore, dataQueries, i18n, geoImageNetStore);
 
-const refresh_source_callback_mock = () => {
+const refreshSourceCallbackMock = () => {
 };
 
 class TestableTaxonomyViewer extends React.Component<Props> {
-
   render() {
     return (
       <MuiThemeProvider theme={theme}>
@@ -66,21 +69,21 @@ class TestableTaxonomyViewer extends React.Component<Props> {
           geoImageNetStore={geoImageNetStore}
           userInteractions={userInteractions}
           storeActions={storeActions}
-          refresh_source_by_status={refresh_source_callback_mock} />
+          refresh_source_by_status={refreshSourceCallbackMock}
+        />
       </MuiThemeProvider>
     );
   }
 }
 
 describe('Taxonomy viewer', () => {
-
   beforeEach(async () => {
     await userInteractions.fetch_taxonomies();
     await userInteractions.select_taxonomy(geoImageNetStore.taxonomies[1]);
   });
 
   test('Default data has new annotations', () => {
-    expect(taxonomyStore.flat_taxonomy_classes[1].counts['new'])
+    expect(taxonomyStore.flat_taxonomy_classes[1].counts.new)
       .toBeGreaterThan(0);
   });
 

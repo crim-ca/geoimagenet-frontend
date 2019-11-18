@@ -52,7 +52,6 @@ export class AnnotationBrowserStore {
     this.uiStore = uiStore;
     this.taxonomyStore = taxonomyStore;
     this.dataQueries = dataQueries;
-    autorun(this.refreshContent);
   }
 
   refreshContent = async () => {
