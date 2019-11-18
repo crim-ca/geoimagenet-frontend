@@ -17,7 +17,7 @@ export class TaxonomyStore {
 
   @observable selected_taxonomy_class: TaxonomyClass;
 
-  @action select_taxonomy_class(taxonomy_class: TaxonomyClass) {
+  @action.bound select_taxonomy_class(taxonomy_class: TaxonomyClass) {
     this.selected_taxonomy_class = taxonomy_class;
   }
 
