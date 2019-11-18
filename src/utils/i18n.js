@@ -14,6 +14,9 @@ const resources = {
         validated: 'Validated',
         rejected: 'Rejected',
         deleted: 'Deleted',
+        others: 'Others',
+        mine: 'Me',
+        followed_users: 'My users',
       },
       singular: {
         new: 'New',
@@ -37,11 +40,6 @@ const resources = {
       },
       filters: 'Filters',
       labels: 'Labels',
-      ownership: {
-        others: 'Others',
-        mine: 'Me',
-        followed_users: 'My users',
-      },
     },
     settings: {
       username: 'Username',
@@ -250,6 +248,9 @@ const resources = {
         validated: 'Validées',
         rejected: 'Rejetées',
         deleted: 'Supprimées',
+        others: 'Les autres',
+        mine: 'Moi',
+        followed_users: 'Mes utilisateurs/trices suiviEs',
       },
       singular: {
         new: 'Nouvelle',
@@ -273,11 +274,6 @@ const resources = {
       },
       filters: 'Filtres',
       labels: 'Libellés',
-      ownership: {
-        others: 'Les autres',
-        mine: 'Moi',
-        followed_users: 'Mes utilisateurs/trices suiviEs',
-      },
     },
     settings: {
       username: 'Nom d\'utilisateur/trice',
