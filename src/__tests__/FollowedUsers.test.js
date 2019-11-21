@@ -36,6 +36,7 @@ copyProps(window, global);
 configure({ adapter: new Adapter() });
 
 const userWithoutFollowedUsers = new User('user_name', 'email', [], 1, [], true);
+const anonymousUser = new User('anonymous', '', [], -1, [], false);
 // $FlowFixMe
 dataQueries.persistFollowedUser = jest.fn(async () => true);
 // $FlowFixMe
@@ -47,6 +48,7 @@ describe('Followed users form', () => {
     const uiStore = new UserInterfaceStore();
     const taxonomyStore = new TaxonomyStore(uiStore);
     const storeActions = new StoreActions(geoImageNetStore, taxonomyStore, uiStore);
+    storeActions.set_session_user(anonymousUser);
     const openLayersStore = new OpenLayersStore(null);
     const userInteractions = new UserInteractions(storeActions, taxonomyStore, dataQueries, i18next, geoImageNetStore);
     const wrapper = mount(
