@@ -85,25 +85,25 @@ export class StoreActions {
 
   @action.bound
   set_session_user(user: User) {
-    this.geoImageNetStore.logged_user = observable.object(user);
+    this.geoImageNetStore.user = observable.object(user);
   }
 
   @action.bound
   remove_followed_user(followed_user_id: number) {
-    if (this.geoImageNetStore.logged_user === undefined) {
+    if (this.geoImageNetStore.user === undefined) {
       throw new Error('Trying to modify followed users but there\'s no user in the state yet.');
     }
-    const followed_users = this.geoImageNetStore.logged_user.followed_users;
+    const followed_users = this.geoImageNetStore.user.followed_users;
     const list_element_index = followed_users.findIndex((element: FollowedUser) => element.id === followed_user_id);
     followed_users.splice(list_element_index, 1);
   }
 
   @action.bound
   add_followed_user(followed_user: FollowedUser) {
-    if (this.geoImageNetStore.logged_user === undefined) {
+    if (this.geoImageNetStore.user === undefined) {
       throw new Error('Trying to set followed users but there\'s nos user in the state yet.');
     }
-    this.geoImageNetStore.logged_user.followed_users.push(followed_user);
+    this.geoImageNetStore.user.followed_users.push(followed_user);
   }
 
   /**

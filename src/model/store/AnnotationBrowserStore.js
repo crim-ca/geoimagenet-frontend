@@ -108,9 +108,9 @@ export class AnnotationBrowserStore {
       bits.push(this.taxonomyStore.taxonomy_class_id_selection_cql);
     }
     const ownershipFiltersArray = Object.values(this.uiStore.annotationOwnershipFilters);
-    if (this.geoImageNetStore.logged_user) {
+    if (this.geoImageNetStore.user) {
       // $FlowFixMe
-      const cqlOwnership = make_annotation_ownership_cql_filter(ownershipFiltersArray, this.geoImageNetStore.logged_user);
+      const cqlOwnership = make_annotation_ownership_cql_filter(ownershipFiltersArray, this.geoImageNetStore.user);
       if (cqlOwnership.length > 0) {
         bits.push(cqlOwnership);
       }

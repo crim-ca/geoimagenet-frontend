@@ -242,7 +242,7 @@ export class MapManager {
 
       const ownershipFiltersArray = Object.values(annotationOwnershipFilters);
       // $FlowFixMe
-      this.CQLForOwnership = make_annotation_ownership_cql_filter(ownershipFiltersArray, geoImageNetStore.logged_user);
+      this.CQLForOwnership = make_annotation_ownership_cql_filter(ownershipFiltersArray, geoImageNetStore.user);
 
       Object.keys(annotationStatusFilters)
         .forEach((k) => {

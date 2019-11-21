@@ -288,14 +288,14 @@ describe('CQL filters generation', () => {
   let mineFilter;
   let followedUsersFilter;
   let filters;
-  let loggedUser;
+  let user;
 
   beforeEach(() => {
     othersFilter = new AnnotationFilter(ANNOTATION.FILTER.OWNERSHIP, ANNOTATION.OWNERSHIP.OTHERS, false);
     mineFilter = new AnnotationFilter(ANNOTATION.FILTER.OWNERSHIP, ANNOTATION.OWNERSHIP.MINE, false);
     followedUsersFilter = new AnnotationFilter(ANNOTATION.FILTER.OWNERSHIP, ANNOTATION.OWNERSHIP.FOLLOWED_USERS, false);
     filters = [othersFilter, mineFilter, followedUsersFilter];
-    loggedUser = new User('', '', [], 1, [{
+    user = new User('', '', [], 1, [{
       id: 2,
       nickname: 'user 2',
     }, {
@@ -308,14 +308,14 @@ describe('CQL filters generation', () => {
     expect(() => {
       make_annotation_ownership_cql_filter(
         filters.concat([new AnnotationFilter(ANNOTATION.FILTER.OWNERSHIP, 'invalid', true)]),
-        loggedUser,
+        user,
       );
     })
       .toThrow('This annotation ownership filter is corrupted, we have an unrecognized type: [invalid]');
   });
 
   test('Empty selection', () => {
-    expect(make_annotation_ownership_cql_filter(filters, loggedUser))
+    expect(make_annotation_ownership_cql_filter(filters, user))
       .toBe('annotator_id IN (-1)');
   });
 
@@ -328,40 +328,40 @@ describe('CQL filters generation', () => {
 
   test('Others', () => {
     othersFilter.toggleActivated(true);
-    expect(make_annotation_ownership_cql_filter(filters, loggedUser))
+    expect(make_annotation_ownership_cql_filter(filters, user))
       .toBe('annotator_id NOT IN (2,3,1)');
   });
 
   test('Mine', () => {
     mineFilter.toggleActivated(true);
-    expect(make_annotation_ownership_cql_filter(filters, loggedUser))
+    expect(make_annotation_ownership_cql_filter(filters, user))
       .toBe('annotator_id IN (1)');
   });
 
   test('Followed users', () => {
     followedUsersFilter.toggleActivated(true);
-    expect(make_annotation_ownership_cql_filter(filters, loggedUser))
+    expect(make_annotation_ownership_cql_filter(filters, user))
       .toBe('annotator_id IN (2,3)');
   });
 
   test('Mine and others', () => {
     othersFilter.toggleActivated(true);
     mineFilter.toggleActivated(true);
-    expect(make_annotation_ownership_cql_filter(filters, loggedUser))
+    expect(make_annotation_ownership_cql_filter(filters, user))
       .toBe('annotator_id NOT IN (2,3,1) OR annotator_id IN (1)');
   });
 
   test('Mine and followed users', () => {
     mineFilter.toggleActivated(true);
     followedUsersFilter.toggleActivated(true);
-    expect(make_annotation_ownership_cql_filter(filters, loggedUser))
+    expect(make_annotation_ownership_cql_filter(filters, user))
       .toBe('annotator_id IN (1) OR annotator_id IN (2,3)');
   });
 
   test('Others and followed users', () => {
     othersFilter.toggleActivated(true);
     followedUsersFilter.toggleActivated(true);
-    expect(make_annotation_ownership_cql_filter(filters, loggedUser))
+    expect(make_annotation_ownership_cql_filter(filters, user))
       .toBe('annotator_id NOT IN (2,3,1) OR annotator_id IN (2,3)');
   });
 
@@ -381,7 +381,7 @@ describe('CQL filters generation', () => {
     othersFilter.toggleActivated(true);
     mineFilter.toggleActivated(true);
     followedUsersFilter.toggleActivated(true);
-    expect(make_annotation_ownership_cql_filter(filters, loggedUser))
+    expect(make_annotation_ownership_cql_filter(filters, user))
       .toBe('');
   });
 });

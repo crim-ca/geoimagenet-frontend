@@ -74,13 +74,13 @@ describe('Followed users form', () => {
      * $FlowFixMe
      * We are in a controlled situation, the logged user is not null
      */
-    expect(geoImageNetStore.logged_user.user_name)
+    expect(geoImageNetStore.user.user_name)
       .toBe('user_name');
   });
 });
 
 /**
- * we want to validate that the form will populate the logged_user's followed users list
+ * we want to validate that the form will populate the user's followed users list
  * for that, we need a store and the form
  */
 describe('Add followed user form validates input, adds and removes user', () => {
@@ -101,7 +101,7 @@ describe('Add followed user form validates input, adds and removes user', () => 
     storeActions = new StoreActions(store, taxonomyStore, uiStore);
     userInteractions = new UserInteractions(storeActions, taxonomyStore, dataQueries, i18next, store);
     storeActions.set_session_user(userWithoutFollowedUsers);
-    wrapper = mount(<UserSettingsContainer user={store.logged_user} userInteractions={userInteractions} />);
+    wrapper = mount(<UserSettingsContainer user={store.user} userInteractions={userInteractions} />);
   });
 
   test('Logged user without followed users has access to the list and form', () => {
@@ -162,7 +162,7 @@ describe('Add followed user form validates input, adds and removes user', () => 
     await wait(0);
     wrapper.update();
 
-    expect(store.logged_user.followed_users.length)
+    expect(store.user.followed_users.length)
       .toBe(1);
     const materialRows = wrapper.find(FollowedUsersList)
       .find('tbody')
@@ -180,7 +180,7 @@ describe('Add followed user form validates input, adds and removes user', () => 
      * $FlowFixMe
      * We are in a controlled situation, the logged user is not null
      */
-    expect(store.logged_user.followed_users.length)
+    expect(store.user.followed_users.length)
       .toBe(0);
   });
 });

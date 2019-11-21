@@ -184,8 +184,8 @@ export class UserInteractions {
         return;
       }
       feature.setId(`${annotationLayer}.${newFeatureId}`);
-      if (this.geoImageNetStore.logged_user) {
-        feature.set('annotator_id', this.geoImageNetStore.logged_user.id);
+      if (this.geoImageNetStore.user) {
+        feature.set('annotator_id', this.geoImageNetStore.user.id);
       }
       this.storeActions.change_annotation_status_count(
         this.taxonomyStore.selected_taxonomy_class_id,

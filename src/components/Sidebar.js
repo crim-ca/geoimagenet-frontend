@@ -68,11 +68,11 @@ const makeSidebarSections: (
       content: (<div id="layer-switcher" className="layer-switcher-container" />),
     },
   ];
-  if (geoImageNetStore.logged_user !== undefined) {
+  if (geoImageNetStore.user !== undefined) {
     sections.push({
       title: 'Settings',
       slug: 'settings',
-      content: (<SettingsContainer user={geoImageNetStore.logged_user} userInteractions={userInteractions} />),
+      content: (<SettingsContainer user={geoImageNetStore.user} userInteractions={userInteractions} />),
     });
   }
   return sections;
