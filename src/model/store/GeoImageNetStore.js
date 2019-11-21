@@ -133,7 +133,7 @@ export class GeoImageNetStore {
    */
   @computed get nickname_map() {
     const map = {};
-    if (this.logged_user === null) {
+    if (this.logged_user === undefined) {
       return map;
     }
     const {followed_users, id, user_name} = this.logged_user;

@@ -19,7 +19,6 @@ type Props = {
 };
 
 class Container extends React.Component<Props> {
-
   save_followed_user_callback = (form_data: FollowedUser): Promise<boolean> => {
     const { t, userInteractions } = this.props;
     return new Promise((resolve) => {
@@ -60,7 +59,7 @@ class Container extends React.Component<Props> {
   };
 
   verify_duplicate_id = (id: number): boolean => {
-    return this.props.user.followed_users.some(followed_user => parseInt(followed_user.id) === parseInt(id));
+    return this.props.user.followed_users.some(followed_user => parseInt(followed_user.id, 10) === parseInt(id, 10));
   };
 
   render() {
@@ -68,9 +67,14 @@ class Container extends React.Component<Props> {
     return (
       <>
         <UserInformation user={user} />
-        <AddFollowedUserForm save_user={this.save_followed_user_callback} id_already_exists={this.verify_duplicate_id} />
-        <FollowedUsersList followed_users={user.followed_users}
-                           delete_user={this.remove_followed_user} />
+        <AddFollowedUserForm
+          save_user={this.save_followed_user_callback}
+          id_already_exists={this.verify_duplicate_id}
+        />
+        <FollowedUsersList
+          followed_users={user.followed_users}
+          delete_user={this.remove_followed_user}
+        />
       </>
     );
   }

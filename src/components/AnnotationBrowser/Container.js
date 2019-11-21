@@ -43,11 +43,15 @@ const style = theme => ({
 class Container extends React.Component<Props> {
   componentDidMount(): void {
     const { annotationBrowserStore: { refreshContent } } = this.props;
-    this.disposer = autorun(refreshContent);
+    if (window.fetch) {
+      this.disposer = autorun(refreshContent);
+    }
   }
 
   componentWillUnmount(): void {
-    this.disposer();
+    if (window.fetch) {
+      this.disposer();
+    }
   }
 
   navigate = (boundingBox: BoundingBox, status: AnnotationStatus, annotationId: number) => {

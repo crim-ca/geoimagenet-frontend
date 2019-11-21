@@ -68,7 +68,7 @@ const makeSidebarSections: (
       content: (<div id="layer-switcher" className="layer-switcher-container" />),
     },
   ];
-  if (geoImageNetStore.logged_user !== null) {
+  if (geoImageNetStore.logged_user !== undefined) {
     sections.push({
       title: 'Settings',
       slug: 'settings',
@@ -109,7 +109,6 @@ const style = {
 };
 
 class Sidebar extends React.Component<Props, State> {
-
   state = {
     opened_panel_title: '',
   };
@@ -122,23 +121,36 @@ class Sidebar extends React.Component<Props, State> {
 
   render() {
     const { opened_panel_title } = this.state;
-    const { classes } = this.props;
-    const sidebar_sections = makeSidebarSections(
-      this.props.userInteractions,
-      this.props.geoImageNetStore,
-      this.props.storeActions,
-      this.props.openLayersStore,
-      this.props.t);
+    const {
+      classes,
+      userInteractions,
+      geoImageNetStore,
+      storeActions,
+      openLayersStore,
+      t,
+    } = this.props;
+    const sidebarSections = makeSidebarSections(
+      userInteractions,
+      geoImageNetStore,
+      storeActions,
+      openLayersStore,
+      t,
+    );
     return (
       <Paper className={classes.sidebar}>
         <div className={classes.bottom}>
           {
-            sidebar_sections.map((section, i) => (
-              <ExpansionPanel key={i}
-                              expanded={opened_panel_title === section.slug}
-                              onChange={this.create_open_panel_handler(section.slug)}>
+            sidebarSections.map((section, i) => (
+              <ExpansionPanel
+                key={i}
+                expanded={opened_panel_title === section.slug}
+                onChange={this.create_open_panel_handler(section.slug)}
+              >
                 <ExpansionPanelSummary
-                  expandIcon={<ExpandMore />}>{section.title}</ExpansionPanelSummary>
+                  expandIcon={<ExpandMore />}
+                >
+                  {section.title}
+                </ExpansionPanelSummary>
                 <ExpansionPanelDetails className={classes.details}>{section.content}</ExpansionPanelDetails>
               </ExpansionPanel>
             ))

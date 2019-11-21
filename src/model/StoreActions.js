@@ -90,7 +90,7 @@ export class StoreActions {
 
   @action.bound
   remove_followed_user(followed_user_id: number) {
-    if (this.geoImageNetStore.logged_user === null) {
+    if (this.geoImageNetStore.logged_user === undefined) {
       throw new Error('Trying to modify followed users but there\'s no user in the state yet.');
     }
     const followed_users = this.geoImageNetStore.logged_user.followed_users;
@@ -100,7 +100,7 @@ export class StoreActions {
 
   @action.bound
   add_followed_user(followed_user: FollowedUser) {
-    if (this.geoImageNetStore.logged_user === null) {
+    if (this.geoImageNetStore.logged_user === undefined) {
       throw new Error('Trying to set followed users but there\'s nos user in the state yet.');
     }
     this.geoImageNetStore.logged_user.followed_users.push(followed_user);
