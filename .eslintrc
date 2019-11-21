@@ -2,28 +2,36 @@
   "env": {
     "browser": true,
     "node": true,
-    "es6": true
+    "es6": true,
+    "jest": true
   },
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module"
   },
   "parser": "babel-eslint",
-  "rules": {
-    "semi": 2,
-    "react/display-name": 0
-  },
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
-    "plugin:jest/recommended",
-    "plugin:flowtype/recommended"
+    "plugin:flowtype/recommended",
+    "airbnb-base",
+    "airbnb/rules/react"
   ],
+  "rules": {
+    "react/jsx-filename-extension": 0,
+    "import/prefer-default-export": 0,
+    "max-len": ["error", { "code": 120 }]
+  },
   "plugins": [
-    "flowtype"
+    "flowtype",
+    "react",
+    "graphql"
   ],
   "globals": {
     "GEOIMAGENET_API_URL": false,
+    "GEOSERVER_URL": false,
+    "ANNOTATION_NAMESPACE": false,
+    "ANNOTATION_LAYER": false,
     "GRAPHQL_ENDPOINT": false,
     "MAGPIE_ENDPOINT": false,
     "ML_ENDPOINT": false,

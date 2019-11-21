@@ -1,6 +1,6 @@
 // @flow strict
 
-import gql from "graphql-tag";
+import gql from 'graphql-tag';
 
 export const MODELS = gql`
     query models {
