@@ -6,7 +6,6 @@ import { MuiThemeProvider } from '@material-ui/core';
 import { JSDOM } from 'jsdom';
 import { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 import { StoreActions } from '../model/StoreActions';
-import { DataQueries } from '../domain/data-queries';
 import { UserInteractions } from '../domain/user-interactions';
 import { Container as UserSettingsContainer } from '../components/UserSettings/Container';
 import { FollowedUsersList } from '../components/UserSettings/FollowedUsersList';
@@ -19,6 +18,7 @@ import { copyProps, wait } from './utils';
 import { UserInterfaceStore } from '../model/store/UserInterfaceStore';
 import { OpenLayersStore } from '../model/store/OpenLayersStore';
 import { theme } from '../utils/react';
+import { dataQueries } from '../model/instance_cache';
 
 const { window } = new JSDOM('<!doctype html>');
 
@@ -35,12 +35,11 @@ copyProps(window, global);
 
 configure({ adapter: new Adapter() });
 
-const dataQueries = new DataQueries('', '', '', '');
-const userWithoutFollowedUsers = new User('user_name', 'email', [], 1, []);
+const userWithoutFollowedUsers = new User('user_name', 'email', [], 1, [], true);
 // $FlowFixMe
-dataQueries.save_followed_user = jest.fn(() => null);
+dataQueries.persistFollowedUser = jest.fn(async () => true);
 // $FlowFixMe
-dataQueries.remove_followed_user = jest.fn(() => null);
+dataQueries.remove_followed_user = jest.fn(async () => true);
 
 describe('Followed users form', () => {
   test('Anonymous user does not have settings section', () => {
@@ -74,7 +73,7 @@ describe('Followed users form', () => {
      * $FlowFixMe
      * We are in a controlled situation, the logged user is not null
      */
-    expect(geoImageNetStore.user.user_name)
+    expect(geoImageNetStore.user.name)
       .toBe('user_name');
   });
 });

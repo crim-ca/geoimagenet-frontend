@@ -70,7 +70,7 @@ class SessionHandle extends React.Component<Props> {
     return (
       <SessionHandlePaper>
         <PresentationText>
-          {`Hello ${user.user_name}.`}
+          {`Hello ${user.name}.`}
         </PresentationText>
         <FontAwesomeIcon icon={faUserCog} className="fa-2x" />
         <ClickableSpan>

@@ -55,7 +55,7 @@ export function createStyleFunction(
      * While one might be tempted to move these variable access outside of the callback,
      * we must keep this code *inside* the callback otherwise the list is not updated in accordance to the changes to the followed users
      */
-    const { showLabels, show_annotators_identifiers, nickname_map } = geoImageNetStore;
+    const { showLabels, show_annotators_identifiers, user: { nicknamesMap } } = geoImageNetStore;
     if (!feature.get('taxonomy_class_id')) {
       return new Style();
     }
@@ -69,7 +69,7 @@ export function createStyleFunction(
         .toString()
       : '-1';
     // TODO if we need performance of styling, this check could happen at the create style level, and return a different function instead of making the check here
-    const identifier = nickname_map.hasOwnProperty(annotatorId) ? nickname_map[annotatorId] : annotatorId;
+    const identifier = nicknamesMap.hasOwnProperty(annotatorId) ? nicknamesMap[annotatorId] : annotatorId;
 
     const bits = [];
     if (showLabels) {

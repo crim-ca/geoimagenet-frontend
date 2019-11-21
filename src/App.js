@@ -83,7 +83,7 @@ class App extends React.Component<Props> {
       geoImageNetStore,
       userInteractions,
     } = this.props;
-    const { acl: { authenticated } } = geoImageNetStore;
+    const { user: { authenticated } } = geoImageNetStore;
     return (
       <Router>
         <MuiThemeProvider theme={theme}>

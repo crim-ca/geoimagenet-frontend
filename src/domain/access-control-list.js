@@ -24,18 +24,8 @@ export class AccessControlList {
 
   repository: ResourcePermissionRepository;
 
-  /**
-   * @readonly
-   * an user can have permissions to read some resources, while not being authentificated (mostly anonymous, tbqh)
-   * hence, we originally use the authentificated boolean to control such flow, mostly the logged layout vs not logged layout
-   * while this technically could be easily overwritten by the user on the client, we don't rely on this to actually
-   * protect password protected resources.
-   */
-  authenticated: boolean;
-
-  constructor(resource_permission_repository: ResourcePermissionRepository, authenticated: boolean = false) {
+  constructor(resource_permission_repository: ResourcePermissionRepository) {
     this.repository = resource_permission_repository;
-    this.authenticated = authenticated;
   }
 
   /**

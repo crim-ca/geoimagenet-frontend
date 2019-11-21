@@ -126,27 +126,6 @@ export class GeoImageNetStore {
   @observable user: User;
 
   /**
-   * If there is a logged user (it's possible there isn't, people can access the map in anonymous mode)
-   * then we should not be trying to substitute nicknames for ids
-   */
-  @computed get nickname_map() {
-    const map = {};
-    if (this.user === undefined) {
-      return map;
-    }
-    const {followed_users, id, user_name} = this.user;
-    map[id] = user_name;
-    if (!Array.isArray(followed_users) || followed_users.length === 0) {
-      return map;
-    }
-    const assign_followed_user = (followedUser: FollowedUser) => {
-      map[followedUser.id] = followedUser.nickname;
-    };
-    followed_users.forEach(assign_followed_user);
-    return map;
-  }
-
-  /**
    * We need to be able to control how annotations are created.
    * Once we begin adding points, we limit the adding of points
    * that are outside of an image, or on another image (maybe). This represents an ongoing annotation.

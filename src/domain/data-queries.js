@@ -44,9 +44,12 @@ export class DataQueries {
     });
   };
 
-  save_followed_user = (form_data: { id: number | string, nickname: string }[]): Promise<Response> => {
-    return post_json(`${this.geoimagenet_api_endpoint}/users/current/followed_users`, JSON.stringify(form_data));
-  };
+  persistFollowedUser = (
+    formData: FollowedUser[],
+  ): Promise<Response> => post_json(
+    `${this.geoimagenet_api_endpoint}/users/current/followed_users`,
+    JSON.stringify(formData),
+  );
 
   fetch_followed_users = async (): Promise<FollowedUser[]> => {
     const response: Response = await make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users`);
@@ -61,6 +64,7 @@ export class DataQueries {
       },
     });
   };
+
 
   /**
    * we overwrite the return for the first element because this method is called get by id, we only ever want one element

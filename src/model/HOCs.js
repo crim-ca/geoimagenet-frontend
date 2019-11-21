@@ -1,9 +1,15 @@
 // @flow strict
 import * as React from 'react';
-import { taxonomyStore, annotationBrowserStore, uiStore } from './instance_cache';
+import {
+  taxonomyStore,
+  annotationBrowserStore,
+  uiStore,
+  dataQueries,
+} from './instance_cache';
 import type { TaxonomyStore } from './store/TaxonomyStore';
 import type { AnnotationBrowserStore } from './store/AnnotationBrowserStore';
 import type { UserInterfaceStore } from './store/UserInterfaceStore';
+import type { DataQueries } from '../domain/data-queries';
 
 type InjectedForTaxonomy = {| taxonomyStore: TaxonomyStore |};
 
@@ -44,8 +50,22 @@ function withUserInterfaceStore<Config>(
   };
 }
 
+type InjectedForDataQueries = {| dataQueries: DataQueries |};
+
+function withDataQueries<Config>(
+  InnerComponent: React.AbstractComponent<{| ...Config, ...InjectedForDataQueries |}>,
+): React.AbstractComponent<Config> {
+  return function WrapperComponent(props: Config) {
+    return (
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      <InnerComponent {...props} dataQueries={dataQueries} />
+    );
+  };
+}
+
 export {
   withTaxonomyStore,
   withAnnotationBrowserStore,
   withUserInterfaceStore,
+  withDataQueries,
 };

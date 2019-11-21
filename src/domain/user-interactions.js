@@ -202,11 +202,6 @@ export class UserInteractions {
     this.storeActions.end_annotation();
   };
 
-  save_followed_user = async (form_data: FollowedUser): Promise<void> => {
-    await this.dataQueries.save_followed_user([form_data]);
-    this.storeActions.add_followed_user(form_data);
-  };
-
   get_followed_users_collection = (): Promise<FollowedUser[]> => {
     return new Promise((resolve, reject) => {
       this.dataQueries.fetch_followed_users()
@@ -219,11 +214,6 @@ export class UserInteractions {
           },
         );
     });
-  };
-
-  remove_followed_user = async (id: number): Promise<void> => {
-    await this.dataQueries.remove_followed_user(id);
-    this.storeActions.remove_followed_user(id);
   };
 
   populate_image_dictionary = async () => {
@@ -409,16 +399,22 @@ export class UserInteractions {
   refreshUserSession = async () => {
     const magpieSessionJson: MagpieMergedSessionInformation = await this.dataQueries.current_user_session();
     const { user, authenticated } = magpieSessionJson;
-    if (!authenticated) {
-      return;
-    }
     let followedUsers: FollowedUser[];
-    try {
-      followedUsers = await this.get_followed_users_collection();
-    } catch (error) {
-      followedUsers = [];
+    if (authenticated) {
+      try {
+        followedUsers = await this.get_followed_users_collection();
+      } catch (error) {
+        followedUsers = [];
+      }
     }
-    const userInstance = new User(user.user_name, user.email, user.group_names, user.user_id, followedUsers);
+    const userInstance = new User(
+      user.user_name,
+      user.email,
+      user.group_names,
+      user.user_id,
+      followedUsers,
+      authenticated,
+    );
     this.storeActions.set_session_user(userInstance);
     let jsonResponse;
     try {
@@ -451,7 +447,7 @@ export class UserInteractions {
       }
       throw e;
     }
-    const acl = new AccessControlList(resourcePermissionRepository, authenticated);
+    const acl = new AccessControlList(resourcePermissionRepository);
     this.storeActions.set_acl(acl);
 
   };

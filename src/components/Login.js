@@ -56,7 +56,7 @@ class LoginComponent extends React.Component<Props, State> {
 
 
   /**
-   * Catch all change handler generation for user_name and password.
+   * Catch all change handler generation for name and password.
    * Takes the name of the property to change and returns a handler for that specific property.
    * @private
    * @param {String} key

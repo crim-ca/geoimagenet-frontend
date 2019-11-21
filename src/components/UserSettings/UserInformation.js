@@ -18,7 +18,7 @@ class UserInformation extends React.Component<Props> {
         <tbody>
         <tr>
           <th>{t('settings:username')}:</th>
-          <td>{user.user_name}</td>
+          <td>{user.name}</td>
         </tr>
         <tr>
           <th>{t('settings:password')}:</th>
