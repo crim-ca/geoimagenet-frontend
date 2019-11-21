@@ -56,13 +56,7 @@ export class DataQueries {
 
   fetch_followed_users = async (): Promise<FollowedUser[]> => {
     const response: Response = await make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users`);
-    try {
-      return await response.json();
-    } catch (error) {
-      Sentry.captureException(error);
-      NotificationManager.error(t('network:malformed_response'));
-      throw error;
-    }
+    return response.json();
   };
 
   remove_followed_user = async (id: number): Promise<Response> => {

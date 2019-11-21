@@ -2,6 +2,7 @@
 import React from 'react';
 import { mount, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+import { MuiThemeProvider } from '@material-ui/core';
 import { JSDOM } from 'jsdom';
 import { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 import { StoreActions } from '../model/StoreActions';
@@ -10,11 +11,14 @@ import { UserInteractions } from '../domain';
 import { Container as UserSettingsContainer } from '../components/UserSettings/Container';
 import { FollowedUsersList } from '../components/UserSettings/FollowedUsersList';
 import { AddFollowedUserForm } from '../components/UserSettings/AddFollowedUserForm';
+import { Sidebar } from '../components/Sidebar';
 import { i18n as i18next } from '../utils/i18n';
 import { User } from '../model/entities';
 import { TaxonomyStore } from '../model/store/TaxonomyStore';
 import { copyProps, wait } from './utils';
 import { UserInterfaceStore } from '../model/store/UserInterfaceStore';
+import { OpenLayersStore } from '../model/store/OpenLayersStore';
+import { theme } from '../utils/react';
 
 const { window } = new JSDOM('<!doctype html>');
 
@@ -39,6 +43,25 @@ dataQueries.save_followed_user = jest.fn(() => null);
 dataQueries.remove_followed_user = jest.fn(() => null);
 
 describe('Followed users form', () => {
+  test('Anonymous user does not have settings section', () => {
+    const geoImageNetStore = new GeoImageNetStore();
+    const storeActions = new StoreActions(geoImageNetStore);
+    const userInteractions = new UserInteractions();
+    const openLayersStore = new OpenLayersStore(null);
+    const wrapper = mount(
+      <MuiThemeProvider theme={theme}>
+        <Sidebar
+          state_proxy={geoImageNetStore}
+          store_actions={storeActions}
+          user_interactions={userInteractions}
+          open_layers_store={openLayersStore}
+        />
+      </MuiThemeProvider>,
+    );
+    expect(wrapper.find(FollowedUsersList).length)
+      .toBe(0);
+  });
+
   test('We can log a user on', () => {
     const geoImageNetStore = new GeoImageNetStore();
     const uiStore = new UserInterfaceStore();
