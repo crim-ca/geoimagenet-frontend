@@ -13,7 +13,7 @@ import { FollowedUsersList } from '../components/UserSettings/FollowedUsersList'
 import { AddFollowedUserForm } from '../components/UserSettings/AddFollowedUserForm';
 import { Sidebar } from '../components/Sidebar';
 import { i18n as i18next } from '../utils/i18n';
-import { User } from '../model/entities';
+import { User } from '../model/User';
 import { TaxonomyStore } from '../model/store/TaxonomyStore';
 import { copyProps, wait } from './utils';
 import { UserInterfaceStore } from '../model/store/UserInterfaceStore';

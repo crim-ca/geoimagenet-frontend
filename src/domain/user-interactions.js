@@ -1,24 +1,25 @@
 // @flow strict
 
-import { DialogManager } from '../components/Dialogs';
 import { action } from 'mobx';
-import { InvalidPermissions, ProbablyInvalidPermissions, ResourcePermissionRepository, User } from '../model/entities.js';
-import { AccessControlList } from './access-control-list.js';
-import { NotificationManager } from 'react-notifications';
-
-import { ANNOTATION_STATUS_AS_ARRAY } from '../constants';
-import { captureException } from '@sentry/browser';
-
-import { i18n } from '../utils';
-
-import type { DataQueries } from './data-queries';
-import type { StoreActions } from '../model/StoreActions';
-import type { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 import type { Feature, ModifyEvent } from 'ol';
-import type { SatelliteImage, Taxonomy } from '../model/entities';
 import type { Map } from 'ol/Map';
 import type { Event } from 'ol/events';
 import type { GeoJSON, WKT } from 'ol/format';
+import { captureException } from '@sentry/browser';
+import { NotificationManager } from 'react-notifications';
+import { DialogManager } from '../components/Dialogs';
+import { ProbablyInvalidPermissions } from '../model/ProbablyInvalidPermissions';
+import { ResourcePermissionRepository } from '../model/ResourcePermissionRepository';
+import { InvalidPermissions } from '../model/InvalidPermissions';
+import { User } from '../model/User';
+import { AccessControlList } from './access-control-list';
+import { ANNOTATION_STATUS_AS_ARRAY } from '../constants';
+import { i18n } from '../utils';
+import type { DataQueries } from './data-queries';
+import type { StoreActions } from '../model/StoreActions';
+import type { GeoImageNetStore } from '../model/store/GeoImageNetStore';
+import type { SatelliteImage } from '../model/entity/SatelliteImage';
+import type { Taxonomy } from '../model/entity/Taxonomy';
 import type { FollowedUser, MagpieMergedSessionInformation, TaxonomyClassesDataFromAPI } from '../Types';
 import type { TaxonomyStore } from '../model/store/TaxonomyStore';
 import { ANNOTATION } from '../Types';
@@ -405,23 +406,23 @@ export class UserInteractions {
    * @todo at some point unhardcode the frontend parameter here, maybe get it from environment variable
    * @returns {Promise<void>}
    */
-  refresh_user_resources_permissions = async () => {
-    const magpie_session_json: MagpieMergedSessionInformation = await this.dataQueries.current_user_session();
-    const { user, authenticated } = magpie_session_json;
+  refreshUserSession = async () => {
+    const magpieSessionJson: MagpieMergedSessionInformation = await this.dataQueries.current_user_session();
+    const { user, authenticated } = magpieSessionJson;
     if (!authenticated) {
       return;
     }
-    let followed_users: FollowedUser[];
+    let followedUsers: FollowedUser[];
     try {
-      followed_users = await this.get_followed_users_collection();
+      followedUsers = await this.get_followed_users_collection();
     } catch (error) {
-      followed_users = [];
+      followedUsers = [];
     }
-    const user_instance = new User(user.user_name, user.email, user.group_names, user.user_id, followed_users);
-    this.storeActions.set_session_user(user_instance);
-    let json_response;
+    const userInstance = new User(user.user_name, user.email, user.group_names, user.user_id, followedUsers);
+    this.storeActions.set_session_user(userInstance);
+    let jsonResponse;
     try {
-      json_response = await this.dataQueries.current_user_permissions('frontend');
+      jsonResponse = await this.dataQueries.current_user_permissions('frontend');
     } catch (e) {
       if (e.status === 404) {
         NotificationManager.error('Permissions for the frontend service do not seem to be properly configured. ' +
@@ -431,16 +432,16 @@ export class UserInteractions {
       throw e;
     }
 
-    if (!json_response.service && !json_response.service.resources) {
+    if (!jsonResponse.service && !jsonResponse.service.resources) {
       NotificationManager.error('The permissions structure returned from Magpie does not seem properly formed: ' +
         'there is no resource attribute on it.');
       throw new InvalidPermissions();
     }
-    const { service } = json_response;
+    const { service } = jsonResponse;
     const { resources } = service;
-    let resource_permission_repository;
+    let resourcePermissionRepository;
     try {
-      resource_permission_repository = new ResourcePermissionRepository(resources);
+      resourcePermissionRepository = new ResourcePermissionRepository(resources);
     } catch (e) {
       if (e instanceof ProbablyInvalidPermissions) {
         NotificationManager.warning('It seems that permissions for your user are either incorrectly set, ' +
@@ -450,7 +451,7 @@ export class UserInteractions {
       }
       throw e;
     }
-    const acl = new AccessControlList(resource_permission_repository, authenticated);
+    const acl = new AccessControlList(resourcePermissionRepository, authenticated);
     this.storeActions.set_acl(acl);
 
   };

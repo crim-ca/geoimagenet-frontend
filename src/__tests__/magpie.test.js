@@ -1,8 +1,9 @@
-const { Permission, ResourcePermissionRepository } = require('../model/entities.js');
-const { AccessControlList } = require('../domain/access-control-list.js');
+const { Permission } = require('../model/Permission');
+const { ResourcePermissionRepository } = require('../model/ResourcePermissionRepository');
+const { AccessControlList } = require('../domain/access-control-list');
 
 test('Creates Permission from hardcoded data structure.', () => {
-  const data_structure = {
+  const dataStructure = {
     resource_id: 9,
     resource_name: 'res_name',
     resource_display_name: 'Resource name',
@@ -20,10 +21,10 @@ test('Creates Permission from hardcoded data structure.', () => {
         parent_id: 9,
         permission_names: ['read'],
         children: {},
-      }
+      },
     },
   };
-  const permission = new Permission(data_structure);
+  const permission = new Permission(dataStructure);
   expect(permission.resource_id)
     .toBe(9);
   expect(permission.resource_name)

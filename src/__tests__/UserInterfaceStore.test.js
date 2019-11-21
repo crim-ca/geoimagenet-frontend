@@ -5,7 +5,7 @@ import { configure, mount } from 'enzyme';
 import { action } from 'mobx';
 import { JSDOM } from 'jsdom';
 import Adapter from 'enzyme-adapter-react-16';
-import { User } from '../model/entities';
+import { User } from '../model/User';
 import { make_annotation_ownership_cql_filter } from '../components/Map/utils';
 import { AnnotationFilter as AnnotationFilterEntity, AnnotationFilter } from '../model/AnnotationFilter';
 import { TaxonomyStore } from '../model/store/TaxonomyStore';

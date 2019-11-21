@@ -79,7 +79,7 @@ export class PlatformLoader {
 
     ReactDOM.render(<LoadingSplashCircle />, div);
 
-    await this.userInteractions.refresh_user_resources_permissions();
+    await this.userInteractions.refreshUserSession();
     const { userInteractions } = this;
     try {
       // dirtily select the first taxonomy in the list.

@@ -1,20 +1,14 @@
 // @flow strict
 
-import { make_http_request, post_json, put_json } from '../utils/http.js';
-import { SatelliteImage } from '../model/entities';
+import { make_http_request, post_json, put_json } from '../utils/http';
+import { SatelliteImage } from '../model/entity/SatelliteImage';
 import type { FollowedUser, MagpieMergedSessionInformation } from '../Types';
-import Sentry from '@sentry/browser';
-import { i18n } from '../utils';
-import { NotificationManager } from 'react-notifications';
-
-const { t } = i18n;
 
 /**
  * Here we find all the actual requests for data from the api.
  * @todo refactor http utilities as their class to inject them here.
  */
 export class DataQueries {
-
   geoimagenet_api_endpoint: string;
 
   geoserver_endpoint: string;

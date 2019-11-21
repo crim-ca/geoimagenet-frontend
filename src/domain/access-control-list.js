@@ -1,5 +1,5 @@
 // @flow strict
-import { ResourcePermissionRepository } from '../model/entities';
+import { ResourcePermissionRepository } from '../model/ResourcePermissionRepository';
 
 /**
  * This class represents the actions an user can do in the platform. Certain buttons and interactions are dependant on

@@ -7,7 +7,9 @@ import { observable, action } from 'mobx';
 import { TaxonomyClass } from './TaxonomyClass';
 import { MODE } from '../constants';
 import type { AccessControlList } from '../domain/access-control-list';
-import type { SatelliteImage, Taxonomy, User } from './entities';
+import type { SatelliteImage } from './entity/SatelliteImage';
+import type { User } from './User';
+import type { Taxonomy } from './entity/Taxonomy';
 import type { GeoImageNetStore } from './store/GeoImageNetStore';
 import type { TaxonomyClassFromAPI, AnnotationStatus, FollowedUser } from '../Types';
 import type { TaxonomyStore } from './store/TaxonomyStore';
@@ -35,6 +37,7 @@ export class StoreActions {
   uiStore: UserInterfaceStore;
 
   taxonomyStore: TaxonomyStore;
+
   /**
    * We use MobX as our state manager, hence our store is the primary dependency of our store actions.
    */

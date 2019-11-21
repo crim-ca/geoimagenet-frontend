@@ -8,12 +8,10 @@ import {
 } from 'mobx';
 import typeof VectorLayer from 'ol/layer/Vector';
 import typeof VectorSource from 'ol/source/Vector';
-import {
-  ResourcePermissionRepository,
-  SatelliteImage,
-  Taxonomy,
-  User,
-} from '../entities';
+import { SatelliteImage } from '../entity/SatelliteImage';
+import { ResourcePermissionRepository } from '../ResourcePermissionRepository';
+import { User } from '../User';
+import { Taxonomy } from '../entity/Taxonomy';
 import type { FollowedUser } from '../../Types';
 import { MODE } from '../../constants';
 import { AccessControlList } from '../../domain/access-control-list';
