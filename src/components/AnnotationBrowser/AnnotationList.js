@@ -3,17 +3,16 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { TFunction } from 'react-i18next';
 import { compose } from 'react-apollo';
 
-import { withTranslation } from '../../utils';
 import { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import { ANNOTATION_THUMBNAIL_SIZE } from '../../constants';
+import { Annotation as AnnotationComponent } from './Annotation';
 
-import type { Annotation, AnnotationStatus, BoundingBox } from '../../Types';
+import type { Annotation as AnnotationEntity, AnnotationStatus, BoundingBox } from '../../Types';
 
 type Props = {
-  annotations: Annotation[],
+  annotations: AnnotationEntity[],
   geoserver_url: string,
   geoImageNetStore: GeoImageNetStore,
   fit_view_to_bounding_box: (BoundingBox, AnnotationStatus, number) => void,
@@ -23,7 +22,6 @@ type Props = {
     list_item: {},
     info: {},
   },
-  t: TFunction,
 };
 const style = (theme) => ({
   list: {
@@ -58,16 +56,13 @@ const style = (theme) => ({
 
 @observer
 class AnnotationList extends React.Component<Props> {
-  make_animate_handler = (bounding_box: BoundingBox, status: AnnotationStatus, annotation_id: number) => () => {
-    this.props.fit_view_to_bounding_box(bounding_box, status, annotation_id);
-  };
 
   render() {
     const {
       geoImageNetStore: { images_dictionary, user: { nicknamesMap } },
       classes,
-      t,
       annotations,
+      fit_view_to_bounding_box,
       geoserver_url,
     } = this.props;
     return (
@@ -96,17 +91,17 @@ class AnnotationList extends React.Component<Props> {
             + `&styles=annotations&format=image/png&BBOX=${boundingBox}&cql_filter=id=${id}`;
           const annotator = nicknamesMap[annotator_id] || annotator_id;
           return (
-            <div key={i} className={classes.list_item}>
-              <figure className={classes.figure} onClick={this.make_animate_handler(bbox, status, id)}>
-                <img src={encodeURI(imageUrl)} />
-                <img src={encodeURI(featureUrl)} />
-              </figure>
-              <div className={classes.info}>
-                <span style={{ fontWeight: 'bold' }}>{t(`taxonomy_classes:${taxonomy_class_id}`)}</span>
-                <span>{t(`status:singular.${status}`)}</span>
-                <span>{t('annotations:created_by', { annotator })}</span>
-              </div>
-            </div>
+            <AnnotationComponent
+              key={i}
+              bbox={bbox}
+              status={status}
+              imageUrl={imageUrl}
+              id={id}
+              fitViewToBoundingBox={fit_view_to_bounding_box}
+              taxonomyClassId={taxonomy_class_id}
+              featureUrl={featureUrl}
+              annotator={annotator}
+            />
           );
         })}
       </div>
@@ -116,7 +111,6 @@ class AnnotationList extends React.Component<Props> {
 
 const component = compose(
   withStyles(style),
-  withTranslation(),
 )(AnnotationList);
 
 export {
