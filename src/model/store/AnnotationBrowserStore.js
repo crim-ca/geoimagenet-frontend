@@ -67,6 +67,12 @@ export class AnnotationBrowserStore {
 
   @action setWfsResponse(wfsResponse: WfsResponse) {
     this.wfsResponse = wfsResponse;
+    if (this.wfsResponse && this.wfsResponse.features) {
+      this.selection = {};
+      this.wfsResponse.features.map((feature) => feature.id).forEach((id) => {
+        this.selection[id] = false;
+      });
+    }
   }
 
   @action nextPage = () => {
