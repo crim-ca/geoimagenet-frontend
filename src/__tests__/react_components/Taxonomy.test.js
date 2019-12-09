@@ -1,29 +1,29 @@
 // @flow strict
 import { MuiThemeProvider } from '@material-ui/core';
 import Tab from '@material-ui/core/Tab';
-import { UserInteractions } from '../domain';
-import { ANNOTATIONS_COUNTS_RESPONSE, TAXONOMY_CLASSES_RESPONSE, TAXONOMY_RESPONSE } from './api_responses';
-import { theme } from '../utils/react';
-import { ANNOTATION } from '../Types';
-import { StoreActions } from '../model/StoreActions';
+import { UserInteractions } from '../../domain/index';
+import { ANNOTATIONS_COUNTS_RESPONSE, TAXONOMY_CLASSES_RESPONSE, TAXONOMY_RESPONSE } from '../api_responses';
+import { theme } from '../../utils/react';
+import { ANNOTATION } from '../../Types';
+import { StoreActions } from '../../model/StoreActions';
 
 const React = require('react');
 const { mount, configure } = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
 const { JSDOM } = require('jsdom');
-const { Viewer } = require('../components/Taxonomy/Viewer');
-const { Classes } = require('../components/Taxonomy/Classes');
-const { SpacedChip } = require('../components/Taxonomy/AnnotationCounts');
-const { PresentationListElement } = require('../components/Taxonomy/PresentationListElement');
-const { i18n } = require('../utils');
-const { wait } = require('./utils');
-const { TaxonomyPresentation } = require('../components/Presentation/TaxonomyPresentation');
+const { Viewer } = require('../../components/Taxonomy/Viewer');
+const { Classes } = require('../../components/Taxonomy/Classes');
+const { SpacedChip } = require('../../components/Taxonomy/AnnotationCounts');
+const { PresentationListElement } = require('../../components/Taxonomy/PresentationListElement');
+const { i18n } = require('../../utils/index');
+const { wait } = require('../utils');
+const { TaxonomyPresentation } = require('../../components/Presentation/TaxonomyPresentation');
 const {
   geoImageNetStore,
   taxonomyStore,
   uiStore,
   dataQueries,
-} = require('../model/instance_cache');
+} = require('../../model/instance_cache');
 
 const { window } = new JSDOM('<!doctype html>');
 

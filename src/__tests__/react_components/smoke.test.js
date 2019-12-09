@@ -1,13 +1,13 @@
 const React = require('react');
-const { Benchmarks } = require('../components/Benchmarks');
-const { Models } = require('../components/Models/Models');
+const { Benchmarks } = require('../../components/Benchmarks');
+const { Models } = require('../../components/Models/Models');
 const { shallow, render, configure } = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
-const { createClient } = require('../utils/apollo');
+const { createClient } = require('../../utils/apollo');
 const fetchMock = require('fetch-mock');
 const { ApolloProvider } = require('react-apollo');
 const { MuiThemeProvider } = require('@material-ui/core');
-const { theme } = require('../utils/react.js');
+const { theme } = require('../../utils/react.js');
 
 // need to call fetchMock before creating the client so that fetch gets mocked
 fetchMock.post('/graphql', { 'data': { 'public_benchmarks': [{ 'id': '10452863-4408-442f-89f9-f275d358cc6e' }, { 'id': '4a615e3b-d109-4ade-a453-446898924ff4' }] } });
