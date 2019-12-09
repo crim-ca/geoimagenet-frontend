@@ -3,10 +3,10 @@ import React from 'react';
 import { withStyles } from '@material-ui/core';
 import type { TFunction } from 'react-i18next';
 import { compose } from 'react-apollo';
+import { observer } from 'mobx-react';
 import { withTranslation } from '../../utils';
 import type { AnnotationStatus, BoundingBox } from '../../Types';
 import { SelectionToggle } from './SelectionToggle';
-import { observer } from 'mobx-react';
 
 type Props = {
   t: TFunction,

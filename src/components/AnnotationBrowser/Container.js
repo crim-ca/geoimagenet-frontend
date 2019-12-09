@@ -102,7 +102,7 @@ class Container extends React.Component<Props> {
         <AnnotationList
           selection={selection}
           makeToggleAnnotationSelection={makeToggleAnnotationSelection}
-          fit_view_to_bounding_box={this.navigate}
+          fitViewToBoundingBox={this.navigate}
           annotations={currentPageContent}
           geoserver_url={GEOSERVER_URL}
           geoImageNetStore={geoImageNetStore}

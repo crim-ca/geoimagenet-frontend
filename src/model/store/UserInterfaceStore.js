@@ -1,11 +1,22 @@
 // @flow strict
-import { action, observable, autorun, computed } from 'mobx';
+import {
+  action,
+  observable,
+  computed,
+} from 'mobx';
 import { MODE } from '../../constants';
 import type { AnnotationOwnershipFilters, AnnotationStatusFilters } from '../../Types';
 import { AnnotationFilter } from '../AnnotationFilter';
 import { ANNOTATION } from '../../Types';
 
-const { VISUALIZATION, CREATION, MODIFICATION, DELETION, RELEASE, VALIDATION } = MODE;
+const {
+  VISUALIZATION,
+  CREATION,
+  MODIFICATION,
+  DELETION,
+  RELEASE,
+  VALIDATION,
+} = MODE;
 
 type FilterSelectionTuple = [string, boolean];
 type FilterSelectionMap = FilterSelectionTuple[];

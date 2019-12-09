@@ -15,7 +15,7 @@ type Props = {
   annotations: AnnotationEntity[],
   geoserver_url: string,
   geoImageNetStore: GeoImageNetStore,
-  fit_view_to_bounding_box: (BoundingBox, AnnotationStatus, number) => void,
+  fitViewToBoundingBox: (BoundingBox, AnnotationStatus, number) => void,
   selection: {},
   makeToggleAnnotationSelection: (number) => () => void,
   classes: {
@@ -63,7 +63,7 @@ class AnnotationList extends React.Component<Props> {
       geoImageNetStore: { images_dictionary, user: { nicknamesMap } },
       classes,
       annotations,
-      fit_view_to_bounding_box,
+      fitViewToBoundingBox,
       selection,
       makeToggleAnnotationSelection,
       geoserver_url,
@@ -102,7 +102,7 @@ class AnnotationList extends React.Component<Props> {
               id={id}
               selected={selection[id] === true}
               toggle={makeToggleAnnotationSelection(id)}
-              fitViewToBoundingBox={fit_view_to_bounding_box}
+              fitViewToBoundingBox={fitViewToBoundingBox}
               taxonomyClassId={taxonomy_class_id}
               featureUrl={featureUrl}
               annotator={annotator}
