@@ -5,24 +5,24 @@ import { action } from 'mobx';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { JSDOM } from 'jsdom';
-import { Container as LabelsContainer } from '../components/Map/LabelsChoice/Container';
-import { TaxonomyStore } from '../model/store/TaxonomyStore';
-import { UserInterfaceStore } from '../model/store/UserInterfaceStore';
-import { Actions } from '../components/ModeSelection/Actions';
-import { theme } from '../utils/react';
+import { Container as LabelsContainer } from '../../components/Map/LabelsChoice/Container';
+import { TaxonomyStore } from '../../model/store/TaxonomyStore';
+import { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
+import { Actions } from '../../components/ModeSelection/Actions';
+import { theme } from '../../utils/react';
 import {
   ANNOTATIONS,
   WRITE,
   MODE,
 
-} from '../constants';
-import { uiStore } from '../model/instance_cache';
-import { StoreActions } from '../model/StoreActions';
-import { TaxonomyClass } from '../model/TaxonomyClass';
-import { GeoImageNetStore } from '../model/store/GeoImageNetStore';
-import { ANNOTATION } from '../Types';
+} from '../../constants';
+import { uiStore } from '../../model/instance_cache';
+import { StoreActions } from '../../model/StoreActions';
+import { TaxonomyClass } from '../../model/TaxonomyClass';
+import { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
+import { ANNOTATION } from '../../Types';
 
-const { window } = new JSDOM(`<!doctype html>`);
+const { window } = new JSDOM('<!doctype html>');
 
 function copyProps(src, target) {
   Object.defineProperties(target, {

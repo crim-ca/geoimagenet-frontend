@@ -5,16 +5,16 @@ import { configure, mount } from 'enzyme';
 import { action } from 'mobx';
 import { JSDOM } from 'jsdom';
 import Adapter from 'enzyme-adapter-react-16';
-import { User } from '../model/User';
-import { make_annotation_ownership_cql_filter } from '../components/Map/utils';
-import { AnnotationFilter as AnnotationFilterEntity, AnnotationFilter } from '../model/AnnotationFilter';
-import { TaxonomyStore } from '../model/store/TaxonomyStore';
-import { UserInterfaceStore } from '../model/store/UserInterfaceStore';
-import { AnnotationFilter as AnnotationFilterComponent } from '../components/Map/Filters/AnnotationFilter';
-import { wait } from './utils';
-import { ANNOTATION } from '../Types';
-import { MODE } from '../constants';
-import { uiStore } from '../model/instance_cache';
+import { User } from '../../model/User';
+import { make_annotation_ownership_cql_filter } from '../../components/Map/utils';
+import { AnnotationFilter as AnnotationFilterEntity, AnnotationFilter } from '../../model/AnnotationFilter';
+import { TaxonomyStore } from '../../model/store/TaxonomyStore';
+import { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
+import { AnnotationFilter as AnnotationFilterComponent } from '../../components/Map/Filters/AnnotationFilter';
+import { wait } from '../utils';
+import { ANNOTATION } from '../../Types';
+import { MODE } from '../../constants';
+import { uiStore } from '../../model/instance_cache';
 
 const { window } = new JSDOM('<!doctype html>');
 
