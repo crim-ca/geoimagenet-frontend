@@ -1,6 +1,7 @@
 // @flow strict
 
 import React from 'react';
+import {observer} from 'mobx-react';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { compose } from 'react-apollo';
 
@@ -27,6 +28,7 @@ const style = {
   },
 };
 
+@observer
 class SelectionToggle extends React.Component<Props> {
   render() {
     const { selected, classes: { root }, toggle } = this.props;

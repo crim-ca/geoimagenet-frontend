@@ -77,11 +77,17 @@ export class AnnotationBrowserStore {
     this.pageNumber = Math.max(1, this.pageNumber - 1);
   };
 
+  @action toggleAnnotationSelection = (id: number) => {
+    this.selection[id] = !this.selection[id] || true;
+  };
+
   @observable wfsResponse: WfsResponse;
 
   @observable pageNumber: number = 1;
 
   @observable pageSize: number = 10;
+
+  @observable selection: {} = {};
 
   @computed get totalFeatures(): number {
     return this.wfsResponse ? this.wfsResponse.totalFeatures : 0;

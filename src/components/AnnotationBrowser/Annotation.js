@@ -6,6 +6,7 @@ import { compose } from 'react-apollo';
 import { withTranslation } from '../../utils';
 import type { AnnotationStatus, BoundingBox } from '../../Types';
 import { SelectionToggle } from './SelectionToggle';
+import { observer } from 'mobx-react';
 
 type Props = {
   t: TFunction,
@@ -17,6 +18,8 @@ type Props = {
   featureUrl: string,
   taxonomyClassId: number,
   annotator: string,
+  selected: boolean,
+  toggle: () => void,
   classes: {
     listItem: {},
     figure: {},
@@ -47,6 +50,7 @@ const style = (theme) => ({
   },
 });
 
+@observer
 class Annotation extends React.Component<Props> {
   makeAnimateHandler = (boundingBox: BoundingBox, status: AnnotationStatus, annotationId: number) => () => {
     const { fitViewToBoundingBox } = this.props;
@@ -63,6 +67,8 @@ class Annotation extends React.Component<Props> {
       featureUrl,
       taxonomyClassId,
       annotator,
+      selected,
+      toggle,
       classes: { listItem, figure, info },
     } = this.props;
     return (
@@ -76,8 +82,8 @@ class Annotation extends React.Component<Props> {
           <span>{t(`status:singular.${status}`)}</span>
           <span>{t('annotations:created_by', { annotator })}</span>
           <SelectionToggle
-            selected
-            toggle={() => ('bob')}
+            selected={selected}
+            toggle={toggle}
           />
         </div>
       </div>
