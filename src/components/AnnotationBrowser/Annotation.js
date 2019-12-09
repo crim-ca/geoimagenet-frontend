@@ -5,6 +5,7 @@ import type { TFunction } from 'react-i18next';
 import { compose } from 'react-apollo';
 import { withTranslation } from '../../utils';
 import type { AnnotationStatus, BoundingBox } from '../../Types';
+import { SelectionToggle } from './SelectionToggle';
 
 type Props = {
   t: TFunction,
@@ -74,6 +75,10 @@ class Annotation extends React.Component<Props> {
           <span style={{ fontWeight: 'bold' }}>{t(`taxonomy_classes:${taxonomyClassId}`)}</span>
           <span>{t(`status:singular.${status}`)}</span>
           <span>{t('annotations:created_by', { annotator })}</span>
+          <SelectionToggle
+            selected
+            toggle={() => ('bob')}
+          />
         </div>
       </div>
     );
