@@ -8,10 +8,13 @@ import { withTranslation } from '../../utils';
 import type { AnnotationStatus, BoundingBox } from '../../Types';
 import { SelectionToggle } from './SelectionToggle';
 import { MODE } from '../../constants';
+import { withUserInterfaceStore } from '../../model/HOCs';
+import type { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
 
 type Props = {
   t: TFunction,
   selectedMode: string,
+  uiStore: UserInterfaceStore,
   fitViewToBoundingBox: (BoundingBox, AnnotationStatus, number) => void,
   bbox: string,
   status: string,
@@ -60,7 +63,7 @@ class Annotation extends React.Component<Props> {
   };
 
   maybeMakeSelectionWidget() {
-    const { selectedMode, selected, toggle } = this.props;
+    const { uiStore: { selectedMode }, selected, toggle } = this.props;
     switch (selectedMode) {
       case MODE.DELETION:
       case MODE.RELEASE:
@@ -93,6 +96,7 @@ class Annotation extends React.Component<Props> {
       featureUrl,
       taxonomyClassId,
       annotator,
+      uiStore: { isInBatchMode },
       classes: { listItem, figure, info },
     } = this.props;
     return (
@@ -103,7 +107,12 @@ class Annotation extends React.Component<Props> {
         </figure>
         <div className={info}>
           <span style={{ fontWeight: 'bold' }}>{t(`taxonomy_classes:${taxonomyClassId}`)}</span>
-          <span>{t(`status:singular.${status}`)}</span>
+          {
+            !isInBatchMode
+              ? (
+                <span>{t(`status:singular.${status}`)}</span>
+              ) : null
+          }
           <span>{t('annotations:created_by', { annotator })}</span>
           {this.maybeMakeSelectionWidget()}
         </div>
@@ -115,6 +124,7 @@ class Annotation extends React.Component<Props> {
 const component = compose(
   withStyles(style),
   withTranslation(),
+  withUserInterfaceStore,
 )(Annotation);
 export {
   component as Annotation,

@@ -64,6 +64,10 @@ class UserInterfaceStore {
     }
   }
 
+  @computed get isInBatchMode(): boolean {
+    return [MODE.DELETION, MODE.RELEASE, MODE.VALIDATION].indexOf(this.selectedMode) !== -1;
+  }
+
   constructor() {
     this.setMode(VISUALIZATION);
   }

@@ -65,7 +65,7 @@ class AnnotationList extends React.Component<Props> {
   render() {
     const {
       geoImageNetStore: { images_dictionary, user: { nicknamesMap } },
-      uiStore: { selectedMode },
+      uiStore: { isInBatchMode },
       classes,
       fitViewToBoundingBox,
       annotationBrowserStore: { selection, currentPageContent, toggleAllAnnotationSelection },
@@ -76,7 +76,7 @@ class AnnotationList extends React.Component<Props> {
     return (
       <>
         {
-          [MODE.DELETION, MODE.RELEASE, MODE.VALIDATION].indexOf(selectedMode) !== -1
+          isInBatchMode
             ? (
               <Button onClick={toggleAllAnnotationSelection}>{t('toggleAll')}</Button>
             ) : null
@@ -112,7 +112,6 @@ class AnnotationList extends React.Component<Props> {
                 status={status}
                 imageUrl={imageUrl}
                 id={id}
-                selectedMode={selectedMode}
                 selected={selection[id] === true}
                 toggle={makeToggleAnnotationSelection(id)}
                 fitViewToBoundingBox={fitViewToBoundingBox}
