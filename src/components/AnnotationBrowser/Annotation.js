@@ -64,7 +64,13 @@ class Annotation extends React.Component<Props> {
     switch (selectedMode) {
       case MODE.DELETION:
       case MODE.RELEASE:
-        return null;
+        return (
+          <input
+            type="checkbox"
+            checked={selected}
+            onChange={toggle}
+          />
+        );
       case MODE.VALIDATION:
         return (
           <SelectionToggle
