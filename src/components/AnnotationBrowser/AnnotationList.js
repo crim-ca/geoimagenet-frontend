@@ -27,6 +27,7 @@ type Props = {
     figure: {},
     list_item: {},
     info: {},
+    rootDiv: {},
   },
 };
 const style = (theme) => ({
@@ -58,13 +59,18 @@ const style = (theme) => ({
     alignItems: 'start',
     justifyContent: 'start',
   },
+  rootDiv: {
+    display: 'grid',
+    gridTemplateRows: '1fr',
+    gridGap: theme.values.gutterSmall,
+  },
 });
 
 @observer
 class AnnotationList extends React.Component<Props> {
   render() {
     const {
-      geoImageNetStore: { images_dictionary, user: { nicknamesMap } },
+      geoImageNetStore: { imagesDictionary, user: { nicknamesMap } },
       uiStore: { isInBatchMode },
       classes,
       fitViewToBoundingBox,
@@ -74,7 +80,7 @@ class AnnotationList extends React.Component<Props> {
       t,
     } = this.props;
     return (
-      <>
+      <div className={classes.rootDiv}>
         {
           isInBatchMode
             ? (
@@ -91,7 +97,7 @@ class AnnotationList extends React.Component<Props> {
               taxonomy_class_id,
               annotator_id,
             } = annotation.properties;
-            const clickedImage = images_dictionary.find((image) => image.id === image_id);
+            const clickedImage = imagesDictionary.find((image) => image.id === image_id);
             if (clickedImage === undefined) {
               return;
             }
@@ -122,7 +128,7 @@ class AnnotationList extends React.Component<Props> {
             );
           })}
         </div>
-      </>
+      </div>
     );
   }
 }

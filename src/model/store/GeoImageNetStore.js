@@ -74,7 +74,7 @@ export class GeoImageNetStore {
     return this.selected_taxonomy.versions[0].root_taxonomy_class_id || -1;
   }
 
-  @observable images_dictionary: SatelliteImage[];
+  @observable imagesDictionary: SatelliteImage[];
 
   @observable selected_taxonomy: Taxonomy | null = null;
 
