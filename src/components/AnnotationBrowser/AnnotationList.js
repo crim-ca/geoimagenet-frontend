@@ -1,18 +1,19 @@
 // @flow strict
-
 import React from 'react';
 import { observer } from 'mobx-react';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { compose } from 'react-apollo';
-
 import { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import { ANNOTATION_THUMBNAIL_SIZE } from '../../constants';
 import { Annotation as AnnotationComponent } from './Annotation';
 
 import type { Annotation as AnnotationEntity, AnnotationStatus, BoundingBox } from '../../Types';
+import type { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
+import { withUserInterfaceStore } from '../../model/HOCs';
 
 type Props = {
   annotations: AnnotationEntity[],
+  uiStore: UserInterfaceStore,
   geoserver_url: string,
   geoImageNetStore: GeoImageNetStore,
   fitViewToBoundingBox: (BoundingBox, AnnotationStatus, number) => void,
@@ -61,6 +62,7 @@ class AnnotationList extends React.Component<Props> {
   render() {
     const {
       geoImageNetStore: { images_dictionary, user: { nicknamesMap } },
+      uiStore: { selectedMode },
       classes,
       annotations,
       fitViewToBoundingBox,
@@ -100,6 +102,7 @@ class AnnotationList extends React.Component<Props> {
               status={status}
               imageUrl={imageUrl}
               id={id}
+              selectedMode={selectedMode}
               selected={selection[id] === true}
               toggle={makeToggleAnnotationSelection(id)}
               fitViewToBoundingBox={fitViewToBoundingBox}
@@ -116,6 +119,7 @@ class AnnotationList extends React.Component<Props> {
 
 const component = compose(
   withStyles(style),
+  withUserInterfaceStore,
 )(AnnotationList);
 
 export {

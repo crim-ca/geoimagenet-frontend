@@ -7,9 +7,11 @@ import { observer } from 'mobx-react';
 import { withTranslation } from '../../utils';
 import type { AnnotationStatus, BoundingBox } from '../../Types';
 import { SelectionToggle } from './SelectionToggle';
+import { MODE } from '../../constants';
 
 type Props = {
   t: TFunction,
+  selectedMode: string,
   fitViewToBoundingBox: (BoundingBox, AnnotationStatus, number) => void,
   bbox: string,
   status: string,
@@ -57,6 +59,24 @@ class Annotation extends React.Component<Props> {
     fitViewToBoundingBox(boundingBox, status, annotationId);
   };
 
+  maybeMakeSelectionWidget() {
+    const { selectedMode, selected, toggle } = this.props;
+    switch (selectedMode) {
+      case MODE.DELETION:
+      case MODE.RELEASE:
+        return null;
+      case MODE.VALIDATION:
+        return (
+          <SelectionToggle
+            selected={selected}
+            toggle={toggle}
+          />
+        );
+      default:
+        return null;
+    }
+  }
+
   render() {
     const {
       t,
@@ -67,8 +87,6 @@ class Annotation extends React.Component<Props> {
       featureUrl,
       taxonomyClassId,
       annotator,
-      selected,
-      toggle,
       classes: { listItem, figure, info },
     } = this.props;
     return (
@@ -81,10 +99,7 @@ class Annotation extends React.Component<Props> {
           <span style={{ fontWeight: 'bold' }}>{t(`taxonomy_classes:${taxonomyClassId}`)}</span>
           <span>{t(`status:singular.${status}`)}</span>
           <span>{t('annotations:created_by', { annotator })}</span>
-          <SelectionToggle
-            selected={selected}
-            toggle={toggle}
-          />
+          {this.maybeMakeSelectionWidget()}
         </div>
       </div>
     );

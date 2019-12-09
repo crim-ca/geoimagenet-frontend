@@ -78,7 +78,7 @@ export class AnnotationBrowserStore {
   };
 
   @action toggleAnnotationSelection = (id: number) => {
-    this.selection[id] = !this.selection[id] || true;
+    this.selection[id] = !this.selection[id];
   };
 
   @observable wfsResponse: WfsResponse;
