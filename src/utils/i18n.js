@@ -34,7 +34,7 @@ const resources = {
       status: 'Status',
       annotators_identifiers: 'Annotators identifiers',
       pagination: {
-        page_info: 'Page {{page_number}} of {{total_pages}}',
+        page_info: 'Page {{pageNumber}} of {{totalPages}}',
         previous: 'Previous page',
         next: 'Next page',
       },
@@ -268,7 +268,7 @@ const resources = {
       status: 'Statut',
       annotators_identifiers: 'Identifiants d\'annotateurs/trices',
       pagination: {
-        page_info: 'Page {{page_number}} de {{total_pages}}',
+        page_info: 'Page {{pageNumber}} de {{totalPages}}',
         previous: 'Page précédente',
         next: 'Page suivante',
       },

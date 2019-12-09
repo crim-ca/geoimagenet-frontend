@@ -58,8 +58,8 @@ export class AnnotationBrowserStore {
     const typeName = `${this.annotationNamespace}:${this.annotationLayer}`;
     const json = await this.dataQueries.get_annotations_browser_page(
       typeName,
-      this.cql_filter,
-      this.page_size.toString(10),
+      this.cqlFilter,
+      this.pageSize.toString(10),
       this.offset.toString(10),
     );
     this.setWfsResponse(json);
@@ -69,37 +69,37 @@ export class AnnotationBrowserStore {
     this.wfsResponse = wfsResponse;
   }
 
-  @action next_page = () => {
-    this.page_number = Math.min(this.total_pages, this.page_number + 1);
+  @action nextPage = () => {
+    this.pageNumber = Math.min(this.totalPages, this.pageNumber + 1);
   };
 
-  @action previous_page = () => {
-    this.page_number = Math.max(1, this.page_number - 1);
+  @action previousPage = () => {
+    this.pageNumber = Math.max(1, this.pageNumber - 1);
   };
 
   @observable wfsResponse: WfsResponse;
 
-  @observable page_number: number = 1;
+  @observable pageNumber: number = 1;
 
-  @observable page_size: number = 10;
+  @observable pageSize: number = 10;
 
-  @computed get total_features(): number {
+  @computed get totalFeatures(): number {
     return this.wfsResponse ? this.wfsResponse.totalFeatures : 0;
   }
 
-  @computed get total_pages(): number {
-    return Math.ceil(this.total_features / this.page_size);
+  @computed get totalPages(): number {
+    return Math.ceil(this.totalFeatures / this.pageSize);
   }
 
-  @computed get current_page_content(): Annotation[] {
+  @computed get currentPageContent(): Annotation[] {
     return this.wfsResponse && this.wfsResponse.features ? this.wfsResponse.features : [];
   }
 
   @computed get offset(): number {
-    return (this.page_number - 1) * this.page_size;
+    return (this.pageNumber - 1) * this.pageSize;
   }
 
-  @computed get cql_filter(): string {
+  @computed get cqlFilter(): string {
     const bits = [];
     if (this.taxonomyStore.activated_status_filters_cql.length > 0) {
       bits.push(this.taxonomyStore.activated_status_filters_cql);

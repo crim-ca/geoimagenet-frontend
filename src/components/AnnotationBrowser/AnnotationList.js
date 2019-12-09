@@ -27,7 +27,7 @@ const style = (theme) => ({
   list: {
     display: 'grid',
     '& tr:not(:first-child) > *': {
-      borderTop: '1px solid rgba(0, 0, 0, 0.1)'
+      borderTop: '1px solid rgba(0, 0, 0, 0.1)',
     },
     gridTemplateColumns: '1fr 1fr',
   },
@@ -56,7 +56,6 @@ const style = (theme) => ({
 
 @observer
 class AnnotationList extends React.Component<Props> {
-
   render() {
     const {
       geoImageNetStore: { images_dictionary, user: { nicknamesMap } },
