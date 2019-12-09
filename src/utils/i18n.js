@@ -28,6 +28,7 @@ const resources = {
       },
     },
     annotations: {
+      toggleAll: 'Select / deselect all',
       created_by: 'Created by {{annotator}}',
       class_name: 'Class Name',
       owner: 'Owner',
@@ -262,6 +263,7 @@ const resources = {
       },
     },
     annotations: {
+      toggleAll: 'Sélectionner / désélectionner toutes',
       created_by: 'Créée par {{annotator}}',
       class_name: 'Nom de classe',
       owner: 'Propriétaire',

@@ -69,9 +69,10 @@ export class AnnotationBrowserStore {
     this.wfsResponse = wfsResponse;
     if (this.wfsResponse && this.wfsResponse.features) {
       this.selection = {};
-      this.wfsResponse.features.map((feature) => feature.id).forEach((id) => {
-        this.selection[id] = false;
-      });
+      this.wfsResponse.features.map((feature) => feature.properties.id)
+        .forEach((id) => {
+          this.selection[id] = false;
+        });
     }
   }
 
@@ -87,6 +88,15 @@ export class AnnotationBrowserStore {
     this.selection[id] = !this.selection[id];
   };
 
+  @action toggleAllAnnotationSelection = () => {
+    const { selection, fullSelection } = this;
+    const selected = !fullSelection;
+    Object.keys(this.selection)
+      .forEach((key) => {
+        selection[key] = selected;
+      });
+  };
+
   @observable wfsResponse: WfsResponse;
 
   @observable pageNumber: number = 1;
@@ -94,6 +104,11 @@ export class AnnotationBrowserStore {
   @observable pageSize: number = 10;
 
   @observable selection: {} = {};
+
+  @computed get fullSelection(): boolean {
+    return Object.values(this.selection)
+      .every((value) => value === true);
+  }
 
   @computed get totalFeatures(): number {
     return this.wfsResponse ? this.wfsResponse.totalFeatures : 0;

@@ -1,24 +1,27 @@
 // @flow strict
 import React from 'react';
 import { observer } from 'mobx-react';
+import { TFunction } from 'react-i18next';
 import withStyles from '@material-ui/core/styles/withStyles';
+import Button from '@material-ui/core/Button';
 import { compose } from 'react-apollo';
 import { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
-import { ANNOTATION_THUMBNAIL_SIZE } from '../../constants';
+import { ANNOTATION_THUMBNAIL_SIZE, MODE } from '../../constants';
 import { Annotation as AnnotationComponent } from './Annotation';
-
 import type { Annotation as AnnotationEntity, AnnotationStatus, BoundingBox } from '../../Types';
 import type { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
-import { withUserInterfaceStore } from '../../model/HOCs';
+import type { AnnotationBrowserStore } from '../../model/store/AnnotationBrowserStore';
+import { withAnnotationBrowserStore, withUserInterfaceStore } from '../../model/HOCs';
+import { withTranslation } from '../../utils/index';
 
 type Props = {
-  annotations: AnnotationEntity[],
   uiStore: UserInterfaceStore,
   geoserver_url: string,
   geoImageNetStore: GeoImageNetStore,
+  annotationBrowserStore: AnnotationBrowserStore,
   fitViewToBoundingBox: (BoundingBox, AnnotationStatus, number) => void,
-  selection: {},
   makeToggleAnnotationSelection: (number) => () => void,
+  t: TFunction,
   classes: {
     list: {},
     figure: {},
@@ -64,55 +67,63 @@ class AnnotationList extends React.Component<Props> {
       geoImageNetStore: { images_dictionary, user: { nicknamesMap } },
       uiStore: { selectedMode },
       classes,
-      annotations,
       fitViewToBoundingBox,
-      selection,
+      annotationBrowserStore: { selection, currentPageContent, toggleAllAnnotationSelection },
       makeToggleAnnotationSelection,
       geoserver_url,
+      t,
     } = this.props;
     return (
-      <div className={classes.list}>
-        {annotations.map((annotation, i) => {
-          const {
-            image_id,
-            bbox,
-            id,
-            status,
-            taxonomy_class_id,
-            annotator_id,
-          } = annotation.properties;
-          const clickedImage = images_dictionary.find((image) => image.id === image_id);
-          if (clickedImage === undefined) {
-            return;
-          }
-          const boundingBox = bbox.join(',');
-          const imageUrl = `${geoserver_url}/wms?service=WMS&version=1.3.0&request=GetMap&format=image/png`
-            + `&transparent=true&layers=${clickedImage.layer_name}&hints=quality`
-            + `&width=${ANNOTATION_THUMBNAIL_SIZE}&height=${ANNOTATION_THUMBNAIL_SIZE}`
-            + `&crs=EPSG:3857&bbox=${boundingBox}`;
-          const featureUrl = `${geoserver_url}/wms?request=GetMap&service=WMS&version=1.3.0`
-            + '&transparent=true&layers=annotation&srs=EPSG:3857'
-            + `&WIDTH=${ANNOTATION_THUMBNAIL_SIZE}&HEIGHT=${ANNOTATION_THUMBNAIL_SIZE}`
-            + `&styles=annotations&format=image/png&BBOX=${boundingBox}&cql_filter=id=${id}`;
-          const annotator = nicknamesMap[annotator_id] || annotator_id;
-          return (
-            <AnnotationComponent
-              key={i}
-              bbox={bbox}
-              status={status}
-              imageUrl={imageUrl}
-              id={id}
-              selectedMode={selectedMode}
-              selected={selection[id] === true}
-              toggle={makeToggleAnnotationSelection(id)}
-              fitViewToBoundingBox={fitViewToBoundingBox}
-              taxonomyClassId={taxonomy_class_id}
-              featureUrl={featureUrl}
-              annotator={annotator}
-            />
-          );
-        })}
-      </div>
+      <>
+        {
+          [MODE.DELETION, MODE.RELEASE, MODE.VALIDATION].indexOf(selectedMode) !== -1
+            ? (
+              <Button onClick={toggleAllAnnotationSelection}>{t('toggleAll')}</Button>
+            ) : null
+        }
+        <div className={classes.list}>
+          {currentPageContent.map((annotation, i) => {
+            const {
+              image_id,
+              bbox,
+              id,
+              status,
+              taxonomy_class_id,
+              annotator_id,
+            } = annotation.properties;
+            const clickedImage = images_dictionary.find((image) => image.id === image_id);
+            if (clickedImage === undefined) {
+              return;
+            }
+            const boundingBox = bbox.join(',');
+            const imageUrl = `${geoserver_url}/wms?service=WMS&version=1.3.0&request=GetMap&format=image/png`
+              + `&transparent=true&layers=${clickedImage.layer_name}&hints=quality`
+              + `&width=${ANNOTATION_THUMBNAIL_SIZE}&height=${ANNOTATION_THUMBNAIL_SIZE}`
+              + `&crs=EPSG:3857&bbox=${boundingBox}`;
+            const featureUrl = `${geoserver_url}/wms?request=GetMap&service=WMS&version=1.3.0`
+              + '&transparent=true&layers=annotation&srs=EPSG:3857'
+              + `&WIDTH=${ANNOTATION_THUMBNAIL_SIZE}&HEIGHT=${ANNOTATION_THUMBNAIL_SIZE}`
+              + `&styles=annotations&format=image/png&BBOX=${boundingBox}&cql_filter=id=${id}`;
+            const annotator = nicknamesMap[annotator_id] || annotator_id;
+            return (
+              <AnnotationComponent
+                key={i}
+                bbox={bbox}
+                status={status}
+                imageUrl={imageUrl}
+                id={id}
+                selectedMode={selectedMode}
+                selected={selection[id] === true}
+                toggle={makeToggleAnnotationSelection(id)}
+                fitViewToBoundingBox={fitViewToBoundingBox}
+                taxonomyClassId={taxonomy_class_id}
+                featureUrl={featureUrl}
+                annotator={annotator}
+              />
+            );
+          })}
+        </div>
+      </>
     );
   }
 }
@@ -120,6 +131,8 @@ class AnnotationList extends React.Component<Props> {
 const component = compose(
   withStyles(style),
   withUserInterfaceStore,
+  withAnnotationBrowserStore,
+  withTranslation('annotations'),
 )(AnnotationList);
 
 export {

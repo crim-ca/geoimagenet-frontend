@@ -25,16 +25,16 @@ describe('Annotation browser store', () => {
     );
     annotationBrowserStore.setWfsResponse({
       features: [
-        { id: 1 },
-        { id: 2 },
-        { id: 3 },
-        { id: 4 },
-        { id: 5 },
-        { id: 6 },
-        { id: 7 },
-        { id: 8 },
-        { id: 9 },
-        { id: 10 },
+        { properties: { id: 1 } },
+        { properties: { id: 2 } },
+        { properties: { id: 3 } },
+        { properties: { id: 4 } },
+        { properties: { id: 5 } },
+        { properties: { id: 6 } },
+        { properties: { id: 7 } },
+        { properties: { id: 8 } },
+        { properties: { id: 9 } },
+        { properties: { id: 10 } },
       ],
     });
   });
@@ -76,23 +76,96 @@ describe('Annotation browser store', () => {
     annotationBrowserStore.toggleAnnotationSelection(6);
     annotationBrowserStore.setWfsResponse({
       features: [
-        { id: 23 },
+        { properties: { id: 23 } },
       ],
     });
     annotationBrowserStore.setWfsResponse({
       features: [
-        { id: 1 },
-        { id: 2 },
-        { id: 3 },
-        { id: 4 },
-        { id: 5 },
-        { id: 6 },
-        { id: 7 },
-        { id: 8 },
-        { id: 9 },
-        { id: 10 },
+        { properties: { id: 1 } },
+        { properties: { id: 2 } },
+        { properties: { id: 3 } },
+        { properties: { id: 4 } },
+        { properties: { id: 5 } },
+        { properties: { id: 6 } },
+        { properties: { id: 7 } },
+        { properties: { id: 8 } },
+        { properties: { id: 9 } },
+        { properties: { id: 10 } },
       ],
     });
+    expect(annotationBrowserStore.selection)
+      .toEqual({
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        5: false,
+        6: false,
+        7: false,
+        8: false,
+        9: false,
+        10: false,
+      });
+  });
+
+  test('We have a fullSelection as true when everything is selected', () => {
+    annotationBrowserStore.toggleAnnotationSelection(1);
+    annotationBrowserStore.toggleAnnotationSelection(2);
+    annotationBrowserStore.toggleAnnotationSelection(3);
+    annotationBrowserStore.toggleAnnotationSelection(4);
+    annotationBrowserStore.toggleAnnotationSelection(5);
+    annotationBrowserStore.toggleAnnotationSelection(6);
+    annotationBrowserStore.toggleAnnotationSelection(7);
+    annotationBrowserStore.toggleAnnotationSelection(8);
+    annotationBrowserStore.toggleAnnotationSelection(9);
+    annotationBrowserStore.toggleAnnotationSelection(10);
+    expect(annotationBrowserStore.fullSelection)
+      .toBe(true);
+  });
+
+  test('We have a fullSelection as false when even one is deselected', () => {
+    annotationBrowserStore.toggleAnnotationSelection(1);
+    annotationBrowserStore.toggleAnnotationSelection(2);
+    annotationBrowserStore.toggleAnnotationSelection(3);
+    annotationBrowserStore.toggleAnnotationSelection(4);
+    annotationBrowserStore.toggleAnnotationSelection(5);
+    annotationBrowserStore.toggleAnnotationSelection(7);
+    annotationBrowserStore.toggleAnnotationSelection(8);
+    annotationBrowserStore.toggleAnnotationSelection(9);
+    annotationBrowserStore.toggleAnnotationSelection(10);
+    expect(annotationBrowserStore.fullSelection)
+      .toBe(false);
+  });
+
+  test('We can select all annotations when they\'re all false', () => {
+    annotationBrowserStore.toggleAllAnnotationSelection();
+    expect(annotationBrowserStore.selection)
+      .toEqual({
+        1: true,
+        2: true,
+        3: true,
+        4: true,
+        5: true,
+        6: true,
+        7: true,
+        8: true,
+        9: true,
+        10: true,
+      });
+  });
+
+  test('We deselect all annotations when they\'re all selected', () => {
+    annotationBrowserStore.toggleAnnotationSelection(1);
+    annotationBrowserStore.toggleAnnotationSelection(2);
+    annotationBrowserStore.toggleAnnotationSelection(3);
+    annotationBrowserStore.toggleAnnotationSelection(4);
+    annotationBrowserStore.toggleAnnotationSelection(5);
+    annotationBrowserStore.toggleAnnotationSelection(6);
+    annotationBrowserStore.toggleAnnotationSelection(7);
+    annotationBrowserStore.toggleAnnotationSelection(8);
+    annotationBrowserStore.toggleAnnotationSelection(9);
+    annotationBrowserStore.toggleAnnotationSelection(10);
+    annotationBrowserStore.toggleAllAnnotationSelection();
     expect(annotationBrowserStore.selection)
       .toEqual({
         1: false,

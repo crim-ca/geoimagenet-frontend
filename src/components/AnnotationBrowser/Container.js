@@ -83,8 +83,6 @@ class Container extends React.Component<Props> {
         totalFeatures,
         nextPage,
         previousPage,
-        currentPageContent,
-        selection,
         toggleAnnotationSelection,
       },
     } = this.props;
@@ -100,10 +98,8 @@ class Container extends React.Component<Props> {
         <ModeSelectionContainer geoImageNetStore={geoImageNetStore} />
         <hr />
         <AnnotationList
-          selection={selection}
           makeToggleAnnotationSelection={makeToggleAnnotationSelection}
           fitViewToBoundingBox={this.navigate}
-          annotations={currentPageContent}
           geoserver_url={GEOSERVER_URL}
           geoImageNetStore={geoImageNetStore}
         />
