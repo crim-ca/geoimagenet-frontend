@@ -1,43 +1,19 @@
 // @flow strict
 
 import { MuiThemeProvider } from '@material-ui/core';
-import { theme } from '../utils/react';
+import { theme } from '../../utils/react';
 
 const { MockedProvider } = require('react-apollo/test-utils');
 const React = require('react');
-const { mount, configure } = require('enzyme');
-const Adapter = require('enzyme-adapter-react-16');
-const { Models } = require('../components/Models/Models');
-const { ModelsTable } = require('../components/Models/ModelsTable');
-const { BenchmarksTable } = require('../components/Models/BenchmarksTable');
-const { UploadForm } = require('../components/Models/UploadForm');
-const { MODELS, LAUNCH_TEST_JOB, BENCHMARKS_JOBS, UPLOAD_MODEL } = require('../domain/graphql_queries');
+const { mount } = require('enzyme');
+const { Models } = require('../../components/Models/Models');
+const { ModelsTable } = require('../../components/Models/ModelsTable');
+const { BenchmarksTable } = require('../../components/Models/BenchmarksTable');
+const { UploadForm } = require('../../components/Models/UploadForm');
+const { MODELS, LAUNCH_TEST_JOB, BENCHMARKS_JOBS, UPLOAD_MODEL } = require('../../domain/graphql_queries');
 const { NotificationContainer } = require('react-notifications');
-const { wait } = require('./utils');
-const { JSDOM } = require('jsdom');
-const { window } = new JSDOM(`<!doctype html>`);
-
-function copyProps(src, target) {
-  Object.defineProperties(target, {
-    ...Object.getOwnPropertyDescriptors(src),
-    ...Object.getOwnPropertyDescriptors(target),
-  });
-}
-
-global.window = window;
-global.document = window.document;
-global.navigator = {
-  userAgent: 'node.js',
-};
-global.requestAnimationFrame = function (callback) {
-  return setTimeout(callback, 0);
-};
-global.cancelAnimationFrame = function (id) {
-  clearTimeout(id);
-};
-copyProps(window, global);
-
-configure({ adapter: new Adapter() });
+const { wait } = require('../utils');
+require('./define_global_jsdom');
 
 type Props = {
   mocks: {}[],

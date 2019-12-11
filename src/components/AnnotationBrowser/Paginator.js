@@ -5,11 +5,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { TFunction } from 'react-i18next';
-
-import { withTranslation } from '../../utils';
-
-import type { AnnotationBrowserStore } from '../../model/store/AnnotationBrowserStore';
 import { compose } from 'react-apollo';
+import { withTranslation } from '../../utils';
 
 const style = (theme) => ({
   root: {
@@ -22,15 +19,15 @@ const style = (theme) => ({
     justifyContent: 'space-evenly',
     '& > *:not(:first-child)': {
       marginLeft: theme.values.gutterMedium,
-    }
-  }
+    },
+  },
 });
 type Props = {
-  page_number: number,
-  total_pages: number,
-  total_features: number,
-  previous_page: () => void,
-  next_page: () => void,
+  pageNumber: number,
+  totalPages: number,
+  totalFeatures: number,
+  previousPage: () => void,
+  nextPage: () => void,
   classes: {
     root: {},
     buttons: {},
@@ -38,31 +35,54 @@ type Props = {
   t: TFunction,
 };
 
-class Paginator extends React.Component<Props> {
-  render() {
-    const { classes: { root, buttons }, t } = this.props;
-    return (
-      <div className={root}>
-        <Typography variant='body2'>{this.props.total_features} annotations</Typography>
-        <Typography variant='body2'>{t('annotations:pagination.page_info', {
-          page_number: this.props.page_number,
-          total_pages: this.props.total_pages,
-        })}</Typography>
-        <div className={buttons}>
-          <Button
-            color='primary'
-            variant='contained'
-            disabled={this.props.page_number === 1}
-            onClick={this.props.previous_page}>{t('annotations:pagination.previous')}</Button>
-          <Button
-            color='primary'
-            variant='contained'
-            disabled={this.props.page_number === this.props.total_pages}
-            onClick={this.props.next_page}>{t('annotations:pagination.next')}</Button>
-        </div>
+/**
+ * Here I was tempted to make AnnotationBrowserStore a dependency of the Paginator
+ * instead of passing all the values as scalars to reduce the number of properties.
+ * However, that would prevent the Paginator to be used in any other context.
+ * So I decided to keep it generic, as it is right now.
+ */
+function Paginator(props: Props) {
+  const {
+    classes: {
+      root,
+      buttons,
+    },
+    t,
+    pageNumber,
+    nextPage,
+    previousPage,
+    totalFeatures,
+    totalPages,
+  } = props;
+  return (
+    <div className={root}>
+      <Typography variant="body2">{`${totalFeatures} annotations`}</Typography>
+      <Typography variant="body2">
+        {t('annotations:pagination.page_info', {
+          pageNumber,
+          totalPages,
+        })}
+      </Typography>
+      <div className={buttons}>
+        <Button
+          color="primary"
+          variant="contained"
+          disabled={pageNumber === 1}
+          onClick={previousPage}
+        >
+          {t('annotations:pagination.previous')}
+        </Button>
+        <Button
+          color="primary"
+          variant="contained"
+          disabled={pageNumber === totalPages}
+          onClick={nextPage}
+        >
+          {t('annotations:pagination.next')}
+        </Button>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 const component = compose(

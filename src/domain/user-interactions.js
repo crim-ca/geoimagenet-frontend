@@ -217,8 +217,8 @@ export class UserInteractions {
   };
 
   populate_image_dictionary = async () => {
-    const images_dictionary = await this.dataQueries.fetch_images_dictionary();
-    this.storeActions.set_images_dictionary(images_dictionary);
+    const imagesDictionary = await this.dataQueries.fetch_images_dictionary();
+    this.storeActions.set_images_dictionary(imagesDictionary);
   };
 
   /**
@@ -231,7 +231,7 @@ export class UserInteractions {
     const imageId = feature.get('image_id');
     const wktFeature = wktFormat.writeFeature(feature);
 
-    const thisSatelliteImage: SatelliteImage | typeof undefined = this.geoImageNetStore.images_dictionary
+    const thisSatelliteImage: SatelliteImage | typeof undefined = this.geoImageNetStore.imagesDictionary
       .find((image) => (
         image.id === imageId
       ));

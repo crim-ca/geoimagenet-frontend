@@ -1,11 +1,22 @@
 // @flow strict
-import { action, observable, autorun, computed } from 'mobx';
+import {
+  action,
+  observable,
+  computed,
+} from 'mobx';
 import { MODE } from '../../constants';
 import type { AnnotationOwnershipFilters, AnnotationStatusFilters } from '../../Types';
 import { AnnotationFilter } from '../AnnotationFilter';
 import { ANNOTATION } from '../../Types';
 
-const { VISUALIZATION, CREATION, MODIFICATION, DELETION, RELEASE, VALIDATION } = MODE;
+const {
+  VISUALIZATION,
+  CREATION,
+  MODIFICATION,
+  DELETION,
+  RELEASE,
+  VALIDATION,
+} = MODE;
 
 type FilterSelectionTuple = [string, boolean];
 type FilterSelectionMap = FilterSelectionTuple[];
@@ -51,6 +62,10 @@ class UserInterfaceStore {
       this.enableAllFilters();
       this.restoreFilters(this.previousFilterSelection);
     }
+  }
+
+  @computed get isInBatchMode(): boolean {
+    return [MODE.DELETION, MODE.RELEASE, MODE.VALIDATION].indexOf(this.selectedMode) !== -1;
   }
 
   constructor() {

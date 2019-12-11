@@ -1,13 +1,13 @@
 // @flow strict
 
-import { ContextualMenuManager } from '../components/ContextualMenu/ContextualMenuManager';
-import { ContextualMenuContainer, defaultState } from '../components/ContextualMenu/ContextualMenuContainer';
+import { ContextualMenuManager } from '../../components/ContextualMenu/ContextualMenuManager';
+import { ContextualMenuContainer, defaultState } from '../../components/ContextualMenu/ContextualMenuContainer';
 import { MenuItem } from '@material-ui/core';
 
 const React = require('react');
 const { shallow, mount, configure } = require('enzyme');
 const Adapter = require('enzyme-adapter-react-16');
-const { wait } = require('./utils');
+const { wait } = require('../utils');
 const { JSDOM } = require('jsdom');
 const { window } = new JSDOM(`<!doctype html><body><div id="contextual-menu-root"></div></body>`);
 

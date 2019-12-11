@@ -192,8 +192,8 @@ export class StoreActions {
   }
 
   @action.bound
-  set_images_dictionary(images_dictionary: SatelliteImage[]) {
-    this.geoImageNetStore.images_dictionary = images_dictionary;
+  set_images_dictionary(imagesDictionary: SatelliteImage[]) {
+    this.geoImageNetStore.imagesDictionary = imagesDictionary;
   }
 
   @action.bound

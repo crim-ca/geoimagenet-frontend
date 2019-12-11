@@ -28,13 +28,14 @@ const resources = {
       },
     },
     annotations: {
+      toggleAll: 'Select / deselect all',
       created_by: 'Created by {{annotator}}',
       class_name: 'Class Name',
       owner: 'Owner',
       status: 'Status',
       annotators_identifiers: 'Annotators identifiers',
       pagination: {
-        page_info: 'Page {{page_number}} of {{total_pages}}',
+        page_info: 'Page {{pageNumber}} of {{totalPages}}',
         previous: 'Previous page',
         next: 'Next page',
       },
@@ -262,13 +263,14 @@ const resources = {
       },
     },
     annotations: {
+      toggleAll: 'Sélectionner / désélectionner toutes',
       created_by: 'Créée par {{annotator}}',
       class_name: 'Nom de classe',
       owner: 'Propriétaire',
       status: 'Statut',
       annotators_identifiers: 'Identifiants d\'annotateurs/trices',
       pagination: {
-        page_info: 'Page {{page_number}} de {{total_pages}}',
+        page_info: 'Page {{pageNumber}} de {{totalPages}}',
         previous: 'Page précédente',
         next: 'Page suivante',
       },

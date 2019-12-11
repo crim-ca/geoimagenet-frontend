@@ -1,39 +1,24 @@
 // @flow strict
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import { MuiThemeProvider } from '@material-ui/core';
-import { JSDOM } from 'jsdom';
-import { GeoImageNetStore } from '../model/store/GeoImageNetStore';
-import { StoreActions } from '../model/StoreActions';
-import { UserInteractions } from '../domain/user-interactions';
-import { Container as UserSettingsContainer } from '../components/UserSettings/Container';
-import { FollowedUsersList } from '../components/UserSettings/FollowedUsersList';
-import { AddFollowedUserForm } from '../components/UserSettings/AddFollowedUserForm';
-import { Sidebar } from '../components/Sidebar';
-import { i18n as i18next } from '../utils/i18n';
-import { User } from '../model/User';
-import { TaxonomyStore } from '../model/store/TaxonomyStore';
-import { copyProps, wait } from './utils';
-import { UserInterfaceStore } from '../model/store/UserInterfaceStore';
-import { OpenLayersStore } from '../model/store/OpenLayersStore';
-import { theme } from '../utils/react';
-import { dataQueries } from '../model/instance_cache';
+import { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
+import { StoreActions } from '../../model/StoreActions';
+import { UserInteractions } from '../../domain/user-interactions';
+import { Container as UserSettingsContainer } from '../../components/UserSettings/Container';
+import { FollowedUsersList } from '../../components/UserSettings/FollowedUsersList';
+import { AddFollowedUserForm } from '../../components/UserSettings/AddFollowedUserForm';
+import { Sidebar } from '../../components/Sidebar';
+import { i18n as i18next } from '../../utils/i18n';
+import { User } from '../../model/User';
+import { TaxonomyStore } from '../../model/store/TaxonomyStore';
+import { wait } from '../utils';
+import { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
+import { OpenLayersStore } from '../../model/store/OpenLayersStore';
+import { theme } from '../../utils/react';
+import { dataQueries } from '../../model/instance_cache';
 
-const { window } = new JSDOM('<!doctype html>');
-
-global.window = window;
-global.document = window.document;
-global.navigator = {
-  userAgent: 'node.js',
-};
-global.requestAnimationFrame = (callback) => setTimeout(callback, 0);
-global.cancelAnimationFrame = (id) => {
-  clearTimeout(id);
-};
-copyProps(window, global);
-
-configure({ adapter: new Adapter() });
+require('./define_global_jsdom');
 
 const userWithoutFollowedUsers = new User('user_name', 'email', [], 1, [], true);
 const anonymousUser = new User('anonymous', '', [], -1, [], false);

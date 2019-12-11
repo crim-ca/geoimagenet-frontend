@@ -25,15 +25,6 @@ ul.taxonomy_classes label {
     cursor: pointer;
 }
 
-input[type=checkbox] {
-    /*
-    TODO if accessibility and using tab becomes a problem, uncomment these, and find a way to have both the input visible but without the alignment issue in the eyes column
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    */
-    display: none;
-}
-
 label.checkbox {
     font-size: 30px;
     height: 30px;

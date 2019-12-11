@@ -24,12 +24,12 @@ export class DataQueries {
     this.ml_endpoint = ml_endpoint;
   }
 
-  get_annotations_browser_page = async (type_name: string, cql_filter: string, page_size: string, offset: string) => {
+  get_annotations_browser_page = async (type_name: string, cqlFilter: string, page_size: string, offset: string) => {
     let url = `${this.geoserver_endpoint}/wfs?service=WFS&` +
       `version=1.1.0&request=GetFeature&typeName=${type_name}&` +
       `outputFormat=application/json&srsname=EPSG:3857&`;
-    if (cql_filter.length > 0) {
-      url += cql_filter;
+    if (cqlFilter.length > 0) {
+      url += cqlFilter;
     }
     url += `&maxfeatures=${page_size}&startindex=${offset}`;
     const response = await make_http_request(url);

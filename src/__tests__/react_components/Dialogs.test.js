@@ -1,13 +1,13 @@
-import { wait } from './utils';
+import { wait } from '../utils';
 
 const React = require('react');
 const { shallow, configure } = require('enzyme');
-const { DialogManager } = require('../components/Dialogs/DialogManager');
-const { DialogContainer } = require('../components/Dialogs/DialogContainer');
-const { PromisifiedDialog } = require('../components/Dialogs/PromisifiedDialog');
+const { DialogManager } = require('../../components/Dialogs/DialogManager');
+const { DialogContainer } = require('../../components/Dialogs/DialogContainer');
+const { PromisifiedDialog } = require('../../components/Dialogs/PromisifiedDialog');
 const { Dialog, DialogActions, Button } = require('@material-ui/core');
 const Adapter = require('enzyme-adapter-react-16');
-const { default_state } = require('../components/Dialogs/DialogContainer');
+const { default_state } = require('../../components/Dialogs/DialogContainer');
 
 configure({ adapter: new Adapter() });
 
