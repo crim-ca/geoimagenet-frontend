@@ -1,9 +1,10 @@
 // @flow strict
 import React from 'react';
+import IconButton from '@material-ui/core/IconButton';
 import { observer } from 'mobx-react';
-import Button from '@material-ui/core/Button';
 import { TFunction } from 'react-i18next';
 import { compose } from 'react-apollo';
+import { FilterIcon } from './FilterIcon';
 import { withTranslation } from '../../../utils';
 import { FiltersPaper } from '../FiltersPaper';
 import { FadingDialog } from '../FadingDialog';
@@ -11,6 +12,14 @@ import { withUserInterfaceStore } from '../../../model/HOCs';
 import type { UserInterfaceStore } from '../../../model/store/UserInterfaceStore';
 import type { AnnotationFilter as AnnotationFilterEntity } from '../../../model/AnnotationFilter';
 import { AnnotationFilter as AnnotationFilterComponent } from './AnnotationFilter';
+
+const styles = {
+  button: {
+    width: 64,
+    height: 64,
+    padding: 0,
+  },
+};
 
 type Props = {
   uiStore: UserInterfaceStore,
@@ -44,13 +53,13 @@ class Container extends React.Component<Props, State> {
     const { uiStore, t } = this.props;
     return (
       <>
-        <Button
-          variant="contained"
+        <IconButton
           color="primary"
           onClick={this.toggleContainer}
+          style={styles.button}
         >
-          {t('annotations:filters')}
-        </Button>
+          <FilterIcon />
+        </IconButton>
         <FadingDialog open={open} anchor={anchor}>
           <FiltersPaper>
             <ul>
