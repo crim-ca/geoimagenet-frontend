@@ -1,12 +1,26 @@
 // @flow strict
 
 import React from 'react';
-import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import { observer } from 'mobx-react';
-
-import { withTranslation } from '../../../utils';
 import { TFunction } from 'react-i18next';
+import { OwnerIcon } from './OwnerIcon';
+import { withTranslation } from '../../../utils';
 import { GeoImageNetStore } from '../../../model/store/GeoImageNetStore';
+
+const styles = {
+  button: {
+    width: 64,
+    height: 64,
+    padding: 0,
+  },
+  icon: {
+    width: 64,
+    height: 64,
+    'padding-top': 8,
+    'padding-left': 8,
+  },
+};
 
 type Props = {
   t: TFunction,
@@ -16,8 +30,7 @@ type State = {};
 
 @observer
 class Container extends React.Component<Props, State> {
-
-  receive_click_event = () => {
+  receiveClickEvent = () => {
     this.props.geoImageNetStore.toggle_annotator_identifiers();
   };
 
@@ -25,9 +38,13 @@ class Container extends React.Component<Props, State> {
     const { t, geoImageNetStore } = this.props;
     return (
       <>
-        <Button variant='contained'
-                color={geoImageNetStore.show_annotators_identifiers ? 'primary' : 'secondary'}
-                onClick={this.receive_click_event}>{t(`annotations:annotators_identifiers`)}</Button>
+        <IconButton
+          color={geoImageNetStore.show_annotators_identifiers ? 'primary' : 'secondary'}
+          onClick={this.receiveClickEvent}
+          style={styles.button}
+        >
+          <OwnerIcon />
+        </IconButton>
       </>
     );
   }
