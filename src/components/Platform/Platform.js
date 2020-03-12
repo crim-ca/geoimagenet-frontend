@@ -9,7 +9,8 @@ import { Sidebar } from '../Sidebar';
 import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import type { OpenLayersStore } from '../../model/store/OpenLayersStore';
 import { Container as FiltersContainer } from '../Map/Filters/Container';
-import { Container as LabelsContainer } from '../Map/LabelsChoice/Container';
+import { Container as OwnersContainer } from '../Map/Owners/Container';
+import { Container as LabelsContainer } from '../Map/Labels/Container';
 import { ActiveFiltersBox } from '../Map/ActiveFiltersBox';
 import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 import { withTaxonomyStore } from '../../model/HOCs';
@@ -19,8 +20,8 @@ const PlatformContainer = withStyles(({ values }) => ({
     display: 'grid',
     height: '100%',
     gridTemplateColumns: `1fr min-content ${values.widthSidebar}`,
-    gridTemplateRows: '64px calc(100% - 64px)'
-  }
+    gridTemplateRows: '64px calc(100% - 64px)',
+  },
 }))(({ classes, children }) => (<div className={classes.root}>{children}</div>));
 
 const Coordinates = withStyles(({ values, zIndex }) => ({
@@ -31,7 +32,7 @@ const Coordinates = withStyles(({ values, zIndex }) => ({
     padding: values.gutterSmall,
     margin: values.gutterSmall,
     width: '300px',
-  }
+  },
 }))(Paper);
 
 type Props = {|
@@ -50,24 +51,35 @@ type Props = {|
 @observer
 class Platform extends Component<Props> {
   render() {
+    const {
+      geoImageNetStore,
+      storeActions,
+      taxonomyStore,
+      userInteractions,
+      openLayersStore,
+    } = this.props;
+
     return (
       <PlatformContainer>
         <MapContainer
-          openLayersStore={this.props.openLayersStore}
-          geoImageNetStore={this.props.geoImageNetStore}
-          taxonomyStore={this.props.taxonomyStore}
-          storeActions={this.props.storeActions}
-          userInteractions={this.props.userInteractions} />
+          openLayersStore={openLayersStore}
+          geoImageNetStore={geoImageNetStore}
+          taxonomyStore={taxonomyStore}
+          storeActions={storeActions}
+          userInteractions={userInteractions}
+        />
         <Coordinates id='coordinates' />
         <ActiveFiltersBox>
-          <LabelsContainer geoImageNetStore={this.props.geoImageNetStore} storeActions={this.props.storeActions} />
-          <FiltersContainer geoImageNetStore={this.props.geoImageNetStore} storeActions={this.props.storeActions} />
+          <OwnersContainer geoImageNetStore={geoImageNetStore} storeActions={storeActions} />
+          <LabelsContainer geoImageNetStore={geoImageNetStore} storeActions={storeActions} />
+          <FiltersContainer geoImageNetStore={geoImageNetStore} storeActions={storeActions} />
         </ActiveFiltersBox>
         <Sidebar
-          openLayersStore={this.props.openLayersStore}
-          geoImageNetStore={this.props.geoImageNetStore}
-          userInteractions={this.props.userInteractions}
-          storeActions={this.props.storeActions} />
+          openLayersStore={openLayersStore}
+          geoImageNetStore={geoImageNetStore}
+          userInteractions={userInteractions}
+          storeActions={storeActions}
+        />
       </PlatformContainer>
     );
   }
@@ -75,5 +87,5 @@ class Platform extends Component<Props> {
 
 const component = withTaxonomyStore(Platform);
 export {
-  component as Platform
+  component as Platform,
 };
