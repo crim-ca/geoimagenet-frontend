@@ -37,6 +37,14 @@ export class GeoImageNetStore {
    */
   @observable showLabels: boolean = true;
 
+  @action toggleLabels: (?boolean) => void = (override: ?boolean) => {
+    if (override !== undefined && override !== null) {
+      this.showLabels = override;
+      return;
+    }
+    this.showLabels = !this.showLabels;
+  };
+
   @observable show_annotators_identifiers: boolean = true;
 
   @action toggle_annotator_identifiers: (?boolean) => void = (override: ?boolean) => {
