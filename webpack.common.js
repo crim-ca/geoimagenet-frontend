@@ -53,10 +53,14 @@ module.exports = {
         ],
       },
       {
-        test: /\.(png|svg|jpg|gif)$/,
+        test: /\.(png|jpg|gif)$/,
         use: [
           'file-loader?name=img/[hash].[ext]',
         ],
+      },
+      {
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
       },
       {
         test: /\.(hack\.jpg)$/,
