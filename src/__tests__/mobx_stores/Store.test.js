@@ -5,7 +5,7 @@ import { action } from 'mobx';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { JSDOM } from 'jsdom';
-import { Container as LabelsContainer } from '../../components/Map/LabelsChoice/Container';
+import { Container as OwnersContainer } from '../../components/Map/Owners/Container';
 import { TaxonomyStore } from '../../model/store/TaxonomyStore';
 import { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
 import { Actions } from '../../components/ModeSelection/Actions';
@@ -68,14 +68,14 @@ const classesFromApi = {
 
 describe('UI Elements correctly change the store', () => {
   test('Toggle annotators identifier off from default state', () => {
-    const wrapper = mount(<LabelsContainer geoImageNetStore={geoImageNetStore} />);
+    const wrapper = mount(<OwnersContainer geoImageNetStore={geoImageNetStore} />);
     wrapper.simulate('click');
     expect(geoImageNetStore.show_annotators_identifiers)
       .toBe(false);
   });
   test('Toggle annotators identifier on when state is already false', () => {
     geoImageNetStore.toggle_annotator_identifiers(false);
-    const wrapper = mount(<LabelsContainer geoImageNetStore={geoImageNetStore} />);
+    const wrapper = mount(<OwnersContainer geoImageNetStore={geoImageNetStore} />);
     wrapper.simulate('click');
     expect(geoImageNetStore.show_annotators_identifiers)
       .toBe(true);
