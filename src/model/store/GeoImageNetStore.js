@@ -45,14 +45,14 @@ export class GeoImageNetStore {
     this.showLabels = !this.showLabels;
   };
 
-  @observable show_annotators_identifiers: boolean = true;
+  @observable showAnnotatorsIdentifiers: boolean = true;
 
-  @action toggle_annotator_identifiers: (?boolean) => void = (override: ?boolean) => {
+  @action toggleAnnotatorIdentifiers: (?boolean) => void = (override: ?boolean) => {
     if (override !== undefined && override !== null) {
-      this.show_annotators_identifiers = override;
+      this.showAnnotatorsIdentifiers = override;
       return;
     }
-    this.show_annotators_identifiers = !this.show_annotators_identifiers;
+    this.showAnnotatorsIdentifiers = !this.showAnnotatorsIdentifiers;
   };
 
   /**

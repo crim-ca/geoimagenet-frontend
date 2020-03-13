@@ -268,7 +268,7 @@ export class MapManager {
     this.map.addEventListener('click', this.receiveMapViewportClickEvent);
 
     autorun(() => {
-      const { showLabels, show_annotators_identifiers } = this.geoImageNetStore;
+      const { showLabels, showAnnotatorsIdentifiers } = this.geoImageNetStore;
       const { annotationStatusFilters } = this.uiStore;
       /**
        * This clunky switch is used so that MobX registers the access to the showLabels property.
@@ -278,7 +278,7 @@ export class MapManager {
        *
        * We could directly refresh the layers without regard to the actual value in showLabels, the style function picks it up, but that would mean even more useless api calls
        */
-      const noise = show_annotators_identifiers;
+      const noise = showAnnotatorsIdentifiers;
       switch (showLabels) {
         default:
           Object.keys(annotationStatusFilters)

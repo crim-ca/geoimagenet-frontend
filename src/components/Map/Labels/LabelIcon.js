@@ -8,8 +8,8 @@ const styles = {
   icon: {
     width: 64,
     height: 64,
-    'padding-top': 8,
-    'padding-left': 8,
+    paddingTop: 4,
+    paddingLeft: 8,
   },
 };
 
