@@ -3,7 +3,7 @@
 import { withStyles } from '@material-ui/core';
 import React from 'react';
 
-export const ActiveFiltersBox = withStyles(theme => {
+export const ActiveFiltersBox = withStyles((theme) => {
   const { values } = theme;
   return {
     root: {
@@ -14,11 +14,11 @@ export const ActiveFiltersBox = withStyles(theme => {
       flexDirection: 'column',
       alignItems: 'flex-end',
       '& > button:not(:first-child)': {
-        marginTop: values.gutterSmall
+        marginTop: values.gutterSmall,
       },
-    }
+    },
   };
-})(props => {
+})((props) => {
   const { classes, children } = props;
   return <div className={classes.root}>{children}</div>;
 });
