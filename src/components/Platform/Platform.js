@@ -15,6 +15,12 @@ import { ActiveFiltersBox } from '../Map/ActiveFiltersBox';
 import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 import { withTaxonomyStore } from '../../model/HOCs';
 
+
+/**
+ * Changes to gridRow and gridColumn in Coordinates will change the location of the live
+ * coordinates of the cursor on the map. Futher changes must be made to
+ * gridTemplate* in PlatformContainer, to construct the grid itself (see CSS grid layout)
+ */
 const PlatformContainer = withStyles(({ values }) => ({
   root: {
     display: 'grid',
