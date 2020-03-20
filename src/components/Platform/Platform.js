@@ -26,18 +26,20 @@ const PlatformContainer = withStyles(({ values }) => ({
     display: 'grid',
     height: '100%',
     gridTemplateColumns: `1fr min-content ${values.widthSidebar}`,
-    gridTemplateRows: '64px calc(100% - 64px)',
+    gridTemplateRows: 'calc(100% - 40px) 40px',
   },
 }))(({ classes, children }) => (<div className={classes.root}>{children}</div>));
 
 const Coordinates = withStyles(({ values, zIndex }) => ({
   root: {
-    gridRow: '1/2',
-    gridColumn: '2/3',
+    gridRow: '2/2',
+    gridColumn: '1/3',
     zIndex: zIndex.over_map,
-    padding: values.gutterSmall,
-    margin: values.gutterSmall,
-    width: '300px',
+    padding: '4px',
+    margin: '9px',
+    width: '200px',
+    height: '26px',
+    textAlign: 'center',
   },
 }))(Paper);
 

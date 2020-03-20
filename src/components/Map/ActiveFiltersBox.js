@@ -8,7 +8,7 @@ export const ActiveFiltersBox = withStyles((theme) => {
   return {
     root: {
       marginRight: values.gutterSmall,
-      gridRow: '2/3',
+      gridRow: '1/2',
       gridColumn: '2/3',
       display: 'flex',
       flexDirection: 'column',
