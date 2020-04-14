@@ -22,7 +22,12 @@
     "import/prefer-default-export": 0,
     "max-len": ["error", { "code": 120 }],
     "quotes": [2, "single", "avoid-escape"],
-    "jsx-quotes":"off"
+    "jsx-quotes":"off",
+    "no-underscore-dangle": "off",
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "object-shorthand":"off",
+    "camelcase":"off",
+    "class-methods-use-this":"off"
   },
   "plugins": [
     "flowtype",
