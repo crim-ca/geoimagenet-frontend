@@ -2,38 +2,44 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core';
 import { Link, withRouter } from 'react-router-dom';
-
-import { SessionHandle } from './SessionHandle.js';
+import { compose } from 'react-apollo';
+import { SessionHandle } from './SessionHandle';
 import type { UserInteractions } from '../domain';
 import type { GeoImageNetStore } from '../model/store/GeoImageNetStore';
-import { compose } from 'react-apollo';
 
-const MenuContainerDiv = withStyles(theme => {
-  const { values } = theme;
+const MenuContainerDiv = withStyles((theme) => {
+  const { values, palette } = theme;
   return {
     container: {
+      backgroundColor: `${palette.primary.main}`,
+      color: 'white',
       padding: `0 ${values.gutterSmall}`,
       height: '100%',
       display: 'grid',
       gridTemplateColumns: '1fr repeat(6, auto) 1fr',
+      gridTemplateRows: `${values.heightAppBar} calc(100% - ${values.heightAppBar})`,
       justifyItems: 'right',
       alignItems: 'center',
       '& > :nth-child(1)': {
         gridColumnStart: 2,
-      }
-    }
+      },
+    },
   };
 })((props) => {
   const { classes, children } = props;
   return <div className={classes.container}>{children}</div>;
 });
 
-const style = theme => ({
+const style = (theme) => ({
   link: {
     padding: `0 ${theme.values.gutterSmall}`,
+    fontSize: '24px',
+    alignItems: 'center',
   },
   selected: {
-    textDecoration: 'underline',
+    fontSize: '24px',
+    alignItems: 'center',
+    fontWeight: 'bold',
   },
 });
 
@@ -49,8 +55,6 @@ type Props = {
  * A menu centering items using Links from material. Should be placed at the top of each logged pages.
  */
 class Menu extends Component<Props> {
-
-
   /**
    * Defines the different menus that can be shown when logged in
    * @todo bring back help when we have an idea what to put in there
@@ -58,40 +62,47 @@ class Menu extends Component<Props> {
   menus = [
     {
       title: 'Home',
-      href: '/'
+      href: '/',
     },
     {
-      title: 'Platform',
-      href: '/platform'
+      title: 'Map',
+      href: '/platform',
     },
     {
       title: 'Datasets',
-      href: '/datasets'
+      href: '/datasets',
     },
     {
       title: 'Models',
-      href: '/models'
+      href: '/models',
     },
     {
       title: 'Benchmarks',
-      href: '/benchmarks'
+      href: '/benchmarks',
     },
-    //{title: 'Help', href: '/help'},
+    // {title: 'Help', href: '/help'},
     {
       title: 'Contact',
-      href: `mailto:${this.props.contact_email}`
+      href: `mailto:${this.props.contact_email}`,
     },
   ];
 
   render() {
-    const { geoImageNetStore, userInteractions, location, classes } = this.props;
+    const {
+      geoImageNetStore, userInteractions, location, classes,
+    } = this.props;
     const current_url = location.pathname;
     return (
       <MenuContainerDiv>
-        {this.menus.map((menu, i) => <Link to={menu.href}
-                                           key={i}
-                                           className={menu.href === current_url ? `${classes.link} ${classes.selected}` : classes.link}>{menu.title}</Link>
-        )}
+        {this.menus.map((menu, i) => (
+          <Link
+            to={menu.href}
+            key={i}
+            className={menu.href === current_url ? `${classes.link} ${classes.selected}` : classes.link}
+          >
+            {menu.href === current_url ? `- ${menu.title} -` : menu.title}
+          </Link>
+        ))}
         <SessionHandle geoImageNetStore={geoImageNetStore} userInteractions={userInteractions} />
       </MenuContainerDiv>
     );

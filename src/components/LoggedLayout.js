@@ -2,23 +2,21 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core';
 import { NotificationContainer } from 'react-notifications';
-
-import { Menu } from './Menu.js';
-
+import { Menu } from './Menu';
 import type { UserInteractions } from '../domain';
 import type { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 
-const LayoutGrid = withStyles(theme => {
+const LayoutGrid = withStyles((theme) => {
   const { values } = theme;
   return {
     grid: {
       height: '100%',
       display: 'grid',
-      gridTemplateColumns: `1fr`,
-      gridTemplateRows: `${values.heightAppBar} calc(100% - ${values.heightAppBar})`
+      gridTemplateColumns: '1fr',
+      gridTemplateRows: `${values.heightAppBar} calc(100% - ${values.heightAppBar})`,
     },
   };
-})(props => {
+})((props) => {
   const { classes, children } = props;
   return <div className={classes.grid}>{children}</div>;
 });
@@ -27,14 +25,14 @@ const Bottom = withStyles({
   root: {
     gridRow: '2/3',
     gridColumn: '1/2',
-  }
+  },
 })(({ classes, children }) => (<div className={classes.root}>{children}</div>));
 
 const Top = withStyles({
   root: {
     gridRow: '1/2',
     gridColumn: '1/2',
-  }
+  },
 })(({ classes, children }) => (<div className={classes.root}>{children}</div>));
 
 type Props = {
@@ -49,7 +47,6 @@ type Props = {
  * Each bottom component is responsible for setting its bottom section's layout.
  */
 class LoggedLayout extends React.Component<Props> {
-
   render() {
     const { children, geoImageNetStore, userInteractions } = this.props;
     /**
@@ -61,7 +58,8 @@ class LoggedLayout extends React.Component<Props> {
           <Menu
             geoImageNetStore={geoImageNetStore}
             userInteractions={userInteractions}
-            contact_email={CONTACT_EMAIL} />
+            contact_email={CONTACT_EMAIL}
+          />
         </Top>
         <Bottom>
           {children}
