@@ -4,26 +4,25 @@ import React from 'react';
 import {
   BrowserRouter as Router,
   Switch,
-  Route
+  Route,
 } from 'react-router-dom';
+import { NotificationContainer } from 'react-notifications';
+import { CssBaseline, MuiThemeProvider } from '@material-ui/core';
+import { ApolloProvider } from 'react-apollo';
+import { ApolloClient } from 'apollo-client';
 import { Platform } from './components/Platform/Platform';
 import { Datasets } from './components/Datasets/Datasets';
 import { Models } from './components/Models/Models';
 import { Benchmarks } from './components/Benchmarks';
 import { theme, ThemedComponent } from './utils/react';
 import { PresentationContainer } from './components/Presentation/Presentation';
-import { NotificationContainer } from 'react-notifications';
-
 import type { OpenLayersStore } from './model/store/OpenLayersStore';
 import type { GeoImageNetStore } from './model/store/GeoImageNetStore';
 import type { StoreActions } from './model/StoreActions';
 import type { UserInteractions } from './domain';
-import { CssBaseline, MuiThemeProvider } from '@material-ui/core';
-import { ApolloProvider } from 'react-apollo';
 import { DialogContainer } from './components/Dialogs';
 import { ContextualMenuContainer } from './components/ContextualMenu/ContextualMenuContainer';
 import { LoggedLayout } from './components/LoggedLayout';
-import { ApolloClient } from 'apollo-client';
 
 type Props = {
   openLayersStore: OpenLayersStore,
@@ -52,11 +51,13 @@ class App extends React.Component<Props> {
             openLayersStore={openLayersStore}
             geoImageNetStore={geoImageNetStore}
             storeActions={storeActions}
-            userInteractions={userInteractions} />
+            userInteractions={userInteractions}
+          />
         </Route>
         <Route path='/datasets'>
           <Datasets
-            geoImageNetStore={geoImageNetStore} />
+            geoImageNetStore={geoImageNetStore}
+          />
         </Route>
         <Route path='/models'>
           <Models model_upload_instructions_url={thelper_model_upload_instructions_url} />
@@ -68,7 +69,8 @@ class App extends React.Component<Props> {
               <PresentationContainer
                 geoImageNetStore={geoImageNetStore}
                 contact_email={contact_email}
-                userInteractions={userInteractions} />
+                userInteractions={userInteractions}
+              />
               <NotificationContainer />
             </div>
           </ThemedComponent>
@@ -94,8 +96,7 @@ class App extends React.Component<Props> {
                 <LoggedLayout geoImageNetStore={geoImageNetStore} userInteractions={userInteractions}>
                   {this.content()}
                 </LoggedLayout>
-              ) : this.content()
-            }
+              ) : this.content()}
           </ApolloProvider>
           <DialogContainer />
           <NotificationContainer />

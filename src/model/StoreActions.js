@@ -146,7 +146,7 @@ export class StoreActions {
       }
 
       if (current_raw.children && current_raw.children.length > 0) {
-        current_raw.children.forEach(c => {
+        current_raw.children.forEach((c) => {
           assign_top_object_to_list(c, current_raw.id);
         });
       }
