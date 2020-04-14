@@ -2,6 +2,35 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Typography from '@material-ui/core/Typography';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import withStyles from '@material-ui/core/styles/withStyles';
+
+const style = (theme) => {
+  const { colors } = theme;
+  return {
+    filter_new: {
+      color: `${colors.new}`,
+    },
+    filter_pre_released: {
+      color: `${colors.pre_released}`,
+    },
+    filter_released: {
+      color: `${colors.released}`,
+    },
+    filter_review: {
+      color: `${colors.review}`,
+    },
+    filter_validated: {
+      color: `${colors.validated}`,
+    },
+    filter_rejected: {
+      color: `${colors.rejected}`,
+    },
+    filter_deleted: {
+      color: `${colors.deleted}`,
+    },
+  };
+};
 
 type Props = {
   uniqueId: string,
@@ -12,6 +41,15 @@ type Props = {
     }
   }) => void,
   label: string,
+  classes: {
+    filter_new: string,
+    filter_pre_released: string,
+    filter_released: string,
+    filter_review: string,
+    filter_validated: string,
+    filter_rejected: string,
+    filter_deleted: string,
+  },
 };
 
 @observer
@@ -22,8 +60,10 @@ class CheckboxLineInput extends React.Component<Props> {
       checked,
       changeHandler,
       label,
+      classes,
     } = this.props;
-    return (
+
+    const commonCheckLineInput = (
       <>
         <input
           type="checkbox"
@@ -41,7 +81,24 @@ class CheckboxLineInput extends React.Component<Props> {
         </label>
       </>
     );
+
+    if (uniqueId in classes) {
+      return (
+        <>
+          {commonCheckLineInput}
+          <FiberManualRecordIcon
+            className={classes[uniqueId]}
+            style={{ marginLeft: 'auto' }}
+          />
+        </>
+      );
+    }
+    return (
+      <>
+        {commonCheckLineInput}
+      </>
+    );
   }
 }
-
-export { CheckboxLineInput };
+const component = withStyles(style)(CheckboxLineInput);
+export { component as CheckboxLineInput };
