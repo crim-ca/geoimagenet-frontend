@@ -1,3 +1,5 @@
+/* eslint-disable no-mixed-operators */
+/* eslint-disable no-bitwise */
 // @flow strict
 
 import Base from 'ol/layer/Base';
@@ -6,12 +8,12 @@ import Map from 'ol/Map';
 import { Control } from 'ol/control';
 import { unByKey } from 'ol/Observable';
 import { Feature } from 'ol';
-import type { AnnotationStatus } from './Types';
 import Layer from 'ol/layer/Layer';
+import type { AnnotationStatus } from './Types';
 
 /**
- * Somewhat dirty hack to know if the device supports touch events, but probably reliable. Might leak the touch event, but
- * it will probably be gc'd.
+ * Somewhat dirty hack to know if the device supports touch events, but probably reliable. Might leak the touch event,
+ * but it will probably be gc'd.
  * @returns {boolean}
  */
 function isTouchDevice() {
@@ -26,15 +28,15 @@ function isTouchDevice() {
 type ToggleLayerCallback = AnnotationStatus => void;
 
 /**
- * Taken from https://github.com/walkermatt/ol-layerswitcher and modified as we don't need some of the things it initially does,
- * such as the OL control behaviour, hidden aspect, and to be able to actually integrate it to the platform.
+ * Taken from https://github.com/walkermatt/ol-layerswitcher and modified as we don't need some of the things it
+ * initially does, such as the OL control behaviour, hidden aspect, and to be able to actually integrate it to the
+ * platform.
  * @todo we need to transform this (somehow) into a React component that would still exhibit an OL Contol behaviour.
  *
  * Possibly by creating another "LayerSwitcher" component that would manage this class internally.
  */
 class LayerSwitcher extends Control {
-
-  toggle_layer_callback: ToggleLayerCallback;
+  toggleLayerCallback: ToggleLayerCallback;
 
   mapListeners: (() => void)[];
 
@@ -43,7 +45,6 @@ class LayerSwitcher extends Control {
   panel: HTMLElement;
 
   constructor(opt_options: { target: string | HTMLElement }, toggle_layer_callback: ToggleLayerCallback) {
-
     const options = opt_options || {};
     const { target } = options;
     const element = document.createElement('div');
@@ -72,7 +73,6 @@ class LayerSwitcher extends Control {
     this.panel.className = 'panel';
     element.appendChild(this.panel);
     this.enableTouchScroll_(this.panel);
-
   }
 
   /**
@@ -80,7 +80,6 @@ class LayerSwitcher extends Control {
    * this would be the render method?
    */
   renderPanel() {
-
     this.ensureTopVisibleBaseLayerShown_();
 
     while (this.panel.firstChild) {
@@ -95,7 +94,6 @@ class LayerSwitcher extends Control {
       .slice()
       .reverse();
     this.renderLayers_(layers, ul);
-
   }
 
   /**
@@ -120,7 +118,7 @@ class LayerSwitcher extends Control {
    */
   ensureTopVisibleBaseLayerShown_() {
     let lastVisibleBaseLyr;
-    this.forEachRecursive(this.getMap(), function (l, idx, a) {
+    this.forEachRecursive(this.getMap(), (l) => {
       if (l.get('type') === 'base' && l.getVisible()) {
         lastVisibleBaseLyr = l;
       }
@@ -143,7 +141,7 @@ class LayerSwitcher extends Control {
     layer.setVisible(visible);
     if (visible && layer.get('type') === 'base') {
       // Hide all other base layers regardless of grouping
-      this.forEachRecursive(map, function (base_layer, idx, a) {
+      this.forEachRecursive(map, (base_layer) => {
         if (base_layer !== layer && base_layer.get('type') === 'base') {
           base_layer.setVisible(false);
         }
@@ -154,8 +152,7 @@ class LayerSwitcher extends Control {
   /**
    * Render all layers that are children of a group.
    */
-  renderLayer_(layer: Base, layer_index: number) {
-
+  renderLayer_(layer: Base) {
     const this_ = this;
 
     const li = document.createElement('li');
@@ -165,11 +162,10 @@ class LayerSwitcher extends Control {
     const label = document.createElement('label');
 
     /**
-     * hacky hack to make GeoImageNet images be grouped? combine is a custom attribute added on the high resolution images
-     * rendered on the map.
+     * hacky hack to make GeoImageNet images be grouped? combine is a custom attribute added on the high resolution
+     * images rendered on the map.
      */
     if (layer.getLayers && !layer.get('combine')) {
-
       li.className = 'group';
       label.innerHTML = layer_title;
       li.appendChild(label);
@@ -180,9 +176,7 @@ class LayerSwitcher extends Control {
         .slice()
         .reverse();
       this.renderLayers_(layers, ul);
-
     } else {
-
       li.className = 'layer';
       const input = document.createElement('input');
       if (layer.get('type') === 'base') {
@@ -212,23 +206,20 @@ class LayerSwitcher extends Control {
       }
 
       li.appendChild(label);
-
     }
-
     return li;
-
   }
 
   /**
    * Render all layers that are children of a group.
-   * layer_group Group layer whose children will be rendered.
+   * layerGroup Group layer whose children will be rendered.
    * element DOM element that children will be appended to.
    */
   renderLayers_(layers: Layer[], element: HTMLElement) {
-    for (var i = 0, l; i < layers.length; i++) {
+    for (let i = 0, l; i < layers.length; i++) {
       l = layers[i];
       if (l.get('title')) {
-        element.appendChild(this.renderLayer_(l, i));
+        element.appendChild(this.renderLayer_(l));
       }
     }
   }
@@ -236,7 +227,7 @@ class LayerSwitcher extends Control {
   /**
    * **Static** Call the supplied function for each layer in the passed layer group
    * recursively nesting groups.
-   * @param layer_group The layer group to start iterating from.
+   * @param layerGroup The layer group to start iterating from.
    * @param callback Callback which will be called for each `ol.layer.Base`
    * found under `lyr`. The signature for `fn` is the same as `ol.Collection#forEach`
    */
@@ -256,8 +247,9 @@ class LayerSwitcher extends Control {
    *
    * Adapted from http://stackoverflow.com/a/2117523/526860
    */
+  // eslint-disable-next-line class-methods-use-this
   uuid(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
       const r = Math.random() * 16 | 0;
       const v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
@@ -269,13 +261,13 @@ class LayerSwitcher extends Control {
    * @desc Apply workaround to enable scrolling of overflowing content within an
    * element. Adapted from https://gist.github.com/chrismbarr/4107472
    */
-  enableTouchScroll_ = function (elm: HTMLElement) {
+  enableTouchScroll_ = (elm: HTMLElement) => {
     if (isTouchDevice()) {
       let scrollStartPos = 0;
-      elm.addEventListener('touchstart', function (event: TouchEvent) {
+      elm.addEventListener('touchstart', (event: TouchEvent) => {
         scrollStartPos = this.scrollTop + event.touches[0].pageY;
       }, false);
-      elm.addEventListener('touchmove', function (event: TouchEvent) {
+      elm.addEventListener('touchmove', (event: TouchEvent) => {
         this.scrollTop = scrollStartPos - event.touches[0].pageY;
       }, false);
     }

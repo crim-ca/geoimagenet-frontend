@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+/* eslint-disable default-case */
 // @flow strict
 /**
  * This file is a mess, I know it, you know it, now move along and let me refactor
@@ -158,6 +160,7 @@ export class MapManager {
    */
   view: View;
 
+
   /**
    * We want to show the mouse position to the users, it's called a "control" in open layers.
    */
@@ -214,10 +217,13 @@ export class MapManager {
     const { annotations_collections, annotations_sources } = this.geoImageNetStore;
 
     /**
-     * this innocent looking piece of code is actually very central to the map, here we create the Open Layers sources and collections that will hold the features
-     * (quick reminder, an GeoImageNet "annotation" is represented on the map as an Open Layers "feature", served with wfs
+     * this innocent looking piece of code is actually very central to the map, here we create the Open Layers sources
+     * and collections that will hold the features (quick reminder, an GeoImageNet "annotation" is represented on
+     * the map as an Open Layers "feature", served with wfs
+     *
      * We need to set their color in accordance with their status.
-     * We keep references to the collections, sources and layers so that we can access them directly if need be (such as when refreshing sources, or setting style functions)
+     * We keep references to the collections, sources and layers so that we can access them directly if need be
+     * (such as when refreshing sources, or setting style functions)
      */
     ANNOTATION_STATUS_AS_ARRAY.forEach((key) => {
       const color = style.getPropertyValue(`--color-${key}`);
@@ -233,7 +239,8 @@ export class MapManager {
 
 
     /**
-     * We need to show the layers that are activated in the filters, and refresh them when we change the visible classes selection
+     * We need to show the layers that are activated in the filters, and refresh them when we change the visible
+     * classes selection
      */
     autorun(() => {
       const { annotationStatusFilters, annotationOwnershipFilters } = this.uiStore;
@@ -274,9 +281,11 @@ export class MapManager {
        * This clunky switch is used so that MobX registers the access to the showLabels property.
        * we assign noise only for mobx to rerun this function as well.
        *
-       * this is horrible, there must be a way to change the style globally without reloading everything, I can't believe it's the only way
+       * this is horrible, there must be a way to change the style globally without reloading everything,
+       * I can't believe it's the only way
        *
-       * We could directly refresh the layers without regard to the actual value in showLabels, the style function picks it up, but that would mean even more useless api calls
+       * We could directly refresh the layers without regard to the actual value in showLabels, the style function
+       * picks it up, but that would mean even more useless api calls
        */
       const noise = showAnnotatorsIdentifiers;
       switch (showLabels) {
@@ -336,8 +345,8 @@ export class MapManager {
   }
 
   /**
-   * OpenLayers allows us to register a single event handler for the click event on the map. From there, we need to infer
-   * the user's intent and dispatch the click to relevant more specialized handlers.
+   * OpenLayers allows us to register a single event handler for the click event on the map. From there, we need to
+   * infer the user's intent and dispatch the click to relevant more specialized handlers.
    */
   receiveMapViewportClickEvent = (event: Event): void => {
     const features = this.aggregateFeaturesAtCursor(event);
@@ -409,7 +418,7 @@ export class MapManager {
       visible: false,
     }));
 
-    ALLOWED_BING_MAPS.forEach(function (bing_map) {
+    ALLOWED_BING_MAPS.forEach((bing_map) => {
       baseMaps.push(new TileLayer({
         title: bing_map.title,
         type: 'base',
@@ -436,11 +445,13 @@ export class MapManager {
     const resolutions = new Array(n_tile_levels);
     for (let z = 0; z < n_tile_levels; ++z) {
       // generate resolutions
-      resolutions[z] = size / Math.pow(2, z);
+      resolutions[z] = size / (2 ** z);
     }
     const layer_names_zindex = {};
     try {
-      const result = await geoserverCapabilities(`${this.geoserverURL}/wms?request=GetCapabilities&service=WMS&version=1.3.0`);
+      const result = await geoserverCapabilities(
+        `${this.geoserverURL}/wms?request=GetCapabilities&service=WMS&version=1.3.0`,
+      );
       const capability = result.Capability;
       capability.Layer.Layer.forEach((layer) => {
         if (layer.KeywordList.some((keyword) => keyword === 'GEOIMAGENET')) {
@@ -496,7 +507,6 @@ export class MapManager {
               layer_names_zindex[layer.Name] = zindex;
             }
           });
-
         }
       });
     } catch (e) {
@@ -541,13 +551,10 @@ export class MapManager {
     const bbox_source = new VectorSource({
       features: bbox_features,
     });
-    let bbox_cluster_source = new Cluster({
+    const bbox_cluster_source = new Cluster({
       distance: 10,
       source: bbox_source,
-      geometryFunction: feature => {
-        return feature.getGeometry()
-          .getInteriorPoint();
-      }
+      geometryFunction: (feature) => feature.getGeometry().getInteriorPoint(),
     });
 
     const boundingBoxClusterLayer = new VectorLayer({
@@ -581,14 +588,17 @@ export class MapManager {
       visible: true,
     });
 
-    let contours_layers = [contours_layer, boundingBoxClusterLayer];
+    const contours_layers = [contours_layer, boundingBoxClusterLayer];
 
     const annotationLayers = [];
     // I have no idea what I am trying to have been doing here
     ANNOTATION_STATUS_AS_ARRAY.forEach((status) => {
       annotationLayers.unshift(this.geoImageNetStore.annotations_layers[status]);
     });
-
+    /*
+    The following also defines how the groups appear in the sidebar layerswitcher. Change the titles to change
+    the labels that appear in the layerswitcher. Remove the title to prevent the group from it.
+    */
     const contours_group = new Group({
       title: 'BBOX',
       layers: contours_layers,
@@ -598,25 +608,30 @@ export class MapManager {
       title: 'RGB Images',
       layers: RGB_layers,
       combine: true,
-      visible: false
+      visible: false,
     });
     const NRG_group = new Group({
       title: 'NRG Images',
       layers: NRG_layers,
       combine: true,
     });
+    const channelLayers = [RGB_group, NRG_group];
+    const channels = new Group({
+      title: 'Channels',
+      layers: channelLayers,
+      visible: true,
+    });
     const base_maps_group = new Group({
       title: 'Base maps',
       layers: baseMaps,
     });
+    // Title for annotations_group removed so it doesn't show up in LayerSwitcher (in the Sidebar)
     const annotations_group = new Group({
-      title: 'Annotations',
       layers: annotationLayers,
     });
 
     if (this.geoImageNetStore.acl.can(READ, WMS)) {
-      this.map.addLayer(RGB_group);
-      this.map.addLayer(NRG_group);
+      this.map.addLayer(channels);
       this.map.addLayer(contours_group);
     }
     this.map.addLayer(base_maps_group);
