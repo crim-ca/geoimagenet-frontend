@@ -1,4 +1,6 @@
 // @flow strict
+import '../../css/base.css';
+import '../../css/style_platform.css';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withStyles, Paper } from '@material-ui/core';
@@ -30,16 +32,19 @@ const PlatformContainer = withStyles(({ values }) => ({
   },
 }))(({ classes, children }) => (<div className={classes.root}>{children}</div>));
 
-const Coordinates = withStyles(({ values, zIndex }) => ({
+const Coordinates = withStyles(({ zIndex }) => ({
   root: {
     gridRow: '2/2',
     gridColumn: '1/3',
     zIndex: zIndex.over_map,
-    padding: '4px',
+    padding: '2px',
     margin: '9px',
     width: '200px',
     height: '26px',
     textAlign: 'center',
+    background: 'rgba(0, 60, 136, .5)',
+    color: '#fff',
+    border: '2px solid rgba(255, 255, 255, .2)',
   },
 }))(Paper);
 
