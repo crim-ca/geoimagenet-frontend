@@ -3,34 +3,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import Typography from '@material-ui/core/Typography';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import withStyles from '@material-ui/core/styles/withStyles';
-
-const style = (theme) => {
-  const { colors } = theme;
-  return {
-    filter_new: {
-      color: `${colors.new}`,
-    },
-    filter_pre_released: {
-      color: `${colors.pre_released}`,
-    },
-    filter_released: {
-      color: `${colors.released}`,
-    },
-    filter_review: {
-      color: `${colors.review}`,
-    },
-    filter_validated: {
-      color: `${colors.validated}`,
-    },
-    filter_rejected: {
-      color: `${colors.rejected}`,
-    },
-    filter_deleted: {
-      color: `${colors.deleted}`,
-    },
-  };
-};
+import { theme } from '../../../utils/react';
 
 type Props = {
   uniqueId: string,
@@ -41,26 +14,49 @@ type Props = {
     }
   }) => void,
   label: string,
-  classes: {
-    filter_new: string,
-    filter_pre_released: string,
-    filter_released: string,
-    filter_review: string,
-    filter_validated: string,
-    filter_rejected: string,
-    filter_deleted: string,
-  },
 };
 
 @observer
 class CheckboxLineInput extends React.Component<Props> {
   render() {
+    /*
+     * Broke from convention because using withStyles here caused errors with tests
+     * 'Filter components has a checked input by default' and 'Filter components unchecks the box'
+     * by preventing Jest from accessing the checkbox input and claiming the component undefined.
+     * In the end, was simpler to change how this component was styled.
+     */
+    const style = {
+      common: {
+        marginLeft: 'auto ',
+      },
+      filter_new: {
+        color: `${theme.colors.new}`,
+      },
+      filter_pre_released: {
+        color: `${theme.colors.pre_released}`,
+      },
+      filter_released: {
+        color: `${theme.colors.released}`,
+      },
+      filter_review: {
+        color: `${theme.colors.review}`,
+      },
+      filter_validated: {
+        color: `${theme.colors.validated}`,
+      },
+      filter_rejected: {
+        color: `${theme.colors.rejected}`,
+      },
+      filter_deleted: {
+        color: `${theme.colors.deleted}`,
+      },
+    };
+
     const {
       uniqueId,
       checked,
       changeHandler,
       label,
-      classes,
     } = this.props;
 
     const commonCheckLineInput = (
@@ -82,14 +78,11 @@ class CheckboxLineInput extends React.Component<Props> {
       </>
     );
 
-    if (uniqueId in classes) {
+    if (uniqueId in style) {
       return (
         <>
           {commonCheckLineInput}
-          <FiberManualRecordIcon
-            className={classes[uniqueId]}
-            style={{ marginLeft: 'auto' }}
-          />
+          <FiberManualRecordIcon style={{ ...style[uniqueId], ...style.common }} />
         </>
       );
     }
@@ -100,5 +93,4 @@ class CheckboxLineInput extends React.Component<Props> {
     );
   }
 }
-const component = withStyles(style)(CheckboxLineInput);
-export { component as CheckboxLineInput };
+export { CheckboxLineInput };
