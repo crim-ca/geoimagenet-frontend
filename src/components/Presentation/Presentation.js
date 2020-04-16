@@ -102,21 +102,21 @@ function ChangeLanguage() {
 function BenchmarksPanel() {
   const { t } = useTranslation();
   return (
-    <>
+    <React.Fragment>
       <ul>
         <li>{t('intro:benchmarks.item_1')}</li>
         <li>{t('intro:benchmarks.item_2')}</li>
         <li>{t('intro:benchmarks.item_3')}</li>
         <li>{t('intro:benchmarks.item_4')}</li>
       </ul>
-    </>
+    </React.Fragment>
   );
 }
 
 function Platform() {
   const { t } = useTranslation();
   return (
-    <>
+    <React.Fragment>
       <Typography variant='body1'>{t('intro:platform.par_1')}</Typography>
       <Typography variant='h6'>{t('intro:platform.section_1.header')}</Typography>
       <ul>
@@ -135,14 +135,14 @@ function Platform() {
         <li>{t('intro:platform.section_3.item_3')}</li>
         <li>{t('intro:platform.section_3.item_4')}</li>
       </ul>
-    </>
+    </React.Fragment>
   );
 }
 
 function Publications() {
   const { t } = useTranslation();
   return (
-    <>
+    <React.Fragment>
       <Typography variant='h5'>{t('intro:publications.section_1.header')}</Typography>
       <ul>
         <li>
@@ -222,25 +222,25 @@ function Publications() {
       <ul>
         <li>{t('intro:publications.section_3.item_1')}</li>
       </ul>
-    </>
+    </React.Fragment>
   );
 }
 
 function Mission() {
   const { t } = useTranslation();
   return (
-    <>
+    <React.Fragment>
       <Typography variant='body1' dangerouslySetInnerHTML={{ __html: t('intro:mission.what') }} />
       <Typography variant='body1' dangerouslySetInnerHTML={{ __html: t('intro:mission.how') }} />
       <Typography variant='body1' dangerouslySetInnerHTML={{ __html: t('intro:mission.why') }} />
-    </>
+    </React.Fragment>
   );
 }
 
 function Team() {
   const { t } = useTranslation();
   return (
-    <>
+    <React.Fragment>
       <Typography variant='h6'>{t('intro:team.section_1.header')}</Typography>
       <ul>
         <li>{t('intro:team.section_1.item_1')}</li>
@@ -268,14 +268,14 @@ function Team() {
       <ul>
         <li>{t('intro:team.section_4.item_1')}</li>
       </ul>
-    </>
+    </React.Fragment>
   );
 }
 
 function Collaborators() {
   const { t } = useTranslation();
   return (
-    <>
+    <React.Fragment>
       <Typography variant='body1'>{t('intro:collaborators.item_1')}</Typography>
       <Typography variant='body1'>{t('intro:collaborators.item_2')}</Typography>
       <Typography variant='body1'>{t('intro:collaborators.item_3')}</Typography>
@@ -286,7 +286,7 @@ function Collaborators() {
       <Typography variant='body1'>{t('intro:collaborators.item_8')}</Typography>
       <Typography variant='body1'>{t('intro:collaborators.item_9')}</Typography>
       <Typography variant='body1'>{t('intro:collaborators.item_10')}</Typography>
-    </>
+    </React.Fragment>
   );
 }
 
@@ -399,10 +399,10 @@ export const PresentationContainer = withStyles(({ values }) => ({
         <LessOpaquePaper
           title={t('title:benchmarks')}
           content={(
-            <>
+            <React.Fragment>
               <BenchmarksPanel />
               <Benchmarks />
-            </>
+            </React.Fragment>
         )}
         />
       </div>

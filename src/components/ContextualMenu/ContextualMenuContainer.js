@@ -104,7 +104,7 @@ class ContextualMenuContainer extends React.Component<Props, State> {
       menu_items,
     } = this.state;
     return (
-      <>
+      <React.Fragment>
         <div
           ref={this.setAnchorElement}
           style={{
@@ -124,7 +124,7 @@ class ContextualMenuContainer extends React.Component<Props, State> {
             ))
           }
         </Menu>
-      </>
+      </React.Fragment>
     );
   }
 }

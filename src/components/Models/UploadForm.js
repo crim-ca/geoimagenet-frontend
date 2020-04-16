@@ -150,10 +150,10 @@ class UploadFormComponent extends React.Component<Props, State> {
           Click here for instructions on how to prepare your model for upload.
         </Link>
         {loading && (
-          <>
+          <React.Fragment>
             <Typography variant='body1' display='inline'>Uploading...</Typography>
             <CircularProgress />
-          </>
+          </React.Fragment>
         )}
       </UploadFormContainer>
     );

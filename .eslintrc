@@ -27,7 +27,9 @@
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "object-shorthand":"off",
     "camelcase":"off",
-    "class-methods-use-this":"off"
+    "class-methods-use-this":"off",
+    "react/jsx-fragments": "off",
+    "react/destructuring-assignment": "warn"
   },
   "plugins": [
     "flowtype",

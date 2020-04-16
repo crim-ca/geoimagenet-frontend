@@ -32,7 +32,7 @@ class TaxonomyPresentation extends React.Component<Props> {
     const taxonomyClass = taxonomyStore.flat_taxonomy_classes[geoImageNetStore.root_taxonomy_class_id];
     const classes = taxonomyClass ? [taxonomyClass] : [];
     return (
-      <>
+      <React.Fragment>
         <Typography variant="body1">{t('intro:taxonomy.par_1')}</Typography>
         <Typography variant="body1">{t('intro:taxonomy.par_2')}</Typography>
         <Link download href={`${GEOIMAGENET_API_URL}/taxonomy_classes`}>{t('intro:taxonomy.download')}</Link>
@@ -50,7 +50,7 @@ class TaxonomyPresentation extends React.Component<Props> {
               />
             ) : null}
         </Paper>
-      </>
+      </React.Fragment>
     );
   }
 }

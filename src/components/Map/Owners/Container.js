@@ -25,7 +25,7 @@ class Container extends React.Component<Props, State> {
   render() {
     const { t, geoImageNetStore } = this.props;
     return (
-      <>
+      <React.Fragment>
         <IconButton
           color={geoImageNetStore.showAnnotatorsIdentifiers ? 'primary' : 'secondary'}
           onClick={this.receiveClickEvent}
@@ -33,7 +33,7 @@ class Container extends React.Component<Props, State> {
         >
           <OwnerIcon />
         </IconButton>
-      </>
+      </React.Fragment>
     );
   }
 }

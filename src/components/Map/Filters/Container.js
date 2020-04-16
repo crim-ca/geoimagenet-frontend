@@ -45,7 +45,7 @@ class Container extends React.Component<Props, State> {
     const { anchor, open } = this.state;
     const { uiStore, t } = this.props;
     return (
-      <>
+      <React.Fragment>
         <IconButton
           color="primary"
           onClick={this.toggleContainer}
@@ -79,7 +79,7 @@ class Container extends React.Component<Props, State> {
             </ul>
           </FiltersPaper>
         </FadingDialog>
-      </>
+      </React.Fragment>
     );
   }
 }

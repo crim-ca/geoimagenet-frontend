@@ -60,7 +60,7 @@ class CheckboxLineInput extends React.Component<Props> {
     } = this.props;
 
     const commonCheckLineInput = (
-      <>
+      <React.Fragment>
         <input
           type="checkbox"
           id={uniqueId}
@@ -75,21 +75,21 @@ class CheckboxLineInput extends React.Component<Props> {
             {label}
           </Typography>
         </label>
-      </>
+      </React.Fragment>
     );
 
     if (uniqueId in style) {
       return (
-        <>
+        <React.Fragment>
           {commonCheckLineInput}
           <FiberManualRecordIcon style={{ ...style[uniqueId], ...style.common }} />
-        </>
+        </React.Fragment>
       );
     }
     return (
-      <>
+      <React.Fragment>
         {commonCheckLineInput}
-      </>
+      </React.Fragment>
     );
   }
 }
