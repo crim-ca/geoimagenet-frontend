@@ -77,7 +77,7 @@ class Menu extends Component<Props> {
       href: '/models',
     },
     {
-      title: 'Benchmarks',
+      title: 'Benchmark',
       href: '/benchmarks',
     },
     // {title: 'Help', href: '/help'},

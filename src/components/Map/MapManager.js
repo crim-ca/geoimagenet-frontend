@@ -541,7 +541,7 @@ export class MapManager {
       return new Style();
     };
     const contours_layer = new VectorLayer({
-      title: 'Image traces',
+      title: 'Image Boundries',
       source: contours_source,
       style: styleFunction,
       visible: true,
@@ -588,7 +588,9 @@ export class MapManager {
       visible: true,
     });
 
-    const contours_layers = [contours_layer, boundingBoxClusterLayer];
+    const pleiadesImages = [];
+
+    const contours_layers = [boundingBoxClusterLayer, contours_layer];
 
     const annotationLayers = [];
     // I have no idea what I am trying to have been doing here
@@ -600,7 +602,7 @@ export class MapManager {
     the labels that appear in the layerswitcher. Remove the title to prevent the group from it.
     */
     const contours_group = new Group({
-      title: 'BBOX',
+      title: 'Image Localization',
       layers: contours_layers,
     });
 
@@ -630,13 +632,28 @@ export class MapManager {
       layers: annotationLayers,
     });
 
+    const pleiadesSensor = new Group({
+      title: 'Pleiades',
+      layers: pleiadesImages,
+      combine: true,
+      visible: true,
+    });
+
+    const sensors = [pleiadesSensor];
+
+    // Placeholder, is empty for now
+    const sensorsGroup = new Group({
+      title: 'Sensors',
+      layers: sensors,
+    });
+
     if (this.geoImageNetStore.acl.can(READ, WMS)) {
+      this.map.addLayer(sensorsGroup);
       this.map.addLayer(channels);
       this.map.addLayer(contours_group);
     }
     this.map.addLayer(base_maps_group);
     this.map.addLayer(annotations_group);
-
     this.map.addControl(this.layerSwitcher);
   }
 }

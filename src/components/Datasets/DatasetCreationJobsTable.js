@@ -28,13 +28,14 @@ function DatasetCreationJobsTableComponent({ data: { jobs, refetch }, mutate }) 
   };
 
   return (
-    <>
+    <React.Fragment>
       <Button
         onClick={launch_dataset_creation}
         variant='contained'
         color='primary'
+        text_transformation=''
       >
-        <Typography style={{ color: 'white', fontWeight: 'bold' }}>
+        <Typography style={{ color: 'white' }}>
           Create Patches
         </Typography>
       </Button>
@@ -61,7 +62,7 @@ function DatasetCreationJobsTableComponent({ data: { jobs, refetch }, mutate }) 
         ]}
         data={jobs}
       />
-    </>
+    </React.Fragment>
 
   );
 }
