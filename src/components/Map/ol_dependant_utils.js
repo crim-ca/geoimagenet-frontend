@@ -55,7 +55,7 @@ export function createStyleFunction(
      * While one might be tempted to move these variable access outside of the callback,
      * we must keep this code *inside* the callback otherwise the list is not updated in accordance to the changes to the followed users
      */
-    const { showLabels, show_annotators_identifiers, user: { nicknamesMap } } = geoImageNetStore;
+    const { showLabels, showAnnotatorsIdentifiers, user: { nicknamesMap } } = geoImageNetStore;
     if (!feature.get('taxonomy_class_id')) {
       return new Style();
     }
@@ -75,7 +75,7 @@ export function createStyleFunction(
     if (showLabels) {
       bits.push(label);
     }
-    if (show_annotators_identifiers) {
+    if (showAnnotatorsIdentifiers) {
       bits.push(`user ${identifier}`);
     }
     const finalText = bits.join(' : ');

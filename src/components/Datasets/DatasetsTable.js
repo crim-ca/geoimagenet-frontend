@@ -2,17 +2,19 @@
 import React from 'react';
 import MaterialTable from 'material-table';
 import PropTypes from 'prop-types';
-import { tableIcons } from '../../utils/react';
 import { graphql } from 'react-apollo';
 import { Link } from '@material-ui/core';
+import { tableIcons } from '../../utils/react';
 import { DATASETS } from '../../domain/graphql_queries';
 
 function DatasetsTableComponent({ data: { datasets }, ml_endpoint }) {
-
-  const render_download_link = rowData => (
+  const render_download_link = (rowData) => (
     <Link
       href={`${ml_endpoint}/datasets/${rowData.id}/download`}
-      target='_blank'>Download</Link>
+      target='_blank'
+    >
+Download
+    </Link>
   );
 
   return (
@@ -23,26 +25,29 @@ function DatasetsTableComponent({ data: { datasets }, ml_endpoint }) {
         {
           title: '',
           field: 'id',
-          render: render_download_link
+          render: render_download_link,
         },
         {
           title: 'Name',
-          field: 'name'
+          field: 'name',
         },
         {
           title: 'Created',
-          field: 'created'
+          field: 'created',
         },
         {
           title: 'Classes',
-          field: 'classes_count'
+          field: 'classes_count',
         },
         {
           title: 'Annotations',
-          field: 'annotations_count'
+          field: 'annotations_count',
         },
       ]}
       data={datasets}
+      options={{
+        style: { color: 'red' },
+      }}
     />
   );
 }

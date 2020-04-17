@@ -5,10 +5,11 @@
 }
 
 .ol-scale-line {
-    background: rgba(0, 60, 136, .3);
+    background: rgba(0, 60, 136, .5);
     border-radius: 4px;
-    bottom: 8px;
-    left: 8px;
+    border: 2px solid rgba(255, 255, 255, .2);
+    bottom: 36px;
+    left: 9px;
     padding: 2px;
     position: absolute
 }
@@ -63,9 +64,9 @@
 
 .ol-control {
     position: absolute;
-    background-color: rgba(255, 255, 255, .4);
+    background-color: rgba(255, 255, 255, .2);
     border-radius: 4px;
-    padding: 2px
+    padding: 1px;
 }
 
 .ol-control:hover {
@@ -73,8 +74,8 @@
 }
 
 .ol-zoom {
-    top: .5em;
-    left: .5em
+    bottom: 4.7em;
+    left: 9px;
 }
 
 .ol-rotate {

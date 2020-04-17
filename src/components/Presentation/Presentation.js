@@ -1,13 +1,15 @@
 // @flow strict
 import React, { useState } from 'react';
-import { withStyles, Link, Typography, Paper, Select, MenuItem, Dialog } from '@material-ui/core';
+import {
+  withStyles, Link, Typography, Paper, Select, MenuItem, Dialog,
+} from '@material-ui/core';
 import Clear from '@material-ui/icons/Clear';
 import { useTranslation } from '../../utils';
 import { TaxonomyPresentation } from './TaxonomyPresentation';
 
 
-import { Logos } from '../Logos.js';
-import { Login } from '../Login.js';
+import { Logos } from '../Logos';
+import { Login } from '../Login';
 import { Benchmarks } from '../Benchmarks';
 
 import logo_gin from '../../img/logos/logo_trans_GIN.png';
@@ -19,9 +21,9 @@ const DarkDialog = withStyles(({ colors, values }) => ({
     backgroundColor: 'black',
     border: `2px solid ${colors.barelyWhite}`,
     '& li': {
-      margin: values.gutterSmall
+      margin: values.gutterSmall,
     },
-  }
+  },
 }))(Dialog);
 
 const LessOpaquePaper = withStyles(({ values }) => ({
@@ -46,7 +48,9 @@ const LessOpaquePaper = withStyles(({ values }) => ({
     alignItems: 'baseline',
     justifyContent: 'space-between',
   },
-}))(({ classes, title, content, maxWidth = 'xl' }) => {
+}))(({
+  classes, title, content, maxWidth = 'xl',
+}) => {
   const [opened, setOpened] = useState(false);
   const close = () => {
     setOpened(false);
@@ -60,7 +64,8 @@ const LessOpaquePaper = withStyles(({ values }) => ({
       <DarkDialog
         maxWidth={maxWidth}
         open={opened}
-        onClose={close}>
+        onClose={close}
+      >
         <div className={classes.top}>
           <Typography style={{ marginRight: '24px' }} variant='h4'>{title}</Typography>
           <Clear style={{ cursor: 'pointer' }} onClick={close} />
@@ -82,7 +87,7 @@ const WhiteSelect = withStyles({
 
 function ChangeLanguage() {
   const { t, i18n } = useTranslation();
-  const change_language = event => {
+  const change_language = (event) => {
     const language = event.target.value;
     i18n.changeLanguage(language);
   };
@@ -142,21 +147,36 @@ function Publications() {
       <ul>
         <li>
           {t('intro:publications.section_1.item_1')}
-          (<Link
-          rel='noopener noreferrer'
-          href='/pdf/CSRS2019_abstract_en.pdf'
-          target='_blank'>{t('intro:publications.abstract')}</Link>)
-          (<Link
-          rel='noopener noreferrer'
-          href='/pdf/GeoImageNet_in_40th_Canadian_Symposium_on_Remote_Sensing-05_June_2019.pdf'
-          target='_blank'>{t('intro:publications.presentation')}</Link>)
+          (
+          <Link
+            rel='noopener noreferrer'
+            href='/pdf/CSRS2019_abstract_en.pdf'
+            target='_blank'
+          >
+            {t('intro:publications.abstract')}
+          </Link>
+)
+          (
+          <Link
+            rel='noopener noreferrer'
+            href='/pdf/GeoImageNet_in_40th_Canadian_Symposium_on_Remote_Sensing-05_June_2019.pdf'
+            target='_blank'
+          >
+            {t('intro:publications.presentation')}
+          </Link>
+)
         </li>
         <li>
           {t('intro:publications.section_1.item_2')}
-          (<Link
-          rel='noopener noreferrer'
-          href='/pdf/LivingPlanet_GeoImageNet_2019_poster.pdf'
-          target='_blank'>{t('intro:publications.poster')}</Link>)
+          (
+          <Link
+            rel='noopener noreferrer'
+            href='/pdf/LivingPlanet_GeoImageNet_2019_poster.pdf'
+            target='_blank'
+          >
+            {t('intro:publications.poster')}
+          </Link>
+)
         </li>
       </ul>
       <Typography variant='h5'>{t('intro:publications.section_2.header')}</Typography>
@@ -167,7 +187,8 @@ function Publications() {
             dangerouslySetInnerHTML={{ __html: t('intro:publications.section_2.item_1.link_text') }}
             rel='noopener noreferrer'
             target='_blank'
-            href='https://www.usherbrooke.ca/actualites/nouvelles/nouvelles-details/article/38764/' />
+            href='https://www.usherbrooke.ca/actualites/nouvelles/nouvelles-details/article/38764/'
+          />
         </li>
         <li>
           <span dangerouslySetInnerHTML={{ __html: t('intro:publications.section_2.item_2.intro') }} />
@@ -175,7 +196,8 @@ function Publications() {
             dangerouslySetInnerHTML={{ __html: t('intro:publications.section_2.item_2.link_text') }}
             rel='noopener noreferrer'
             target='_blank'
-            href='https://www.crim.ca/fr/nouvelles/geoimagenet-l-intelligence-artificielle-appliquee-aux-images-satellites' />
+            href='https://www.crim.ca/fr/nouvelles/geoimagenet-l-intelligence-artificielle-appliquee-aux-images-satellites'
+          />
         </li>
         <li>
           <span dangerouslySetInnerHTML={{ __html: t('intro:publications.section_2.item_3.intro') }} />
@@ -183,7 +205,8 @@ function Publications() {
             dangerouslySetInnerHTML={{ __html: t('intro:publications.section_2.item_3.link_text') }}
             rel='noopener noreferrer'
             target='_blank'
-            href='https://www.effigis.com/fr/financement-federal-pour-la-r-et-d-dune-application-dinterpretation-automatisee-dimages-satellite-par-intelligence-artificielle/' />
+            href='https://www.effigis.com/fr/financement-federal-pour-la-r-et-d-dune-application-dinterpretation-automatisee-dimages-satellite-par-intelligence-artificielle/'
+          />
         </li>
         <li>
           <span dangerouslySetInnerHTML={{ __html: t('intro:publications.section_2.item_4.intro') }} />
@@ -191,7 +214,8 @@ function Publications() {
             dangerouslySetInnerHTML={{ __html: t('intro:publications.section_2.item_4.link_text') }}
             rel='noopener noreferrer'
             target='_blank'
-            href='https://www.canarie.ca/fr/canarie-distribue-44-millions-de-dollars-a-vingt-equipes-de-recherche-pour-quelles-perfectionnent-leurs-logiciels-afin-dameliorer-les-vaccins-de-surveiller-le-changement-climatique/' />
+            href='https://www.canarie.ca/fr/canarie-distribue-44-millions-de-dollars-a-vingt-equipes-de-recherche-pour-quelles-perfectionnent-leurs-logiciels-afin-dameliorer-les-vaccins-de-surveiller-le-changement-climatique/'
+          />
         </li>
       </ul>
       <Typography variant='h5'>{t('intro:publications.section_3.header')}</Typography>
@@ -332,9 +356,10 @@ export const PresentationContainer = withStyles(({ values }) => ({
   },
   input: {
     color: 'white',
-  }
-}))(({ classes, geoImageNetStore, userInteractions, contact_email }) => {
-
+  },
+}))(({
+  classes, geoImageNetStore, userInteractions, contact_email,
+}) => {
   const { t } = useTranslation();
   const [dialog_open, change_dialog_openness] = useState(false);
   const toggle_dialog = () => {
@@ -344,18 +369,26 @@ export const PresentationContainer = withStyles(({ values }) => ({
   return (
     <div className={classes.container}>
       <div className={classes.menuRight}>
-        <Typography style={{
-          cursor: 'pointer',
-          marginRight: '24px'
-        }} variant='body1'
-                    onClick={toggle_dialog}>{t('login:login')}</Typography>
+        <Typography
+          style={{
+            cursor: 'pointer',
+            marginRight: '24px',
+          }}
+          variant='body1'
+          onClick={toggle_dialog}
+        >
+          {t('login:login')}
+        </Typography>
         <Dialog open={dialog_open} onClose={toggle_dialog}>
           <Login userInteractions={userInteractions} />
         </Dialog>
-        <Typography style={{
-          cursor: 'pointer',
-          marginRight: '24px'
-        }} variant='body1'>
+        <Typography
+          style={{
+            cursor: 'pointer',
+            marginRight: '24px',
+          }}
+          variant='body1'
+        >
           <a href={`mailto:${contact_email}`}>{t('util:contact')}</a>
         </Typography>
         <ChangeLanguage />
@@ -363,12 +396,15 @@ export const PresentationContainer = withStyles(({ values }) => ({
       <div className={classes.logoLeft}><img alt='Logo GeoImageNet' src={logo_gin} /></div>
       <div className={classes.logos}><Logos /></div>
       <div className={classes.benchmarks}>
-        <LessOpaquePaper title={t('title:benchmarks')} content={
-          <React.Fragment>
-            <BenchmarksPanel />
-            <Benchmarks />
-          </React.Fragment>
-        } />
+        <LessOpaquePaper
+          title={t('title:benchmarks')}
+          content={(
+            <React.Fragment>
+              <BenchmarksPanel />
+              <Benchmarks />
+            </React.Fragment>
+        )}
+        />
       </div>
       <div className={classes.mission}>
         <LessOpaquePaper title={t('title:mission')} content={<Mission />} maxWidth='lg' />
@@ -386,11 +422,13 @@ export const PresentationContainer = withStyles(({ values }) => ({
         <LessOpaquePaper title={t('title:collaborators')} content={<Collaborators />} />
       </div>
       <div className={classes.taxonomy}>
-        <LessOpaquePaper title={t('title:taxonomy')} content={
-          <TaxonomyPresentation geoImageNetStore={geoImageNetStore} userInteractions={userInteractions} />
-        } />
+        <LessOpaquePaper
+          title={t('title:taxonomy')}
+          content={
+            <TaxonomyPresentation geoImageNetStore={geoImageNetStore} userInteractions={userInteractions} />
+        }
+        />
       </div>
     </div>
   );
-
 });

@@ -1,11 +1,9 @@
+/* eslint-disable object-shorthand */
 // @flow strict
 
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import { ANNOTATION_THUMBNAIL_SIZE } from '../constants';
-
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
@@ -21,6 +19,7 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
+import { ANNOTATION_THUMBNAIL_SIZE } from '../constants';
 
 export const tableIcons = {
   Add: AddBox,
@@ -39,7 +38,7 @@ export const tableIcons = {
   Search: Search,
   SortArrow: ArrowUpward,
   ThirdStateCheck: Remove,
-  ViewColumn: ViewColumn
+  ViewColumn: ViewColumn,
 };
 
 const GUTTER_SMALL = '12px';
@@ -55,21 +54,21 @@ const turquoise_ish = 'rgba(0, 188, 213, 1)';
 export const theme = createMuiTheme({
   palette: {
     primary: {
-      main: turquoise_ish
+      main: turquoise_ish,
     },
     secondary: {
       main: '#FFF',
-    }
+    },
   },
   typography: {
     useNextVariants: true,
-    fontFamily: 'Montserrat'
+    fontFamily: 'Montserrat',
   },
   values: {
     annotation_size: `${ANNOTATION_THUMBNAIL_SIZE}px`,
     widthSidebar: '600px',
-    heightAppBar: '64px',
-    heightActionsBar: '64px',
+    heightAppBar: '40px',
+    heightActionsBar: '40px',
     gutterSmall: GUTTER_SMALL,
     gutterMedium: GUTTER_MEDIUM,
     maxContentWidth: '1200px',
@@ -96,17 +95,17 @@ export const theme = createMuiTheme({
     MuiLink: {
       root: {
         color: 'inherit',
-      }
+      },
     },
     MuiPaper: {
       root: {
         padding: GUTTER_SMALL,
-      }
+      },
     },
     MuiTypography: {
       body1: {
-        margin: `${GUTTER_SMALL} 0`
-      }
+        margin: `${GUTTER_SMALL} 0`,
+      },
     },
     MuiExpansionPanel: {
       root: {
@@ -114,7 +113,7 @@ export const theme = createMuiTheme({
         '&$expanded': {
           margin: 0,
           padding: 0,
-        }
+        },
       },
     },
   },

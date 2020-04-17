@@ -3,14 +3,14 @@ export const make_http_request = (url: string, options: RequestOptions = {}): Pr
   return new Promise((resolve, reject) => {
     fetch(url, options)
       .then(
-        response => {
+        (response) => {
           if (response.ok) {
             resolve(response);
           } else {
             reject(response);
           }
         },
-        error => reject(error),
+        (error) => reject(error),
       );
   });
 };

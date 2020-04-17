@@ -1,4 +1,6 @@
 // @flow strict
+import '../../css/base.css';
+import '../../css/style_platform.css';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withStyles, Paper } from '@material-ui/core';
@@ -9,29 +11,41 @@ import { Sidebar } from '../Sidebar';
 import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import type { OpenLayersStore } from '../../model/store/OpenLayersStore';
 import { Container as FiltersContainer } from '../Map/Filters/Container';
-import { Container as LabelsContainer } from '../Map/LabelsChoice/Container';
+import { Container as OwnersContainer } from '../Map/Owners/Container';
+import { Container as LabelsContainer } from '../Map/Labels/Container';
 import { ActiveFiltersBox } from '../Map/ActiveFiltersBox';
 import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 import { withTaxonomyStore } from '../../model/HOCs';
 
+
+/**
+ * Changes to gridRow and gridColumn in Coordinates will change the location of the live
+ * coordinates of the cursor on the map. Futher changes must be made to
+ * gridTemplate* in PlatformContainer, to construct the grid itself (see CSS grid layout)
+ */
 const PlatformContainer = withStyles(({ values }) => ({
   root: {
     display: 'grid',
     height: '100%',
     gridTemplateColumns: `1fr min-content ${values.widthSidebar}`,
-    gridTemplateRows: '64px calc(100% - 64px)'
-  }
+    gridTemplateRows: 'calc(100% - 40px) 40px',
+  },
 }))(({ classes, children }) => (<div className={classes.root}>{children}</div>));
 
-const Coordinates = withStyles(({ values, zIndex }) => ({
+const Coordinates = withStyles(({ zIndex }) => ({
   root: {
-    gridRow: '1/2',
-    gridColumn: '2/3',
+    gridRow: '2/2',
+    gridColumn: '1/3',
     zIndex: zIndex.over_map,
-    padding: values.gutterSmall,
-    margin: values.gutterSmall,
-    width: '300px',
-  }
+    padding: '2px',
+    margin: '9px',
+    width: '200px',
+    height: '26px',
+    textAlign: 'center',
+    background: 'rgba(0, 60, 136, .5)',
+    color: '#fff',
+    border: '2px solid rgba(255, 255, 255, .2)',
+  },
 }))(Paper);
 
 type Props = {|
@@ -50,24 +64,35 @@ type Props = {|
 @observer
 class Platform extends Component<Props> {
   render() {
+    const {
+      geoImageNetStore,
+      storeActions,
+      taxonomyStore,
+      userInteractions,
+      openLayersStore,
+    } = this.props;
+
     return (
       <PlatformContainer>
         <MapContainer
-          openLayersStore={this.props.openLayersStore}
-          geoImageNetStore={this.props.geoImageNetStore}
-          taxonomyStore={this.props.taxonomyStore}
-          storeActions={this.props.storeActions}
-          userInteractions={this.props.userInteractions} />
+          openLayersStore={openLayersStore}
+          geoImageNetStore={geoImageNetStore}
+          taxonomyStore={taxonomyStore}
+          storeActions={storeActions}
+          userInteractions={userInteractions}
+        />
         <Coordinates id='coordinates' />
         <ActiveFiltersBox>
-          <LabelsContainer geoImageNetStore={this.props.geoImageNetStore} storeActions={this.props.storeActions} />
-          <FiltersContainer geoImageNetStore={this.props.geoImageNetStore} storeActions={this.props.storeActions} />
+          <OwnersContainer geoImageNetStore={geoImageNetStore} storeActions={storeActions} />
+          <LabelsContainer geoImageNetStore={geoImageNetStore} storeActions={storeActions} />
+          <FiltersContainer geoImageNetStore={geoImageNetStore} storeActions={storeActions} />
         </ActiveFiltersBox>
         <Sidebar
-          openLayersStore={this.props.openLayersStore}
-          geoImageNetStore={this.props.geoImageNetStore}
-          userInteractions={this.props.userInteractions}
-          storeActions={this.props.storeActions} />
+          openLayersStore={openLayersStore}
+          geoImageNetStore={geoImageNetStore}
+          userInteractions={userInteractions}
+          storeActions={storeActions}
+        />
       </PlatformContainer>
     );
   }
@@ -75,5 +100,5 @@ class Platform extends Component<Props> {
 
 const component = withTaxonomyStore(Platform);
 export {
-  component as Platform
+  component as Platform,
 };

@@ -1,15 +1,16 @@
+/* eslint-disable camelcase */
 // @flow strict
 import MaterialTable from 'material-table';
 import { graphql, compose } from 'react-apollo';
-import { tableIcons } from '../../utils/react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { DATASET_CREATION_JOBS, LAUNCH_DATASET_CREATION_JOB } from '../../domain/graphql_queries';
-import { Button } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 import { NotificationManager } from 'react-notifications';
+import { DATASET_CREATION_JOBS, LAUNCH_DATASET_CREATION_JOB } from '../../domain/graphql_queries';
+import { tableIcons } from '../../utils/react';
+
 
 function DatasetCreationJobsTableComponent({ data: { jobs, refetch }, mutate }) {
-
   const launch_dataset_creation = async () => {
     let result;
     try {
@@ -28,10 +29,15 @@ function DatasetCreationJobsTableComponent({ data: { jobs, refetch }, mutate }) 
 
   return (
     <React.Fragment>
-      <Button onClick={launch_dataset_creation}
-              variant='contained'
-              color='primary'>
-        Create Patches
+      <Button
+        onClick={launch_dataset_creation}
+        variant='contained'
+        color='primary'
+        text_transformation=''
+      >
+        <Typography style={{ color: 'white' }}>
+          Create Patches
+        </Typography>
       </Button>
       <MaterialTable
         title='Dataset creation jobs'
@@ -39,19 +45,19 @@ function DatasetCreationJobsTableComponent({ data: { jobs, refetch }, mutate }) 
         columns={[
           {
             title: 'ID',
-            field: 'id'
+            field: 'id',
           },
           {
             title: 'Status',
-            field: 'status'
+            field: 'status',
           },
           {
             title: 'Message',
-            field: 'status_message'
+            field: 'status_message',
           },
           {
             title: 'Progress',
-            field: 'progress'
+            field: 'progress',
           },
         ]}
         data={jobs}

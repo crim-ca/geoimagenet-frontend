@@ -43,7 +43,6 @@ const { t } = i18n;
  */
 
 export class UserInteractions {
-
   storeActions: StoreActions;
 
   taxonomyStore: TaxonomyStore;
@@ -75,7 +74,7 @@ export class UserInteractions {
   }
 
   refresh_all_sources = () => {
-    ANNOTATION_STATUS_AS_ARRAY.forEach(status => this.refresh_source_by_status(status));
+    ANNOTATION_STATUS_AS_ARRAY.forEach((status) => this.refresh_source_by_status(status));
   };
 
   /**
@@ -95,7 +94,7 @@ export class UserInteractions {
      * we could aggregate the counts then call the changes after the loop, maybe reducing the function calls,
      * but there's no guarantee that the collection is not of all different classes, nor that it'd be any faster
      */
-    features.forEach(feature => {
+    features.forEach((feature) => {
       const taxonomy_class_id = feature.get('taxonomy_class_id');
       this.geoImageNetStore.annotations_sources[old_source].removeFeature(feature);
       this.geoImageNetStore.annotations_sources[new_source].addFeature(feature);
@@ -106,7 +105,7 @@ export class UserInteractions {
 
   delete_annotation_under_click = async (features: Array<Feature>, feature_ids: Array<number>) => {
     try {
-      await DialogManager.confirm(`Do you really want to delete the highlighted feature?`);
+      await DialogManager.confirm('Do you really want to delete the highlighted feature?');
     } catch (e) {
       // if we catched it means user did not want to delete the annotation, simply return, nothing problematic here.
       return;
@@ -202,19 +201,17 @@ export class UserInteractions {
     this.storeActions.end_annotation();
   };
 
-  get_followed_users_collection = (): Promise<FollowedUser[]> => {
-    return new Promise((resolve, reject) => {
-      this.dataQueries.fetch_followed_users()
-        .then(
-          response => resolve(response),
-          error => {
-            captureException(error);
-            NotificationManager.error(t('settings.fetch_followed_users_failure'));
-            reject(error);
-          },
-        );
-    });
-  };
+  get_followed_users_collection = (): Promise<FollowedUser[]> => new Promise((resolve, reject) => {
+    this.dataQueries.fetch_followed_users()
+      .then(
+        (response) => resolve(response),
+        (error) => {
+          captureException(error);
+          NotificationManager.error(t('settings.fetch_followed_users_failure'));
+          reject(error);
+        },
+      );
+  });
 
   populate_image_dictionary = async () => {
     const imagesDictionary = await this.dataQueries.fetch_images_dictionary();
@@ -236,9 +233,9 @@ export class UserInteractions {
         image.id === imageId
       ));
     if (thisSatelliteImage === undefined) {
-      NotificationManager.error('The image you are trying to annotate does not seem to be referenced by the aip. ' +
-        'You may try to reload the platform but this seem to be an internal error, you may want to contact ' +
-        'your platform administrator.');
+      NotificationManager.error('The image you are trying to annotate does not seem to be referenced by the aip. '
+        + 'You may try to reload the platform but this seem to be an internal error, you may want to contact '
+        + 'your platform administrator.');
       return false;
     }
 
@@ -247,7 +244,7 @@ export class UserInteractions {
   };
 
   modifystart_handler = (event: Event) => {
-    event.features.forEach(feature => {
+    event.features.forEach((feature) => {
       this.original_coordinates[feature.getId()] = feature.getGeometry()
         .getCoordinates();
     });
@@ -278,7 +275,7 @@ export class UserInteractions {
       }
     }));
 
-    const reset_feature = feature => {
+    const reset_feature = (feature) => {
       // feature is not ok, reset it and remove it from the modified features
       feature.getGeometry()
         .setCoordinates(this.original_coordinates[feature.getId()]);
@@ -288,8 +285,8 @@ export class UserInteractions {
       modified_features_to_reset.forEach((feature) => {
         reset_feature(feature);
       });
-      NotificationManager.warning('An annotation must be wholly contained in a single image, ' +
-        'you are trying to make a coordinate go outside of the original image.');
+      NotificationManager.warning('An annotation must be wholly contained in a single image, '
+        + 'you are trying to make a coordinate go outside of the original image.');
     }
 
     if (modified_features_to_update.length > 0) {
@@ -303,7 +300,7 @@ export class UserInteractions {
     }
 
     // reset modification status
-    all_modified_features.forEach(feature => {
+    all_modified_features.forEach((feature) => {
       feature.revision_ = 0;
       delete this.original_coordinates[feature.getId()];
     });
@@ -312,7 +309,7 @@ export class UserInteractions {
   ask_expertise_for_features = async (feature_ids: number[], features: Feature[]) => {
     try {
       await this.dataQueries.review_request(feature_ids, true);
-      features.forEach(feature => {
+      features.forEach((feature) => {
         feature.set('review_requested', true);
       });
       NotificationManager.success('Features were marked for expertise.');
@@ -346,7 +343,6 @@ export class UserInteractions {
    */
   @action.bound
   async fetch_taxonomies() {
-
     try {
       const taxonomies = await this.dataQueries.fetch_taxonomies();
       this.storeActions.set_taxonomy(taxonomies);
@@ -355,19 +351,18 @@ export class UserInteractions {
        * the build_taxonomy_classes_structure has the nice side-effect of building a flat taxonomy classes structure as well!
        * so we will neatly ask it to generate language dictionaries for newly added taxonomy classes afterwards
        */
-      root_taxonomy_classes.forEach(root_taxonomy_class => this.storeActions.build_taxonomy_classes_structures(root_taxonomy_class));
+      root_taxonomy_classes.forEach((root_taxonomy_class) => this.storeActions.build_taxonomy_classes_structures(root_taxonomy_class));
 
       const fr_dict = this.storeActions.generate_localized_taxonomy_classes_labels('fr');
       const en_dict = this.storeActions.generate_localized_taxonomy_classes_labels('en');
 
       this.i18next_instance.addResources('fr', 'taxonomy_classes', fr_dict);
       this.i18next_instance.addResources('en', 'taxonomy_classes', en_dict);
-
     } catch (e) {
       switch (e.status) {
         case 404:
-          NotificationManager.warning('There doesn\'t seem to be any taxonomy available in the API (we received a 404 not-found status). ' +
-            'This will likely render the platform unusable until someone populates the taxonomies.');
+          NotificationManager.warning('There doesn\'t seem to be any taxonomy available in the API (we received a 404 not-found status). '
+            + 'This will likely render the platform unusable until someone populates the taxonomies.');
           break;
         default:
           NotificationManager.error('We could not fetch the taxonomies. This will heavily and negatively impact the platform use.');
@@ -421,16 +416,16 @@ export class UserInteractions {
       jsonResponse = await this.dataQueries.current_user_permissions('frontend');
     } catch (e) {
       if (e.status === 404) {
-        NotificationManager.error('Permissions for the frontend service do not seem to be properly configured. ' +
-          'That will probably prevent you from using the platform, please contact your administrator.');
+        NotificationManager.error('Permissions for the frontend service do not seem to be properly configured. '
+          + 'That will probably prevent you from using the platform, please contact your administrator.');
         return;
       }
       throw e;
     }
 
     if (!jsonResponse.service && !jsonResponse.service.resources) {
-      NotificationManager.error('The permissions structure returned from Magpie does not seem properly formed: ' +
-        'there is no resource attribute on it.');
+      NotificationManager.error('The permissions structure returned from Magpie does not seem properly formed: '
+        + 'there is no resource attribute on it.');
       throw new InvalidPermissions();
     }
     const { service } = jsonResponse;
@@ -440,16 +435,15 @@ export class UserInteractions {
       resourcePermissionRepository = new ResourcePermissionRepository(resources);
     } catch (e) {
       if (e instanceof ProbablyInvalidPermissions) {
-        NotificationManager.warning('It seems that permissions for your user are either incorrectly set, ' +
-          'or undefined. This is probably not something you can solve on your own, please contact ' +
-          'your administrator if this prevents you from using the platform.');
+        NotificationManager.warning('It seems that permissions for your user are either incorrectly set, '
+          + 'or undefined. This is probably not something you can solve on your own, please contact '
+          + 'your administrator if this prevents you from using the platform.');
         return;
       }
       throw e;
     }
     const acl = new AccessControlList(resourcePermissionRepository);
     this.storeActions.set_acl(acl);
-
   };
 
   /**
@@ -483,5 +477,4 @@ export class UserInteractions {
       NotificationManager.error(this.i18next_instance.t('login:forbidden'));
     }
   }
-
 }

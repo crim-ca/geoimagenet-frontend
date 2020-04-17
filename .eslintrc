@@ -20,7 +20,16 @@
   "rules": {
     "react/jsx-filename-extension": 0,
     "import/prefer-default-export": 0,
-    "max-len": ["error", { "code": 120 }]
+    "max-len": ["error", { "code": 120 }],
+    "quotes": [2, "single", "avoid-escape"],
+    "jsx-quotes":"off",
+    "no-underscore-dangle": "off",
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "object-shorthand":"off",
+    "camelcase":"off",
+    "class-methods-use-this":"off",
+    "react/jsx-fragments": "off",
+    "react/destructuring-assignment": "warn"
   },
   "plugins": [
     "flowtype",

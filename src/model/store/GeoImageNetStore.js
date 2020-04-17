@@ -37,14 +37,22 @@ export class GeoImageNetStore {
    */
   @observable showLabels: boolean = true;
 
-  @observable show_annotators_identifiers: boolean = true;
-
-  @action toggle_annotator_identifiers: (?boolean) => void = (override: ?boolean) => {
+  @action toggleLabels: (?boolean) => void = (override: ?boolean) => {
     if (override !== undefined && override !== null) {
-      this.show_annotators_identifiers = override;
+      this.showLabels = override;
       return;
     }
-    this.show_annotators_identifiers = !this.show_annotators_identifiers;
+    this.showLabels = !this.showLabels;
+  };
+
+  @observable showAnnotatorsIdentifiers: boolean = true;
+
+  @action toggleAnnotatorIdentifiers: (?boolean) => void = (override: ?boolean) => {
+    if (override !== undefined && override !== null) {
+      this.showAnnotatorsIdentifiers = override;
+      return;
+    }
+    this.showAnnotatorsIdentifiers = !this.showAnnotatorsIdentifiers;
   };
 
   /**

@@ -1,9 +1,11 @@
 // @flow strict
 import React from 'react';
+import IconButton from '@material-ui/core/IconButton';
 import { observer } from 'mobx-react';
-import Button from '@material-ui/core/Button';
 import { TFunction } from 'react-i18next';
 import { compose } from 'react-apollo';
+import { buttonStyle } from '../SharedStyles';
+import { FilterIcon } from './FilterIcon';
 import { withTranslation } from '../../../utils';
 import { FiltersPaper } from '../FiltersPaper';
 import { FadingDialog } from '../FadingDialog';
@@ -43,14 +45,14 @@ class Container extends React.Component<Props, State> {
     const { anchor, open } = this.state;
     const { uiStore, t } = this.props;
     return (
-      <>
-        <Button
-          variant="contained"
+      <React.Fragment>
+        <IconButton
           color="primary"
           onClick={this.toggleContainer}
+          style={buttonStyle}
         >
-          {t('annotations:filters')}
-        </Button>
+          <FilterIcon />
+        </IconButton>
         <FadingDialog open={open} anchor={anchor}>
           <FiltersPaper>
             <ul>
@@ -77,7 +79,7 @@ class Container extends React.Component<Props, State> {
             </ul>
           </FiltersPaper>
         </FadingDialog>
-      </>
+      </React.Fragment>
     );
   }
 }

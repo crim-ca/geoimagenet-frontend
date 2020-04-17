@@ -22,18 +22,20 @@ class AnnotationCounts extends React.Component<Props> {
   render() {
     const { counts, name_en, annotationStatusFilters } = this.props;
     return (
-      <>
+      <React.Fragment>
         {ANNOTATION_STATUS_AS_ARRAY.map((status, i) => (
           annotationStatusFilters[status].activated && counts[status]
             ? (
               <Tooltip key={i} title={`${counts[status]} ${status} annotations of class ${name_en}`}>
-                <SpacedChip label={counts[status]}
-                            className={`annotation_${status}`}
-                            variant='outlined' />
+                <SpacedChip
+                  label={counts[status]}
+                  className={`annotation_${status}`}
+                  variant='outlined'
+                />
               </Tooltip>
             ) : null
         ))}
-      </>
+      </React.Fragment>
     );
   }
 }

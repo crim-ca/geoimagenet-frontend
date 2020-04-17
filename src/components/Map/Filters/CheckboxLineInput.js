@@ -2,6 +2,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Typography from '@material-ui/core/Typography';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import { theme } from '../../../utils/react';
 
 type Props = {
   uniqueId: string,
@@ -17,14 +19,48 @@ type Props = {
 @observer
 class CheckboxLineInput extends React.Component<Props> {
   render() {
+    /*
+     * Broke from convention because using withStyles here caused errors with tests
+     * 'Filter components has a checked input by default' and 'Filter components unchecks the box'
+     * by preventing Jest from accessing the checkbox input and claiming the component undefined.
+     * In the end, was simpler to change how this component was styled.
+     */
+    const style = {
+      common: {
+        marginLeft: 'auto ',
+      },
+      filter_new: {
+        color: `${theme.colors.new}`,
+      },
+      filter_pre_released: {
+        color: `${theme.colors.pre_released}`,
+      },
+      filter_released: {
+        color: `${theme.colors.released}`,
+      },
+      filter_review: {
+        color: `${theme.colors.review}`,
+      },
+      filter_validated: {
+        color: `${theme.colors.validated}`,
+      },
+      filter_rejected: {
+        color: `${theme.colors.rejected}`,
+      },
+      filter_deleted: {
+        color: `${theme.colors.deleted}`,
+      },
+    };
+
     const {
       uniqueId,
       checked,
       changeHandler,
       label,
     } = this.props;
-    return (
-      <>
+
+    const commonCheckLineInput = (
+      <React.Fragment>
         <input
           type="checkbox"
           id={uniqueId}
@@ -39,9 +75,22 @@ class CheckboxLineInput extends React.Component<Props> {
             {label}
           </Typography>
         </label>
-      </>
+      </React.Fragment>
+    );
+
+    if (uniqueId in style) {
+      return (
+        <React.Fragment>
+          {commonCheckLineInput}
+          <FiberManualRecordIcon style={{ ...style[uniqueId], ...style.common }} />
+        </React.Fragment>
+      );
+    }
+    return (
+      <React.Fragment>
+        {commonCheckLineInput}
+      </React.Fragment>
     );
   }
 }
-
 export { CheckboxLineInput };

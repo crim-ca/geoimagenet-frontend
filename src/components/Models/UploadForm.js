@@ -1,6 +1,8 @@
 // @flow strict
 
-import { Button, CircularProgress, Link, TextField, Typography, withStyles } from '@material-ui/core';
+import {
+  Button, CircularProgress, Link, TextField, Typography, withStyles,
+} from '@material-ui/core';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { graphql } from 'react-apollo/graphql';
@@ -25,7 +27,7 @@ type UploadEvent = {
   target: UploadEventTarget,
 };
 
-const UploadFormContainer = withStyles(theme => ({
+const UploadFormContainer = withStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'row',
@@ -33,8 +35,8 @@ const UploadFormContainer = withStyles(theme => ({
     height: '40px',
     '& > *': {
       marginRight: theme.values.gutterSmall,
-    }
-  }
+    },
+  },
 }))(({ classes, children }) => (
   <div className={classes.root}>{children}</div>
 ));
@@ -56,7 +58,6 @@ type Props = {
 
 
 class UploadFormComponent extends React.Component<Props, State> {
-
   state = {
     model_name: new Date().toISOString(),
     file: null,
@@ -71,12 +72,11 @@ class UploadFormComponent extends React.Component<Props, State> {
     const { mutate } = this.props;
     if (validity.valid) {
       try {
-
         await this.setState({ loading: true });
         const result = await mutate({
           variables: {
             file,
-            model_name
+            model_name,
           },
           update: () => {
             console.log('in updateing...');
@@ -85,7 +85,7 @@ class UploadFormComponent extends React.Component<Props, State> {
         this.setState({
           file: null,
           validity: { valid: false },
-          loading: false
+          loading: false,
         });
         const { data: { upload_model: { message, success } } } = result;
 
@@ -94,14 +94,12 @@ class UploadFormComponent extends React.Component<Props, State> {
         } else {
           NotificationManager.error(message);
         }
-
       } catch (e) {
         console.log(e);
         NotificationManager.error(`there was an error: ${e.message}. please try again later.`);
       }
 
       this.setState({ loading: false });
-
     }
   };
 
@@ -111,15 +109,15 @@ class UploadFormComponent extends React.Component<Props, State> {
   };
 
   file_changed = (event: UploadEvent) => {
-    const target: UploadEventTarget = event.target;
+    const { target } = event;
     const { validity, files: [file] } = target;
     this.setState({
       file,
-      validity
+      validity,
     });
   };
 
-  change_value = name => event => {
+  change_value = (name) => (event) => {
     this.setState({ [name]: event.target.value });
   };
 
@@ -131,17 +129,24 @@ class UploadFormComponent extends React.Component<Props, State> {
         <TextField
           required
           value={model_name}
-          onChange={this.change_value('model_name')} />
+          onChange={this.change_value('model_name')}
+          style={{ width: '180px' }}
+        />
         <input
           required
           type='file'
-          onChange={this.file_changed} />
+          onChange={this.file_changed}
+        />
         <Button
           onClick={this.upload_model}
-          disabled={!this.upload_is_valid()}>Upload</Button>
+          disabled={!this.upload_is_valid()}
+        >
+          Upload
+        </Button>
         <Link
           target='_blank'
-          href={model_upload_instructions_url}>
+          href={model_upload_instructions_url}
+        >
           Click here for instructions on how to prepare your model for upload.
         </Link>
         {loading && (

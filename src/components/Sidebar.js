@@ -63,7 +63,8 @@ const makeSidebarSections: (
       ),
     },
     {
-      title: 'Basemaps, Images and Filters',
+      // This part acts as a target for the layerswitcher, defined in MapContainer.js
+      title: 'Basemaps and Images',
       slug: 'layers',
       content: (<div id="layer-switcher" className="layer-switcher-container" />),
     },

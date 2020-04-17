@@ -31,7 +31,7 @@ const styles = {
 };
 
 class MapContainer extends React.Component<Props> {
-  map_manager: MapManager;
+  mapManager: MapManager;
 
   /**
    * Since we need DOM elements to exist to create Open Layers maps, we hook onto React's componentDidMount lifecycle
@@ -51,7 +51,7 @@ class MapContainer extends React.Component<Props> {
     /**
      * The Layer Switcher is paramount to the map: it should allow easy access and toggling to the various displayed layers.
      */
-    const layer_switcher = new LayerSwitcher(
+    const layerSwitcher = new LayerSwitcher(
       { target: 'layer-switcher' },
       storeActions.toggle_annotation_status_visibility,
     );
@@ -72,7 +72,7 @@ class MapContainer extends React.Component<Props> {
     });
 
 
-    this.map_manager = new MapManager(
+    this.mapManager = new MapManager(
       GEOSERVER_URL,
       ANNOTATION_NAMESPACE,
       ANNOTATION_LAYER,
@@ -82,20 +82,21 @@ class MapContainer extends React.Component<Props> {
       uiStore,
       openLayersStore,
       storeActions,
-      layer_switcher,
+      layerSwitcher,
       userInteractions,
       taxonomyStore,
     );
 
+    // eslint-disable-next-line no-new
     new Interactions(
-      this.map_manager.map,
+      this.mapManager.map,
       geoImageNetStore,
       userInteractions,
       openLayersStore,
       uiStore,
       taxonomyStore,
-      this.map_manager.GeoJSONFormat,
-      this.map_manager.WKTFormat,
+      this.mapManager.GeoJSONFormat,
+      this.mapManager.WKTFormat,
       ANNOTATION_LAYER,
     );
   }

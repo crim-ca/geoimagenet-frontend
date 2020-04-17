@@ -14,14 +14,16 @@ import type { UserInteractions } from '../domain';
 import type { GeoImageNetStore } from '../model/store/GeoImageNetStore';
 
 const SessionHandlePaper = withStyles((theme) => {
-  const { values } = theme;
+  const { values, palette } = theme;
   return {
     root: {
-      padding: values.gutterSmall,
+      padding: '4px',
       display: 'grid',
       gridTemplateColumns: 'max-content min-content min-content',
-      gridGap: values.gutterSmall,
-      alignItems: 'center',
+      height: '34px',
+      gridGap: '8px',
+      alignItems: 'start',
+      color: `${palette.primary.main}`,
     },
   };
 })(Paper);
@@ -31,6 +33,9 @@ const PresentationText = withStyles((theme) => {
   return {
     root: {
       marginRight: values.gutterSmall,
+      margin: '4px',
+      fontWeight: 'bold',
+      fontSize: '16px',
     },
   };
 })(Typography);

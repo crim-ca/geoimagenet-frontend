@@ -1,6 +1,65 @@
 Changelog
 =========
 
+1.7.0 (2020-04-17)
+------------------
+
+New
+~~~
+- Production webpack bundle to be served directly by the Compose (no more gunicorn to serve production instance) [Félix Gagnon-Grenier]
+
+Changes
+~~~
+- GEOIM-305 - deactivate unnecessary filters on mode change	[Félix Gagnon-Grenier]
+- GEOIM-305 - componentify annotation [Félix Gagnon-Grenier]
+- GEOIM-316 - selection toggle for validation mode [Félix Gagnon-Grenier]
+- GEOIM-316 - annotation selection toggling [Félix Gagnon-Grenier]
+- GEOIM-316 - show validation widget only in validation mode [Félix Gagnon-Grenier]
+- GEOIM-316 - test for current page selection [Félix Gagnon-Grenier]
+- GEOIM-316 - show checkbox for annotation selection [Félix Gagnon-Grenier]
+- GEOIM-316 - select / deselect all [Félix Gagnon-Grenier]
+- GEOIM-316 remove status in batch mode to see selection widget [Félix Gagnon-Grenier]	
+- GEOIM-316 - some spacing with linting [Félix Gagnon-Grenier]
+- GEOIM-316 - annotation component tests [Félix Gagnon-Grenier]
+- GEOIM-286 - Modify look and feel [Francis Pelletier]
+
+1.6.1 (2019-10-28)
+------------------
+
+Fix  [Félix Gagnon-Grenier]
+~~~
+- GEOIM-215 - boilerplate around anonymous session
+
+1.6.0 (2019-10-03)
+------------------
+
+Changes [Félix Gagnon-Grenier]
+~~~
+- leverage postinstall script instead of manually launching flow deps commands
+- use compose for HOCs
+- set timeout for annotation selection on click to 1200 to allow slow transitions to still select the annotation
+- GEOIM-276 - automatically fill nickname map with logged user name, overridable with the list
+- GEOIM-276 - showing nickname is possible
+- GEOIM-276 - better meta information
+- bugfix: manually set annotator id on created annotations
+- GEOIM-276 - meta information with the annotations
+- GEOIM-276 - select annotation on click
+- GEOIM-276 - refactor selected features collection into open layers store
+- GEOIM-276 - showing annotations over images
+- GEOIM-267 - fix scoping to keep followed users collection sync
+- GEOIM-267 - traductions et couleur secondaire
+- fixing jest configuration to ignore non test files when launching all tests
+- fixing contextual menu test html element reference management
+- tests & flow annotations
+- GEOIM-277 - move to annotation bounding box when clicking localize
+- some feature layers creation explanations
+
+1.5.1 (2019-09-18)
+------------------
+
+Fix
+~~~
+- GEOIM-282 - fix delete content type header
 
 1.5.0 (2019-09-09)
 ------------------
