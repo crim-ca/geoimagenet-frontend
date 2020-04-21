@@ -25,11 +25,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh """
-                docker run --rm $LOCAL_IMAGE_NAME /bin/sh -c \" \
-                pip install -r requirements_tests.txt && \
-                python -m pytest -v\"
-                """
+                sh 'docker run --rm $LOCAL_IMAGE_NAME /bin/sh -c "cd /code && npm run test"'
             }
         }
 

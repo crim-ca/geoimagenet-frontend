@@ -7,6 +7,7 @@ declare var GEOSERVER_URL: string;
 declare var FRONTEND_JS_SENTRY_DSN: string;
 declare var ANNOTATION_LAYER: string;
 declare var ANNOTATION_NAMESPACE: string;
+declare var CONTACT_EMAIL: string;
 
 declare module './img/icons/favicon.ico' {}
 declare module 'react-notifications/lib/notifications.css' {}

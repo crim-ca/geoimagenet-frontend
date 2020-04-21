@@ -2,7 +2,8 @@
 
 const features = {
     subscriptions: false,
-    expertise: true,
+    expertise: false,
+    duplicate: false,
 };
 
 module.exports = {features};

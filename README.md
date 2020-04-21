@@ -12,17 +12,13 @@ Anything under `GIN/` should technically be agnostic of any framework.
 
 # Installation
 
-The dependencies are stored in `requirements.txt`, install these with `pip install -r requirements.txt`.
-
-## Development
-
-We can launch a minimal version locally with `gunicorn -c Framework/gunicorn_config.py Framework:fl_app -k eventlet`.
-Since we use webpack to bundle our javascript files for client consumption, we also need to run the webpack watcher: 
-`npm run deploy:local`. That will launch the webpack transpilation and "watch" the files for modification during development.
+Run `npm install` from the root of repository
 
 ## Environment variables
 
-A few environment variables can be used to customize the behaviour of the client.
+You can modify the webpack.common.js and webpack.dev.js to modify your local dev environnement
+
+For reference:
 
 - SERVER_PROTOCOL: The protocol to be used for http requests from the client. Defaults to "https://".
 - GEOSERVER_URL: The geoserver installation to be used for the client, *without* the /geoserver. Defaults to "geoimagenetdev.crim.ca".
@@ -30,6 +26,18 @@ A few environment variables can be used to customize the behaviour of the client
 - ANNOTATION_NAMESPACE_URI: The geoserver namespace uri of the annotation data. Defaults to "geoimagenet.public.crim.ca".
 - ANNOTATION_NAMESPACE: The geoserver namespace of the annotation data. Defaults to "GEOIMAGENET_PUBLIC".
 - ANNOTATION_LAYER: The geoserver layer configured to accept annotations. Defaults to "annotation".
+
+## Development
+
+Run `npm run dev-server` to launch a dev instance
+
+## Production
+
+Run `npm run prod` to produce a production ready webpack bundle. Note that it will not launch it's own instance. 
+
+You can always install and use the npm library http-server to selfhost it, but GIN compose is setup to directly serve the produced 
+bundle, so it is possible to build a new docker image of the frontend to test it with a local instance of the compose repository.
+(see script `deploy-frontend.sh` as an example/tool for this purpose)
 
 ## Documentation
 
@@ -44,7 +52,14 @@ maybe revisit this idea. For now I just implemented our needs from their code.
 
 # Geoserver
 
-Geoser needs the postgis extension to be enabled to support the postgis data stores needed to store the annotations.
+## Current state
+
+There is no need to setup a local geoserver as it is possible to either use the geoimagenetdev.crim.ca's instance (see webpack.common.js)
+of deploy the frontend side by side with the 'compose' repository or inside it
+
+## To setup your own geoserver (old)
+
+Geoserver needs the postgis extension to be enabled to support the postgis data stores needed to store the annotations.
 On ubuntu `sudo apt install postgis`. Then, in the postgres cli, run `CREATE EXTENSION postgis;`.
 You might need to connect to the postgres server using `sudo -u postgres psql annotations` to have sufficient permission to create extensions.
 We also use uuids in the application, so install the relevant extension using `CREATE EXTENSION "uuid-ossp";`

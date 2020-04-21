@@ -1,33 +1,96 @@
 // @flow strict
-
 import React from 'react';
-import Typography from "@material-ui/core/Typography";
+import { observer } from 'mobx-react';
+import Typography from '@material-ui/core/Typography';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import { theme } from '../../../utils/react';
 
 type Props = {
-    unique_id: string,
-    checked: boolean,
-    change_handler: (event: {
-        target: {
-            checked: boolean
-        }
-    }) => void,
-    label: string,
-};
-class CheckboxLineInput extends React.Component<Props> {
-    render() {
-        const {unique_id, checked, change_handler, label} = this.props;
-        return (
-            <>
-                <input type='checkbox'
-                       id={unique_id}
-                       checked={checked}
-                       onChange={change_handler} />
-                <label htmlFor={unique_id}>
-                    <Typography style={{cursor: 'pointer'}}
-                                variant='body2'>{label}</Typography>
-                </label>
-            </>
-        );
+  uniqueId: string,
+  checked: boolean,
+  changeHandler: (event: {
+    target: {
+      checked: boolean
     }
+  }) => void,
+  label: string,
+};
+
+@observer
+class CheckboxLineInput extends React.Component<Props> {
+  render() {
+    /*
+     * Broke from convention because using withStyles here caused errors with tests
+     * 'Filter components has a checked input by default' and 'Filter components unchecks the box'
+     * by preventing Jest from accessing the checkbox input and claiming the component undefined.
+     * In the end, was simpler to change how this component was styled.
+     */
+    const style = {
+      common: {
+        marginLeft: 'auto ',
+      },
+      filter_new: {
+        color: `${theme.colors.new}`,
+      },
+      filter_pre_released: {
+        color: `${theme.colors.pre_released}`,
+      },
+      filter_released: {
+        color: `${theme.colors.released}`,
+      },
+      filter_review: {
+        color: `${theme.colors.review}`,
+      },
+      filter_validated: {
+        color: `${theme.colors.validated}`,
+      },
+      filter_rejected: {
+        color: `${theme.colors.rejected}`,
+      },
+      filter_deleted: {
+        color: `${theme.colors.deleted}`,
+      },
+    };
+
+    const {
+      uniqueId,
+      checked,
+      changeHandler,
+      label,
+    } = this.props;
+
+    const commonCheckLineInput = (
+      <React.Fragment>
+        <input
+          type="checkbox"
+          id={uniqueId}
+          checked={checked}
+          onChange={changeHandler}
+        />
+        <label htmlFor={uniqueId}>
+          <Typography
+            style={{ cursor: 'pointer' }}
+            variant="body2"
+          >
+            {label}
+          </Typography>
+        </label>
+      </React.Fragment>
+    );
+
+    if (uniqueId in style) {
+      return (
+        <React.Fragment>
+          {commonCheckLineInput}
+          <FiberManualRecordIcon style={{ ...style[uniqueId], ...style.common }} />
+        </React.Fragment>
+      );
+    }
+    return (
+      <React.Fragment>
+        {commonCheckLineInput}
+      </React.Fragment>
+    );
+  }
 }
-export {CheckboxLineInput};
+export { CheckboxLineInput };
