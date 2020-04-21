@@ -80,11 +80,6 @@ class Menu extends Component<Props> {
       title: 'Benchmark',
       href: '/benchmarks',
     },
-    // {title: 'Help', href: '/help'},
-    {
-      title: 'Contact',
-      href: `mailto:${this.props.contact_email}`,
-    },
   ];
 
   render() {
@@ -92,6 +87,8 @@ class Menu extends Component<Props> {
       geoImageNetStore, userInteractions, location, classes,
     } = this.props;
     const current_url = location.pathname;
+
+    // Contact removed from Menu list and added as a simple <a href=''> element because <Link> with mailto doesn't work
     return (
       <MenuContainerDiv>
         {this.menus.map((menu, i) => (
@@ -103,6 +100,7 @@ class Menu extends Component<Props> {
             {menu.href === current_url ? `- ${menu.title} -` : menu.title}
           </Link>
         ))}
+        <a href={`mailto:${this.props.contact_email}`} className={classes.link}>Contact</a>
         <SessionHandle geoImageNetStore={geoImageNetStore} userInteractions={userInteractions} />
       </MenuContainerDiv>
     );
