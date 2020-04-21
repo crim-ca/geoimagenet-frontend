@@ -16,21 +16,21 @@ export function make_annotation_ownership_cql_filter(ownership_filters: Annotati
    *  those need to be added with OR glue, for instance - ( id NOT IN (1) OR id IN (3,4,5) )
    */
 
-  if (ownership_filters.every(filter => filter.activated)) {
+  if (ownership_filters.every((filter) => filter.activated)) {
     return '';
   }
-  if (ownership_filters.every(filter => filter.activated === false)) {
+  if (ownership_filters.every((filter) => filter.activated === false)) {
     return 'annotator_id IN (-1)';
   }
 
   const cql_bits = [];
-  ownership_filters.forEach(filter => {
+  ownership_filters.forEach((filter) => {
     if (!filter.activated) {
       return;
     }
     switch (filter.text) {
       case ANNOTATION.OWNERSHIP.OTHERS: {
-        const user_ids = user.followed_users.map(user => user.id);
+        const user_ids = user.followed_users.map((user) => user.id);
         user_ids.push(user.id);
         cql_bits.push(`annotator_id NOT IN (${user_ids.join(',')})`);
         break;
@@ -42,7 +42,7 @@ export function make_annotation_ownership_cql_filter(ownership_filters: Annotati
         if (user.followed_users.length === 0) {
           return;
         }
-        const followed_users_ids = user.followed_users.map(user => user.id);
+        const followed_users_ids = user.followed_users.map((user) => user.id);
         cql_bits.push(`annotator_id IN (${followed_users_ids.join(',')})`);
         break;
       }
