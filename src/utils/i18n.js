@@ -107,9 +107,9 @@ const resources = {
         },
         section_2: {
           header: 'Connect to the platform demo:',
-          par_1: 'If you want to take a look and do not have a login, you will only <a href="/platform">see the annotations</a> ' +
+          par_1: 'If you want to take a look and do not have a login, you will only <a style="text-decoration: underline;" href="/platform">see the annotations</a> ' +
             'on a base map of Canada (Pleiades images are unavailable without a login).',
-          par_2: `You can also request a login at <a href="mailto:{{contact_email}}">{{contact_email}}</a> or just log in using the link at the top of the page.`,
+          par_2: `You can also request a login at <a style="text-decoration: underline;" href="mailto:{{contact_email}}">{{contact_email}}</a> or just log in using the link at the top of the page.`,
 
         },
         section_3: {
@@ -345,9 +345,9 @@ const resources = {
         section_2: {
           header: 'Accès à la plateforme :',
           par_1: 'Si vous souhaitez jeter un coup d’œil et n’avez pas d’identifiant, vous pouvez ' +
-            '<a href="/platform">consulter les annotations</a> sur une carte de base du Canada ' +
+            '<a style="text-decoration: underline;" href="/platform">consulter les annotations</a> sur une carte de base du Canada ' +
             '(aucune image Pléiades n’est disponible sans identifiant).',
-          par_2: `Vous pouvez demander un identifiant à <a href="mailto:{{contact_email}}">{{contact_email}}</a> ou simplement vous connecter en utilisant le lien en haut de la page.`,
+          par_2: `Vous pouvez demander un identifiant à <a style="text-decoration: underline;" href="mailto:{{contact_email}}">{{contact_email}}</a> ou simplement vous connecter en utilisant le lien en haut de la page.`,
 
         },
         section_3: {
