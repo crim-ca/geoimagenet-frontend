@@ -102,6 +102,7 @@ class Container extends React.Component<Props> {
           fitViewToBoundingBox={this.navigate}
           geoserver_url={GEOSERVER_URL}
           geoImageNetStore={geoImageNetStore}
+          userInteractions={userInteractions}
         />
         <Paginator
           pageNumber={pageNumber}
