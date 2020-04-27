@@ -19,7 +19,7 @@ type State = {};
 @observer
 class Container extends React.Component<Props, State> {
   receiveClickEvent = () => {
-    this.props.geoImageNetStore.toggleAnnotatorIdentifiers();
+    this.props.geoImageNetStore.toggleAnnotationOwners();
   };
 
   render() {

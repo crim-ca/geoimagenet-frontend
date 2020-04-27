@@ -76,7 +76,7 @@ describe('UI Elements correctly change the store', () => {
   });
 
   test('Toggle annotators identifier on when state is already false', () => {
-    geoImageNetStore.toggleAnnotatorIdentifiers(false);
+    geoImageNetStore.toggleAnnotationOwners(false);
     const wrapper = mount(<OwnersContainer geoImageNetStore={geoImageNetStore} />);
     wrapper.simulate('click');
     expect(geoImageNetStore.showAnnotatorsIdentifiers)

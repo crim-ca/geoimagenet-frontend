@@ -47,7 +47,7 @@ export class GeoImageNetStore {
 
   @observable showAnnotatorsIdentifiers: boolean = true;
 
-  @action toggleAnnotatorIdentifiers: (?boolean) => void = (override: ?boolean) => {
+  @action toggleAnnotationOwners: (?boolean) => void = (override: ?boolean) => {
     if (override !== undefined && override !== null) {
       this.showAnnotatorsIdentifiers = override;
       return;
@@ -140,6 +140,6 @@ export class GeoImageNetStore {
    */
   @observable current_annotation = {
     initialized: false,
-    image_title: ''
+    image_title: '',
   };
 }
