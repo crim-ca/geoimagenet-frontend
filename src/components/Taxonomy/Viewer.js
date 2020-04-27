@@ -1,15 +1,15 @@
 // @flow strict
 import React from 'react';
+import { observer } from 'mobx-react';
+import type { TFunction } from 'react-i18next';
+import { compose } from 'react-apollo';
 import { Selector } from './Selector';
 import { Classes } from './Classes';
 import { withTranslation } from '../../utils';
-import { observer } from 'mobx-react';
 
 import type { UserInteractions } from '../../domain';
 import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
-import type { TFunction } from 'react-i18next';
 import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
-import { compose } from 'react-apollo';
 import { withTaxonomyStore } from '../../model/HOCs';
 
 type Props = {
@@ -23,7 +23,9 @@ type Props = {
 @observer
 class Viewer extends React.Component<Props> {
   render() {
-    const { t, geoImageNetStore, userInteractions, taxonomyStore } = this.props;
+    const {
+      t, geoImageNetStore, userInteractions, taxonomyStore,
+    } = this.props;
     if (geoImageNetStore.selected_taxonomy === null) {
       return null;
     }
@@ -34,13 +36,17 @@ class Viewer extends React.Component<Props> {
 
     return (
       <React.Fragment>
-        <Selector userInteractions={userInteractions}
-                  t={t}
-                  geoImageNetStore={geoImageNetStore} />
-        <Classes userInteractions={userInteractions}
-                 geoImageNetStore={geoImageNetStore}
-                 refresh_source_by_status={this.props.refresh_source_by_status}
-                 taxonomy_classes={classes} />
+        <Selector
+          userInteractions={userInteractions}
+          t={t}
+          geoImageNetStore={geoImageNetStore}
+        />
+        <Classes
+          userInteractions={userInteractions}
+          geoImageNetStore={geoImageNetStore}
+          refresh_source_by_status={this.props.refresh_source_by_status}
+          taxonomy_classes={classes}
+        />
       </React.Fragment>
     );
   }
