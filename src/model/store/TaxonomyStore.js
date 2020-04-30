@@ -28,6 +28,7 @@ export class TaxonomyStore {
       taxonomy_class.pinned = override;
     } else {
       taxonomy_class.pinned = !taxonomy_class.pinned;
+      this.invert_taxonomy_class_visibility(taxonomy_class);
     }
     /**
      * when a class has children, we need to set the pin upon its children as well, as they're the ones that are gonna be displayed
