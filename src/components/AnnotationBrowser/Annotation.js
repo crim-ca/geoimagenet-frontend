@@ -62,18 +62,9 @@ class Annotation extends React.Component<Props> {
     fitViewToBoundingBox(boundingBox, status, annotationId);
   };
 
-  maybeMakeSelectionWidget() {
+  validationWidget() {
     const { uiStore: { selectedMode }, selected, toggle } = this.props;
     switch (selectedMode) {
-      case MODE.DELETION:
-      case MODE.RELEASE:
-        return (
-          <input
-            type="checkbox"
-            checked={selected}
-            onChange={toggle}
-          />
-        );
       case MODE.VALIDATION:
         return (
           <SelectionToggle
@@ -96,7 +87,7 @@ class Annotation extends React.Component<Props> {
       featureUrl,
       taxonomyClassId,
       annotator,
-      uiStore: { isInBatchMode },
+      uiStore: { isInCreationMode },
       classes: { listItem, figure, info },
     } = this.props;
     return (
@@ -108,13 +99,13 @@ class Annotation extends React.Component<Props> {
         <div className={info}>
           <span style={{ fontWeight: 'bold' }}>{t(`taxonomy_classes:${taxonomyClassId}`)}</span>
           {
-            !isInBatchMode
+            isInCreationMode
               ? (
                 <span>{t(`status:singular.${status}`)}</span>
               ) : null
           }
           <span>{t('annotations:created_by', { annotator })}</span>
-          {this.maybeMakeSelectionWidget()}
+          {this.validationWidget()}
         </div>
       </div>
     );

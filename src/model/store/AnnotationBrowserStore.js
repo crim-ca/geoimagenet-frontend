@@ -147,6 +147,4 @@ export class AnnotationBrowserStore {
     }
     return `&cql_filter=(${bits.join(') AND (')})`;
   }
-
-
 }

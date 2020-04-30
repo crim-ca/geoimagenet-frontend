@@ -64,8 +64,20 @@ class UserInterfaceStore {
     }
   }
 
-  @computed get isInBatchMode(): boolean {
-    return [MODE.DELETION, MODE.RELEASE, MODE.VALIDATION].indexOf(this.selectedMode) !== -1;
+  @computed get isInCreationMode(): boolean {
+    return [MODE.VISUALIZATION, MODE.CREATION, MODE.MODIFICATION].indexOf(this.selectedMode) !== -1;
+  }
+
+  @computed get isInEvaluationMode(): boolean {
+    return [MODE.RELEASE, MODE.VALIDATION].indexOf(this.selectedMode) !== -1;
+  }
+
+  @computed get isInReleaseMode(): boolean {
+    return [MODE.RELEASE].indexOf(this.selectedMode) !== -1;
+  }
+
+  @computed get isInValidationMode(): boolean {
+    return [MODE.VALIDATION].indexOf(this.selectedMode) !== -1;
   }
 
   constructor() {

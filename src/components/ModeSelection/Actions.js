@@ -25,23 +25,25 @@ import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import { withUserInterfaceStore } from '../../model/HOCs';
 import type { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
 
-const modes = [];
-modes.push({
-  name: 'eye',
+const mapModes = [];
+const reviewModes = [];
+
+mapModes.push({
+  name: 'Navigate',
   icon: faMousePointer,
   mode: MODE.VISUALIZATION,
   permission_name: READ,
   resource: ANNOTATIONS,
 });
-modes.push({
-  name: 'creation',
+mapModes.push({
+  name: 'Create',
   icon: faPlusSquare,
   mode: MODE.CREATION,
   permission_name: WRITE,
   resource: ANNOTATIONS,
 });
 if (features.duplicate) {
-  modes.push({
+  mapModes.push({
     name: 'duplicate',
     icon: faCopy,
     mode: MODE.DUPLICATION,
@@ -49,22 +51,22 @@ if (features.duplicate) {
     resource: ANNOTATIONS,
   });
 }
-modes.push({
-  name: 'modify',
+mapModes.push({
+  name: 'Edit',
   icon: faEdit,
   mode: MODE.MODIFICATION,
   permission_name: WRITE,
   resource: ANNOTATIONS,
 });
-modes.push({
-  name: 'delete',
+mapModes.push({
+  name: 'Delete',
   icon: faTrashAlt,
   mode: MODE.DELETION,
   permission_name: WRITE,
   resource: ANNOTATIONS,
 });
 if (features.expertise) {
-  modes.push({
+  reviewModes.push({
     name: 'ask_expertise',
     icon: faQuestionCircle,
     mode: MODE.ASK_EXPERTISE,
@@ -72,15 +74,15 @@ if (features.expertise) {
     resource: ANNOTATIONS,
   });
 }
-modes.push({
-  name: 'release',
+reviewModes.push({
+  name: 'Release',
   icon: faPaperPlane,
   mode: MODE.RELEASE,
   permission_name: WRITE,
   resource: ANNOTATIONS,
 });
-modes.push({
-  name: 'validate',
+reviewModes.push({
+  name: 'Validate',
   icon: faCheck,
   mode: MODE.VALIDATION,
   permission_name: WRITE,
@@ -97,6 +99,18 @@ const ActionsContainer = withStyles((theme) => {
 })((props) => {
   const { classes, children } = props;
   return <div className={`${classes.root} actions`}>{children}</div>;
+});
+
+const VerticalLine = withStyles((theme) => ({
+  root: {
+    borderLeft: `2px solid ${theme.palette.primary.main}`,
+    height: '60px',
+    left: '50%',
+    marginLeft: '-1px',
+  },
+}))((props) => {
+  const { classes, children } = props;
+  return <div className={`${classes.root}`}>{children}</div>;
 });
 
 type Props = {
@@ -118,7 +132,12 @@ class Actions extends Component<Props> {
 
   render() {
     const { geoImageNetStore, uiStore: { selectedMode } } = this.props;
-    const visibleModes = modes.filter((action) => geoImageNetStore.acl.can(
+    const visibleMapModes = mapModes.filter((action) => geoImageNetStore.acl.can(
+      action.permission_name,
+      action.resource,
+    ));
+
+    const visibleReviewModes = reviewModes.filter((action) => geoImageNetStore.acl.can(
       action.permission_name,
       action.resource,
     ));
@@ -126,13 +145,33 @@ class Actions extends Component<Props> {
     return (
       <ActionsContainer>
         {
-          visibleModes.map((action) => (
-            <FontAwesomeIcon
-              key={`${action.mode}`}
-              icon={action.icon}
-              className={action.mode === selectedMode ? 'fa-2x active' : 'fa-2x'}
-              onClick={this.setModeCallback(action.mode)}
-            />
+          visibleMapModes.map((action) => (
+            <span style={{ textAlign: 'center', paddingLeft: '2px' }} key={`${action.mode}`}>
+              <FontAwesomeIcon
+                icon={action.icon}
+                className={action.mode === selectedMode ? 'fa-2x active' : 'fa-2x'}
+                onClick={this.setModeCallback(action.mode)}
+              />
+              <div style={{ paddingLeft: '4px' }}>{`${action.name}`}</div>
+            </span>
+          ))
+        }
+        {
+          visibleReviewModes.length > 0
+            ? (
+              <VerticalLine />
+            ) : null
+        }
+        {
+          visibleReviewModes.map((action) => (
+            <span style={{ textAlign: 'center' }} key={`${action.mode}`}>
+              <FontAwesomeIcon
+                icon={action.icon}
+                className={action.mode === selectedMode ? 'fa-2x active' : 'fa-2x'}
+                onClick={this.setModeCallback(action.mode)}
+              />
+              <div style={{ paddingLeft: '4px' }}>{`${action.name}`}</div>
+            </span>
           ))
         }
       </ActionsContainer>

@@ -1,6 +1,8 @@
+/* eslint-disable consistent-return */
 // @flow strict
 import React from 'react';
 import { observer } from 'mobx-react';
+import { NotificationManager } from 'react-notifications';
 import { TFunction } from 'react-i18next';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Button from '@material-ui/core/Button';
@@ -8,6 +10,7 @@ import { compose } from 'react-apollo';
 import { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import { ANNOTATION_THUMBNAIL_SIZE, MODE } from '../../constants';
 import { Annotation as AnnotationComponent } from './Annotation';
+import type { UserInteractions } from '../../domain';
 import type { Annotation as AnnotationEntity, AnnotationStatus, BoundingBox } from '../../Types';
 import type { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
 import type { AnnotationBrowserStore } from '../../model/store/AnnotationBrowserStore';
@@ -21,6 +24,7 @@ type Props = {
   annotationBrowserStore: AnnotationBrowserStore,
   fitViewToBoundingBox: (BoundingBox, AnnotationStatus, number) => void,
   makeToggleAnnotationSelection: (number) => () => void,
+  userInteractions: UserInteractions,
   t: TFunction,
   classes: {
     list: {},
@@ -68,25 +72,77 @@ const style = (theme) => ({
 
 @observer
 class AnnotationList extends React.Component<Props> {
+  releasePage = () => {
+    const { annotationBrowserStore: { currentPageContent }, userInteractions } = this.props;
+    const annotationIds = [];
+    const taxonomyClassIds = [];
+    currentPageContent.map((annotation) => {
+      const {
+        id,
+        taxonomy_class_id,
+      } = annotation.properties;
+      annotationIds.push(id);
+      if (!taxonomyClassIds.includes(taxonomy_class_id)) {
+        taxonomyClassIds.push(taxonomy_class_id);
+      }
+    });
+    userInteractions.release_page_annotations(annotationIds, taxonomyClassIds);
+  };
+
+  validatePage = () => {
+    const { annotationBrowserStore: { currentPageContent, selection }, userInteractions } = this.props;
+    const validAnnotIds = [];
+    const rejectedAnnotIds = [];
+    const taxonomyClassIds = [];
+    currentPageContent.map((annotation) => {
+      const {
+        id,
+        taxonomy_class_id,
+      } = annotation.properties;
+      if (selection[id] === true) {
+        validAnnotIds.push(id);
+      } else {
+        rejectedAnnotIds.push(id);
+      }
+      if (!taxonomyClassIds.includes(taxonomy_class_id)) {
+        taxonomyClassIds.push(taxonomy_class_id);
+      }
+    });
+    userInteractions.validation_of_page_annotation(validAnnotIds, rejectedAnnotIds, taxonomyClassIds);
+  };
+
+  handleClick = () => {
+    const {
+      annotationBrowserStore: { currentPageContent },
+      uiStore: { isInReleaseMode, isInValidationMode },
+    } = this.props;
+    if (currentPageContent.length > 0) {
+      if (isInReleaseMode) {
+        this.releasePage();
+      }
+      if (isInValidationMode) {
+        this.validatePage();
+      }
+    } else {
+      NotificationManager.warning('There are no annotations in the current page');
+    }
+  }
+
   render() {
     const {
       geoImageNetStore: { imagesDictionary, user: { nicknamesMap } },
-      uiStore: { isInBatchMode },
+      uiStore: { isInEvaluationMode, isInReleaseMode },
       classes,
       fitViewToBoundingBox,
-      annotationBrowserStore: { selection, currentPageContent, toggleAllAnnotationSelection },
+      annotationBrowserStore: { selection, currentPageContent },
       makeToggleAnnotationSelection,
       geoserver_url,
       t,
     } = this.props;
+
+
     return (
       <div className={classes.rootDiv}>
-        {
-          isInBatchMode
-            ? (
-              <Button onClick={toggleAllAnnotationSelection}>{t('toggleAll')}</Button>
-            ) : null
-        }
         <div className={classes.list}>
           {currentPageContent.map((annotation, i) => {
             const {
@@ -128,6 +184,23 @@ class AnnotationList extends React.Component<Props> {
             );
           })}
         </div>
+        {
+          isInEvaluationMode
+            ? (
+              <Button variant="contained" color="primary" onClick={this.handleClick}>
+                {
+                  isInReleaseMode
+                    ? (
+                      'Release current page\'s annotations'
+                    ) : 'Validate/Reject current page\'s annotations'
+                }
+              </Button>
+            ) : (
+              <Button variant="contained" disabled>
+                No batch action in this mode
+              </Button>
+            )
+        }
       </div>
     );
   }

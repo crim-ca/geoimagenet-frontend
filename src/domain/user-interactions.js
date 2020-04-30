@@ -71,6 +71,7 @@ export class UserInteractions {
     this.taxonomyStore = taxonomyStore;
 
     this.release_annotations = this.release_annotations.bind(this);
+    this.release_page_annotations = this.release_page_annotations.bind(this);
   }
 
   refresh_all_sources = () => {
@@ -267,7 +268,7 @@ export class UserInteractions {
     });
 
     await Promise.all(all_modified_features.map(async (feature: Feature) => {
-      let valid = await this.feature_respects_its_original_image(feature, format_wkt);
+      const valid = await this.feature_respects_its_original_image(feature, format_wkt);
       if (!valid) {
         modified_features_to_reset.push(feature);
       } else {
@@ -454,7 +455,7 @@ export class UserInteractions {
   release_annotations = async (taxonomy_class_id: number) => {
     await DialogManager.confirm('Do you really want to release all the annotations of the selected class, as well as its children?');
     try {
-      await this.dataQueries.release_annotations_request(taxonomy_class_id);
+      await this.dataQueries.release_annotations_by_taxonomy_request(taxonomy_class_id);
       const counts = await this.dataQueries.flat_taxonomy_classes_counts(taxonomy_class_id);
       this.storeActions.set_annotation_counts(counts);
       NotificationManager.success('Annotations were released.');
@@ -463,6 +464,40 @@ export class UserInteractions {
       NotificationManager.error('We were unable to release the annotations.');
     }
   };
+
+  iterateOnCounts = async (taxonomiId: number) => {
+    const counts = await this.dataQueries.flat_taxonomy_classes_counts(taxonomiId);
+    this.storeActions.set_annotation_counts(counts);
+  }
+
+  release_page_annotations = async (annotationClassId: number[], taxonomyClasses: number[]) => {
+    await DialogManager.confirm('Do you really want to release all the annotations of this page?');
+    try {
+      await this.dataQueries.release_annotations_by_id_request(annotationClassId);
+      await taxonomyClasses.map(this.iterateOnCounts);
+      NotificationManager.success('Annotations were released.');
+    } catch (error) {
+      captureException(error);
+      NotificationManager.error('We were unable to release the annotations.');
+    }
+  }
+
+  validation_of_page_annotation = async (validIds: number[], rejectedIds: number[], taxonomyClasses: number[]) => {
+    await DialogManager.confirm('Do you really want to validate/reject all the annotations of this page?');
+    try {
+      if (validIds && validIds.length) {
+        await this.dataQueries.validate_annotations_request(validIds);
+      }
+      if (rejectedIds && rejectedIds.length) {
+        await this.dataQueries.reject_annotations_request(rejectedIds);
+      }
+      await taxonomyClasses.map(this.iterateOnCounts);
+      NotificationManager.success('Annotations were validated/rejected.');
+    } catch (error) {
+      captureException(error);
+      NotificationManager.error('We were unable to validate/reject the annotations.');
+    }
+  }
 
   /**
    * When submitting the login form, the user expects to login, or be presented with error about said login.

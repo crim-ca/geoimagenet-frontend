@@ -54,6 +54,7 @@ class Container extends React.Component<Props> {
               userInteractions={userInteractions}
             />
           ))}
+        <span style={{ paddingBottom: '20px' }} />
       </React.Fragment>
     );
   }
