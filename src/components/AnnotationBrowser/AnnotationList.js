@@ -195,7 +195,11 @@ class AnnotationList extends React.Component<Props> {
                     ) : 'Validate/Reject current page\'s annotations'
                 }
               </Button>
-            ) : null
+            ) : (
+              <Button variant="contained" disabled>
+                No batch action in this mode
+              </Button>
+            )
         }
       </div>
     );
