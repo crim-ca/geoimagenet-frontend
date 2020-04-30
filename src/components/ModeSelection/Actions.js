@@ -146,9 +146,8 @@ class Actions extends Component<Props> {
       <ActionsContainer>
         {
           visibleMapModes.map((action) => (
-            <span style={{ textAlign: 'center', paddingLeft: '2px' }}>
+            <span style={{ textAlign: 'center', paddingLeft: '2px' }} key={`${action.mode}`}>
               <FontAwesomeIcon
-                key={`${action.mode}`}
                 icon={action.icon}
                 className={action.mode === selectedMode ? 'fa-2x active' : 'fa-2x'}
                 onClick={this.setModeCallback(action.mode)}
@@ -165,9 +164,8 @@ class Actions extends Component<Props> {
         }
         {
           visibleReviewModes.map((action) => (
-            <span style={{ textAlign: 'center' }}>
+            <span style={{ textAlign: 'center' }} key={`${action.mode}`}>
               <FontAwesomeIcon
-                key={`${action.mode}`}
                 icon={action.icon}
                 className={action.mode === selectedMode ? 'fa-2x active' : 'fa-2x'}
                 onClick={this.setModeCallback(action.mode)}
