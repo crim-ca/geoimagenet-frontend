@@ -1,6 +1,18 @@
 Changelog
 =========
 
+Unreleased
+------------------
+
+Changes
+~~~
+
+- GEOIM-305 - Completed remaining issues elements for Taxonomie Browser [ Francis Pelletier]
+- GEOIM-305 - Changed positionning of map icons and tools 
+- GEOIM-305 - Batch button for release and validate mode.
+- GEOIM-305 - Improve UI intuitiveness for mode selection in Annotation Browser
+- GEOIM-289 - Pinning or unpinning a Taxonomy class now also changes visibility
+
 1.7.0 (2020-04-17)
 ------------------
 
@@ -18,7 +30,7 @@ Changes
 - GEOIM-316 - test for current page selection [Félix Gagnon-Grenier]
 - GEOIM-316 - show checkbox for annotation selection [Félix Gagnon-Grenier]
 - GEOIM-316 - select / deselect all [Félix Gagnon-Grenier]
-- GEOIM-316 remove status in batch mode to see selection widget [Félix Gagnon-Grenier]	
+- GEOIM-316 - remove status in batch mode to see selection widget [Félix Gagnon-Grenier]	
 - GEOIM-316 - some spacing with linting [Félix Gagnon-Grenier]
 - GEOIM-316 - annotation component tests [Félix Gagnon-Grenier]
 - GEOIM-286 - Modify look and feel [Francis Pelletier]
