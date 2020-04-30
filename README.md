@@ -55,7 +55,7 @@ maybe revisit this idea. For now I just implemented our needs from their code.
 ## Current state
 
 There is no need to setup a local geoserver as it is possible to either use the geoimagenetdev.crim.ca's instance (see webpack.common.js)
-of deploy the frontend side by side with the 'compose' repository or inside it
+of deploy the frontend side by side with the 'compose' repository or inside it.
 
 ## To setup your own geoserver (old)
 
