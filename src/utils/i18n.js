@@ -81,23 +81,23 @@ const resources = {
         item_4: 'GeoImageNet offers a benchmarking service with an evaluation server to obtain performance metrics in order to share and collaborate their works.',
       },
       mission: {
-        what: '<b>What</b> :  GeoImageNet is a unique collaborative initiative involving remote sensing researchers, ' +
-          'developers of digital research platforms, artificial intelligence experts and professionals dedicated ' +
-          'to derive value from satellite imagery.',
-        how: '<b>How</b> : By facilitating the creation and download of annotations on Pleiades (50 cm)  images. The imagery ' +
-          'used to build this database includes more than 10,000 km2 of Pleiades images covering Canada\'s major cities ' +
-          'as well as various other natural and anthropogenic environments (forests, wetlands, mining sites, agricultural areas, etc.). ' +
-          'These annotations are based on a taxonomy containing many objects (approx. 180) and land cover types (approx. 50).',
-        why: '<b>Why</b> : To promote deep learning research on Earth Observation (EO) data for detection, segmentation and ' +
-          'other automated tasks. This will allow researchers from diverse institutions to collaborate in a more ' +
-          'structured and effective manner for the application of deep learning in remote sensing and to develop new ' +
-          'value-added products based on VHR satellite images. This synergy will facilitate making more progress in research, ' +
-          'both in remote sensing applications and in the development of machine learning algorithms.',
+        what: '<b>What</b> :  GeoImageNet is a unique collaborative initiative involving remote sensing researchers, '
+          + 'developers of digital research platforms, artificial intelligence experts and professionals dedicated '
+          + 'to derive value from satellite imagery.',
+        how: '<b>How</b> : By facilitating the creation and download of annotations on Pleiades (50 cm)  images. The imagery '
+          + 'used to build this database includes more than 10,000 km2 of Pleiades images covering Canada\'s major cities '
+          + 'as well as various other natural and anthropogenic environments (forests, wetlands, mining sites, agricultural areas, etc.). '
+          + 'These annotations are based on a taxonomy containing many objects (approx. 180) and land cover types (approx. 50).',
+        why: '<b>Why</b> : To promote deep learning research on Earth Observation (EO) data for detection, segmentation and '
+          + 'other automated tasks. This will allow researchers from diverse institutions to collaborate in a more '
+          + 'structured and effective manner for the application of deep learning in remote sensing and to develop new '
+          + 'value-added products based on VHR satellite images. This synergy will facilitate making more progress in research, '
+          + 'both in remote sensing applications and in the development of machine learning algorithms.',
       },
       platform: {
-        par_1: 'GeoImageNet is a collaborative research platform for researchers from different backgrounds who ' +
-          'wish to develop innovative algorithms for the exploitation of very high resolution (VHR) satellite ' +
-          'images for various applications.',
+        par_1: 'GeoImageNet is a collaborative research platform for researchers from different backgrounds who '
+          + 'wish to develop innovative algorithms for the exploitation of very high resolution (VHR) satellite '
+          + 'images for various applications.',
         section_1: {
           header: 'Technological components:',
           item_1: 'OpenSource Platform in Python/JavaScript',
@@ -107,17 +107,17 @@ const resources = {
         },
         section_2: {
           header: 'Connect to the platform demo:',
-          par_1: 'If you want to take a look and do not have a login, you will only <a style="text-decoration: underline;" href="/platform">see the annotations</a> ' +
-            'on a base map of Canada (Pleiades images are unavailable without a login).',
-          par_2: `You can also request a login at <a style="text-decoration: underline;" href="mailto:{{contact_email}}">{{contact_email}}</a> or just log in using the link at the top of the page.`,
+          par_1: 'If you want to take a look and do not have a login, you will only <a style="text-decoration: underline;" href="/platform">see the annotations</a> '
+            + 'on a base map of Canada (Pleiades images are unavailable without a login).',
+          par_2: 'You can also request a login at <a style="text-decoration: underline;" href="mailto:{{contact_email}}">{{contact_email}}</a> or just log in using the link at the top of the page.',
 
         },
         section_3: {
           header: 'Please note:',
           item_1: 'For now, the login will give you access to the demo version only and no annotations will be used in the dataset.',
           item_2: 'On the demo platform, the annotations made by users will be deleted every week.',
-          item_3: 'Once on the platform, and in order to see existing annotations, select either “Object“ or ' +
-            '“Land cover“ in the Taxonomy and click on the “eye icon” to make them visible.',
+          item_3: 'Once on the platform, and in order to see existing annotations, select either “Object“ or '
+            + '“Land cover“ in the Taxonomy and click on the “eye icon” to make them visible.',
           item_4: 'The production platform will be available soon.',
         },
       },
@@ -125,7 +125,7 @@ const resources = {
         par_1: 'Land cover types: 48 classes',
         par_2: 'Objects: 178 classes',
         download: 'Download the JSON file',
-        no_taxonomies: 'There doesn\'t seem to be any taxonomies in the database.'
+        no_taxonomies: 'There doesn\'t seem to be any taxonomies in the database.',
       },
       publications: {
         presentation: 'Presentation',
@@ -134,20 +134,20 @@ const resources = {
         poster: 'Poster',
         section_1: {
           header: 'Presentations:',
-          item_1: '2019, GeoImageNet: a Collaborative Platform for Deep Learning Application to Very High ' +
-            'Resolution EO Images, Yacine Bouroudi, Claude Chapdelaine, Samuel Foucher, David Byrns, Mario Beaulieu, ' +
-            'Pierre-Luc St-Charles, Mickaël Germain, Étienne Lauzier-Hudon, Pierre Bugnet, Nouri Sabo and ' +
-            'Claire Gosselin, 40 ième Symposium canadien de télédétection, 4-6 juin 2019 ',
-          item_2: '2019, GeoImageNet: A Collaborative Platform for the Annotation of VHR Images, Claude Chapdelaine, ' +
-            'Samuel Foucher, Yacine Bouroubi, David Byrns, Mario Beaulieu, Pierre Bugnet, Pierre-Luc St-Charles, ' +
-            'Tom Landry, Mickaël Germain, Living Planet 2019, Milan, Italy. ',
+          item_1: '2019, GeoImageNet: a Collaborative Platform for Deep Learning Application to Very High '
+            + 'Resolution EO Images, Yacine Bouroudi, Claude Chapdelaine, Samuel Foucher, David Byrns, Mario Beaulieu, '
+            + 'Pierre-Luc St-Charles, Mickaël Germain, Étienne Lauzier-Hudon, Pierre Bugnet, Nouri Sabo and '
+            + 'Claire Gosselin, 40 ième Symposium canadien de télédétection, 4-6 juin 2019 ',
+          item_2: '2019, GeoImageNet: A Collaborative Platform for the Annotation of VHR Images, Claude Chapdelaine, '
+            + 'Samuel Foucher, Yacine Bouroubi, David Byrns, Mario Beaulieu, Pierre Bugnet, Pierre-Luc St-Charles, '
+            + 'Tom Landry, Mickaël Germain, Living Planet 2019, Milan, Italy. ',
         },
         section_2: {
           header: 'Press releases:',
           item_1: {
             intro: 'Press release from <u>Université de Sherbrooke</u> : ',
-            link_text: 'Une plateforme pour l’application de techniques d’intelligence artificielle à ' +
-              'l’exploitation des images satellites',
+            link_text: 'Une plateforme pour l’application de techniques d’intelligence artificielle à '
+              + 'l’exploitation des images satellites',
           },
           item_2: {
             intro: 'Press release from <u>CRIM</u> : ',
@@ -155,19 +155,19 @@ const resources = {
           },
           item_3: {
             intro: 'Press release from <u>Effigis Géo-Solutions</u> : ',
-            link_text: 'An Automated Satellite Image Interpretation Application Based on Artificial ' +
-              'Intelligence is awarded Federal R & D Funding',
+            link_text: 'An Automated Satellite Image Interpretation Application Based on Artificial '
+              + 'Intelligence is awarded Federal R & D Funding',
           },
           item_4: {
             intro: 'Press release from <u>CANARIE</u> : ',
-            link_text: 'CANARIE Awards $4.4M to 20 Research Teams to Develop Advanced Software to Improve ' +
-              'Vaccines, Monitor Climate Change, and More',
+            link_text: 'CANARIE Awards $4.4M to 20 Research Teams to Develop Advanced Software to Improve '
+              + 'Vaccines, Monitor Climate Change, and More',
           },
         },
         section_3: {
           header: 'Publications:',
           item_1: 'No paper available yet',
-        }
+        },
       },
       collaborators: {
         item_1: 'Yacine Bouroubi – Université de Sherbrooke',
@@ -222,22 +222,22 @@ const resources = {
       },
     },
     util: {
-      'french': 'French',
-      'english': 'English',
-      'contact': 'Contact',
+      french: 'French',
+      english: 'English',
+      contact: 'Contact',
     },
     login: {
-      'login': 'Login',
-      'forbidden': 'Login forbidden.',
-      'access_platform': 'Access platform',
-      'username': 'Username',
-      'password': 'Password',
+      login: 'Login',
+      forbidden: 'Login forbidden.',
+      access_platform: 'Access platform',
+      username: 'Username',
+      password: 'Password',
     },
     workspace: {
-      'title': 'Workspace',
-      'no_data': 'There is nothing in your workspace. Open the taxonomies tab and pin classes to begin.',
-      'empty': 'Empty',
-      'empty_tooltip': 'Remove all classes from your workspace.',
+      title: 'Workspace',
+      no_data: 'There is nothing in your workspace. Open the taxonomies tab and pin classes to begin.',
+      empty: 'Empty',
+      empty_tooltip: 'Remove all classes from your workspace.',
     },
   },
   fr: {
@@ -316,25 +316,25 @@ const resources = {
         item_4: 'GeoImageNet offre aux chercheurs un serveur d’évaluation pour obtenir des indicateurs de rendement afin de collaborer et partager leurs travaux.',
       },
       mission: {
-        what: '<b>Quoi</b> : GeoImageNet est une initiative de collaboration unique associant des chercheurs en télédétection, ' +
-          'des développeurs de plateformes de recherche numériques, des experts en intelligence artificielle et ' +
-          'des professionnels voués à l’ajout de valeur à l’imagerie par satellite.',
-        how: '<b>Comment</b> : En facilitant la création et le téléchargement des annotations sur des images Pléiades (50 cm). ' +
-          'Les images utilisées pour créer cette base de données incluent plus de 10 000 km2 d\'images satellite Pléiades ' +
-          'couvrant les principales villes du Canada ainsi que divers autres environnements naturels et anthropiques ' +
-          '(forêts, milieux humides, sites miniers, zones agricoles, etc.). Ces annotations sont basées sur une taxonomie ' +
-          'contenant de nombreux objets (environ 180) et divers types d’occupation du sol (environ 50).',
-        why: '<b>Pourquoi</b> : Afin de promouvoir la recherche en apprentissage profond sur les données ' +
-          'd’observation de la Terre (“Earth observation EO”) pour la détection, la segmentation et autres tâches ' +
-          'automatiques. Cela permettra aux chercheurs de diverses institutions de collaborer de manière plus structurée ' +
-          'et efficace à l’application de l’apprentissage profond en télédétection et de développer de nouveaux produits à ' +
-          'valeur ajoutée basés sur des images satellite THR. Cette synergie facilitera les progrès de la recherche, ' +
-          'tant dans les applications de télédétection que dans le développement d’algorithmes d’apprentissage.',
+        what: '<b>Quoi</b> : GeoImageNet est une initiative de collaboration unique associant des chercheurs en télédétection, '
+          + 'des développeurs de plateformes de recherche numériques, des experts en intelligence artificielle et '
+          + 'des professionnels voués à l’ajout de valeur à l’imagerie par satellite.',
+        how: '<b>Comment</b> : En facilitant la création et le téléchargement des annotations sur des images Pléiades (50 cm). '
+          + 'Les images utilisées pour créer cette base de données incluent plus de 10 000 km2 d\'images satellite Pléiades '
+          + 'couvrant les principales villes du Canada ainsi que divers autres environnements naturels et anthropiques '
+          + '(forêts, milieux humides, sites miniers, zones agricoles, etc.). Ces annotations sont basées sur une taxonomie '
+          + 'contenant de nombreux objets (environ 180) et divers types d’occupation du sol (environ 50).',
+        why: '<b>Pourquoi</b> : Afin de promouvoir la recherche en apprentissage profond sur les données '
+          + 'd’observation de la Terre (“Earth observation EO”) pour la détection, la segmentation et autres tâches '
+          + 'automatiques. Cela permettra aux chercheurs de diverses institutions de collaborer de manière plus structurée '
+          + 'et efficace à l’application de l’apprentissage profond en télédétection et de développer de nouveaux produits à '
+          + 'valeur ajoutée basés sur des images satellite THR. Cette synergie facilitera les progrès de la recherche, '
+          + 'tant dans les applications de télédétection que dans le développement d’algorithmes d’apprentissage.',
       },
       platform: {
-        par_1: 'GeoImageNet est une plateforme de recherche collaborative pour les chercheurs de différents horizons ' +
-          'qui souhaitent développer des algorithmes innovants pour l’exploitation d’images satellitaires à ' +
-          'très haute résolution (THR) pour diverses applications.',
+        par_1: 'GeoImageNet est une plateforme de recherche collaborative pour les chercheurs de différents horizons '
+          + 'qui souhaitent développer des algorithmes innovants pour l’exploitation d’images satellitaires à '
+          + 'très haute résolution (THR) pour diverses applications.',
         section_1: {
           header: 'Composantes technologiques :',
           item_1: 'Plateforme <i>Open source</i> en Python/JavaScript.',
@@ -344,18 +344,18 @@ const resources = {
         },
         section_2: {
           header: 'Accès à la plateforme :',
-          par_1: 'Si vous souhaitez jeter un coup d’œil et n’avez pas d’identifiant, vous pouvez ' +
-            '<a style="text-decoration: underline;" href="/platform">consulter les annotations</a> sur une carte de base du Canada ' +
-            '(aucune image Pléiades n’est disponible sans identifiant).',
-          par_2: `Vous pouvez demander un identifiant à <a style="text-decoration: underline;" href="mailto:{{contact_email}}">{{contact_email}}</a> ou simplement vous connecter en utilisant le lien en haut de la page.`,
+          par_1: 'Si vous souhaitez jeter un coup d’œil et n’avez pas d’identifiant, vous pouvez '
+            + '<a style="text-decoration: underline;" href="/platform">consulter les annotations</a> sur une carte de base du Canada '
+            + '(aucune image Pléiades n’est disponible sans identifiant).',
+          par_2: 'Vous pouvez demander un identifiant à <a style="text-decoration: underline;" href="mailto:{{contact_email}}">{{contact_email}}</a> ou simplement vous connecter en utilisant le lien en haut de la page.',
 
         },
         section_3: {
           header: 'Veuillez noter :',
           item_1: 'Pour l’instant, l’identifiant vous donnera accès à la version de démonstration et aucune annotation ne sera utilisée dans le jeu de données.',
           item_2: 'Sur la version de démonstration, les annotations créées par les utilisateurs seront supprimées chaque semaine.',
-          item_3: 'Une fois sur la plateforme, si vous souhaitez voir les annotations existantes, sélectionnez ' +
-            'Objet ou Occupation du sol dans la Taxonomie, puis cliquez sur «icône représentant un œil» pour les afficher.',
+          item_3: 'Une fois sur la plateforme, si vous souhaitez voir les annotations existantes, sélectionnez '
+            + 'Objet ou Occupation du sol dans la Taxonomie, puis cliquez sur «icône représentant un œil» pour les afficher.',
           item_4: 'La plateforme de production sera bientôt disponible.',
         },
       },
@@ -363,7 +363,7 @@ const resources = {
         par_1: 'Occupation du sol :  48 classes',
         par_2: 'Objets: 178 classes',
         download: 'Télécharger le fichier JSON.',
-        no_taxonomies: 'Il ne semble pas y avoir de taxonomies dans la base de données.'
+        no_taxonomies: 'Il ne semble pas y avoir de taxonomies dans la base de données.',
       },
       publications: {
         presentation: 'Présentation',
@@ -372,20 +372,20 @@ const resources = {
         poster: 'Affiche',
         section_1: {
           header: 'Présentations :',
-          item_1: '2019, GeoImageNet: a Collaborative Platform for Deep Learning Application to Very High ' +
-            'Resolution EO Images, Yacine Bouroudi, Claude Chapdelaine, Samuel Foucher, David Byrns, Mario Beaulieu, ' +
-            'Pierre-Luc St-Charles, Mickaël Germain, Étienne Lauzier-Hudon, Pierre Bugnet, Nouri Sabo and ' +
-            'Claire Gosselin, 40 ième Symposium canadien de télédétection, 4-6 juin 2019 ',
-          item_2: '2019, GeoImageNet: A Collaborative Platform for the Annotation of VHR Images, Claude Chapdelaine, ' +
-            'Samuel Foucher, Yacine Bouroubi, David Byrns, Mario Beaulieu, Pierre Bugnet, Pierre-Luc St-Charles, ' +
-            'Tom Landry, Mickaël Germain, Living Planet 2019, Milan, Italy. ',
+          item_1: '2019, GeoImageNet: a Collaborative Platform for Deep Learning Application to Very High '
+            + 'Resolution EO Images, Yacine Bouroudi, Claude Chapdelaine, Samuel Foucher, David Byrns, Mario Beaulieu, '
+            + 'Pierre-Luc St-Charles, Mickaël Germain, Étienne Lauzier-Hudon, Pierre Bugnet, Nouri Sabo and '
+            + 'Claire Gosselin, 40 ième Symposium canadien de télédétection, 4-6 juin 2019 ',
+          item_2: '2019, GeoImageNet: A Collaborative Platform for the Annotation of VHR Images, Claude Chapdelaine, '
+            + 'Samuel Foucher, Yacine Bouroubi, David Byrns, Mario Beaulieu, Pierre Bugnet, Pierre-Luc St-Charles, '
+            + 'Tom Landry, Mickaël Germain, Living Planet 2019, Milan, Italy. ',
         },
         section_2: {
           header: 'Communiqués de presse :',
           item_1: {
             intro: 'Communiqué de l’<u>Université de Sherbrooke</u> : ',
-            link_text: 'Une plateforme pour l’application de techniques d’intelligence artificielle à ' +
-              'l’exploitation des images satellites',
+            link_text: 'Une plateforme pour l’application de techniques d’intelligence artificielle à '
+              + 'l’exploitation des images satellites',
           },
           item_2: {
             intro: 'Communiqué du <u>CRIM</u> : ',
@@ -393,19 +393,19 @@ const resources = {
           },
           item_3: {
             intro: 'Communiqué d’<u>Effigis Géo-Solutions</u> : ',
-            link_text: 'Financement fédéral pour la recherche et développement d’une application ' +
-              'd’interprétation automatisée d’images satellite par intelligence artificielle',
+            link_text: 'Financement fédéral pour la recherche et développement d’une application '
+              + 'd’interprétation automatisée d’images satellite par intelligence artificielle',
           },
           item_4: {
             intro: 'Communiqué de <u>CANARIE</u> : ',
-            link_text: 'CANARIE distribue 4,4 millions de dollars à vingt équipes de recherche pour qu’elles ' +
-              'perfectionnent leurs logiciels afin d’améliorer les vaccins, de surveiller le changement climatique et bien davantage',
+            link_text: 'CANARIE distribue 4,4 millions de dollars à vingt équipes de recherche pour qu’elles '
+              + 'perfectionnent leurs logiciels afin d’améliorer les vaccins, de surveiller le changement climatique et bien davantage',
           },
         },
         section_3: {
           header: 'Actes de conférence :',
           item_1: 'Aucune publication n’est disponible présentement.',
-        }
+        },
       },
       collaborators: {
         item_1: 'Yacine Bouroubi – Université de Sherbrooke',
@@ -460,24 +460,24 @@ const resources = {
       },
     },
     util: {
-      'french': 'Français',
-      'english': 'Anglais',
-      'contact': 'Contact',
+      french: 'Français',
+      english: 'Anglais',
+      contact: 'Contact',
     },
     login: {
-      'login': 'Se Connecter',
-      'forbidden': 'Accès interdit.',
-      'access_platform': 'Accéder à la plateforme',
-      'username': 'Nom d\'usager',
-      'password': 'Mot de passe',
+      login: 'Se Connecter',
+      forbidden: 'Accès interdit.',
+      access_platform: 'Accéder à la plateforme',
+      username: 'Nom d\'usager',
+      password: 'Mot de passe',
     },
     workspace: {
-      'title': 'Espace de travail',
-      'no_data': 'Il n\'y a rien dans votre espace de travail. Ouvrez l\'onglet des taxonomies et épinglez une classe pour commencer.',
-      'empty': 'Vider',
-      'empty_tooltip': 'Retirer toutes les classes de votre espace de travail.',
+      title: 'Espace de travail',
+      no_data: 'Il n\'y a rien dans votre espace de travail. Ouvrez l\'onglet des taxonomies et épinglez une classe pour commencer.',
+      empty: 'Vider',
+      empty_tooltip: 'Retirer toutes les classes de votre espace de travail.',
     },
-  }
+  },
 };
 
 i18n.use(LanguageDetector)
@@ -498,7 +498,7 @@ i18n.use(LanguageDetector)
       lookupFromPathIndex: 0,
       lookupFromSubdomainIndex: 0,
       caches: ['localStorage', 'cookie'],
-    }
+    },
   });
 
 i18n.t = i18n.t.bind(i18n);
