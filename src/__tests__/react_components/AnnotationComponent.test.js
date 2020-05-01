@@ -44,6 +44,6 @@ describe('Annotation component', () => {
     uiStore.setMode(MODE.VALIDATION);
     wrapper.update();
     expect(wrapper.find('span').length)
-      .toBe(2);
+      .toBe(6);
   });
 });

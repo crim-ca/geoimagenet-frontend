@@ -1,9 +1,12 @@
 // @flow strict
 
 import React from 'react';
-import {observer} from 'mobx-react';
+import { observer } from 'mobx-react';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { compose } from 'react-apollo';
+import { Button, ButtonGroup } from '@material-ui/core';
+import CancelIcon from '@material-ui/icons/Cancel';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 type Props = {
   selected: boolean,
@@ -15,15 +18,17 @@ type Props = {
 
 const style = {
   root: {
-    '& > button': {
-      width: '20px',
-      height: '20px',
-    },
     '& > .left.selected': {
       backgroundColor: 'green',
+      color: 'white',
     },
     '& > .right.selected': {
       backgroundColor: 'red',
+      color: 'white',
+    },
+    '& > .other': {
+      backgroundColor: 'GhostWhite',
+      color: 'grey',
     },
   },
 };
@@ -33,10 +38,10 @@ class SelectionToggle extends React.Component<Props> {
   render() {
     const { selected, classes: { root }, toggle } = this.props;
     return (
-      <div className={root} onClick={toggle}>
-        <button type="button" className={selected ? 'left selected' : 'left'} />
-        <button type="button" className={selected ? 'right' : 'right selected'} />
-      </div>
+      <ButtonGroup className={root} onClick={toggle}>
+        <Button size="small" className={selected ? 'left selected' : 'other'}><CheckCircleIcon /></Button>
+        <Button size="small" className={selected ? 'other' : 'right selected'}><CancelIcon /></Button>
+      </ButtonGroup>
     );
   }
 }
