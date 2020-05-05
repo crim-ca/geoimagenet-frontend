@@ -627,9 +627,12 @@ export class MapManager {
       title: 'Base maps',
       layers: baseMaps,
     });
+
     // Title for annotations_group removed so it doesn't show up in LayerSwitcher (in the Sidebar)
+    // Max resolution has been set so you can only see annotations at the scale you can create them
     const annotations_group = new Group({
       layers: annotationLayers,
+      maxResolution: 20,
     });
 
     const pleiadesSensor = new Group({
