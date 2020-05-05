@@ -12,6 +12,12 @@ Changes
 - GEOIM-305 - Batch button for release and validate mode.
 - GEOIM-305 - Improve UI intuitiveness for mode selection in Annotation Browser
 - GEOIM-289 - Pinning or unpinning a Taxonomy class now also changes visibility
+- GEOIM-311 - Limit annotation rendering by resolution
+
+Fix
+~~~
+
+- GEOIM-322 - Fixes Notification manager's icon problem
 
 1.7.0 (2020-04-17)
 ------------------
