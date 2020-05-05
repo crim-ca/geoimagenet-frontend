@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { TFunction } from 'react-i18next';
 import { compose } from 'react-apollo';
 import { buttonStyle } from '../SharedStyles';
-import { FilterIcon } from './FilterIcon';
+import Filter from '../../../img/icons/filter.png';
 import { withTranslation } from '../../../utils';
 import { FiltersPaper } from '../FiltersPaper';
 import { FadingDialog } from '../FadingDialog';
@@ -21,6 +21,13 @@ type Props = {
 type State = {
   anchor: HTMLElement | null,
   open: boolean,
+};
+const styles = {
+  icon: {
+    width: 36,
+    height: 36,
+    textAlign: 'center',
+  },
 };
 
 @observer
@@ -51,7 +58,10 @@ class Container extends React.Component<Props, State> {
           onClick={this.toggleContainer}
           style={buttonStyle}
         >
-          <FilterIcon />
+          <img
+            style={styles.icon}
+            src={Filter}
+          />
         </IconButton>
         <FadingDialog open={open} anchor={anchor}>
           <FiltersPaper>
