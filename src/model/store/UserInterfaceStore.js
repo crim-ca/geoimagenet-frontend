@@ -39,8 +39,8 @@ class UserInterfaceStore {
     this.previousSelectedMode = this.selectedMode || mode;
     this.selectedMode = mode;
 
-    const noConstraintsFilters = [VISUALIZATION, CREATION, MODIFICATION];
-    const constraintsFilters = [DELETION, RELEASE, VALIDATION];
+    const noConstraintsFilters = [VISUALIZATION, CREATION];
+    const constraintsFilters = [MODIFICATION, DELETION, RELEASE, VALIDATION];
 
     const fromNonConstrainingMode = noConstraintsFilters.indexOf(this.previousSelectedMode) > -1;
     const toConstrainingMode = constraintsFilters.indexOf(this.selectedMode) > -1;
@@ -54,6 +54,9 @@ class UserInterfaceStore {
       this.disableAllFilters();
       this.setConstrainingFiltersForSelectedMode();
     }
+    if (mode === CREATION) {
+      this.addFiltersForCreation();
+    }
 
     const fromConstrainingMode = constraintsFilters.indexOf(this.previousSelectedMode) > -1;
     const toNonConstrainingMode = noConstraintsFilters.indexOf(this.selectedMode) > -1;
@@ -64,8 +67,20 @@ class UserInterfaceStore {
     }
   }
 
-  @computed get isInBatchMode(): boolean {
-    return [MODE.DELETION, MODE.RELEASE, MODE.VALIDATION].indexOf(this.selectedMode) !== -1;
+  @computed get isInCreationMode(): boolean {
+    return [MODE.VISUALIZATION, MODE.CREATION, MODE.MODIFICATION].indexOf(this.selectedMode) !== -1;
+  }
+
+  @computed get isInEvaluationMode(): boolean {
+    return [MODE.RELEASE, MODE.VALIDATION].indexOf(this.selectedMode) !== -1;
+  }
+
+  @computed get isInReleaseMode(): boolean {
+    return [MODE.RELEASE].indexOf(this.selectedMode) !== -1;
+  }
+
+  @computed get isInValidationMode(): boolean {
+    return [MODE.VALIDATION].indexOf(this.selectedMode) !== -1;
   }
 
   constructor() {
@@ -74,13 +89,6 @@ class UserInterfaceStore {
 
   setConstrainingFiltersForSelectedMode() {
     switch (this.selectedMode) {
-      case MODE.DELETION:
-      case MODE.RELEASE:
-        this.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleActivated(true);
-        this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].toggleActivated(true);
-        this.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleEnabled(true);
-        this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].toggleEnabled(true);
-        break;
       case MODE.VALIDATION:
         this.annotationStatusFilters[ANNOTATION.STATUS.RELEASED].toggleActivated(true);
         this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].toggleActivated(true);
@@ -88,7 +96,20 @@ class UserInterfaceStore {
         this.annotationStatusFilters[ANNOTATION.STATUS.RELEASED].toggleEnabled(true);
         this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].toggleEnabled(true);
         this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.FOLLOWED_USERS].toggleEnabled(true);
+        break;
+      default:
+        this.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleActivated(true);
+        this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].toggleActivated(true);
+        this.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleEnabled(true);
+        this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].toggleEnabled(true);
     }
+  }
+
+  addFiltersForCreation() {
+    this.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleActivated(true);
+    this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].toggleActivated(true);
+    this.annotationStatusFilters[ANNOTATION.STATUS.NEW].toggleEnabled(true);
+    this.annotationOwnershipFilters[ANNOTATION.OWNERSHIP.MINE].toggleEnabled(true);
   }
 
   @action restoreFilters(filterSelectionMap: FilterSelectionMap) {

@@ -28,20 +28,6 @@ describe('Annotation component', () => {
       .toBe(1);
   });
 
-  test('It has a checkbox in deletion mode', () => {
-    uiStore.setMode(MODE.DELETION);
-    wrapper.update();
-    expect(wrapper.find('input[type="checkbox"]').length)
-      .toBe(1);
-  });
-
-  test('It has a checkbox in release mode', () => {
-    uiStore.setMode(MODE.RELEASE);
-    wrapper.update();
-    expect(wrapper.find('input[type="checkbox"]').length)
-      .toBe(1);
-  });
-
   test('It has a toggleable control in validation mode', () => {
     uiStore.setMode(MODE.VALIDATION);
     wrapper.update();
@@ -49,15 +35,15 @@ describe('Annotation component', () => {
       .toBe(1);
   });
 
-  test('It shows status when not in batch mode', () => {
+  test('It shows status when in creation mode', () => {
     expect(wrapper.find('span').length)
       .toBe(3);
   });
 
-  test('It does not show status when in batch mode', () => {
+  test('It does not show status when in evaluation mode', () => {
     uiStore.setMode(MODE.VALIDATION);
     wrapper.update();
     expect(wrapper.find('span').length)
-      .toBe(2);
+      .toBe(6);
   });
 });

@@ -28,12 +28,13 @@ export class TaxonomyStore {
       taxonomy_class.pinned = override;
     } else {
       taxonomy_class.pinned = !taxonomy_class.pinned;
+      this.invert_taxonomy_class_visibility(taxonomy_class);
     }
     /**
      * when a class has children, we need to set the pin upon its children as well, as they're the ones that are gonna be displayed
      */
     if (taxonomy_class.children && taxonomy_class.children.length > 0) {
-      taxonomy_class.children.forEach(c => {
+      taxonomy_class.children.forEach((c) => {
         this.toggle_pinned_class(c, taxonomy_class.pinned);
       });
     }
@@ -50,7 +51,7 @@ export class TaxonomyStore {
       taxonomy_class.visible = !taxonomy_class.visible;
     }
     if (taxonomy_class.children && taxonomy_class.children.length > 0) {
-      taxonomy_class.children.forEach(c => {
+      taxonomy_class.children.forEach((c) => {
         this.invert_taxonomy_class_visibility(c, taxonomy_class.visible);
       });
     }
@@ -107,7 +108,7 @@ export class TaxonomyStore {
       }
     });
     return Object.keys(leaf_class_groups_dict)
-      .map(key => {
+      .map((key) => {
         const classes = leaf_class_groups_dict[key];
         return {
           path: key,
@@ -117,9 +118,7 @@ export class TaxonomyStore {
   }
 
   @computed get leaf_pinned_classes(): TaxonomyClass[] {
-    return this.flat_classes_as_array.filter((taxonomy_class: TaxonomyClass) => {
-      return (taxonomy_class.pinned === true) && (taxonomy_class.children.length === 0);
-    });
+    return this.flat_classes_as_array.filter((taxonomy_class: TaxonomyClass) => (taxonomy_class.pinned === true) && (taxonomy_class.children.length === 0));
   }
 
   @computed get flat_classes_as_array(): TaxonomyClass[] {

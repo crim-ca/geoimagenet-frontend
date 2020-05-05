@@ -29,7 +29,8 @@
     "camelcase":"off",
     "class-methods-use-this":"off",
     "react/jsx-fragments": "off",
-    "react/destructuring-assignment": "warn"
+    "react/destructuring-assignment": "warn",
+    "consistent-return": "warn"
   },
   "plugins": [
     "flowtype",

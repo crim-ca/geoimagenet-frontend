@@ -31,7 +31,7 @@ const style = (theme) => ({
   root: {
     '& hr': {
       margin: `${theme.values.gutterMedium} -${theme.values.gutterMedium}`,
-      borderTop: `1px solid ${theme.colors.turquoise}`,
+      borderTop: `2px solid ${theme.colors.turquoise}`,
       border: '0',
     },
   },
@@ -95,6 +95,7 @@ class Container extends React.Component<Props> {
           userInteractions={userInteractions}
           geoImageNetStore={geoImageNetStore}
         />
+        <hr />
         <ModeSelectionContainer geoImageNetStore={geoImageNetStore} />
         <hr />
         <AnnotationList
@@ -102,6 +103,7 @@ class Container extends React.Component<Props> {
           fitViewToBoundingBox={this.navigate}
           geoserver_url={GEOSERVER_URL}
           geoImageNetStore={geoImageNetStore}
+          userInteractions={userInteractions}
         />
         <Paginator
           pageNumber={pageNumber}

@@ -71,7 +71,7 @@ export class AnnotationBrowserStore {
       this.selection = {};
       this.wfsResponse.features.map((feature) => feature.properties.id)
         .forEach((id) => {
-          this.selection[id] = false;
+          this.selection[id] = true;
         });
     }
   }
@@ -147,6 +147,4 @@ export class AnnotationBrowserStore {
     }
     return `&cql_filter=(${bits.join(') AND (')})`;
   }
-
-
 }

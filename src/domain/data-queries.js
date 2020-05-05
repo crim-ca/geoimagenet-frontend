@@ -25,9 +25,9 @@ export class DataQueries {
   }
 
   get_annotations_browser_page = async (type_name: string, cqlFilter: string, page_size: string, offset: string) => {
-    let url = `${this.geoserver_endpoint}/wfs?service=WFS&` +
-      `version=1.1.0&request=GetFeature&typeName=${type_name}&` +
-      `outputFormat=application/json&srsname=EPSG:3857&`;
+    let url = `${this.geoserver_endpoint}/wfs?service=WFS&`
+      + `version=1.1.0&request=GetFeature&typeName=${type_name}&`
+      + 'outputFormat=application/json&srsname=EPSG:3857&';
     if (cqlFilter.length > 0) {
       url += cqlFilter;
     }
@@ -39,9 +39,7 @@ export class DataQueries {
   fetch_images_dictionary = async () => {
     const response = await make_http_request(`${this.geoimagenet_api_endpoint}/images`);
     const images = await response.json();
-    return images.map(raw => {
-      return new SatelliteImage(raw.bands, raw.bits, raw.extension, raw.filename, raw.id, raw.layer_name, raw.sensor_name);
-    });
+    return images.map((raw) => new SatelliteImage(raw.bands, raw.bits, raw.extension, raw.filename, raw.id, raw.layer_name, raw.sensor_name));
   };
 
   persistFollowedUser = (
@@ -56,22 +54,20 @@ export class DataQueries {
     return response.json();
   };
 
-  remove_followed_user = async (id: number): Promise<Response> => {
-    return make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users/${id}`, {
-      method: 'delete',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-  };
+  remove_followed_user = async (id: number): Promise<Response> => make_http_request(`${this.geoimagenet_api_endpoint}/users/current/followed_users/${id}`, {
+    method: 'delete',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
 
   /**
    * we overwrite the return for the first element because this method is called get by id, we only ever want one element
    */
   get_annotation_by_id = async (id: number, typename: string) => {
-    const url = `${this.geoserver_endpoint}/wfs?service=WFS&version=1.1.0&request=GetFeature` +
-      `&typeName=${typename}&outputFormat=application/json&srsname=EPSG:3857&cql_filter=id=${id}`;
+    const url = `${this.geoserver_endpoint}/wfs?service=WFS&version=1.1.0&request=GetFeature`
+      + `&typeName=${typename}&outputFormat=application/json&srsname=EPSG:3857&cql_filter=id=${id}`;
     const response = await make_http_request(url);
     const json = await response.json();
     return json.features[0];
@@ -81,14 +77,14 @@ export class DataQueries {
    * Returns a GeoJson FeatureCollection with the images that contain a specific wkt geometry
    */
   get_annotation_images = async (wktFeature: string) => {
-    let url = `${this.geoserver_endpoint}/wfs?service=WFS&` +
-      'exceptions=application/json&' +
-      'request=GetFeature&' +
-      'typeNames=GeoImageNet:image&' +
-      'outputFormat=application/json&' +
-      'srsName=EPSG:3857&' +
-      'propertyName=id,layer_name&' +
-      `cql_filter=CONTAINS(trace_simplified, ${wktFeature}) AND bands IN ('RGB', 'NRG') AND bits=8`;
+    const url = `${this.geoserver_endpoint}/wfs?service=WFS&`
+      + 'exceptions=application/json&'
+      + 'request=GetFeature&'
+      + 'typeNames=GeoImageNet:image&'
+      + 'outputFormat=application/json&'
+      + 'srsName=EPSG:3857&'
+      + 'propertyName=id,layer_name&'
+      + `cql_filter=CONTAINS(trace_simplified, ${wktFeature}) AND bands IN ('RGB', 'NRG') AND bits=8`;
 
     const response = await make_http_request(url);
     return await response.json();
@@ -126,9 +122,9 @@ export class DataQueries {
       make_http_request(`${this.magpie_endpoint}/users/current`),
       make_http_request(`${this.magpie_endpoint}/session`),
     ]);
-    const jsons = await Promise.all(responses.map(res => res.json()));
+    const jsons = await Promise.all(responses.map((res) => res.json()));
     const merged_information = {};
-    jsons.forEach(json => {
+    jsons.forEach((json) => {
       if (json.code === 200) {
         Object.assign(merged_information, json);
       } else {
@@ -149,9 +145,26 @@ export class DataQueries {
     return res.json();
   };
 
-  release_annotations_request = (taxonomy_class_id: number) => {
+  /**
+   * Releases annotations for a given taxonomy class
+   * @param {number} taxonomy_id
+   * @returns {Promise<*>}
+   */
+  release_annotations_by_taxonomy_request = (taxonomy_class_id: number) => {
     const payload = JSON.stringify({
       taxonomy_class_id: taxonomy_class_id,
+    });
+    return post_json(`${this.geoimagenet_api_endpoint}/annotations/release`, payload);
+  };
+
+  /**
+   * Releases annotations by annotation ids
+   * @param {Number[]} annotation_ids
+   * @returns {Promise<*>}
+   */
+  release_annotations_by_id_request = (annotation_ids: number[]) => {
+    const payload = JSON.stringify({
+      annotation_ids: annotation_ids,
     });
     return post_json(`${this.geoimagenet_api_endpoint}/annotations/release`, payload);
   };
@@ -178,7 +191,7 @@ export class DataQueries {
 
   delete_annotations_request = (annotation_ids: number[]) => {
     const payload = JSON.stringify({
-      annotation_ids: annotation_ids
+      annotation_ids: annotation_ids,
     });
     return post_json(`${this.geoimagenet_api_endpoint}/annotations/delete`, payload);
   };
@@ -206,16 +219,13 @@ export class DataQueries {
     return res.json();
   };
 
-  modify_geojson_features = async (payload: string) => {
-    return put_json(`${this.geoimagenet_api_endpoint}/annotations`, payload);
-  };
+  modify_geojson_features = async (payload: string) => put_json(`${this.geoimagenet_api_endpoint}/annotations`, payload);
 
   review_request = async (feature_ids: Array<number>, review_requested: boolean) => {
     const payload = JSON.stringify({
       annotation_ids: feature_ids,
-      boolean: review_requested
+      boolean: review_requested,
     });
     return post_json(`${this.geoimagenet_api_endpoint}/annotations/request_review`, payload);
   };
-
 }

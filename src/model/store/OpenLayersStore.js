@@ -2,17 +2,16 @@
 
 import { action, observable, configure } from 'mobx';
 
-import type { BoundingBox, Coordinate } from '../../Types';
-import { VIEW_CENTER } from '../../constants';
 import type Collection from 'ol/Collection';
 import type Feature from 'ol/Feature';
+import type { BoundingBox, Coordinate } from '../../Types';
+import { VIEW_CENTER } from '../../constants';
 
 configure({
   enforceActions: 'always',
 });
 
 export class OpenLayersStore {
-
   constructor(selected_features_collection: Collection) {
     this.set_selected_features_collection(selected_features_collection);
   }
@@ -51,5 +50,4 @@ export class OpenLayersStore {
   @observable extent: BoundingBox;
 
   @observable selected_features: Collection;
-
 }
