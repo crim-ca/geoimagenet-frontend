@@ -8,11 +8,14 @@ import {
   Style,
   Text,
 } from 'ol/style';
+import { VALID_OPENLAYERS_ANNOTATION_RESOLUTION } from '../../constants';
+import { theme } from '../../utils/react';
 import { features as activatedFeatures } from '../../../features';
 import type { GeoImageNetStore } from '../../model/store/GeoImageNetStore';
 import type { TaxonomyStore } from '../../model/store/TaxonomyStore';
 
 type StyleFunction = (Feature, number) => Style | Style[];
+
 
 function baseStyle(color: string): Style {
   return new Style({
@@ -44,8 +47,20 @@ function selectStyle(): Style {
   });
 }
 
+// Static styles to help with rendering.
+const vectorStyles = {
+  new: baseStyle(theme.colors.new),
+  pre_release: baseStyle(theme.colors.pre_released),
+  released: baseStyle(theme.colors.released),
+  review: baseStyle(theme.colors.review),
+  validated: baseStyle(theme.colors.validated),
+  rejected: baseStyle(theme.colors.rejected),
+  deleted: baseStyle(theme.colors.deleted),
+};
+const selectedStyle = selectStyle();
+
 export function createStyleFunction(
-  color: string,
+  key: string,
   geoImageNetStore: GeoImageNetStore,
   taxonomyStore: TaxonomyStore,
   create_for_select_interaction: boolean = false,
@@ -81,7 +96,7 @@ export function createStyleFunction(
     const finalText = bits.join(' : ');
 
     const styles = [
-      create_for_select_interaction ? selectStyle() : baseStyle(color),
+      create_for_select_interaction ? selectedStyle : vectorStyles[key],
     ];
     if (bits.length > 0) {
       styles.push(new Style({
@@ -90,9 +105,9 @@ export function createStyleFunction(
           fill: new Fill({ color: '#000' }),
           stroke: new Stroke({
             color: '#FFF',
-            width: 2
+            width: 2,
           }),
-          text: resolution > 100 ? '' : finalText,
+          text: resolution > VALID_OPENLAYERS_ANNOTATION_RESOLUTION ? '' : finalText,
           overflow: true,
         }),
       }));
@@ -104,9 +119,9 @@ export function createStyleFunction(
           fill: new Fill({ color: '#000' }),
           stroke: new Stroke({
             color: '#FFF',
-            width: 2
+            width: 2,
           }),
-          text: resolution > 100 ? '' : '?',
+          text: resolution > VALID_OPENLAYERS_ANNOTATION_RESOLUTION ? '' : '?',
           overflow: true,
           offsetY: showLabels ? 36 : 0,
         }),
