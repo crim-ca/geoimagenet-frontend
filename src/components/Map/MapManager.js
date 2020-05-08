@@ -229,7 +229,7 @@ export class MapManager {
       const color = style.getPropertyValue(`--color-${key}`);
       this.storeActions.set_annotation_collection(key, new Collection());
       this.storeActions.set_annotation_source(key, this.createVectorSource(annotations_collections[key], key));
-      const vectorLayer = this.createVectorLayer(key, annotations_sources[key], color, true);
+      const vectorLayer = this.createVectorLayer(key, annotations_sources[key], key, true);
       this.storeActions.set_annotation_layer(key, vectorLayer);
     });
 
@@ -307,16 +307,17 @@ export class MapManager {
   createVectorLayer(
     title: string,
     source: VectorSource,
-    color: string,
+    key: string,
     visible: boolean = true,
     zIndex: number = 99999999,
   ) {
     return new Vector({
       title,
       source,
-      style: createStyleFunction(color, this.geoImageNetStore, this.taxonomyStore),
+      style: createStyleFunction(key, this.geoImageNetStore, this.taxonomyStore),
       visible,
       zIndex,
+      declutter: true,
     });
   }
 
@@ -632,7 +633,7 @@ export class MapManager {
     // Max resolution has been set so you can only see annotations at the scale you can create them
     const annotations_group = new Group({
       layers: annotationLayers,
-      maxResolution: 20,
+      maxResolution: VALID_OPENLAYERS_ANNOTATION_RESOLUTION,
     });
 
     const pleiadesSensor = new Group({

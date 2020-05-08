@@ -4,6 +4,12 @@ Changelog
 Unreleased
 ------------------
 
+Changes
+~~~
+
+- GEOIM-297 - Vector layer styles are now static to help with rendering
+- GEOIM-297 - Reduced resolution for annotation and label rendering (Now need to zoom in more)
+
 1.7.1 (2020-05-05)
 ------------------
 
