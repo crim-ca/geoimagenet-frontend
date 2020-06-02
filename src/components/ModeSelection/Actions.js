@@ -1,7 +1,7 @@
 // @flow strict
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { withStyles } from '@material-ui/core';
+import { withStyles, Tooltip } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlusSquare,
@@ -34,6 +34,7 @@ mapModes.push({
   mode: MODE.VISUALIZATION,
   permission_name: READ,
   resource: ANNOTATIONS,
+  tooltip: 'Use this mode to navigate the map using the mouse.',
 });
 mapModes.push({
   name: 'Create',
@@ -41,6 +42,7 @@ mapModes.push({
   mode: MODE.CREATION,
   permission_name: WRITE,
   resource: ANNOTATIONS,
+  tooltip: 'Use this mode to create new annotations. Select an annotation class and click on the map to create the nodes of the annotation. Double-click to complete it.',
 });
 if (features.duplicate) {
   mapModes.push({
@@ -49,6 +51,7 @@ if (features.duplicate) {
     mode: MODE.DUPLICATION,
     permission_name: WRITE,
     resource: ANNOTATIONS,
+    tooltip: 'To do',
   });
 }
 mapModes.push({
@@ -57,6 +60,7 @@ mapModes.push({
   mode: MODE.MODIFICATION,
   permission_name: WRITE,
   resource: ANNOTATIONS,
+  tooltip: 'Use this mode to edit an annotation. Click and hold on any point along the edge of an annotation to change it\'s shape.',
 });
 mapModes.push({
   name: 'Delete',
@@ -64,6 +68,7 @@ mapModes.push({
   mode: MODE.DELETION,
   permission_name: WRITE,
   resource: ANNOTATIONS,
+  tooltip: 'Use this mode to delete an annotation. Click on the annotation you want to delete.',
 });
 if (features.expertise) {
   reviewModes.push({
@@ -72,6 +77,7 @@ if (features.expertise) {
     mode: MODE.ASK_EXPERTISE,
     permission_name: WRITE,
     resource: ANNOTATIONS,
+    tooltip: 'To do',
   });
 }
 reviewModes.push({
@@ -80,6 +86,7 @@ reviewModes.push({
   mode: MODE.RELEASE,
   permission_name: WRITE,
   resource: ANNOTATIONS,
+  tooltip: 'Use this mode to validate all the annotations present in the current annotation page.',
 });
 reviewModes.push({
   name: 'Validate',
@@ -87,6 +94,7 @@ reviewModes.push({
   mode: MODE.VALIDATION,
   permission_name: WRITE,
   resource: VALIDATIONS,
+  tooltip: 'Use this mode to release the annotations in the current page below. Each annotation can be set as either validated or rejected.',
 });
 
 const ActionsContainer = withStyles((theme) => {
@@ -112,6 +120,15 @@ const VerticalLine = withStyles((theme) => ({
   const { classes, children } = props;
   return <div className={`${classes.root}`}>{children}</div>;
 });
+
+const CustomTooltip = withStyles((theme) => ({
+  tooltip: {
+    backgroundColor: theme.colors.grey,
+    color: theme.colors.barelyWhite,
+    fontSize: 14,
+  },
+}))(Tooltip);
+
 
 type Props = {
   geoImageNetStore: GeoImageNetStore,
@@ -146,14 +163,16 @@ class Actions extends Component<Props> {
       <ActionsContainer>
         {
           visibleMapModes.map((action) => (
-            <span style={{ textAlign: 'center', paddingLeft: '2px' }} key={`${action.mode}`}>
-              <FontAwesomeIcon
-                icon={action.icon}
-                className={action.mode === selectedMode ? 'fa-2x active' : 'fa-2x'}
-                onClick={this.setModeCallback(action.mode)}
-              />
-              <div style={{ paddingLeft: '4px' }}>{`${action.name}`}</div>
-            </span>
+            <CustomTooltip title={`${action.tooltip}`} interactive enterDelay={600}>
+              <span style={{ textAlign: 'center', paddingLeft: '2px' }} key={`${action.mode}`}>
+                <FontAwesomeIcon
+                  icon={action.icon}
+                  className={action.mode === selectedMode ? 'fa-2x active' : 'fa-2x'}
+                  onClick={this.setModeCallback(action.mode)}
+                />
+                <div style={{ paddingLeft: '4px' }}>{`${action.name}`}</div>
+              </span>
+            </CustomTooltip>
           ))
         }
         {
@@ -164,20 +183,21 @@ class Actions extends Component<Props> {
         }
         {
           visibleReviewModes.map((action) => (
-            <span style={{ textAlign: 'center' }} key={`${action.mode}`}>
-              <FontAwesomeIcon
-                icon={action.icon}
-                className={action.mode === selectedMode ? 'fa-2x active' : 'fa-2x'}
-                onClick={this.setModeCallback(action.mode)}
-              />
-              <div style={{ paddingLeft: '4px' }}>{`${action.name}`}</div>
-            </span>
+            <CustomTooltip title={`${action.tooltip}`} interactive enterDelay={600}>
+              <span style={{ textAlign: 'center' }} key={`${action.mode}`}>
+                <FontAwesomeIcon
+                  icon={action.icon}
+                  className={action.mode === selectedMode ? 'fa-2x active' : 'fa-2x'}
+                  onClick={this.setModeCallback(action.mode)}
+                />
+                <div style={{ paddingLeft: '4px' }}>{`${action.name}`}</div>
+              </span>
+            </CustomTooltip>
           ))
         }
       </ActionsContainer>
     );
   }
 }
-
 const component = withUserInterfaceStore(Actions);
 export { component as Actions };
