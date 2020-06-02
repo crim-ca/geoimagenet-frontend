@@ -3,6 +3,7 @@ Changelog
 
 Unreleased
 ------------------
+- GEOIM-302 - Adds tooltips to the map modes. [Francis Pelletier]
 
 1.7.2 (2020-05-08)
 ------------------
