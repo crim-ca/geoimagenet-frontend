@@ -5,6 +5,8 @@ import React, { Component } from 'react';
 import { Checkbox } from './Checkbox';
 import { ReleaseButton } from './ReleaseButton';
 import type { TaxonomyClass } from '../../model/TaxonomyClass';
+import { CustomTooltip } from '../CustomTooltip';
+
 
 type Props = {
   taxonomy_class: TaxonomyClass,
@@ -13,9 +15,12 @@ type Props = {
   toggle_pinned_class: (TaxonomyClass) => void,
 };
 
+const releaseTooltip = 'Release annotations for this taxonomy class';
+const pinnedTooltip = 'Select this taxonomy class for use in the annotation browser';
+const changeTooltip = 'Toggle the visibility of this taxonomy class';
+
 @observer
 class TaxonomyClassActions extends Component<Props> {
-
   makeChangeHandler = (taxonomy_class: TaxonomyClass) => () => {
     this.props.invert_taxonomy_class_visibility(taxonomy_class);
   };
@@ -32,19 +37,40 @@ class TaxonomyClassActions extends Component<Props> {
     const { pinned, visible, id } = taxonomy_class;
     return (
       <span className="actions">
-        <Checkbox
-          value={id}
-          imageClass="checkbox eye"
-          changeHandler={this.makeChangeHandler(taxonomy_class)}
-          checked={visible}
-        />
-        <Checkbox
-          value={id}
-          imageClass="checkbox pin"
-          changeHandler={this.makePinnedHandler(taxonomy_class)}
-          checked={pinned}
-        />
-        <ReleaseButton onclick={release_handler} />
+        <CustomTooltip
+          title={`${changeTooltip}`}
+          enterDelay={600}
+        >
+          <span className="subactions">
+            <Checkbox
+              value={id}
+              imageClass="checkbox eye"
+              changeHandler={this.makeChangeHandler(taxonomy_class)}
+              checked={visible}
+            />
+          </span>
+        </CustomTooltip>
+        <CustomTooltip
+          title={`${pinnedTooltip}`}
+          enterDelay={600}
+        >
+          <span className="subactions">
+            <Checkbox
+              value={id}
+              imageClass="checkbox pin"
+              changeHandler={this.makePinnedHandler(taxonomy_class)}
+              checked={pinned}
+            />
+          </span>
+        </CustomTooltip>
+        <CustomTooltip
+          title={`${releaseTooltip}`}
+          enterDelay={600}
+        >
+          <span className="subactions">
+            <ReleaseButton onclick={release_handler} />
+          </span>
+        </CustomTooltip>
       </span>
     );
   }
