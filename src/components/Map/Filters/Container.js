@@ -13,6 +13,7 @@ import { withUserInterfaceStore } from '../../../model/HOCs';
 import type { UserInterfaceStore } from '../../../model/store/UserInterfaceStore';
 import type { AnnotationFilter as AnnotationFilterEntity } from '../../../model/AnnotationFilter';
 import { AnnotationFilter as AnnotationFilterComponent } from './AnnotationFilter';
+import { CustomTooltip } from '../../CustomTooltip';
 
 type Props = {
   uiStore: UserInterfaceStore,
@@ -29,6 +30,8 @@ const styles = {
     textAlign: 'center',
   },
 };
+
+const toolTip = 'Manage active filters';
 
 @observer
 class Container extends React.Component<Props, State> {
@@ -58,10 +61,15 @@ class Container extends React.Component<Props, State> {
           onClick={this.toggleContainer}
           style={buttonStyle}
         >
-          <img
-            style={styles.icon}
-            src={Filter}
-          />
+          <CustomTooltip
+            title={`${toolTip}`}
+            enterDelay={600}
+          >
+            <img
+              style={styles.icon}
+              src={Filter}
+            />
+          </CustomTooltip>
         </IconButton>
         <FadingDialog open={open} anchor={anchor}>
           <FiltersPaper>

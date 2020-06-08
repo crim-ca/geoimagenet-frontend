@@ -114,7 +114,8 @@ class PlatformListElement extends React.Component<Props> {
             <AnnotationCounts
               name_en={taxonomy_class.name_en}
               counts={taxonomy_class.counts}
-              annotationStatusFilters={uiStore.annotationStatusFilters} />
+              annotationStatusFilters={uiStore.annotationStatusFilters}
+            />
           </StyledLabelAndCountSpan>
           <TaxonomyClassActions
             taxonomy_class={taxonomy_class}

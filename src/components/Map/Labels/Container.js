@@ -9,6 +9,8 @@ import { withTranslation } from '../../../utils';
 import { GeoImageNetStore } from '../../../model/store/GeoImageNetStore';
 import Label from '../../../img/icons/label_filled.png';
 import LabelWhite from '../../../img/icons/label_filled_white.png';
+import { CustomTooltip } from '../../CustomTooltip';
+
 
 type Props = {
   t: TFunction,
@@ -22,6 +24,9 @@ const styles = {
     textAlign: 'center',
   },
 };
+
+const showToolTip = 'Show annotation labels';
+const hideToolTip = 'Hide annotation labels';
 
 @observer
 class Container extends React.Component<Props, State> {
@@ -38,10 +43,15 @@ class Container extends React.Component<Props, State> {
           onClick={this.receiveClickEvent}
           style={buttonStyle}
         >
-          <img
-            style={styles.icon}
-            src={geoImageNetStore.showLabels ? Label : LabelWhite}
-          />
+          <CustomTooltip
+            title={geoImageNetStore.showLabels ? `${hideToolTip}` : `${showToolTip}`}
+            enterDelay={600}
+          >
+            <img
+              style={styles.icon}
+              src={geoImageNetStore.showLabels ? Label : LabelWhite}
+            />
+          </CustomTooltip>
         </IconButton>
       </React.Fragment>
     );
