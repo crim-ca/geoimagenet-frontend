@@ -82,6 +82,12 @@ label.checkbox.pin [type=checkbox]:checked + span {
     visibility: visible;
 }
 
+.taxonomy_class_list_element .subactions {
+    display: flex;
+    align-items: center;
+    padding: 0 1px;
+}
+
 span.icon {
     height: 30px;
     width: 30px;
