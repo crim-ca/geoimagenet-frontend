@@ -8,6 +8,7 @@ import React from 'react';
 import { graphql } from 'react-apollo/graphql';
 import { NotificationManager } from 'react-notifications';
 import { UPLOAD_MODEL } from '../../domain/graphql_queries';
+import HelperPageButton from './HelperPageButton';
 
 type Validity = {
   valid: boolean
@@ -34,7 +35,8 @@ const UploadFormContainer = withStyles((theme) => ({
     alignItems: 'center',
     height: '40px',
     '& > *': {
-      marginRight: theme.values.gutterSmall,
+      marginLeft: theme.values.gutterSmall,
+      marginTop: theme.values.gutterSmall,
     },
   },
 }))(({ classes, children }) => (
@@ -138,17 +140,16 @@ class UploadFormComponent extends React.Component<Props, State> {
           onChange={this.file_changed}
         />
         <Button
+          variant="contained"
+          color="primary"
           onClick={this.upload_model}
           disabled={!this.upload_is_valid()}
         >
-          Upload
+          <Typography variant="body2" color='secondary'>
+              Upload
+          </Typography>
         </Button>
-        <Link
-          target='_blank'
-          href={model_upload_instructions_url}
-        >
-          Click here for instructions on how to prepare your model for upload.
-        </Link>
+        <HelperPageButton helplink={model_upload_instructions_url} />
         {loading && (
           <React.Fragment>
             <Typography variant='body1' display='inline'>Uploading...</Typography>
