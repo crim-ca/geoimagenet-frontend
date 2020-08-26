@@ -6,12 +6,14 @@ import { theme } from '../../utils/react';
 const { MockedProvider } = require('react-apollo/test-utils');
 const React = require('react');
 const { mount } = require('enzyme');
+const { NotificationContainer } = require('react-notifications');
 const { Models } = require('../../components/Models/Models');
 const { ModelsTable } = require('../../components/Models/ModelsTable');
 const { BenchmarksTable } = require('../../components/Models/BenchmarksTable');
 const { UploadForm } = require('../../components/Models/UploadForm');
-const { MODELS, LAUNCH_TEST_JOB, BENCHMARKS_JOBS, UPLOAD_MODEL } = require('../../domain/graphql_queries');
-const { NotificationContainer } = require('react-notifications');
+const {
+  MODELS, LAUNCH_TEST_JOB, BENCHMARKS_JOBS, UPLOAD_MODEL,
+} = require('../../domain/graphql_queries');
 const { wait } = require('../utils');
 require('./define_global_jsdom');
 
@@ -128,29 +130,29 @@ describe('We render some models', () => {
     let upload_form = wrapper.find(UploadForm);
     expect(upload_form)
       .toHaveLength(1);
-    let button = upload_form.find('button');
+    let button = upload_form.find('button').first();
     expect(button)
       .toHaveLength(1);
     expect(button.prop('disabled'))
       .toEqual(true);
 
     const file_input = upload_form.find('input')
-      .filterWhere(n => n.prop('type') === 'file');
+      .filterWhere((n) => n.prop('type') === 'file');
     expect(file_input)
       .toHaveLength(1);
 
     file_input.simulate('change', {
       target: {
         validity: { valid: true },
-        files: [dummy_file]
-      }
+        files: [dummy_file],
+      },
     });
 
     await wait(0);
     wrapper.update();
 
     upload_form = wrapper.find(UploadForm);
-    button = upload_form.find('button');
+    button = upload_form.find('button').first();
     expect(button.prop('disabled'))
       .toEqual(false);
 
@@ -172,10 +174,10 @@ const MODELS_MOCK_QUERY = {
           name: 'test_model',
           path: '/data/geoimagenet/models/2019/6/ckpt.0000.PTW-SCPL1-20190425-162746.pth',
           created: '2019-06-03T18:08:07.161000+00:00',
-        }
-      ]
-    }
-  }
+        },
+      ],
+    },
+  },
 };
 
 const no_dataset_error_mock = [
@@ -185,18 +187,18 @@ const no_dataset_error_mock = [
       query: LAUNCH_TEST_JOB,
       variables: {
         model_id: '5193a839-de70-4533-a874-fc4361e27c53', // this MUST correspond to the id of the mocked test_model
-      }
+      },
     },
     result: {
       data: {
         launch_test: {
           success: false,
           message: 'There does not seem to be datasets yet. Please ask your admin to create a dataset before launching tests.',
-          job: null
-        }
-      }
-    }
-  }
+          job: null,
+        },
+      },
+    },
+  },
 ];
 
 const mocks = [
@@ -206,7 +208,7 @@ const mocks = [
       variables: {
         model_name: 'new-model',
         file: dummy_file,
-      }
+      },
     },
     result: {
       data: {
@@ -215,9 +217,9 @@ const mocks = [
           message: '',
           model: {
             name: 'new-model',
-          }
+          },
         },
-      }
+      },
     },
   },
   MODELS_MOCK_QUERY,
@@ -226,7 +228,7 @@ const mocks = [
       query: LAUNCH_TEST_JOB,
       variables: {
         model_id: '5193a839-de70-4533-a874-fc4361e27c53', // this MUST correspond to the id of the mocked test_model
-      }
+      },
     },
     result: {
       data: {
@@ -239,10 +241,10 @@ const mocks = [
             progress: 1,
             status_message: '',
             visibility: 'hidden',
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    },
   },
   {
     request: {
@@ -257,9 +259,9 @@ const mocks = [
             progress: 100,
             status_message: 'Job done.',
             visibility: 'hidden',
-          }
-        ]
-      }
-    }
+          },
+        ],
+      },
+    },
   },
 ];
