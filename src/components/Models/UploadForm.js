@@ -149,7 +149,7 @@ class UploadFormComponent extends React.Component<Props, State> {
               Upload
           </Typography>
         </Button>
-        <HelperPageButton helplink={model_upload_instructions_url} />
+        <HelperPageButton model_upload_instructions_url={model_upload_instructions_url} />
         {loading && (
           <React.Fragment>
             <Typography variant='body1' display='inline'>Uploading...</Typography>

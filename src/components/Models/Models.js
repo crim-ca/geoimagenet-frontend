@@ -17,7 +17,7 @@ const Grid = withStyles(({ values }) => ({
     display: 'grid',
     gridTemplateRows: 'min-content',
     gridGap: values.gutterSmall,
-  }
+  },
 }))(({ classes: { root, content }, children }) => (
   <div className={root}>
     <div className={content}>{children}</div>
@@ -29,7 +29,6 @@ type Props = {
 };
 
 export class Models extends Component<Props> {
-
   render() {
     return (
       <Grid>
