@@ -14,6 +14,9 @@ import {
   Typography,
   Slide,
 } from '@material-ui/core';
+import PrepareModelContainer from './PrepareModelContainer';
+import HowToContainer from './HowToContainer';
+
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -31,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 const Transition = React.forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
 type Props = {
-  helplink: string,
+  model_upload_instructions_url: string,
 }
 
 export default function HelperPageButton(props: Props) {
@@ -46,13 +49,13 @@ export default function HelperPageButton(props: Props) {
     setOpen(false);
   };
 
-  const { helplink } = props;
+  const { model_upload_instructions_url } = props;
 
   return (
     <div>
       <Button variant="contained" color="primary" onClick={handleClickOpen}>
         <Typography variant="body2" color='secondary'>
-              How to prepare your model
+              Help section
         </Typography>
       </Button>
       <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
@@ -62,13 +65,12 @@ export default function HelperPageButton(props: Props) {
               <Cancel color='secondary' />
             </IconButton>
             <Typography variant="h6" className={classes.title}>
-              How to prepare your model
+              Help section
             </Typography>
           </Toolbar>
         </AppBar>
-        <Button target='_blank' href={helplink}>
-          Link to official thelper page
-        </Button>
+        <PrepareModelContainer model_upload_instructions_url={model_upload_instructions_url} />
+        <HowToContainer />
       </Dialog>
     </div>
   );
