@@ -69,8 +69,8 @@ export default function HelperPageButton(props: Props) {
             </Typography>
           </Toolbar>
         </AppBar>
-        <PrepareModelContainer model_upload_instructions_url={model_upload_instructions_url} />
         <HowToContainer />
+        <PrepareModelContainer model_upload_instructions_url={model_upload_instructions_url} />
       </Dialog>
     </div>
   );
