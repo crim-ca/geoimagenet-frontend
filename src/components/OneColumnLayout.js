@@ -1,9 +1,9 @@
 // @flow strict
 
 import React from 'react';
-import {withStyles} from '@material-ui/core';
+import { withStyles } from '@material-ui/core';
 
-export const OneColumnLayout = withStyles(({values}) => ({
+export const OneColumnLayout = withStyles(({ values }) => ({
   grid: {
     display: 'grid',
     paddingTop: values.gutterMedium,
@@ -14,9 +14,9 @@ export const OneColumnLayout = withStyles(({values}) => ({
     display: 'grid',
     gridTemplateRows: 'min-content',
     gridGap: values.gutterSmall,
-  }
-}))(({classes, children}) => {
-  return <div className={classes.grid}>
+  },
+}))(({ classes, children }) => (
+  <div className={classes.grid}>
     <div className={classes.children}>{children}</div>
-  </div>;
-});
+  </div>
+));

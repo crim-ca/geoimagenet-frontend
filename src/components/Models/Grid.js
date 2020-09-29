@@ -2,7 +2,7 @@
 import { withStyles } from '@material-ui/core/styles';
 import React from 'react';
 
-const Grid = withStyles(({ values }) => ({
+export const Grid = withStyles(({ values }) => ({
   root: {
     display: 'grid',
     gridTemplateColumns: `${values.gutterSmall} 1fr minmax(300px, max-content) 1fr ${values.gutterSmall}`,
@@ -20,5 +20,3 @@ const Grid = withStyles(({ values }) => ({
     <div className={content}>{children}</div>
   </div>
 ));
-
-export default Grid;

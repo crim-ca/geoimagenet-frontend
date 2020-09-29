@@ -2,7 +2,7 @@
 import { withStyles } from '@material-ui/core/styles';
 import React from 'react';
 
-const GridContainer = withStyles((theme) => ({
+export const GridContainer = withStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'row',
@@ -16,5 +16,3 @@ const GridContainer = withStyles((theme) => ({
 }))(({ classes, children }) => (
   <div className={classes.root}>{children}</div>
 ));
-
-export default GridContainer;

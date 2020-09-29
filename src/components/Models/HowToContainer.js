@@ -7,8 +7,8 @@ import {
   Container,
   Typography,
 } from '@material-ui/core';
-import Grid from './Grid';
-import GridContainer from './GridContainer';
+import { Grid } from './Grid';
+import { GridContainer } from './GridContainer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
