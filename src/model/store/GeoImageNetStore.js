@@ -73,7 +73,7 @@ export class GeoImageNetStore {
   @observable taxonomies: Taxonomy[] = [];
 
   @computed get root_taxonomy_class_id(): number {
-    if (this.selected_taxonomy === null) {
+    if (this.selected_taxonomy === null || this.selected_taxonomy === undefined) {
       return -1;
     }
     if (this.selected_taxonomy.versions === undefined) {

@@ -99,6 +99,15 @@ export class DataQueries {
     return post_json(`${this.magpie_endpoint}/signin`, payload);
   }
 
+  change_password_request = (new_password: string): Promise<Response> => {
+    return make_http_request(`${this.magpie_endpoint}/users/current`, {
+      method: "PUT",
+      data: {
+        password: new_password,
+      }
+    })
+  };
+
   /**
    * Launches the dataset creation task through the geoimagenet api, that will in turn call the machine learning api.
    */
