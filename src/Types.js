@@ -1,6 +1,6 @@
 // @flow strict
 
-import type { TaxonomyClass } from './model/entities';
+import type { TaxonomyClass } from './model/TaxonomyClass';
 import type { AnnotationFilter } from './model/AnnotationFilter';
 
 /**
