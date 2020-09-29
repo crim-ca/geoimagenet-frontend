@@ -7,8 +7,7 @@ import {
   Container,
   Typography,
 } from '@material-ui/core';
-import { Grid } from './Grid';
-import { GridContainer } from './GridContainer';
+import { ButtonGrid } from './ButtonGrid';
 
 type Props = {
   model_upload_instructions_url: string,
@@ -30,35 +29,33 @@ export default function PrepareModelContainer(props: Props) {
       <Typography variant='h4' align='left'>
         Thelper help links
       </Typography>
-      <Grid>
-        <GridContainer>
-          <Button variant="contained" color="primary" target='_blank' href={model_upload_instructions_url}>
-            <Typography variant="body2" color='secondary'>
+      <ButtonGrid>
+        <Button variant="contained" color="primary" target='_blank' href={model_upload_instructions_url}>
+          <Typography variant="body2" color='secondary'>
               How to prepare your model
-            </Typography>
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            target='_blank'
-            href='https://thelper.readthedocs.io/'
-          >
-            <Typography variant="body2" color='secondary'>
+          </Typography>
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          target='_blank'
+          href='https://thelper.readthedocs.io/'
+        >
+          <Typography variant="body2" color='secondary'>
               Documentation
-            </Typography>
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            target='_blank'
-            href='https://github.com/plstcharles/thelper'
-          >
-            <Typography variant="body2" color='secondary'>
+          </Typography>
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          target='_blank'
+          href='https://github.com/plstcharles/thelper'
+        >
+          <Typography variant="body2" color='secondary'>
               Github Repository
-            </Typography>
-          </Button>
-        </GridContainer>
-      </Grid>
+          </Typography>
+        </Button>
+      </ButtonGrid>
     </Container>
   );
 }

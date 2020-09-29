@@ -7,8 +7,7 @@ import {
   Container,
   Typography,
 } from '@material-ui/core';
-import { Grid } from './Grid';
-import { GridContainer } from './GridContainer';
+import { ButtonGrid } from './ButtonGrid';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,30 +68,28 @@ export default function HowToContainer() {
       <Typography variant='h4' align='left'>
         Geoimagenet help links
       </Typography>
-      <Grid>
-        <GridContainer>
-          <Button
-            variant="contained"
-            color="primary"
-            target='_blank'
-            href='https://github.com/crim-ca/geoimagenet'
-          >
-            <Typography variant="body2" color='secondary'>
+      <ButtonGrid>
+        <Button
+          variant="contained"
+          color="primary"
+          target='_blank'
+          href='https://github.com/crim-ca/geoimagenet'
+        >
+          <Typography variant="body2" color='secondary'>
               Example notebooks
-            </Typography>
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            target='_blank'
-            href='https://crim-ca.github.io/geoimagenet/#managing-models'
-          >
-            <Typography variant="body2" color='secondary'>
+          </Typography>
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          target='_blank'
+          href='https://crim-ca.github.io/geoimagenet/#managing-models'
+        >
+          <Typography variant="body2" color='secondary'>
               Documentation
-            </Typography>
-          </Button>
-        </GridContainer>
-      </Grid>
+          </Typography>
+        </Button>
+      </ButtonGrid>
     </Container>
   );
 }
