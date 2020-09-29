@@ -9,6 +9,7 @@ import type { User } from '../../model/entities';
 import { UserInformation } from './UserInformation';
 import { AddFollowedUserForm } from './AddFollowedUserForm';
 import { FollowedUsersList } from './FollowedUsersList';
+import { ChangePasswordForm } from './ChangePasswordForm';
 import type { UserInteractions } from '../../domain/user-interactions';
 import type { FollowedUser } from '../../Types';
 import { withTranslation } from '../../utils';
@@ -77,7 +78,7 @@ class Container extends React.Component<Props> {
   verify_duplicate_id = (id: number): boolean => this.props.user.followed_users.some((followed_user) => parseInt(followed_user.id, 10) === parseInt(id, 10));
 
   render() {
-    const { user } = this.props;
+    const { user, dataQueries } = this.props;
     return (
       <React.Fragment>
         <UserInformation user={user} />
@@ -89,6 +90,7 @@ class Container extends React.Component<Props> {
           followed_users={user.followed_users}
           delete_user={this.persistRemoveUser}
         />
+        <ChangePasswordForm data_queries={dataQueries} />
       </React.Fragment>
     );
   }
