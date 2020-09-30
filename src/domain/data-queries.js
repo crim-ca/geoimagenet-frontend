@@ -42,6 +42,19 @@ export class DataQueries {
     return images.map((raw) => new SatelliteImage(raw.bands, raw.bits, raw.extension, raw.filename, raw.id, raw.layer_name, raw.sensor_name));
   };
 
+  create_user = (user_name: string, email: string, password: string, group_name: string): Promise<Response> => {
+    return make_http_request(`${this.magpie_endpoint}/users`, {
+      method: "post",
+      body: {
+        user_name,
+        email,
+        password,
+        group_name
+      }
+    });
+  };
+
+
   persistFollowedUser = (
     formData: FollowedUser[],
   ): Promise<Response> => post_json(

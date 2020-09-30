@@ -50,6 +50,12 @@ const resources = {
       change_password_failure: 'We were unable to change your password',
       submit_new_password_request: 'Change password',
       min_password_length_info: 'Your new password must contain at least 12 characters.',
+      batch_user_creation: "User creation",
+      batch_user_creation_placeholder: "Enter a comma-separated list of email addresses.",
+      batch_user_creation_instructions: "To create multiple user accounts at a time, please enter a comma separated list of email " +
+        "addresses. On submission, random passwords will be given to each of these accounts then shown here if generation " +
+        "is successful.",
+      batch_user_creation_submit: 'create user accounts',
       username: 'Username',
       nickname: 'Nickname',
       password: 'Password',
@@ -292,6 +298,12 @@ const resources = {
       change_password_failure: "Nous n'avons pu changer votre mot de passe",
       submit_new_password_request: 'Changer mot de passe',
       min_password_length_info: 'Votre nouveau mot de passe doit comporter au moins 12 caractères.',
+      batch_user_creation: "Création d'utilisateurs/trices",
+      batch_user_creation_placeholder: "Entrez une liste d'adresses courriel séparées par des virgules.",
+      batch_user_creation_instructions: "Pour créer plusieurs comptes rapidement, veuillez entrer une liste d'adresses " +
+        "courriel séparées par des virgules. Des mots de passes aléatoires seront générés et affichés à l'écran " +
+        "si l'opération fonctionne.",
+      batch_user_creation_submit: 'générer les comptes',
       username: 'Nom d\'utilisateur/trice',
       nickname: 'Surnom',
       password: 'Mot de passe',

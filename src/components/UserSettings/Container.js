@@ -10,6 +10,7 @@ import { UserInformation } from './UserInformation';
 import { AddFollowedUserForm } from './AddFollowedUserForm';
 import { FollowedUsersList } from './FollowedUsersList';
 import { ChangePasswordForm } from './ChangePasswordForm';
+import { BatchUserCreationForm } from './BatchUserCreationForm';
 import type { UserInteractions } from '../../domain/user-interactions';
 import type { FollowedUser } from '../../Types';
 import { withTranslation } from '../../utils';
@@ -90,6 +91,7 @@ class Container extends React.Component<Props> {
           followed_users={user.followed_users}
           delete_user={this.persistRemoveUser}
         />
+        <BatchUserCreationForm />
         <ChangePasswordForm data_queries={dataQueries} />
       </React.Fragment>
     );
