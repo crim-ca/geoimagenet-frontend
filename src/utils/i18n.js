@@ -502,7 +502,7 @@ i18n.use(LanguageDetector)
       escapeValue: false,
     },
     defaultNS: 'presentation',
-    fallbackLng: ['fr', 'dev'],
+    fallbackLng: ['fr', 'en'],
     resources: resources,
     detection: {
       order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
