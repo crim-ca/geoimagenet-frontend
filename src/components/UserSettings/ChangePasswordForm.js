@@ -27,6 +27,7 @@ const SettingsComponent = (props) => {
       response = await data_queries.change_password_request(new_password);
     } catch (error) {
       NotificationManager.error(t('settings:change_password_failure'));
+      return;
     }
     if (response.statusCode === 200) {
       NotificationManager.success(t('settings:change_password_success'));

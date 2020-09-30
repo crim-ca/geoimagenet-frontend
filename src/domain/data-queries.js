@@ -102,7 +102,7 @@ export class DataQueries {
   change_password_request = (new_password: string): Promise<Response> => {
     return make_http_request(`${this.magpie_endpoint}/users/current`, {
       method: "PUT",
-      data: {
+      body: {
         password: new_password,
       }
     })
