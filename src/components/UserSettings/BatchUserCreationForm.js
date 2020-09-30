@@ -74,9 +74,8 @@ const BatchUserCreationForm = (props) => {
     const promises = emails.map(async email => {
       email = email.trim();
       const user_name = strip_unwanted_name_chars(email.split("@")[0]);
-      console.log("user name:", user_name);
+      // TODO magpie 2.0 will enforce an at least 12 characters policy so put 12 in env vars
       const password = make_pseudorandom_password(12);
-      console.log("password:", password);
       try {
         const response = await dataQueries.create_user(user_name, email, password, "users");
         if (response.statusCode === 201) {
