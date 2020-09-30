@@ -68,27 +68,28 @@ const BatchUserCreationForm = (props) => {
     set_email_string(event.target.value);
   };
 
+  const create_account = async email => {
+    email = email.trim();
+    const user_name = strip_unwanted_name_chars(email.split("@")[0]);
+    // TODO magpie 2.0 will enforce an at least 12 characters policy so put 12 in env vars
+    const password = make_pseudorandom_password(12);
+    try {
+      const response = await dataQueries.create_user(user_name, email, password, "users");
+      if (response.statusCode === 201) {
+        return `success: created user identified by [${user_name}] for email [${email}] with password ${password}\n`;
+      } else {
+        return `failure: problem within magpie when creating user ${email}\n`;
+      }
+    } catch (e) {
+      return `failure: http request problem for user ${email}\n`;
+    }
+  };
+
   const create_users = async () => {
     const emails = email_string.split(",");
-    let log = "";
-    const promises = emails.map(async email => {
-      email = email.trim();
-      const user_name = strip_unwanted_name_chars(email.split("@")[0]);
-      // TODO magpie 2.0 will enforce an at least 12 characters policy so put 12 in env vars
-      const password = make_pseudorandom_password(12);
-      try {
-        const response = await dataQueries.create_user(user_name, email, password, "users");
-        if (response.statusCode === 201) {
-          log += `success: created user identified by [${user_name}] for email [${email}] with password ${password}\n`;
-        } else {
-          log += `failure: problem within magpie when creating user ${email}\n`;
-        }
-      } catch (e) {
-        log += `failure: http request problem for user ${email} creation\n`;
-      }
-    });
-    await Promise.all(promises);
-    set_email_string(log);
+    const promises = emails.map(create_account);
+    const logs = await Promise.all(promises);
+    set_email_string(logs.join(""));
   };
 
   return (
