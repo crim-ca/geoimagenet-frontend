@@ -39,7 +39,7 @@ export default function HowToContainer() {
       'Two notebooks are available showing how to package a ResNet and a UNet.',
     ],
     subtitle2: 'Pushing Models',
-    paragraph2: 'Once the model is packaged, it can be uploaded using the Model user interface'
+    paragraph2: 'Once the model is packaged, it can be uploaded using the Model user interface '
       + 'on the platform using the Choose file button to select your model, and then upload it.',
   };
 
