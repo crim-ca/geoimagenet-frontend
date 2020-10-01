@@ -5,24 +5,46 @@ import { compose } from 'react-apollo';
 import { NotificationManager } from 'react-notifications';
 import { captureException } from '@sentry/browser';
 import { TFunction } from 'react-i18next';
-import type { User } from '../../model/entities';
+
+import { withTranslation } from '../../utils';
 import { UserInformation } from './UserInformation';
 import { AddFollowedUserForm } from './AddFollowedUserForm';
 import { FollowedUsersList } from './FollowedUsersList';
+import { ChangePasswordForm } from './ChangePasswordForm';
+import { BatchUserCreationForm } from './BatchUserCreationForm';
+
+import type { User } from '../../model/entities';
 import type { UserInteractions } from '../../domain/user-interactions';
 import type { FollowedUser } from '../../Types';
-import { withTranslation } from '../../utils';
 import type { DataQueries } from '../../domain/data-queries';
-import { withDataQueries } from '../../model/HOCs';
+import type { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
+
+import { withDataQueries, withUserInterfaceStore } from '../../model/HOCs';
+import withStyles from '@material-ui/core/styles/withStyles';
 
 type Props = {
   user: User,
   userInteractions: UserInteractions,
   dataQueries: DataQueries,
+  uiStore: UserInterfaceStore,
   t: TFunction,
 };
 
 class Container extends React.Component<Props> {
+  constructor(props: P, context: any) {
+    super(props, context);
+    const { dataQueries, uiStore, t, user } = props;
+    if (user.hasAdminRights) {
+      dataQueries.fetch_available_groups()
+        .then((magpie_groups) => {
+          uiStore.setAvailableGroups(magpie_groups);
+        })
+        .catch(() => {
+          NotificationManager.warning(t('settings:fetch_available_groups_error'));
+        });
+    }
+  }
+
   saveFollowedUserCallback = (formData: FollowedUser): Promise<boolean> => {
     const {
       t,
@@ -77,9 +99,10 @@ class Container extends React.Component<Props> {
   verify_duplicate_id = (id: number): boolean => this.props.user.followed_users.some((followed_user) => parseInt(followed_user.id, 10) === parseInt(id, 10));
 
   render() {
-    const { user } = this.props;
+    const { user, dataQueries, classes } = this.props;
+
     return (
-      <React.Fragment>
+      <section className={classes.section}>
         <UserInformation user={user} />
         <AddFollowedUserForm
           save_user={this.saveFollowedUserCallback}
@@ -89,14 +112,24 @@ class Container extends React.Component<Props> {
           followed_users={user.followed_users}
           delete_user={this.persistRemoveUser}
         />
-      </React.Fragment>
+        {user.hasAdminRights ? <BatchUserCreationForm /> : null}
+        <ChangePasswordForm data_queries={dataQueries} />
+      </section>
     );
   }
 }
 
 const component = compose(
   withTranslation(),
+  withStyles(theme => ({
+    section: {
+      display: 'grid',
+      gridTemplateColumns: '1fr',
+      gridGap: theme.values.gutterMedium,
+    }
+  })),
   withDataQueries,
+  withUserInterfaceStore,
 )(Container);
 
 export { component as Container };

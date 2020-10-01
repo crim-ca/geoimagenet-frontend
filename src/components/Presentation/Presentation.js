@@ -379,6 +379,15 @@ export const PresentationContainer = withStyles(({ values }) => ({
         >
           {t('login:login')}
         </Typography>
+        <Typography
+          style={{
+            cursor: 'pointer',
+            marginRight: '24px',
+          }}
+          variant='body1'
+        >
+          <a href='https://crim-ca.github.io/geoimagenet/'>Documentation</a>
+        </Typography>
         <Dialog open={dialog_open} onClose={toggle_dialog}>
           <Login userInteractions={userInteractions} />
         </Dialog>

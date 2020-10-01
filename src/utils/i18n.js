@@ -43,6 +43,22 @@ const resources = {
       labels: 'Labels',
     },
     settings: {
+      change_password: 'Change Password',
+      new_password: 'New password',
+      confirm_new_password: 'Confirm new password',
+      change_password_success: 'Your password has been changed.',
+      change_password_failure: 'We were unable to change your password',
+      submit_new_password_request: 'Change password',
+      min_password_length_info: 'Your new password must contain at least 12 characters.',
+      batch_user_creation: "User creation",
+      batch_user_creation_placeholder: 'Enter a comma separated list of emails.',
+      batch_user_creation_instructions: "To create multiple user accounts at a time, please enter a comma separated list of email " +
+        "addresses. On submission, random passwords will be given to each of these accounts then shown here if generation " +
+        "is successful.",
+      batch_user_creation_submit: 'create user accounts',
+      fetch_available_groups_error: 'We were unable to get available user groups. ' +
+        "It's highly probable that the creation operation will not work either.",
+      batch_user_creation_group_choice: 'Choose a group for the created users.',
       username: 'Username',
       nickname: 'Nickname',
       password: 'Password',
@@ -278,6 +294,22 @@ const resources = {
       labels: 'Libellés',
     },
     settings: {
+      change_password: 'Changer mot de passe',
+      new_password: 'Nouveau mot de passe',
+      confirm_new_password: 'Confirmer mot de passe',
+      change_password_success: 'Votre mot de passe a été changé.',
+      change_password_failure: "Nous n'avons pu changer votre mot de passe",
+      submit_new_password_request: 'Changer mot de passe',
+      min_password_length_info: 'Votre nouveau mot de passe doit comporter au moins 12 caractères.',
+      batch_user_creation: "Création d'utilisateurs/trices",
+      batch_user_creation_placeholder: "Entrez une liste d'addresses courriel séparées par des virgules.",
+      batch_user_creation_instructions: "Pour créer plusieurs comptes à la fois, veuillez entrer une liste d'adresses " +
+        "courriel séparées par des virgules. Des mots de passes aléatoires seront générés et affichés à l'écran " +
+        "si l'opération fonctionne.",
+      batch_user_creation_submit: 'générer les comptes',
+      fetch_available_groups_error: "Nous n'avons pu obtenir les groupes valides. " +
+        "Cela indique probablement que nous ne pourrons créer de comptes non plus.",
+      batch_user_creation_group_choice: 'Choisissez un groupe auquel les comptes seront ajoutés.',
       username: 'Nom d\'utilisateur/trice',
       nickname: 'Surnom',
       password: 'Mot de passe',
@@ -488,7 +520,7 @@ i18n.use(LanguageDetector)
       escapeValue: false,
     },
     defaultNS: 'presentation',
-    fallbackLng: ['fr', 'dev'],
+    fallbackLng: ['fr', 'en'],
     resources: resources,
     detection: {
       order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],

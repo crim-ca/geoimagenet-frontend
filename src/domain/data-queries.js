@@ -42,6 +42,31 @@ export class DataQueries {
     return images.map((raw) => new SatelliteImage(raw.bands, raw.bits, raw.extension, raw.filename, raw.id, raw.layer_name, raw.sensor_name));
   };
 
+  create_user = (
+    user_name: string,
+    email: string,
+    password: string,
+    group_name: string,
+  ): Promise<Response> => post_json(
+    `${this.magpie_endpoint}/users`,
+    JSON.stringify({
+      user_name,
+      email,
+      password,
+      group_name,
+    }),
+  );
+
+  fetch_available_groups = async (): Promise<string[]> => {
+    try {
+      const response = await make_http_request(`${this.magpie_endpoint}/groups`);
+      const response_body = await response.json();
+      return response_body.group_names;
+    } catch (e) {
+      throw new Error('We could not fetch the groups.');
+    }
+  };
+
   persistFollowedUser = (
     formData: FollowedUser[],
   ): Promise<Response> => post_json(
@@ -98,6 +123,13 @@ export class DataQueries {
     const payload = JSON.stringify(form_data);
     return post_json(`${this.magpie_endpoint}/signin`, payload);
   }
+
+  change_password_request = (new_password: string): Promise<Response> => put_json(
+    `${this.magpie_endpoint}/users/current`,
+    JSON.stringify({
+      password: new_password,
+    }),
+  );
 
   /**
    * Launches the dataset creation task through the geoimagenet api, that will in turn call the machine learning api.
