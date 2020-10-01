@@ -85,6 +85,7 @@ table {
 body {
     background-color: var(--light-gray);
     margin: 0;
+    overflow: hidden;
 }
 
 button {
