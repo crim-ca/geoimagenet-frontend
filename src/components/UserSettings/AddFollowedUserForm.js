@@ -76,10 +76,12 @@ class AddFollowedUserForm extends React.Component<Props, State> {
     return (
       <form className={classes.form}>
         <TextField id='id'
+                   variant="outlined"
                    label={t('settings:followed_user_id')}
                    value={this.state.id}
                    onChange={this.change('id')} />
         <TextField id='nickname'
+                   variant="outlined"
                    label={t('settings:followed_user_nickname')}
                    value={this.state.nickname}
                    onChange={this.change('nickname')} />

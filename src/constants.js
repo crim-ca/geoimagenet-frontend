@@ -73,6 +73,8 @@ export const VIEW_CENTER = {
   ZOOM_LEVEL: 4,
 };
 
+export const ADMIN_GROUP = 'administrators';
+
 /**
  * Magpie permission name for get access
  * @type {string}

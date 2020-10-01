@@ -388,9 +388,14 @@ export class UserInteractions {
   }
 
   /**
+   *
    * Should be called anytime there is a change to the user's session, either login or logout.
    * @todo at some point unhardcode the frontend parameter here, maybe get it from environment variable
    * @returns {Promise<void>}
+   *
+   * we need to join the content of two different endpoints' calls
+   * to create what we call a user session for the purposes of a frontend client
+   *
    */
   refreshUserSession = async () => {
     const magpieSessionJson: MagpieMergedSessionInformation = await this.dataQueries.current_user_session();

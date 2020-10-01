@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from '../../utils';
-import { TextField, withStyles, Button } from "@material-ui/core";
+import { TextField, withStyles, Button, Typography } from "@material-ui/core";
 import { NotificationManager } from 'react-notifications';
 
 import type { DataQueries } from '../../domain/data-queries';
@@ -27,6 +27,7 @@ const SettingsComponent = (props) => {
       response = await data_queries.change_password_request(new_password);
     } catch (error) {
       NotificationManager.error(t('settings:change_password_failure'));
+      return;
     }
     if (response.statusCode === 200) {
       NotificationManager.success(t('settings:change_password_success'));
@@ -44,14 +45,16 @@ const SettingsComponent = (props) => {
 
   return (
     <section className={form}>
-      <h2>{t('settings:change_password')}</h2>
-      <p>{t('settings:min_password_length_info')}</p>
+      <Typography variant="h5">{t('settings:change_password')}</Typography>
+      <Typography variant="body1">{t('settings:min_password_length_info')}</Typography>
       <TextField
+        variant="outlined"
         value={new_password}
         type='password'
         placeholder={t('settings:new_password')}
         onChange={make_set_value_callback(set_new_password)} />
       <TextField
+        variant="outlined"
         value={confirm_password}
         type='password'
         placeholder={t('settings:confirm_new_password')}
@@ -69,11 +72,12 @@ SettingsComponent.propTpes = {
   //data_queries: DataQueries,
 };
 
-const styled = withStyles({
+const styled = withStyles(theme => ({
   form: {
-    display: 'flex',
-    flexDirection: 'column'
+    display: "grid",
+    gridTemplateColumn: "1fr",
+    gridGap: theme.values.gutterSmall,
   }
-})(SettingsComponent);
+}))(SettingsComponent);
 
 export { styled as ChangePasswordForm };

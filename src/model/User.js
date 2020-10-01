@@ -1,6 +1,7 @@
 // @flow strict
 import { action, computed, observable } from 'mobx';
 import type { FollowedUser } from '../Types';
+import { ADMIN_GROUP } from '../constants';
 
 export class User {
   @observable name: string;
@@ -29,6 +30,10 @@ export class User {
   @action removeFollowedUser(followedUserId: number) {
     const index = this.followed_users.findIndex((followedUser: FollowedUser) => followedUser.id === followedUserId);
     this.followed_users.splice(index, 1);
+  }
+
+  @computed get hasAdminRights() {
+    return this.group_names.indexOf(ADMIN_GROUP) > -1;
   }
 
   /**

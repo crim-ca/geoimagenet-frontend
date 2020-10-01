@@ -23,10 +23,15 @@ type FilterSelectionMap = FilterSelectionTuple[];
 
 class UserInterfaceStore {
   @observable selectedMode: string;
+  @observable availableGroups: string[] = ["users"];
 
   previousFilterSelection: FilterSelectionMap;
 
   previousSelectedMode: string;
+
+  @action.bound setAvailableGroups(groups: string[]) {
+    this.availableGroups = groups;
+  }
 
   /**
    * When we move to a mode with filter constraints (such as deletion)
