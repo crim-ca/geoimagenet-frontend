@@ -79,11 +79,10 @@ const BatchUserCreationForm = (props) => {
     const password = make_pseudorandom_password(12);
     try {
       const response = await dataQueries.create_user(user_name, email, password, selected_group);
-      if (response.statusCode === 201) {
+      if (response.status === 201) {
         return `success: created user identified by [${user_name}] for email [${email}] with password ${password}\n`;
-      } else {
-        return `failure: problem within magpie when creating user ${email}\n`;
       }
+      return `failure: problem within magpie when creating user ${email}\n`;
     } catch (e) {
       return `failure: http request problem for user ${email}\n`;
     }
