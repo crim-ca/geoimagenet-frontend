@@ -1,12 +1,11 @@
 // @flow strict
 
 import React, { useState, useEffect } from 'react';
-import { useTranslation, withTranslation } from '../../utils';
-import { NotificationManager } from 'react-notifications';
-import { TextField, withStyles, Button } from "@material-ui/core";
-import type { DataQueries } from "../../domain/data-queries";
-import { withDataQueries } from "../../model/HOCs";
+import { useTranslation } from '../../utils';
+import { TextField, Button, Select, MenuItem, Typography, FormControl, InputLabel } from "@material-ui/core";
+import { withDataQueries, withUserInterfaceStore } from "../../model/HOCs";
 import { compose } from "react-apollo";
+import withStyles from "@material-ui/core/styles/withStyles";
 
 /**
  *
@@ -45,15 +44,16 @@ const make_pseudorandom_password = (length: number) => {
 const strip_unwanted_name_chars = (email: string): string => {
   email = email.normalize("NFD");
   email = email.replace(/[\u0300-\u036f]/g, "");
- return email;
+  return email;
 };
 
 const BatchUserCreationForm = (props) => {
-  const { dataQueries } = props;
+  const { dataQueries, uiStore, classes } = props;
   const { t } = useTranslation();
 
   const [email_string, set_email_string] = useState("");
   const [disabled, set_disabled] = useState(true);
+  const [selected_group, set_selected_group] = useState("users");
 
   useEffect(() => {
     const has_content = email_string.length > 0;
@@ -64,8 +64,12 @@ const BatchUserCreationForm = (props) => {
     }
   });
 
-  const change_handler = event => {
+  const email_string_handler = event => {
     set_email_string(event.target.value);
+  };
+
+  const selected_group_handler = event => {
+    set_selected_group(event.target.value);
   };
 
   const create_account = async email => {
@@ -74,7 +78,7 @@ const BatchUserCreationForm = (props) => {
     // TODO magpie 2.0 will enforce an at least 12 characters policy so put 12 in env vars
     const password = make_pseudorandom_password(12);
     try {
-      const response = await dataQueries.create_user(user_name, email, password, "users");
+      const response = await dataQueries.create_user(user_name, email, password, selected_group);
       if (response.statusCode === 201) {
         return `success: created user identified by [${user_name}] for email [${email}] with password ${password}\n`;
       } else {
@@ -93,16 +97,30 @@ const BatchUserCreationForm = (props) => {
   };
 
   return (
-    <section>
-      <h2>{t("settings:batch_user_creation")}</h2>
-      <p>{t("settings:batch_user_creation_instructions")}</p>
+    <section className={classes.form}>
+
+      <Typography variant="h5">{t("settings:batch_user_creation")}</Typography>
+      <Typography variant="body1">{t("settings:batch_user_creation_instructions")}</Typography>
+
       <TextField
-        value={email_string}
-        onChange={change_handler}
+        variant="outlined"
         placeholder={t("settings:batch_user_creation_placeholder")}
+        value={email_string}
+        onChange={email_string_handler}
         rows={6}
         multiline
         fullWidth />
+
+      <Typography variant="body2">{t("settings:batch_user_creation_group_choice")}</Typography>
+
+      <Select
+        variant="outlined"
+        value={selected_group} onChange={selected_group_handler}>
+        {uiStore.availableGroups.map((group, i) => (
+          <MenuItem value={group} key={i}>{group}</MenuItem>
+        ))}
+      </Select>
+
       <Button
         disabled={disabled}
         variant="contained"
@@ -116,6 +134,14 @@ const BatchUserCreationForm = (props) => {
 
 const component = compose(
   withDataQueries,
+  withUserInterfaceStore,
+  withStyles(theme => ({
+    form: {
+      display: "grid",
+      gridTemplateColumn: "1fr",
+      gridGap: theme.values.gutterSmall,
+    }
+  })),
 )(BatchUserCreationForm);
 
 

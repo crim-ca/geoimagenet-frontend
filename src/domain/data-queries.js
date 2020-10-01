@@ -54,6 +54,15 @@ export class DataQueries {
     });
   };
 
+  fetch_available_groups = async (): Promise<string[]> => {
+    try {
+      const response = await make_http_request(`${this.magpie_endpoint}/groups`);
+      const response_body = await response.json();
+      return response_body.group_names;
+    } catch (e) {
+      throw new Error("We could not fetch the groups.");
+    }
+  };
 
   persistFollowedUser = (
     formData: FollowedUser[],
