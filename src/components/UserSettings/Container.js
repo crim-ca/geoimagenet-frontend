@@ -17,10 +17,10 @@ import type { User } from '../../model/entities';
 import type { UserInteractions } from '../../domain/user-interactions';
 import type { FollowedUser } from '../../Types';
 import type { DataQueries } from '../../domain/data-queries';
-import type { UserInterfaceStore } from "../../model/store/UserInterfaceStore";
+import type { UserInterfaceStore } from '../../model/store/UserInterfaceStore';
 
 import { withDataQueries, withUserInterfaceStore } from '../../model/HOCs';
-import withStyles from "@material-ui/core/styles/withStyles";
+import withStyles from '@material-ui/core/styles/withStyles';
 
 type Props = {
   user: User,
@@ -31,18 +31,18 @@ type Props = {
 };
 
 class Container extends React.Component<Props> {
-
-
   constructor(props: P, context: any) {
     super(props, context);
-    const { dataQueries, uiStore, t } = props;
-    dataQueries.fetch_available_groups()
-      .then(magpie_groups => {
-        uiStore.setAvailableGroups(magpie_groups);
-      })
-      .catch(() => {
-        NotificationManager.warning(t("settings:fetch_available_groups_error"));
-      });
+    const { dataQueries, uiStore, t, user } = props;
+    if (user.hasAdminRights) {
+      dataQueries.fetch_available_groups()
+        .then((magpie_groups) => {
+          uiStore.setAvailableGroups(magpie_groups);
+        })
+        .catch(() => {
+          NotificationManager.warning(t('settings:fetch_available_groups_error'));
+        });
+    }
   }
 
   saveFollowedUserCallback = (formData: FollowedUser): Promise<boolean> => {
@@ -99,7 +99,7 @@ class Container extends React.Component<Props> {
   verify_duplicate_id = (id: number): boolean => this.props.user.followed_users.some((followed_user) => parseInt(followed_user.id, 10) === parseInt(id, 10));
 
   render() {
-    const { user, dataQueries, classes} = this.props;
+    const { user, dataQueries, classes } = this.props;
 
     return (
       <section className={classes.section}>
@@ -112,7 +112,7 @@ class Container extends React.Component<Props> {
           followed_users={user.followed_users}
           delete_user={this.persistRemoveUser}
         />
-        <BatchUserCreationForm />
+        {user.hasAdminRights ? <BatchUserCreationForm /> : null}
         <ChangePasswordForm data_queries={dataQueries} />
       </section>
     );
@@ -123,7 +123,7 @@ const component = compose(
   withTranslation(),
   withStyles(theme => ({
     section: {
-      display: "grid",
+      display: 'grid',
       gridTemplateColumns: '1fr',
       gridGap: theme.values.gutterMedium,
     }
