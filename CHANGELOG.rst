@@ -1,106 +1,396 @@
 Changelog
 =========
 
-Unreleased
+
+1.8.1 (2020-10-01)
 ------------------
+- Pull request #118: Feature/GEOIM-104 batch user creation. [Félix
+  Gagnon-Grenier]
+
+  Merge in GEO/frontend from feature/GEOIM-104-batch-user-creation to develop
+
+  * commit '27a8ee13fc6a9a0a82f0f00666d1fd1e38f65585':
+    removes the overflow from the body, duplicated scrollbars are lame
+    GEOIM-104 - fixes reading the correct return code
+    GEOIM-104 - shows batch user creation form only to those who can write users
+    GEOIM-104 - fixes bad request errors on batch user creation and password change
+    GEOIM-104 - adds a group selection to batch user creation
+    GEOIM-104 - async account creation in its own function
+    removes console.logs
+    GEOIM-104 - naive batch create users
+    GEOIM-281 - fix payload shape: data -> body
+- Removes the overflow from the body, duplicated scrollbars are lame.
+  [Félix Gagnon-Grenier]
+- GEOIM-104 - fixes reading the correct return code. [Félix Gagnon-
+  Grenier]
+- GEOIM-104 - shows batch user creation form only to those who can write
+  users. [Félix Gagnon-Grenier]
+- GEOIM-104 - fixes bad request errors on batch user creation and
+  password change. [Félix Gagnon-Grenier]
+- GEOIM-104 - adds a group selection to batch user creation. [Félix
+  Gagnon-Grenier]
+- GEOIM-104 - async account creation in its own function. [Félix Gagnon-
+  Grenier]
+- Removes console.logs. [Félix Gagnon-Grenier]
+- GEOIM-104 - naive batch create users. [Félix Gagnon-Grenier]
+- GEOIM-281 - fix payload shape: data -> body. [Félix Gagnon-Grenier]
+- Pull request #117: GEOIM-340 model documentation. [Francis Pelletier]
+
+  Merge in GEO/frontend from GEOIM-340-model-documentation to develop
+
+  * commit '1dbce8579e2589e145594f0af86a8784b1d4f0e4':
+    Change dev to en in fallback languages
+    Fix typo in model documentation
+    Remove GridContainer
+    Consolidate button placement with ButtonGrid
+    Code styling
+    Finalize help page for Model section
+    Extract utility components to own files
+    Add link to documentation on main page
+    fix props + linting
+    add basic content to helper page
+    Update test for HelperPageButton + linting
+    adds placeholder for internal help page
+- Change dev to en in fallback languages. [pelletfr]
+- Fix typo in model documentation. [pelletfr]
+- Remove GridContainer. [pelletfr]
+- Consolidate button placement with ButtonGrid. [pelletfr]
+- Code styling. [pelletfr]
+- Merge branch 'develop' of https://www.crim.ca/stash/scm/geo/frontend
+  into GEOIM-340-model-documentation. [pelletfr]
+- Pull request #116: Feature/GEOIM-281 changer mot passe. [Félix Gagnon-
+  Grenier]
+
+  Merge in GEO/frontend from feature/GEOIM-281-changer-mot-passe to develop
+
+  * commit '0e0e294fa6ed5a77efc2f551a88a4f0495a56a94':
+    fix import
+    GEOIM-281 - basic change password form
+    vulnerability packages update
+    normalizing one column layout use
+    fix undefined equality
+- Fix import. [Félix Gagnon-Grenier]
+- GEOIM-281 - basic change password form. [Félix Gagnon-Grenier]
+- Vulnerability packages update. [Félix Gagnon-Grenier]
+- Normalizing one column layout use. [Félix Gagnon-Grenier]
+- Fix undefined equality. [Félix Gagnon-Grenier]
+- Finalize help page for Model section. [pelletfr]
+- Extract utility components to own files. [pelletfr]
+- Add link to documentation on main page. [pelletfr]
+- Fix props + linting. [pelletfr]
+- Add basic content to helper page. [pelletfr]
+- Update test for HelperPageButton + linting. [pelletfr]
+- Adds placeholder for internal help page. [pelletfr]
+
 
 1.8.0 (2020-06-11)
 ------------------
-
-Changes
-~~~
-
-- GEOIM-302 - Adds tooltips to UI elements. [Francis Pelletier]
+- Merge branch 'develop' of https://www.crim.ca/stash/scm/geo/frontend
+  into develop. [pelletfr]
+- Adds new tooltips and refactors. [pelletfr]
+- Updates changelog and version. [pelletfr]
+- Changelog update. [pelletfr]
+- Merge branch 'develop' of https://www.crim.ca/stash/scm/geo/frontend
+  into GEOIM-302-tooltips. [pelletfr]
+- Adds tooltips to modes. [pelletfr]
 
 
 1.7.2 (2020-05-08)
 ------------------
+- Changes version. [pelletfr]
+- Updates changelog. [pelletfr]
+- Changes valid annotation resolution. [pelletfr]
 
-Changes
-~~~
+  Reduces the valid resolution, and links that value to the
+  VALID_OPENLAYERS_ANNOTATION_RESOLUTION constant,
+  so creation is consistant with visualization, and can be
+  changed accross the board easily.
 
-- GEOIM-297 - Vector layer styles are now static to help with rendering
-- GEOIM-297 - Reduced resolution for annotation and label rendering (Now need to zoom in more)
+  Eventually, it could also become something that can be
+  changed by the users, right on the map.
+
 
 1.7.1 (2020-05-05)
 ------------------
+- Version 1.7.0 => 1.7.1. [pelletfr]
+- Changelog update. [pelletfr]
+- Fixes react-notifications icon problem. [pelletfr]
 
-Changes
-~~~
+  Previous use of svgr/webpack for svg icons caused
+  path problems for react-notifications, which caused
+  a white rectangle to appear instead of regular icon
 
-- GEOIM-305 - Completed remaining issues elements for Taxonomie Browser [ Francis Pelletier]
-- GEOIM-305 - Changed positionning of map icons and tools 
-- GEOIM-305 - Batch button for release and validate mode.
-- GEOIM-305 - Improve UI intuitiveness for mode selection in Annotation Browser
-- GEOIM-289 - Pinning or unpinning a Taxonomy class now also changes visibility
-- GEOIM-311 - Limit annotation rendering by resolution
+  Solution: Fixing path while using svgr was leading
+  nowhere, so converted svg icons to png, and
+  changed behavior of components accordingly
+- Adds maxResolution rendering for annots. [pelletfr]
+- Updates visuals for selectionToggle. [pelletfr]
+- Changes mode constraints behavior. [pelletfr]
+- Fixes missing translation link. [pelletfr]
+- Updates tests for selection default changes. [pelletfr]
+- Changes validation mode's default to selected. [pelletfr]
+- Version update for package.json. [pelletfr]
+- Makes small change to trigger Jenkins. [pelletfr]
+- Merge branch 'develop' of https://www.crim.ca/stash/scm/geo/frontend
+  into feature/GEOIM-305-menu-annotation-browser. [pelletfr]
+- CHANGELOG. [pelletfr]
+- Changes batch button to be disabled for non batch. [pelletfr]
+- Moves map key to parent span. [pelletfr]
+- Makes toggle pin change visibility. [pelletfr]
+- ESLint rules ajustment. [pelletfr]
+- Adds functions for release and validate actions. [pelletfr]
+- Adjusts spacing and separation AnnotBrowser. [pelletfr]
+- Simplifies and renames toggle widget. [pelletfr]
+- Adds mode name to mode selector. [pelletfr]
+- Restyles previously styled text from mainpage. [pelletfr]
+- Removes obsolete tests. [pelletfr]
+- ESLint. [pelletfr]
+- Renames function to fit domain in use. [pelletfr]
+
+  toggleAnnotatorIdentifiers => toggleAnnotationOwners
+- Adds a necessary prop to AnnotationList. [pelletfr]
+- ESLint. [pelletfr]
+
+
+1.7.0 (2020-04-21)
+------------------
 
 Fix
 ~~~
+- Feature creation. [Félix Gagnon-Grenier]
+- Class selection. [Félix Gagnon-Grenier]
 
-- GEOIM-322 - Fixes Notification manager's icon problem
+Other
+~~~~~
+- Fixed Contact menu element. [pelletfr]
+- ESLint and link styling. [pelletfr]
+- Updated documentation + utility script. [pelletfr]
+- Generalized webpack for local dev. [pelletfr]
+- Final touches to menu and layerswitcher. [pelletfr]
+- ESLint and shorthand fix. [pelletfr]
 
-1.7.0 (2020-04-17)
-------------------
+  Using react shorthand <> instead of <React.Fragment>
+  caused problems with ESDoc parsing
+- Style of CheckboxLineInput changed to import theme. [pelletfr]
 
-New
-~~~
-- Production webpack bundle to be served directly by the Compose (no more gunicorn to serve production instance) [Félix Gagnon-Grenier]
+  withStyles caused a problem to Jest in testing on this component
+  because it obfuscated the wanted child. Was simpler to change
+  how FiberManualRecordIcon was styled, especially after reading
+  that it could also cause problems outside of Jest.
+- Changed Openlayers and coordinates box style. [pelletfr]
+- ESLint. [pelletfr]
+- Added colored icons to annotation filters. [pelletfr]
+- Layerswitcher removed annotations. [pelletfr]
+- ESLint rule to match code style in use. [pelletfr]
+- Top menu color and renaming. [pelletfr]
+- Positionning of OL elems + coordinates. [pelletfr]
+- Platform: How To for grid positionning. [pelletfr]
+- Linting. [pelletfr]
+- Cleanup of anonymous functions. [pelletfr]
+- New tests for LabelsContainer. [pelletfr]
+- Partial linting and style cleanup. [pelletfr]
+- Adding svg mock for Jest. [pelletfr]
+- Changed LabelsChoices to Owners in tests. [pelletfr]
+- Reconfig of OwnerIcon parameter. [pelletfr]
+- Props destruct + new OwnersContainer. [pelletfr]
+- LabelsChoice => Owners + switch to IconButton. [pelletfr]
+- Added Labels IconButton. [pelletfr]
+- Changed filters button to svg IconButton. [pelletfr]
+- Changed webpack handling of svg format. [pelletfr]
+- Modified eslint config to reflect style in use. [pelletfr]
+- Added svg dependencies. [pelletfr]
+- Dev: normalize global jsdom definitions. [Félix Gagnon-Grenier]
+- Dev: GEOIM-316 - annotation component tests. [Félix Gagnon-Grenier]
+- Usr: GEOIM-316 - some spacing with linting. [Félix Gagnon-Grenier]
+- Usr: GEOIM-316 remove status in batch mode to see selection widget.
+  [Félix Gagnon-Grenier]
+- Usr: GEOIM-316 - select / deselect all. [Félix Gagnon-Grenier]
+- Usr: GEOIM-316 - show checkbox for annotation selection. [Félix
+  Gagnon-Grenier]
+- Dev: GEOIM-316 - test for current page selection. [Félix Gagnon-
+  Grenier]
+- Dev: move store tests in a folder. [Félix Gagnon-Grenier]
+- Usr: GEOIM-316 - show validation widget only in validation mode.
+  [Félix Gagnon-Grenier]
+- Dev: linting. [Félix Gagnon-Grenier]
+- Usr: GEOIM-316 - annotation selection toggling. [Félix Gagnon-Grenier]
+- Dev: linting. [Félix Gagnon-Grenier]
+- Usr: GEOIM-316 - selection toggle for validation mode. [Félix Gagnon-
+  Grenier]
+- Dev: introducing template for webpack build. [Félix Gagnon-Grenier]
+- Dev: changing docker build for better npm caching. [Félix Gagnon-
+  Grenier]
+- Dev: GEOIM-305 - componentify annotation. [Félix Gagnon-Grenier]
+- Fix session access for anon user. [Félix Gagnon-Grenier]
+- Dev: observable user. [Félix Gagnon-Grenier]
+- Dev: entities in their own files. [Félix Gagnon-Grenier]
+- Dev: logged_user -> user. [Félix Gagnon-Grenier]
+- Dev: fix followed users tests. [Félix Gagnon-Grenier]
+- Usr: fix annotation filters labels. [Félix Gagnon-Grenier]
+- Fix global fetch by getting autorun out of store. [Félix Gagnon-
+  Grenier]
+- Dev: testing filter selection restoration. [Félix Gagnon-Grenier]
+- Dev: flow. [Félix Gagnon-Grenier]
+- Usr: GEOIM-305 - deactivate unnecessary filters on mode change. [Félix
+  Gagnon-Grenier]
+- Dev: annotation status as its own mobx store. [Félix Gagnon-Grenier]
+- Dev: fix + flow. [Félix Gagnon-Grenier]
+- Dev: moving entities to the model. [Félix Gagnon-Grenier]
+- Dev: move annotation filters in ui store. [Félix Gagnon-Grenier]
+- Dev: normalizing data structures in store test. [Félix Gagnon-Grenier]
+- Dev: moving stores into store folder. [Félix Gagnon-Grenier]
+- Dev: much linting. very camelCased. such different. [Félix Gagnon-
+  Grenier]
+- Usr: GEOIM-305 - correct icons. [Félix Gagnon-Grenier]
+- Dev: fix color bug in newer OL version. [Félix Gagnon-Grenier]
+- Dev: fix console warning. [Félix Gagnon-Grenier]
+- Action buttons always on and linting. [Félix Gagnon-Grenier]
+- Dev: GEOIM-305 - refactor mode selection in ui store. [Félix Gagnon-
+  Grenier]
+- Backtracking linter rudeness. [Félix Gagnon-Grenier]
+- Linting followed users test. [Félix Gagnon-Grenier]
+- Dev: stricter eslint. [Félix Gagnon-Grenier]
+- Usr: GEOIM-288 - pin icon. [Félix Gagnon-Grenier]
+- Usr: deactivate expertise feature. [Félix Gagnon-Grenier]
+- Dev: make hmr work. [Félix Gagnon-Grenier]
+- Dev: abstract fetch away from annotation browser store for easier
+  testing. [Félix Gagnon-Grenier]
+- Dev: run npm command inside docker. [Félix Gagnon-Grenier]
+- Dev: no need from python based image anymore. [Félix Gagnon-Grenier]
+- Typo. [David Caron]
+- ForEachLayerAtPixel should return the topmost layer first. [David
+  Caron]
 
-Changes
-~~~
-- GEOIM-305 - deactivate unnecessary filters on mode change	[Félix Gagnon-Grenier]
-- GEOIM-305 - componentify annotation [Félix Gagnon-Grenier]
-- GEOIM-316 - selection toggle for validation mode [Félix Gagnon-Grenier]
-- GEOIM-316 - annotation selection toggling [Félix Gagnon-Grenier]
-- GEOIM-316 - show validation widget only in validation mode [Félix Gagnon-Grenier]
-- GEOIM-316 - test for current page selection [Félix Gagnon-Grenier]
-- GEOIM-316 - show checkbox for annotation selection [Félix Gagnon-Grenier]
-- GEOIM-316 - select / deselect all [Félix Gagnon-Grenier]
-- GEOIM-316 - remove status in batch mode to see selection widget [Félix Gagnon-Grenier]	
-- GEOIM-316 - some spacing with linting [Félix Gagnon-Grenier]
-- GEOIM-316 - annotation component tests [Félix Gagnon-Grenier]
-- GEOIM-286 - Modify look and feel [Francis Pelletier]
+  don't rely on z index, as it could be the same for 2 images
+- Be a bit more explicit when filtering selection events. [David Caron]
+- Don't import WKT from inside `user-interactions.js` (to make jest
+  tests pass) [David Caron]
+- Usr: fix bug where the draw interaction was added twice and multiple.
+  [David Caron]
+
+  error messages were shown
+- Dev: fixes after refactoring. [David Caron]
+- Dev: disable feature selection when the user is currently drawing.
+  [David Caron]
+- Dev: fix race condition bug where the style of an annotation can be
+  ... [David Caron]
+
+  requested and this annotation doesn't have a taxonomy_class_id yet
+- Dev: show nodata limits on the map. [David Caron]
+- Dev: refactor draw_condition_callback and sort layers by zIndex ...
+  [David Caron]
+
+  to find the top most layer
+- Dev: query geoserver to know if an annotation is completely on an
+  image. [David Caron]
+- Dev: fix bug where `feature.revision_` wasn't reset to 0 in some
+  cases. [David Caron]
+- Dev: flow annotations. [Félix Gagnon-Grenier]
+- Dev: parameterizing annotation thumbnail size. [Félix Gagnon-Grenier]
+- Dev: GEOIM-288 - styling the components directly. [Félix Gagnon-
+  Grenier]
+- Usr: bugfixes for translation use in simple class context. [Félix
+  Gagnon-Grenier]
+- Run js tests. [Félix Gagnon-Grenier]
+- Usr: GEOIM-288 - stop automatically marking classes as visible when
+  pinning. [Félix Gagnon-Grenier]
+- Removing python backend. [Félix Gagnon-Grenier]
+- Introducing react router. [Félix Gagnon-Grenier]
+- Usr: GEOIM-288 - move annotation actions inside annotation browser.
+  [Félix Gagnon-Grenier]
+- Usr: GEOIM-288 - translate annotation browser. [Félix Gagnon-Grenier]
+- Usr: GEOIM-288 - ordering leaf class groups, improving path, visual
+  improvements. [Félix Gagnon-Grenier]
+- Dev: GEOIM-288 - basic breadcrumb. [Félix Gagnon-Grenier]
+- Dev: GEOIM-288 - refactor for hoc taxonomy store. [Félix Gagnon-
+  Grenier]
+- Usr: GEOIM-288 - automatically visualize class when pinning it. [Félix
+  Gagnon-Grenier]
+- Usr: GEOIM-288 - basic show pinned classesin annotation browser.
+  [Félix Gagnon-Grenier]
+- Dev: GEOIM-288 - move taxonomy classes toggling methods to taxonomy
+  store. [Félix Gagnon-Grenier]
+- Dev: GEOIM-288 - basic toggling of pinned state. [Félix Gagnon-
+  Grenier]
+- Dev: GEOIM-288 - refactor flat taxonomy classes into taxonomy store.
+  [Félix Gagnon-Grenier]
+- Dev: GEOIM-288 - adding workspace container. [Félix Gagnon-Grenier]
+- Dev: GEOIM-288 - add pinned property to frontend taxonomy class.
+  [Félix Gagnon-Grenier]
+- Dev: GEOIM-288 - refactoring taxonomy classes into taxonomy store.
+  [Félix Gagnon-Grenier]
+
 
 1.6.1 (2019-10-28)
 ------------------
 
-Fix  [Félix Gagnon-Grenier]
+Fix
 ~~~
-- GEOIM-215 - boilerplate around anonymous session
+- GEOIM-215 - boilerplate around anonymous session. [Félix Gagnon-
+  Grenier]
+
 
 1.6.0 (2019-10-03)
 ------------------
+- Dev: leverage postinstall script instead of manually launching flow
+  deps commands. [Félix Gagnon-Grenier]
+- Dev: use compose for HOCs. [Félix Gagnon-Grenier]
+- Nitpicking over comments. [Félix Gagnon-Grenier]
+- Bump to 1.6.0. [Félix Gagnon-Grenier]
+- Usr: set timeout for annotation selection on click to 1200 to allow
+  slow transitions to still select the annotation. [Félix Gagnon-
+  Grenier]
+- Usr: GEOIM-276 - automatically fill nickname map with logged user
+  name, overridable with the list. [Félix Gagnon-Grenier]
+- Usr: GEOIM-276 - showing nickname is possible. [Félix Gagnon-Grenier]
+- Usr: GEOIM-276 - better meta information. [Félix Gagnon-Grenier]
+- Bugfix: manually set annotator id on created annotations. [Félix
+  Gagnon-Grenier]
+- Usr: GEOIM-276 - meta information with the annotations. [Félix Gagnon-
+  Grenier]
+- Usr: GEOIM-276 - select annotation on click. [Félix Gagnon-Grenier]
+- Dev: GEOIM-276 - refactor selected features collection into open
+  layers store. [Félix Gagnon-Grenier]
+- Usr: GEOIM-276 - showing annotations over images. [Félix Gagnon-
+  Grenier]
+- Usr: GEOIM-267 - fix scoping to keep followed users collection sync.
+  [Félix Gagnon-Grenier]
+- Usr: GEOIM-267 - traductions et couleur secondaire. [Félix Gagnon-
+  Grenier]
+- Dev: fixing jest configuration to ignore non test files when launching
+  all tests. [Félix Gagnon-Grenier]
+- Dev: fixing contextual menu test html element reference management.
+  [Félix Gagnon-Grenier]
+- Dev: tests & flow annotations. [Félix Gagnon-Grenier]
+- Dev: some feature layers creation explanations. [Félix Gagnon-Grenier]
+- Usr: GEOIM-267 - showing annotators nicknames or ids. [Félix Gagnon-
+  Grenier]
+- Usr: GEOIM-267 - show users ids with labels. [Félix Gagnon-Grenier]
+- Dev: no actual need for the ssl context. [Félix Gagnon-Grenier]
+- Dev: GEOIM-267 - getter / setter for annotator label. [Félix Gagnon-
+  Grenier]
+- Dev: GEOIM-267 - moving filters towards map. [Félix Gagnon-Grenier]
+- Merge branch 'hotfix-1.5.1' into develop. [Félix Gagnon-Grenier]
+- Usr: GEOIM-277 - move to annotation bounding box when clicking
+  localize. [Félix Gagnon-Grenier]
+- Dev: GEOIM-277 - inject view into map manager. [Félix Gagnon-Grenier]
+- Usr: GEOIM-277 - localisation button. [Félix Gagnon-Grenier]
+- Dev: fixing some tests. [Félix Gagnon-Grenier]
+- Dev: GEOIM-275 - flow annotations. [Félix Gagnon-Grenier]
+- Usr: GEOIM-275 - basic pagination. [Félix Gagnon-Grenier]
+- Dev: GEOIM-275 - generating status filter cql in store. [Félix Gagnon-
+  Grenier]
+- Dev: GEOIM-275 - barely working feature fetching with binding to
+  taxonomy class selection. [Félix Gagnon-Grenier]
 
-Changes [Félix Gagnon-Grenier]
-~~~
-- leverage postinstall script instead of manually launching flow deps commands
-- use compose for HOCs
-- set timeout for annotation selection on click to 1200 to allow slow transitions to still select the annotation
-- GEOIM-276 - automatically fill nickname map with logged user name, overridable with the list
-- GEOIM-276 - showing nickname is possible
-- GEOIM-276 - better meta information
-- bugfix: manually set annotator id on created annotations
-- GEOIM-276 - meta information with the annotations
-- GEOIM-276 - select annotation on click
-- GEOIM-276 - refactor selected features collection into open layers store
-- GEOIM-276 - showing annotations over images
-- GEOIM-267 - fix scoping to keep followed users collection sync
-- GEOIM-267 - traductions et couleur secondaire
-- fixing jest configuration to ignore non test files when launching all tests
-- fixing contextual menu test html element reference management
-- tests & flow annotations
-- GEOIM-277 - move to annotation bounding box when clicking localize
-- some feature layers creation explanations
 
 1.5.1 (2019-09-18)
 ------------------
+- Dev: GEOIM-282 - fix delete content type header. [Félix Gagnon-
+  Grenier]
 
-Fix
-~~~
-- GEOIM-282 - fix delete content type header
 
-1.5.0 (2019-09-09)
+1.5.0 (2019-09-16)
 ------------------
 
 New
@@ -163,6 +453,10 @@ Fix
 
 Other
 ~~~~~
+- Dev: GEOIM-282 - pr fixes. [Félix Gagnon-Grenier]
+- Dev: GEOIM-282 - restructuring map utils tests. [Félix Gagnon-Grenier]
+- Usr: remove all annotations when no selection. [Félix Gagnon-Grenier]
+- Bumping version to 1.5.0. [Félix Gagnon-Grenier]
 - Usr: GEOIM-282 - same label for followed users. [Félix Gagnon-Grenier]
 - Dev: GEOIM-282 - testing add followed user form and list. [Félix
   Gagnon-Grenier]
