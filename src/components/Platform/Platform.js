@@ -28,7 +28,7 @@ const PlatformContainer = withStyles(({ values }) => ({
     display: 'grid',
     height: '100%',
     gridTemplateColumns: `1fr min-content ${values.widthSidebar}`,
-    gridTemplateRows: 'calc(100% - 40px) 40px',
+    gridTemplateRows: 'calc(100% - 44px) 44px',
   },
 }))(({ classes, children }) => (<div className={classes.root}>{children}</div>));
 
