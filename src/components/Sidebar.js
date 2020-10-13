@@ -102,7 +102,7 @@ const style = {
   },
   bottom: {
     height: '100%',
-    overflowY: 'scroll',
+    overflowY: 'auto',
   },
   details: {
     flexDirection: 'column',
