@@ -2,6 +2,53 @@ Changelog
 =========
 
 
+1.8.2 (2020-10-13)
+------------
+- Bump to 1.8.2. [pelletfr]
+- Pull request #121: Develop. [Francis Pelletier]
+
+  Merge in GEO/frontend from develop to master
+
+  * commit 'bde7aac4673f4a5008a7fc6efe4b6af6fee316b3':
+    Change gridTemplateRows so content fits on Mapview
+    Changes overflow value to auto for scrollbars
+- Pull request #120: Fix scrolling bars. [Francis Pelletier]
+
+  Merge in GEO/frontend from fix-scrolling-bars to develop
+
+  * commit 'f13f566b451f5a50c2257fc43f019f15232a92ce':
+    Change gridTemplateRows so content fits on Mapview
+    Changes overflow value to auto for scrollbars
+- Change gridTemplateRows so content fits on Mapview. [pelletfr]
+- Changes overflow value to auto for scrollbars. [pelletfr]
+- Pull request #119: Release 1.8.1. [Félix Gagnon-Grenier]
+
+  Merge in GEO/frontend from release-1.8.1 to master
+
+  * commit '3efd4e79fb69f485977592bcb1819fb06603727d': (27 commits)
+    version 1.8.1
+    removes the overflow from the body, duplicated scrollbars are lame
+    GEOIM-104 - fixes reading the correct return code
+    GEOIM-104 - shows batch user creation form only to those who can write users
+    GEOIM-104 - fixes bad request errors on batch user creation and password change
+    GEOIM-104 - adds a group selection to batch user creation
+    GEOIM-104 - async account creation in its own function
+    removes console.logs
+    Change dev to en in fallback languages
+    GEOIM-104 - naive batch create users
+    Fix typo in model documentation
+    GEOIM-281 - fix payload shape: data -> body
+    Remove GridContainer
+    Consolidate button placement with ButtonGrid
+    Code styling
+    fix import
+    GEOIM-281 - basic change password form
+    vulnerability packages update
+    normalizing one column layout use
+    fix undefined equality
+    ...
+
+
 1.8.1 (2020-10-01)
 ------------------
 - Pull request #118: Feature/GEOIM-104 batch user creation. [Félix

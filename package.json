@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "description": "Frontend annotation platform for GeoImageNet",
   "directories": {
     "test": "test"
