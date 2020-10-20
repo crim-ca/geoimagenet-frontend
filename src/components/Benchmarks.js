@@ -1,10 +1,10 @@
 // @flow strict
 import React from 'react';
 import MaterialTable from 'material-table';
+import { graphql } from 'react-apollo';
 import { tableIcons } from '../utils/react';
 import { PUBLIC_BENCHMARKS } from '../domain/graphql_queries';
-import {OneColumnLayout} from './OneColumnLayout';
-import { graphql } from 'react-apollo';
+import { OneColumnLayout } from './OneColumnLayout';
 
 type Props = {
   data: {
@@ -13,7 +13,6 @@ type Props = {
 };
 
 class BenchmarksComponent extends React.Component<Props> {
-
   render() {
     const { data: { public_benchmarks } } = this.props;
 
@@ -25,31 +24,35 @@ class BenchmarksComponent extends React.Component<Props> {
           columns={[
             {
               title: 'Owner',
-              field: 'owner'
+              field: 'owner',
             },
             {
               title: 'Model',
-              field: 'model.id'
+              field: 'model.id',
             },
             {
               title: 'Dataset',
-              field: 'dataset.id'
+              field: 'dataset.id',
             },
             {
               title: 'Model upload',
-              field: 'model.created'
+              field: 'model.created',
             },
             {
               title: 'Test completed',
-              field: 'job.finished'
+              field: 'job.finished',
             },
             {
               title: 'Top 1 accuracy',
-              field: 'result.metrics.top_1_accuracy'
+              field: 'result.metrics.top_1_accuracy',
             },
             {
               title: 'Top 5 accuracy',
-              field: 'result.metrics.top_5_accuracy'
+              field: 'result.metrics.top_5_accuracy',
+            },
+            {
+              title: 'Intersection over union',
+              field: 'result.metrics.mIoU',
             },
           ]}
           data={public_benchmarks}
