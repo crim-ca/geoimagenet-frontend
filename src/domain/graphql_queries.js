@@ -36,7 +36,7 @@ export const PUBLIC_BENCHMARKS = gql`
             result {
                 metrics {
                     top_1_accuracy
-                    top_5_accuracy
+                    mIoU
                 }
             }
             dataset {
