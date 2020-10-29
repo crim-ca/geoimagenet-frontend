@@ -47,10 +47,6 @@ class BenchmarksComponent extends React.Component<Props> {
               field: 'result.metrics.top_1_accuracy',
             },
             {
-              title: 'Top 5 accuracy',
-              field: 'result.metrics.top_5_accuracy',
-            },
-            {
               title: 'Intersection over union',
               field: 'result.metrics.mIoU',
             },
