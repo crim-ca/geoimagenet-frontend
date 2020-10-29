@@ -2,8 +2,28 @@ Changelog
 =========
 
 
-1.8.2 (2020-10-13)
+1.8.3 (2020-10-29)
 ------------
+- Pull request #123: Develop. [Francis Pelletier]
+
+  Merge in GEO/frontend from develop to master
+
+  * commit 'ad6fe9d20c9204f550269d1142b6d05fc29fae58':
+    Change benchmark metrics
+    Add Intersection over union metric
+- Pull request #122: Fix benchmarking. [Francis Pelletier]
+
+  Merge in GEO/frontend from fix-benchmarking to develop
+
+  * commit 'caeca2e5aa31abb47ece6332df343e7599847a21':
+    Change benchmark metrics
+    Add Intersection over union metric
+- Change benchmark metrics. [pelletfr]
+- Add Intersection over union metric. [pelletfr]
+
+
+1.8.2 (2020-10-13)
+------------------
 - Bump to 1.8.2. [pelletfr]
 - Pull request #121: Develop. [Francis Pelletier]
 
