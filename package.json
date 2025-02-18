@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://felix.gagnon-grenier%40crim.ca@www.crim.ca/stash/scm/geo/frontend.git"
+    "url": "https://github.com/crim-ca/geoimagenet-frontend"
   },
   "author": "Félix Gagnon-Grenier",
   "devDependencies": {
