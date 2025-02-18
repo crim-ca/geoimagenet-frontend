@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://felix.gagnon-grenier%40crim.ca@www.crim.ca/stash/scm/geo/frontend.git"
+    "url": "https://github.com/crim-ca/geoimagenet-frontend"
   },
   "author": "Félix Gagnon-Grenier",
   "devDependencies": {
@@ -90,6 +90,7 @@
     "apollo-upload-client": "^10.0.1",
     "apollo-utilities": "^1.3.1",
     "date-fns": "^2.0.0-alpha.27",
+    "elliptic": "^6.6.1",
     "emotion": "^10.0.9",
     "graphql": "^14.2.1",
     "graphql-tag": "^2.10.1",
